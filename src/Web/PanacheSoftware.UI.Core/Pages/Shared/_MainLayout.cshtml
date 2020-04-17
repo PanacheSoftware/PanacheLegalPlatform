@@ -1,0 +1,343 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <link rel="apple-touch-icon" sizes="76x76" href="~/img/apple-icon.png">
+    <link rel="icon" type="image/png" href="~/img/favicon.png">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>@ViewData["Title"] - From UI Core</title>
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport' />
+    <!--     Fonts and icons     -->
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
+    <!-- CSS Files -->
+    <link href="~/css/material-dashboard.css?v=2.1.0" rel="stylesheet" />
+    @RenderSection("Styles", required: false)
+</head>
+
+<body class="">
+    <div class="wrapper ">
+        @await Component.InvokeAsync("SideBar")
+        <div class="main-panel">
+            <!-- Navbar -->
+            <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
+                <div class="container-fluid">
+                    <div class="navbar-wrapper">
+                        <div class="navbar-minimize">
+                            <button id="minimizeSidebar" class="btn btn-just-icon btn-white btn-fab btn-round">
+                                <i class="material-icons text_align-center visible-on-sidebar-regular">more_vert</i>
+                                <i class="material-icons design_bullet-list-67 visible-on-sidebar-mini">view_list</i>
+                            </button>
+                        </div>
+                    </div>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="navbar-toggler-icon icon-bar"></span>
+                        <span class="navbar-toggler-icon icon-bar"></span>
+                        <span class="navbar-toggler-icon icon-bar"></span>
+                    </button>
+                    <div class="collapse navbar-collapse justify-content-end">
+                        <form class="navbar-form">
+                            <div class="input-group no-border">
+                                <input type="text" value="" class="form-control" placeholder="Ask Panache Bot...">
+                                <button type="submit" class="btn btn-white btn-round btn-just-icon">
+                                    <i class="material-icons">search</i>
+                                    <div class="ripple-container"></div>
+                                </button>
+                            </div>
+                        </form>
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <a class="nav-link" href="#pablo">
+                                    <i class="material-icons">dashboard</i>
+                                    <p class="d-lg-none d-md-block">
+                                        Dashboard
+                                    </p>
+                                </a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="material-icons">notifications</i>
+                                    <span class="notification">1</span>
+                                    <p class="d-lg-none d-md-block">
+                                        Notifications
+                                    </p>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+                                    <a class="dropdown-item" href="#">Some notification</a>
+                                </div>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link" href="#pablo" id="navbarDropdownProfile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="material-icons">person</i>
+                                    <p class="d-lg-none d-md-block">
+                                        Account
+                                    </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-page="/Logout" class="nav-link">
+                                    <i class="material-icons">exit_to_app</i>
+                                    <p class="d-lg-none d-md-block">
+                                        Logout
+                                    </p>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+            <!-- End Navbar -->
+            <div class="content">
+                <div class="container-fluid">
+                    @RenderBody()
+                </div>
+            </div>
+            <footer class="footer">
+                <div class="container-fluid">
+                    @await Component.InvokeAsync("Footer")
+                </div>
+            </footer>
+        </div>
+    </div>
+    <!--   Core JS Files   -->
+    <script src="~/js/core/jquery.min.js"></script>
+    <script src="~/js/core/popper.min.js"></script>
+    <script src="~/js/core/bootstrap-material-design.min.js"></script>
+    <!-- Plugin for the Perfect Scrollbar -->
+    <script src="~/js/plugins/perfect-scrollbar.jquery.min.js"></script>
+    <!-- Plugin for the momentJs  -->
+    <script src="~/js/plugins/moment.min.js"></script>
+    <!--  Plugin for Sweet Alert -->
+    <script src="~/js/plugins/sweetalert2.js"></script>
+    <!-- Forms Validations Plugin -->
+    <script src="~/js/plugins/jquery.validate.min.js"></script>
+    <!-- Plugin for the Wizard, full documentation here: https://github.com/VinceG/twitter-bootstrap-wizard -->
+    <script src="~/js/plugins/jquery.bootstrap-wizard.js"></script>
+    <!--	Plugin for Select, full documentation here: http://silviomoreto.github.io/bootstrap-select -->
+    <script src="~/js/plugins/bootstrap-selectpicker.js"></script>
+    <!--  Plugin for the DateTimePicker, full documentation here: https://eonasdan.github.io/bootstrap-datetimepicker/ -->
+    <script src="~/js/plugins/bootstrap-datetimepicker.min.js"></script>
+    <!--  DataTables.net Plugin, full documentation here: https://datatables.net/  -->
+    <script src="~/js/plugins/jquery.dataTables.min.js"></script>
+    <!--	Plugin for Tags, full documentation here: https://github.com/bootstrap-tagsinput/bootstrap-tagsinputs  -->
+    <script src="~/js/plugins/bootstrap-tagsinput.js"></script>
+    <!-- Plugin for Fileupload, full documentation here: http://www.jasny.net/bootstrap/javascript/#fileinput -->
+    <script src="~/js/plugins/jasny-bootstrap.min.js"></script>
+    <!--  Full Calendar Plugin, full documentation here: https://github.com/fullcalendar/fullcalendar    -->
+    <script src="~/js/plugins/fullcalendar.min.js"></script>
+    <!-- Vector Map plugin, full documentation here: http://jvectormap.com/documentation/ -->
+    <script src="~/js/plugins/jquery-jvectormap.js"></script>
+    <!--  Plugin for the Sliders, full documentation here: http://refreshless.com/nouislider/ -->
+    <script src="~/js/plugins/nouislider.min.js"></script>
+    <!-- Include a polyfill for ES6 Promises (optional) for IE11, UC Browser and Android browser support SweetAlert -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/core-js/2.4.1/core.js"></script>
+    <!-- Library for adding dinamically elements -->
+    <script src="~/js/plugins/arrive.min.js"></script>
+    <!--  Google Maps Plugin    -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script>
+    <!-- Chartist JS -->
+    <script src="~/js/plugins/chartist.min.js"></script>
+    <!--  Notifications Plugin    -->
+    <script src="~/js/plugins/bootstrap-notify.js"></script>
+    <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
+    <script src="~/js/material-dashboard.js?v=2.1.0" type="text/javascript"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
+
+
+
+@*<!DOCTYPE html>
+    <html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>@ViewData["Title"]</title>
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+        <!-- Bootstrap core CSS -->
+        <link rel="stylesheet" href="~/css/bootstrap.min.css">
+        <!-- Material Design Bootstrap -->
+        <link rel="stylesheet" href="~/css/mdb.min.css">
+
+        @RenderSection("Styles", required: false)
+
+        <!-- Your custom styles (optional) -->
+        <style>
+        </style>
+    </head>
+
+    <body class="fixed-sn white-skin">
+
+        <!-- Main Navigation -->
+        <header>
+
+            <!-- Sidebar navigation -->
+            <div id="slide-out" class="side-nav sn-bg-4 fixed">
+                <ul class="custom-scrollbar">
+
+                    <!-- Logo -->
+                    <li class="logo-sn waves-effect py-3">
+                        <div class="text-center">
+                            <a href="#" class="pl-0"><img src="~/img/Long-Blue-Trans-small.png"></a>
+                        </div>
+                    </li>
+
+                    <!-- Search Form -->
+                    <li>
+                        <form class="search-form" role="search">
+                            <div class="md-form mt-0 waves-light">
+                                <input type="text" class="form-control py-2" placeholder="Ask PanacheBot">
+                            </div>
+                        </form>
+                    </li>
+
+                    <!-- Side navigation links -->
+                    <li>
+                        <ul class="collapsible collapsible-accordion">
+
+                            <li>
+                                <a class="collapsible-header waves-effect arrow-r">
+                                    <i class="w-fa fas fa-user"></i>Profile<i class="fas fa-angle-down rotate-icon"></i>
+                                </a>
+                                <div class="collapsible-body">
+                                    <ul>
+                                        <li>
+                                            <a href="../profile/basic-1.html" class="waves-effect">Basic 1</a>
+                                        </li>
+                                        <li>
+                                            <a href="../profile/basic-2.html" class="waves-effect">Basic 2</a>
+                                        </li>
+                                        <li>
+                                            <a href="../profile/extended.html" class="waves-effect">Extended</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+
+                        </ul>
+                    </li>
+                    <!-- Side navigation links -->
+
+                </ul>
+                <div class="sidenav-bg mask-strong"></div>
+            </div>
+            <!-- Sidebar navigation -->
+            <!-- Navbar -->
+            <nav class="navbar fixed-top navbar-expand-lg scrolling-navbar double-nav">
+
+                <!-- SideNav slide-out button -->
+                <div class="float-left">
+                    <a href="#" data-activates="slide-out" class="button-collapse"><i class="fas fa-bars"></i></a>
+                </div>
+
+                <!-- Breadcrumb -->
+                <div class="breadcrumb-dn mr-auto">
+                    <p>@ViewData["Breadcrumb"]</p>
+                </div>
+
+                <!-- Navbar links -->
+                <ul class="nav navbar-nav nav-flex-icons ml-auto">
+
+                    <!-- Dropdown -->
+                    <li class="nav-item dropdown notifications-nav">
+                        <a class="nav-link dropdown-toggle waves-effect" id="navbarDropdownMenuLink" data-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false">
+                            <span class="badge red">3</span> <i class="fas fa-bell"></i>
+                            <span class="d-none d-md-inline-block">Notifications</span>
+                        </a>
+                        <div class="dropdown-menu dropdown-primary" aria-labelledby="navbarDropdownMenuLink">
+                            <a class="dropdown-item" href="#">
+                                <i class="far fa-money-bill-alt mr-2" aria-hidden="true"></i>
+                                <span>New order received</span>
+                                <span class="float-right"><i class="far fa-clock" aria-hidden="true"></i> 13 min</span>
+                            </a>
+                            <a class="dropdown-item" href="#">
+                                <i class="far fa-money-bill-alt mr-2" aria-hidden="true"></i>
+                                <span>New order received</span>
+                                <span class="float-right"><i class="far fa-clock" aria-hidden="true"></i> 33 min</span>
+                            </a>
+                            <a class="dropdown-item" href="#">
+                                <i class="fas fa-chart-line mr-2" aria-hidden="true"></i>
+                                <span>Your campaign is about to end</span>
+                                <span class="float-right"><i class="far fa-clock" aria-hidden="true"></i> 53 min</span>
+                            </a>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link waves-effect"><i class="far fa-comments"></i> <span class="clearfix d-none d-sm-inline-block">Support</span></a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle waves-effect" href="#" id="userDropdown" data-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-user"></i> <span class="clearfix d-none d-sm-inline-block">Profile</span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                            <a class="dropdown-item" href="#">Log Out</a>
+                            <a class="dropdown-item" href="#">My account</a>
+                        </div>
+                    </li>
+
+                </ul>
+                <!-- Navbar links -->
+
+            </nav>
+            <!-- Navbar -->
+
+        </header>
+        <!-- Main Navigation -->
+        <!-- Main layout -->
+        <main>
+            <div class="container-fluid">
+
+                @RenderBody()
+
+            </div>
+        </main>
+        <!-- Main layout -->
+        <!-- Footer -->
+        <footer class="page-footer pt-0 mt-5 fixed-bottom">
+
+            <!-- Copyright -->
+            <div class="footer-copyright py-3 text-center">
+                <div class="container-fluid">
+                    © 2019 Copyright: <a href="http://www.panachesoftware.com" target="_blank"> PanacheSoftware.com </a>
+
+                </div>
+            </div>
+            <!-- Copyright -->
+
+        </footer>
+        <!-- Footer -->
+        <!-- SCRIPTS -->
+        <!-- JQuery -->
+        <script type="text/javascript" src="~/js/jquery-3.4.1.min.js"></script>
+        <!-- Bootstrap tooltips -->
+        <script type="text/javascript" src="~/js/popper.min.js"></script>
+        <!-- Bootstrap core JavaScript -->
+        <script type="text/javascript" src="~/js/bootstrap.js"></script>
+        <!-- MDB core JavaScript -->
+        <script type="text/javascript" src="~/js/mdb.min.js"></script>
+        <!-- Custom scripts -->
+
+        @RenderSection("Scripts", required: false)
+
+        <script>
+            // SideNav Initialization
+            $(".button-collapse").sideNav();
+
+            var container = document.querySelector('.custom-scrollbar');
+            var ps = new PerfectScrollbar(container, {
+                wheelSpeed: 2,
+                wheelPropagation: true,
+                minScrollbarLength: 20
+            });
+
+        </script>
+    </body>
+
+    </html>*@

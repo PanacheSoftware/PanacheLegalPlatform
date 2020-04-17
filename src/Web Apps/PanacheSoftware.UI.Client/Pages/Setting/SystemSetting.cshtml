@@ -1,0 +1,74 @@
+﻿@page
+@model SystemSettingModel
+@{
+    ViewData["Title"] = "System Settings";
+    Layout = "_PSMainLayout";
+}
+
+@section Styles {
+    @await Html.PartialAsync("_PLDataTableCSS")
+}
+
+<div id="overlay" class="overlay"></div>
+<div class="container-fluid p-5">
+    <div class="row">
+        <div class="form-group col-md-12">
+            <div class="breadcrumb-container">
+                <a id="toggle-sidebar" class="btn btn-outline-secondary btn-sm breadcrumb-button" href="#"><i class="fa fa-bars"></i></a>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-page="/Dashboard/Index">@Html.GetTitle(Model.langQueryList, 10121)</a></li>
+                    <li class="breadcrumb-item active">@Html.GetTitle(Model.langQueryList, 10123)</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <form method="post">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card border-light mb-6">
+                    <div class="card-header">@Html.GetTitle(Model.langQueryList, 10123)</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table id="datatable" class="table table-striped table-bordered datatable display nowrap" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th>@Html.GetTitle(Model.langQueryList, 10218)</th>
+                                            <th>@Html.GetTitle(Model.langQueryList, 10212)</th>
+                                            <th>@Html.GetTitle(Model.langQueryList, 10219)</th>
+                                            <th>@Html.GetTitle(Model.langQueryList, 10220)</th>
+                                            <th>@Html.GetTitle(Model.langQueryList, 10200)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var currentSettingHeader in Model.settingList.SettingHeaders)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <a asp-page="/Setting/SettingName" asp-route-id="@currentSettingHeader.Name" class="btn btn-primary btn-sm"><i class="fa fa-edit"></i></a>
+                                                </td>
+                                                <td>@currentSettingHeader.Name</td>
+                                                <td>@currentSettingHeader.SettingType</td>
+                                                <td>@currentSettingHeader.Value</td>
+                                                <td>@currentSettingHeader.DefaultValue</td>
+                                                <td>@currentSettingHeader.Description</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                                <a class="btn btn-primary" asp-page="/Setting/SettingName">@Html.GetTitle(Model.langQueryList, 10204)</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+@section Scripts {
+    @await Html.PartialAsync("_PLDataTableJS")
+}
+

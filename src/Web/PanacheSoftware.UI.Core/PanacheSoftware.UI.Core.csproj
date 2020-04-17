@@ -1,0 +1,76 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="IdentityModel" Version="4.1.1" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="3.1.1" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="resources\**\*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="resources\css\panache\pl-breadcrumb.css" />
+    <None Remove="resources\css\panache\pl-login.css" />
+    <None Remove="resources\js\panache\pl-datatable.js" />
+  </ItemGroup>
+
+  <!--<ItemGroup>
+    <None Remove="Resources\img\sidebar-bg.png" />
+    <None Remove="Resources\img\user.jpg" />
+    <None Remove="Resources\js\sidebar\sidebar-main.js" />
+  </ItemGroup>-->
+
+  <!--<ItemGroup>
+    <None Remove="Resources\css\jquery.orgchart.css" />
+    <None Remove="Resources\css\jquery.orgchart.min.css" />
+    <None Remove="Resources\js\ckeditor\ckeditor.js" />
+    <None Remove="Resources\js\ckeditor\ckeditor.js.map" />
+    <None Remove="Resources\js\fancytree\jquery.fancytree-all-deps.js" />
+    <None Remove="Resources\js\fancytree\jquery.fancytree-all-deps.min.js" />
+    <None Remove="Resources\js\fancytree\jquery.fancytree-all-deps.min.js.map" />
+    <None Remove="Resources\js\orgchart\jquery.orgchart.js" />
+    <None Remove="Resources\js\orgchart\jquery.orgchart.min.js" />
+    <None Remove="Resources\js\orgchart\jquery.orgchart.min.js.map" />
+  </ItemGroup>-->
+
+  <!--<ItemGroup>
+    <Folder Include="Areas\" />
+    <Folder Include="Resources\css\bootstrap\" />
+    <Folder Include="Resources\css\datatables\" />
+    <Folder Include="Resources\css\datepicker\" />
+    <Folder Include="Resources\css\sidebar\" />
+    <Folder Include="Resources\css\panache\" />
+    <Folder Include="Resources\css\orgchart\" />
+    <Folder Include="resources\fancytree\src\skin-material\" />
+    <Folder Include="Resources\js\datatables\" />
+    <Folder Include="Resources\js\datepicker\" />
+    <Folder Include="Resources\js\sidebar\" />
+    <Folder Include="Resources\js\panache\" />
+    <Folder Include="Resources\sass\sidebar\" />
+  </ItemGroup>-->
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\PanacheSoftware.Core\PanacheSoftware.Core.csproj" />
+    <ProjectReference Include="..\..\Core\PanacheSoftware.Http\PanacheSoftware.Http.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="resources\css\chart\" />
+    <Folder Include="resources\css\dhtmlx-gantt\" />
+    <Folder Include="resources\js\d3\" />
+    <Folder Include="resources\js\chart\" />
+    <Folder Include="resources\js\dhtmlx-gantt\" />
+  </ItemGroup>
+
+</Project>

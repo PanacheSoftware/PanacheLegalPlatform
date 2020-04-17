@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>PanacheSoftware.Service.Client</name>
+    </assembly>
+    <members>
+        <member name="M:PanacheSoftware.Service.Client.Controllers.ClientController.Get">
+             <summary>
+             Gets all Clients.
+             </summary>
+             <remarks>
+             Sample request:
+            
+                 POST /Todo
+                 {
+                    "id": 1,
+                    "name": "Item1",
+                    "isComplete": true
+                 }
+            
+             </remarks>
+             <returns>A collection of Client Headers</returns>
+             <response code="200">If 1-n Clients were found</response>
+             <response code="401">If the user is not authorised for this function</response> 
+             <response code="404">If no client Headers found</response> 
+        </member>
+        <member name="M:PanacheSoftware.Service.Client.Controllers.ClientController.Get(System.String)">
+             <summary>
+             Gets a specified client.
+             </summary>
+             <remarks>
+             Sample request:
+            
+                 POST /Todo
+                 {
+                    "id": 1,
+                    "name": "Item1",
+                    "isComplete": true
+                 }
+            
+             </remarks>
+             <returns>A collection of Client Headers</returns>
+             <response code="200">If 1-n Clients were found</response>
+             <response code="401">If the user is not authorised for this function</response> 
+             <response code="404">If no client Headers found</response>
+        </member>
+        <member name="M:PanacheSoftware.Service.Client.Persistance.Repositories.Client.ClientHeaderRepository.ClientNameToId(System.String)">
+            <summary>
+            Returns the ClientHeader ID corresponding to a ShortName
+            </summary>
+            <param name="shortName">ClientHeader ShortName</param>
+            <returns>A valid ClientHeader ID or Guid.Empty if no ClientHeader found</returns>
+        </member>
+    </members>
+</doc>

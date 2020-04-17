@@ -1,0 +1,180 @@
+﻿@page "{id}/{taskGroupId?}"
+@model CreateOrEditModel
+@{
+    ViewData["Title"] = $"Panche Legal - Task ({Model.taskHead.Title})";
+    Layout = "_PSMainLayout";
+}
+
+@section Styles {
+    @await Html.PartialAsync("_PLFormCSS")
+    @await Html.PartialAsync("_PLDataTableCSS")
+}
+
+<div id="overlay" class="overlay"></div>
+<div class="container-fluid p-5">
+    <div class="row">
+        <div class="form-group col-md-12">
+            <div class="breadcrumb-container">
+                <a id="toggle-sidebar" class="btn btn-outline-secondary btn-sm breadcrumb-button" href="#"><i class="fa fa-bars"></i></a>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-page="/Dashboard/Index">@Html.GetTitle(Model.langQueryList, 10121)</a></li>
+                    <li class="breadcrumb-item"><a asp-page="/TaskGroup/TaskGroups">@Html.GetTitle(Model.langQueryList, 10111)</a></li>
+                    <li class="breadcrumb-item active">
+                        @if (Model.taskHead.Id == Guid.Empty)
+                        {
+                            @Html.Raw("New Task")
+                        }
+                        else
+                        {
+                            @Model.taskHead.Title
+                        }
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.SaveState != SaveStates.IGNORE)
+    {
+        if (Model.SaveState == SaveStates.FAILED)
+        {
+            <div class="alert alert-dismissible alert-danger">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <strong>@Html.GetTitle(Model.langQueryList, 10500)</strong>
+                @if (!string.IsNullOrWhiteSpace(Model.ErrorString))
+                {
+                    @Model.ErrorString;
+                }
+            </div>
+        }
+        else if (Model.SaveState == SaveStates.SUCCESS)
+        {
+            <div class="alert alert-dismissible alert-success">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <strong>@Html.GetTitle(Model.langQueryList, 10501)</strong>
+            </div>
+        }
+    }
+
+    <form method="post">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card border-light mb-6">
+                    <div class="card-header">@Html.GetTitle(Model.langQueryList, 10908)</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="bmd-label-floating">@Html.GetTitle(Model.langQueryList, 10900)</label>
+                                    <input asp-for="taskHead.Title" class="form-control" />
+                                    <span asp-validation-for="taskHead.Title" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="bmd-label-floating">@Html.GetTitle(Model.langQueryList, 10200)</label>
+                                    <textarea asp-for="taskHead.Description" class="form-control" rows="5"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                &nbsp;
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card border-light mb-6">
+                    <div class="card-header">@Html.GetTitle(Model.langQueryList, 10910)</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="bmd-label-floating">@Html.GetTitle(Model.langQueryList, 10911)</label>
+                                    <input asp-for="taskHead.CompletionDate" type="text" class="form-control datepicker" />
+                                    <input asp-for="taskHead.Completed" type="checkbox" hidden />
+                                    <input asp-for="taskHead.CompletedOnDate" type="text" class="form-control datepicker" hidden />
+                                    <input asp-for="taskHead.OriginalCompletionDate" type="text" class="form-control datepicker" hidden />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                &nbsp;
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card border-light mb-6">
+                    <div class="card-header">@Html.GetTitle(Model.langQueryList, 10909)</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="bmd-label-floating">@Html.GetTitle(Model.langQueryList, 10202)</label>
+                                    <input asp-for="taskHead.DateFrom" type="text" class="form-control datepicker" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="bmd-label-floating">@Html.GetTitle(Model.langQueryList, 10203)</label>
+                                    <input asp-for="taskHead.DateTo" type="text" class="form-control datepicker" />
+                                </div>
+                            </div>
+                        </div>
+                        <input asp-for="taskHead.TaskGroupHeaderId" type="text" class="form-control" hidden />
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="bmd-label-floating">@Html.GetTitle(Model.langQueryList, 10201)</label>
+                                    <select asp-for="taskHead.Status" asp-items="@Model.StatusList" class="custom-select"></select>
+                                    <input asp-for="taskHead.Id" class="form-control" hidden />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                &nbsp;
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card border-light mb-6">
+                    <div class="card-body">
+                        <input asp-for="taskHead.TaskType" type="text" class="form-control" hidden />
+                        <input asp-for="taskHead.SequenceNumber" type="text" class="form-control" hidden />
+                        @if (Model.taskHead.Id == Guid.Empty)
+                        {
+                            <button type="submit" class="btn btn-primary">@Html.GetTitle(Model.langQueryList, 10906)</button>
+                        }
+                        else
+                        {
+                            <button type="submit" class="btn btn-primary">@Html.GetTitle(Model.langQueryList, 10907)</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_PLFormJS")
+    @await Html.PartialAsync("_PLDataTableJS")
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+}

@@ -1,0 +1,64 @@
+﻿@model PanacheSoftware.Core.Domain.API.Task.TaskSummary
+@using PanacheSoftware.UI.Core.Helpers
+@{
+    <div class="card border-primary mb-3">
+        <div class="card-header">
+            @Model.Title
+            @if (Model.Completed)
+            {
+                <span class="badge badge-success float-right">Completed</span>
+            }
+            else
+            {
+                <span class="badge badge-primary float-right">In Progress</span>
+            }
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <p class="card-text">@Model.Description</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    &nbsp;
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <p>
+                        <strong>Due Date:</strong> @Model.CompletionDate.ToShortDateString()
+                        @if (Model.Completed)
+                        {
+                            <br /><strong>Completion Date:</strong>@Model.CompletedOnDate.ToShortDateString()
+                        }
+                    </p>
+                </div>
+                <div class="col-md-4">
+                    <p>
+                        <strong>Stakeholders:</strong>
+                        <br />Peter Davis
+                        <br />Neill Pemberton
+                    </p>
+                </div>
+                <div class="col-md-4">
+                    <p>
+                        <strong>Documents:</strong>
+                        <br />Title <i class="fa fa-file-pdf" aria-hidden="true"></i>
+                        <br />TP1 <i class="fa fa-file-word" aria-hidden="true"></i>
+                    </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    &nbsp;
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <p><button type="submit" class="btn-sm btn-primary">Edit Task</button></p>
+                </div>
+            </div>
+        </div>
+    </div>
+}

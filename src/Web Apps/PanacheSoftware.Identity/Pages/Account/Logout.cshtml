@@ -1,0 +1,97 @@
+﻿@page
+@model LogoutModel
+@{
+    ViewData["Title"] = "Logout";
+    Layout = "_LoginLayout";
+}
+
+<div class="container">
+    <div class="row d-flex justify-content-center">
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+    </div>
+
+    @if (string.IsNullOrWhiteSpace(Model.loggedOutViewModel.ClientName))
+    {
+        <div class="row d-flex justify-content-center">
+            <div class="col-md-8">
+                <!-- Material form login -->
+                <div class="card">
+                    <h5 class="card-header info-color white-text text-center py-4">
+                        <strong>Would you like to logout of @Model.loggedOutViewModel.ClientName?</strong>
+                    </h5>
+
+                    <!--Card content-->
+                    <div class="card-body px-lg-5 pt-0">
+
+                        <!-- Form -->
+                        <form class="text-center" style="color: #757575;" asp-route="Login">
+                            <input type="hidden" asp-for="logoutViewModel.LogoutId" />
+
+                            <!-- Sign in button -->
+                            <button class="btn btn-outline-info btn-rounded btn-block my-4 waves-effect z-depth-0">Yes</button>
+                        </form>
+                        <!-- Form -->
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        ViewData["signed-out"] = true;
+
+        <div class="row d-flex justify-content-center">
+            <div class="col-md-8">
+                <!-- Material form login -->
+                <div class="card">
+                    <h5 class="card-header info-color white-text text-center py-4">
+                        <strong>You are now logged out of @Model.loggedOutViewModel.ClientName</strong>
+                    </h5>
+
+                    <!--Card content-->
+                    <div class="card-body px-lg-5 pt-0">
+                        <br />
+                        @if (Model.loggedOutViewModel.PostLogoutRedirectUri != null)
+                        {
+                            <div class="d-flex justify-content-around">
+                                <div class="form-check">
+                                    Click <a class="PostLogoutRedirectUri" href="@Model.loggedOutViewModel.PostLogoutRedirectUri">here</a> to return to the
+                                    <span>@Model.loggedOutViewModel.ClientName</span> application.
+                                </div>
+                            </div>
+                        }
+
+                        @*@if (Model.loggedOutViewModel.SignOutIframeUrl != null)
+                        {
+                            <iframe width="0" height="0" class="signout" src="@Model.loggedOutViewModel.SignOutIframeUrl"></iframe>
+                        }*@
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        @*@section scripts
+        {
+            @if (Model.loggedOutViewModel.AutomaticRedirectAfterSignOut)
+            {
+                <script src="~/js/signout-redirect.js"></script>
+            }
+        }*@
+    }
+
+</div>
+
+
+
+
+

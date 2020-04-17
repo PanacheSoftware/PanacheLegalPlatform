@@ -1,0 +1,95 @@
+﻿@page
+@model TaskGroupsModel
+@{
+    ViewData["Title"] = "Panache Legal - Task Groups";
+    Layout = "_PSMainLayout";
+}
+
+@section Styles {
+    @await Html.PartialAsync("_PLDataTableCSS")
+}
+
+<div id="overlay" class="overlay"></div>
+<div class="container-fluid p-5">
+    <div class="row">
+        <div class="form-group col-md-12">
+            <div class="breadcrumb-container">
+                <a id="toggle-sidebar" class="btn btn-outline-secondary btn-sm breadcrumb-button" href="#"><i class="fa fa-bars"></i></a>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-page="/Dashboard/Index">@Html.GetTitle(Model.langQueryList, 10121)</a></li>
+                    <li class="breadcrumb-item active">@Html.GetTitle(Model.langQueryList, 10112)</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <form method="post">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card border-light mb-6">
+                    <div class="card-header">@Html.GetTitle(Model.langQueryList, 10111)</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table id="datatable" class="table table-striped table-bordered datatable display nowrap" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th>@Html.GetTitle(Model.langQueryList, 10900)</th>
+                                            <th>@Html.GetTitle(Model.langQueryList, 10901)</th>
+                                            <th>@Html.GetTitle(Model.langQueryList, 10200)</th>
+                                            <th>@Html.GetTitle(Model.langQueryList, 10913)</th>
+                                            <th>@Html.GetTitle(Model.langQueryList, 10911)</th>
+                                            <th>@Html.GetTitle(Model.langQueryList, 10912)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var taskGroupHeader in Model.taskGroupList.TaskGroupHeaders)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <a asp-page="/TaskGroup/Index" asp-route-id="@taskGroupHeader.Id" class="btn btn-primary btn-sm"><i class="fa fa-edit"></i></a>
+                                                </td>
+                                                <td>@taskGroupHeader.ShortName</td>
+                                                <td>@taskGroupHeader.LongName</td>
+                                                <td>@taskGroupHeader.Description</td>
+                                                <td>
+                                                    @if (taskGroupHeader.Completed)
+                                                    {
+                                                        @:<span class="btn btn-success btn-sm"><i class="fa fa-check"></i>&nbsp;Completed</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        @:<span class="btn btn-outline-warning btn-sm">Incomplete</span>
+                                                    }
+                                                </td>
+                                                <td>@taskGroupHeader.CompletionDate.ToShortDateString()</td>
+                                                <td>
+                                                    @if (taskGroupHeader.CompletedOnDate.ToShortDateString() != "01/01/1900")
+                                                    {
+                                                        @taskGroupHeader.CompletedOnDate.ToShortDateString()
+                                                    }
+                                                    else
+                                                    {
+                                                        @:&nbsp;
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                                <a class="btn btn-primary" asp-page="/TaskGroup/CreateOrEdit">@Html.GetTitle(Model.langQueryList, 10204)</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_PLDataTableJS")
+}
+
+
+

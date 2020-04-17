@@ -1,0 +1,157 @@
+﻿@page
+@model LoginModel
+@{
+    ViewData["Title"] = "Login";
+    Layout = "_LoginLayout";
+}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+                <div class="card card-signin my-5">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Sign In</h5>
+                        <form class="form" asp-route="Login">
+                            <div class="form-label-group">
+                                <input type="hidden" asp-for="loginViewModel.ReturnUrl" />
+                                <input class="form-control" asp-for="loginViewModel.Username" placeholder="Username" required autofocus>
+                                @*<input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>*@
+                                <label for="loginViewModel_Username">Username</label>
+                            </div>
+
+                            <div class="form-label-group">
+                                <input type="password" class="form-control" asp-for="loginViewModel.Password" placeholder="Password" required>
+                                @*<input type="password" id="inputPassword" class="form-control" placeholder="Password" required>*@
+                                <label for="loginViewModel_Password">Password</label>
+                            </div>
+
+                            <div class="custom-control custom-checkbox mb-3">
+                                <input type="checkbox" class="custom-control-input" id="customCheck1">
+                                @*<label class="custom-control-label" for="customCheck1">Remember password</label>*@
+                            </div>
+                            <button class="btn btn-lg btn-primary btn-block text-uppercase" name="button" value="login" type="submit">Login</button>
+                            @*<button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Sign in</button>*@
+                            @*<hr class="my-4">
+        <button class="btn btn-lg btn-google btn-block text-uppercase" type="submit"><i class="fab fa-google mr-2"></i> Sign in with Google</button>
+        <button class="btn btn-lg btn-facebook btn-block text-uppercase" type="submit"><i class="fab fa-facebook-f mr-2"></i> Sign in with Facebook</button>*@
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*<div class="row">
+        <div class="col-lg-4 col-md-6 col-sm-8 ml-auto mr-auto">
+            <form class="form" asp-route="Login">
+                <div class="card card-login card-hidden">
+                    <div class="card-header card-header-primary text-center">
+                        <h4 class="card-title">Sign In</h4>
+                    </div>
+                    <div class="card-body ">
+                        <span class="bmd-form-group">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="material-icons">face</i>
+                                    </span>
+                                </div>
+                                <input type="hidden" asp-for="loginViewModel.ReturnUrl" />
+                                <input class="form-control" asp-for="loginViewModel.Username" placeholder="Username" autofocus>
+                            </div>
+                        </span>
+                        <span class="bmd-form-group">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="material-icons">lock_outline</i>
+                                    </span>
+                                </div>
+                                <input type="password" class="form-control" asp-for="loginViewModel.Password" placeholder="Password" autocomplete="off">
+                            </div>
+                        </span>
+                    </div>
+                    <div class="card-footer justify-content-center">
+                        <button class="btn btn-primary btn-link btn-lg" name="button" value="login">Login</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>*@
+
+@*<div class="container">
+    <div class="row d-flex justify-content-center">
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+    </div>
+    <div class="row d-flex justify-content-center">
+        <div class="col-md-8">
+            <!-- Material form login -->
+            <partial name="_ValidationSummary" />
+            <div class="card">
+
+                <h5 class="card-header info-color white-text text-center py-4">
+                    <strong>Sign in</strong>
+                </h5>
+
+                <!--Card content-->
+                <div class="card-body px-lg-5 pt-0">
+
+                    <!-- Form -->
+                    <form class="text-center" style="color: #757575;" asp-route="Login">
+                        <input type="hidden" asp-for="loginViewModel.ReturnUrl" />
+
+                        <!-- Email -->
+                        <div class="md-form">
+                            <input class="form-control" asp-for="loginViewModel.Username" autofocus>
+                            <label asp-for="loginViewModel.Username"></label>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="md-form">
+                            <input type="password" class="form-control" asp-for="loginViewModel.Password" autocomplete="off">
+                            <label asp-for="loginViewModel.Password"></label>
+                        </div>
+
+                        @if (Model.loginViewModel.AllowRememberLogin)
+                        {
+                            <div class="d-flex justify-content-around">
+                                <div>
+                                    <!-- Remember me -->
+                                    <div class="form-check">
+                                        <input asp-for="loginViewModel.RememberLogin" class="form-check-input" id="materialLoginFormRemember">
+                                        <label class="form-check-label" asp-for="loginViewModel.RememberLogin">Remember me</label>
+                                    </div>
+                                </div>
+                                <div>
+                                    <!-- Forgot password -->
+                                    <a href="">Forgot password?</a>
+                                </div>
+                            </div>
+                        }
+                        <!-- Sign in button -->
+                        <button class="btn btn-outline-info btn-rounded btn-block my-4 waves-effect z-depth-0" name="button" value="login">Login</button>
+
+                        <!-- Social login -->
+                        @if (Model.loginViewModel.VisibleExternalProviders.Any())
+                        {
+                            <p>or sign in with:</p>
+                            <a type="button" class="btn-floating btn-primary">
+                                <i class="fab fa-microsoft"></i>
+                            </a>
+                        }
+
+                    </form>
+                    <!-- Form -->
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>*@        

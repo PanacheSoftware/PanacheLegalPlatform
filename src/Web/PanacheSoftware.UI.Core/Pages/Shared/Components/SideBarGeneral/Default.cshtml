@@ -1,0 +1,10 @@
+﻿@using PanacheSoftware.Core.Domain.API.Language
+@model LangQueryList
+
+<li class="header-menu">
+    <span>@Html.GetTitle(Model, 10103)</span>
+</li>
+@await Component.InvokeAsync("SideBarDashboard")
+@await Component.InvokeAsync("SideBarClient")
+@await Component.InvokeAsync("SideBarTeam")
+@await Component.InvokeAsync("SideBarTask")

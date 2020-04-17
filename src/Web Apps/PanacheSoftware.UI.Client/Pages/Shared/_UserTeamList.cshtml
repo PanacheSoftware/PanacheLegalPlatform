@@ -1,0 +1,42 @@
+﻿@model PanacheSoftware.Core.Domain.UI.UserTeamTableModel
+@using PanacheSoftware.UI.Core.Helpers
+@{
+    <div class="col-md-12">
+        <div class="card border-light mb-6">
+            <div class="card-header">@Html.GetTitle(Model.langQueryList, 10406)</div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <table id="userTeam_table" class="table table-striped table-bordered datatable display nowrap" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>@Html.GetTitle(Model.langQueryList, 10400)</th>
+                                    <th>@Html.GetTitle(Model.langQueryList, 10202)</th>
+                                    <th>@Html.GetTitle(Model.langQueryList, 10203)</th>
+                                    <th>@Html.GetTitle(Model.langQueryList, 10201)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    for (int iCount = 0; iCount < Model.userProfileModel.userTeamJoins.Count; iCount++)
+                                    {
+                                        <tr>
+                                            <!--TeamTableRowsStart-->
+                                            <td><select asp-for="userProfileModel.userTeamJoins[iCount].TeamHeaderId" asp-items="@Model.TeamSelectList" class="custom-select" disabled></select><input asp-for="userProfileModel.userTeamJoins[iCount].Id" class="form-control" hidden /><input asp-for="userProfileModel.userTeamJoins[iCount].UserId" class="form-control" hidden /></td>
+                                            <td><input asp-for="userProfileModel.userTeamJoins[iCount].DateFrom" type="text" class="form-control datepicker" /></td>
+                                            <td><input asp-for="userProfileModel.userTeamJoins[iCount].DateTo" type="text" class="form-control datepicker" /></td>
+                                            <td><select asp-for="userProfileModel.userTeamJoins[iCount].Status" asp-items="@Model.StatusList" class="custom-select"></select></td>
+                                            <!--TeamTableRowsEnd-->
+                                        </tr>
+                                    }
+                                    <input id="TeamTableCount" value="@(Model.userProfileModel.userTeamJoins.Count)" hidden />
+                                }
+                            </tbody>
+                        </table>
+                        <input type="button" id="add_userTeam" class="btn btn-primary pull-right add-address-btn" value="@Html.GetTitle(Model.langQueryList, 10407)" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

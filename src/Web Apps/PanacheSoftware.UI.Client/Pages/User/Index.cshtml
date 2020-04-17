@@ -1,0 +1,243 @@
+﻿@page "{id?}"
+@model IndexModel
+@{
+    ViewData["Title"] = $"Panache Legal - Profile ({Model.userProfileModel.userModel.Email})";
+    Layout = "_PSMainLayout";
+}
+
+@section Styles {
+    @await Html.PartialAsync("_PLFormCSS")
+    @await Html.PartialAsync("_PLDataTableCSS")
+}
+
+<div id="overlay" class="overlay"></div>
+<div class="container-fluid p-5">
+    <div class="row">
+        <div class="form-group col-md-12">
+            <div class="breadcrumb-container">
+                <a id="toggle-sidebar" class="btn btn-outline-secondary btn-sm breadcrumb-button" href="#"><i class="fa fa-bars"></i></a>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-page="/Dashboard/Index">@Html.GetTitle(Model.langQueryList, 10121)</a></li>
+                    <li class="breadcrumb-item"><a asp-page="/User/Users">@Html.GetTitle(Model.langQueryList, 10115)</a></li>
+                    <li class="breadcrumb-item active">
+                        @if (Model.userProfileModel.userModel.Id == Guid.Empty)
+                        {
+                            @Html.Raw("New User")
+                        }
+                        else
+                        {
+                            @Model.userProfileModel.userModel.Email
+                        }
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.SaveState != SaveStates.IGNORE)
+    {
+        if (Model.SaveState == SaveStates.FAILED)
+        {
+            <div class="alert alert-dismissible alert-danger">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <strong>@Html.GetTitle(Model.langQueryList, 10500)</strong>
+                @if (!string.IsNullOrWhiteSpace(Model.ErrorString))
+                {
+                    @Model.ErrorString;
+                }
+            </div>
+        }
+        else if (Model.SaveState == SaveStates.SUCCESS)
+        {
+            <div class="alert alert-dismissible alert-success">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <strong>@Html.GetTitle(Model.langQueryList, 10501)</strong>
+            </div>
+        }
+    }
+
+    <form method="post">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card border-light mb-6">
+                    <div class="card-header">@Html.GetTitle(Model.langQueryList, 10801)</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label for="email">@Html.GetTitle(Model.langQueryList, 10800)</label>
+                                    @if (string.IsNullOrWhiteSpace(Model.userProfileModel.userModel.Email))
+                                    {
+                                        <input asp-for="userProfileModel.userModel.Email" class="form-control" />
+                                    }
+                                    else
+                                    {
+                                        <input asp-for="userProfileModel.userModel.Email" class="form-control" readonly />
+                                    }
+                                    <span asp-validation-for="userProfileModel.userModel.Email" class="text-danger"></span>
+                                </div>
+                                @*<div class="form-group">
+                                        <label for="username">Username</label>
+                                        <input asp-for="userProfileModel.userModel.UserName" class="form-control" />
+                                        <span asp-validation-for="userProfileModel.userModel.UserName" class="text-danger"></span>
+                                    </div>*@
+                                @if (Model.userProfileModel.userModel.Id == Guid.Empty)
+                                {
+                                    <div class="form-group">
+                                        <label for="password">@Html.GetTitle(Model.langQueryList, 10802)</label>
+                                        <input asp-for="userProfileModel.password" type="password" class="form-control" />
+                                        <span asp-validation-for="userProfileModel.password" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="confirmpassword">@Html.GetTitle(Model.langQueryList, 10803)</label>
+                                        <input asp-for="userProfileModel.passwordConfirm" type="password" class="form-control" />
+                                        <span asp-validation-for="userProfileModel.passwordConfirm" class="text-danger"></span>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="form-group">
+                                        <input asp-for="userProfileModel.password" class="form-control" hidden />
+                                        <input asp-for="userProfileModel.passwordConfirm" class="form-control" hidden />
+                                    </div>
+                                }
+                                <div class="form-group">
+                                    <label for="fullname">@Html.GetTitle(Model.langQueryList, 10804)</label>
+                                    <input asp-for="userProfileModel.userModel.FullName" class="form-control" />
+                                    <span asp-validation-for="userProfileModel.userModel.FullName" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="firstname">@Html.GetTitle(Model.langQueryList, 10207)</label>
+                                    <input asp-for="userProfileModel.userModel.FirstName" class="form-control" />
+                                    <span asp-validation-for="userProfileModel.userModel.FirstName" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="lastname">@Html.GetTitle(Model.langQueryList, 10209)</label>
+                                    <input asp-for="userProfileModel.userModel.Surname" class="form-control" />
+                                    <span asp-validation-for="userProfileModel.userModel.Surname" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="datefrom">@Html.GetTitle(Model.langQueryList, 10202)</label>
+                                    <input asp-for="userProfileModel.userModel.DateFrom" type="text" class="form-control datepicker" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="dateto">@Html.GetTitle(Model.langQueryList, 10203)</label>
+                                    <input asp-for="userProfileModel.userModel.DateTo" type="text" class="form-control datepicker" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div>
+                                    <input type="file" name="img[]" class="file" accept="image/*">
+                                    <div class="input-group my-3">
+                                        <input asp-for="userProfileModel.userModel.Base64ProfileImage" class="form-control" hidden />
+                                        <input type="text" class="form-control" disabled placeholder="@Html.GetTitle(Model.langQueryList, 10221)" id="file">
+                                        <div class="input-group-append">
+                                            <button type="button" class="browse btn btn-primary">@Html.GetTitle(Model.langQueryList, 10205)</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    @if (!string.IsNullOrWhiteSpace(Model.userProfileModel.userModel.Base64ProfileImage))
+                                    {
+                                        <img src="@Model.userProfileModel.userModel.Base64ProfileImage" id="preview" class="img-thumbnail" alt="profileimage" />
+                                    }
+                                    else
+                                    {
+                                        //https://placehold.it/250
+                                        <img src="~/img/250.png" id="preview" class="img-thumbnail" alt="profileimage">
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="description">@Html.GetTitle(Model.langQueryList, 10200)</label>
+                                    <textarea asp-for="userProfileModel.userModel.Description" class="form-control" rows="5"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="description">@Html.GetTitle(Model.langQueryList, 10201)</label>
+                                    <select asp-for="userProfileModel.userModel.Status" asp-items="@Model.StatusList" class="custom-select"></select>
+                                    <input asp-for="userProfileModel.userModel.Id" class="form-control" hidden />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                &nbsp;
+            </div>
+        </div>
+        <div class="row">
+            <partial name="_UserTeamList" model="Model.userTeamTableModel" />
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                &nbsp;
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card border-light mb-6">
+                    <div class="card-body">
+                        @if (Model.userProfileModel.userModel.Id == Guid.Empty)
+                        {
+                            <button type="submit" class="btn btn-primary">@Html.GetTitle(Model.langQueryList, 10805)</button>
+                        }
+                        else
+                        {
+                            <button type="submit" class="btn btn-primary">@Html.GetTitle(Model.langQueryList, 10806)</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_PLFormJS")
+    @await Html.PartialAsync("_PLDataTableJS")
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+        <script>
+            $(document).ready(function () {
+
+                $("#preview").on("load", function () {
+                    var newImage = document.getElementById('preview').src;
+                    $('#userProfileModel_userModel_Base64ProfileImage').val(newImage);
+                });
+
+                var teamButton = document.getElementById('add_userTeam');
+
+                teamButton.addEventListener('click', addTeam, false);
+
+                function addTeam() {
+                    var teamTable = $('#userTeam_table').DataTable()
+                    var rowCount = $('#TeamTableCount').val();
+                    var userId = $('#userProfileModel_userModel_Id').val();
+
+                    teamTable.row.add([
+                        @{
+                            for (int i = 0; i < Model.userTeamTableModel.teamListRows.Count(); i++)
+                            {
+                                @Html.Raw(Model.userTeamTableModel.teamListRows[i]);
+                            }
+                        }
+                    ]).draw();
+
+                    $('.datepicker').datepicker();
+
+                    rowCount++;
+                    $('#TeamTableCount').val(rowCount);
+
+                }
+            });
+        </script>
+}

@@ -1,0 +1,199 @@
+﻿@page "{id?}/{parentid?}"
+@model IndexModel
+@{
+    ViewData["Title"] = $"Panche Legal - Node ()";
+    Layout = "_MainLayout";
+}
+
+<div>
+    <form method="post">
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header card-header-icon card-header-primary">
+                        <div class="card-icon">
+                            <i class="fa fa-file"></i>
+                        </div>
+                        <h4 class="card-title">
+                            Edit Node -
+                            @if (Model.folderNod.Id == Guid.Empty)
+                            {
+                                <small class="category">New Node</small>
+                            }
+                            else
+                            {
+                                <small class="category">@Model.folderNod.Title</small>
+                            }
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="bmd-label-floating">Node Title</label>
+                                    <input asp-for="folderNod.Title" class="form-control" />
+                                    <span asp-validation-for="folderNod.Title" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="bmd-label-floating">Description</label>
+                                    <textarea asp-for="folderNod.Description" class="form-control" rows="5"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="bmd-label-floating">Completion Due Date</label>
+                                    <input asp-for="folderNod.CompletionDate" type="text" class="form-control datepicker" />
+                                    <input asp-for="folderNod.DateTo" class="form-control" hidden />
+                                    <input asp-for="folderNod.DateFrom" class="form-control" hidden />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="bmd-label-floating">Completed On Date</label>
+                                    <input asp-for="folderNod.CompletedOnDate" type="text" class="form-control datepicker" />
+                                    <input asp-for="folderNod.Completed" type="text" class="form-control" hidden />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="bmd-label-floating">Node Type</label>
+                                    <select asp-for="folderNod.NodeType" asp-items="@Model.NodeTypeList" class="selectpicker" data-style="select-with-transition"></select>
+                                    <input class="form-control" hidden type="text" id="unBound" name="unBound" value="Unbound" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="bmd-label-floating">Status</label>
+                                    <select asp-for="folderNod.Status" asp-items="@Model.StatusList" class="selectpicker" data-style="select-with-transition"></select>
+                                    <input asp-for="folderNod.Id" class="form-control" hidden />
+                                    <input asp-for="folderNod.FolderHeaderId" class="form-control" hidden />
+                                    <input asp-for="folderNod.OriginalCompletionDate" class="form-control" hidden />
+                                    <input asp-for="folderNod.SequenceNumber" class="form-control" hidden />
+                                </div>
+                            </div>
+                        </div>
+                        <div class=" row">
+                            <div class="col-md-12">
+                                <br /><br /><br />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header card-header-icon card-header-primary">
+                        <div class="card-icon">
+                            <i class="fa fa-edit"></i>
+                        </div>
+                        <h4 class="card-title">
+                            Template
+                        </h4>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <textarea asp-for="folderNod.FolderNodeDetail.Data" id="template-container"></textarea>
+                                @*<div id="template-container">
+             @Html.Raw(Model.folderNod.FolderNodeDetail.Data)
+        </div>*@
+                                <input asp-for="folderNod.FolderNodeDetail.DateFrom" class="form-control" hidden />
+                                <input asp-for="folderNod.FolderNodeDetail.DateTo" class="form-control" hidden />
+                                <input asp-for="folderNod.FolderNodeDetail.FolderNodeId" class="form-control" hidden />
+                                <input asp-for="folderNod.FolderNodeDetail.Id" class="form-control" hidden />
+                                <input asp-for="folderNod.FolderNodeDetail.Status" class="form-control" hidden />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                @if (Model.folderNod.Id == Guid.Empty)
+                                {
+                                    <button type="submit" class="btn btn-primary">Create Node</button>
+                                }
+                                else
+                                {
+                                    <button type="submit" class="btn btn-primary">Update Node</button>
+                                }
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script src="~/js/ckeditor/ckeditor.js"></script>
+
+    <script type="module">
+        $(document).ready(function () {
+            md.initFormExtendedDatetimepickers();
+            checkParentFolder();
+            $('#folderNod_FolderHeaderId').on('change', function () {
+                checkParentFolder();
+            });
+
+            function checkParentFolder() {
+                var parentFolderSelect = document.getElementById('folderNod_FolderHeaderId');
+                var disable = false;
+                if (parentFolderSelect.value !== '') {
+                    disable = true;
+                }
+            }
+
+            function MinHeightPlugin(editor) {
+                this.editor = editor;
+            }
+
+            MinHeightPlugin.prototype.init = function() {
+                this.editor.ui.view.editable.extendTemplate({
+                    attributes: {
+                        style: {
+                            minHeight: '400px'
+                        }
+                    }
+                });
+            };
+
+            ClassicEditor.builtinPlugins.push(MinHeightPlugin);
+            ClassicEditor
+                .create(document.querySelector('#template-container'), {
+                    panachesoftwareConfig: {
+			            types: [ 'Client ID', 'Client name', 'Folder ID' ]                             // ADDED
+			        }
+		        } )
+		        .then( editor => {
+			        window.editor = editor;
+		        } )
+		        .catch( err => {
+			        console.error( err.stack );
+		        } );
+        });
+    </script>
+}
+

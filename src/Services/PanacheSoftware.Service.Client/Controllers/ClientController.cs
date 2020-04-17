@@ -1,0 +1,200 @@
+﻿using System;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using AutoMapper;
+using Microsoft.AspNetCore.JsonPatch;
+using PanacheSoftware.Core.Domain.API.Client;
+using PanacheSoftware.Core.Domain.Client;
+using PanacheSoftware.Service.Client.Core;
+using System.Security.Claims;
+using PanacheSoftware.Http;
+using PanacheSoftware.Core.Types;
+using PanacheSoftware.Service.Client.Manager;
+
+namespace PanacheSoftware.Service.Client.Controllers
+{
+    [Produces("application/json")]
+    [Authorize]
+    [Route("api/[controller]")]
+    public class ClientController : Controller
+    {
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
+        private readonly IClientManager _clientManager;
+
+        public ClientController(IUnitOfWork unitOfWork, IMapper mapper, IClientManager clientManager)
+        {
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
+            _clientManager = clientManager;
+        }
+
+        /// <summary>
+        /// Gets all Clients.
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     POST /Todo
+        ///     {
+        ///        "id": 1,
+        ///        "name": "Item1",
+        ///        "isComplete": true
+        ///     }
+        ///
+        /// </remarks>
+        /// <returns>A collection of Client Headers</returns>
+        /// <response code="200">If 1-n Clients were found</response>
+        /// <response code="401">If the user is not authorised for this function</response> 
+        /// <response code="404">If no client Headers found</response> 
+        [HttpGet]
+        [Produces("application/json")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
+        public IActionResult Get()
+        {
+            try
+            {
+                ClientList clientList = new ClientList();
+
+                foreach (var currentClient in _unitOfWork.ClientHeaders.GetAll(true))
+                {
+                    clientList.ClientHeaders.Add(_mapper.Map<ClientHead>(currentClient));
+                }
+
+                if (clientList.ClientHeaders.Count > 0)
+                    return Ok(clientList);
+            }
+            catch (Exception e)
+            {
+                string message = e.Message;
+            }
+
+            return NotFound();
+        }
+
+        /// <summary>
+        /// Gets a specified client.
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     POST /Todo
+        ///     {
+        ///        "id": 1,
+        ///        "name": "Item1",
+        ///        "isComplete": true
+        ///     }
+        ///
+        /// </remarks>
+        /// <returns>A collection of Client Headers</returns>
+        /// <response code="200">If 1-n Clients were found</response>
+        /// <response code="401">If the user is not authorised for this function</response> 
+        /// <response code="404">If no client Headers found</response>
+        [HttpGet("{id}")]
+        [Produces("application/json")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
+        public IActionResult Get(string id)
+        {
+            try
+            {
+                ClientHeader clientHeader = null;
+
+                if (Guid.TryParse(id, out Guid parsedId))
+                {
+                    clientHeader = _unitOfWork.ClientHeaders.GetClientHeaderWithRelations(parsedId, true);
+                }
+                else
+                {
+                    clientHeader = _unitOfWork.ClientHeaders.GetClientHeaderWithRelations(id, true);
+                }
+
+                if (clientHeader != null)
+                {
+                    return Ok(_mapper.Map<ClientHead>(clientHeader));
+                }
+            }
+            catch (Exception e)
+            {
+                string message = e.Message;
+            }
+
+            return NotFound();
+        }
+
+        [HttpPost]
+        public IActionResult Post([FromBody]ClientHead clientHead)
+        {
+            try
+            {
+                if (clientHead.Id == Guid.Empty)
+                {
+                    //var userId = User.FindFirstValue("sub");
+
+                    var clientHeader = _mapper.Map<ClientHeader>(clientHead);
+
+                    _unitOfWork.ClientHeaders.Add(clientHeader);
+
+                    _unitOfWork.Complete();
+
+                    return Created(new Uri($"{Request.Path}/{clientHeader.Id}", UriKind.Relative), _mapper.Map<ClientHead>(clientHeader));
+                }
+            }
+            catch (Exception e)
+            {
+                string message = e.Message;
+            }
+
+            return BadRequest();
+        }
+
+        [HttpPatch("{id}")]
+        [Produces("application/json")]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        public IActionResult Patch(string id, [FromBody]JsonPatchDocument<ClientHead> clientHeadPatch)
+        {
+            try
+            {
+                if (Guid.TryParse(id, out Guid parsedId))
+                {
+                    //var userId = User.FindFirstValue("sub");
+
+                    ClientHeader clientHeader = _unitOfWork.ClientHeaders.Get(parsedId);
+
+                    ClientHead clientHead = _mapper.Map<ClientHead>(clientHeader);
+
+                    clientHeadPatch.ApplyTo(clientHead);
+
+                    _mapper.Map(clientHead, clientHeader);
+
+                    _unitOfWork.Complete();
+
+                    return CreatedAtRoute("Get", new { id = _mapper.Map<ClientHead>(clientHeader).Id }, _mapper.Map<ClientHead>(clientHeader));
+                }
+            }
+            catch (Exception e)
+            {
+                string message = e.Message;
+            }
+
+            return BadRequest();
+        }
+
+        [Route("[action]/{id}")]
+        [HttpGet]
+        public IActionResult GetClientSummary(string id)
+        {
+            var clientSummary = _clientManager.GetClientSummary(id);
+
+            if (clientSummary != null)
+                return Ok(clientSummary);
+
+            return NotFound();
+        }
+    }
+}

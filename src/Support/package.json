@@ -1,0 +1,30 @@
+{
+  "version": "1.0.0",
+  "name": "panachelegalplatform-support",
+  "private": true,
+  "description": "Panache Legal Platform Suuport",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PanacheSoftware/PanacheLegalPlatform.git"
+  },
+  "author": "Peter Davis",
+  "license": "AGPL-3.0",
+  "bugs": {
+    "url": "https://github.com/PanacheSoftware/PanacheLegalPlatform/issues"
+  },
+  "homepage": "https://github.com/PanacheSoftware/PanacheLegalPlatform#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "gulp": "^4.0.2",
+    "gulp-concat": "^2.6.1"
+  },
+  "scripts": {
+    "start": "gulp"
+  },
+  "-vs-binding": {
+    "BeforeBuild": [
+      "install",
+      "start"
+    ]
+  }
+}

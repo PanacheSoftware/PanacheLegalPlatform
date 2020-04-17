@@ -1,0 +1,58 @@
+﻿@model PanacheSoftware.Core.Domain.API.Task.TaskGroupSummary
+@using PanacheSoftware.UI.Core.Helpers
+@{
+<div class="card">
+    <div class="card-header" id="heading@{@Model.SequenceNumber}">
+        <p>
+            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse@{@Model.SequenceNumber}" aria-expanded="true" aria-controls="collapse@{@Model.SequenceNumber}">
+                @Model.LongName
+            </button>
+            @if (Model.Completed)
+            {
+                <span class="badge badge-success float-right">Complete</span>
+            }
+            else
+            {
+                <span class="badge badge-primary float-right">In Progress</span>
+            }
+        </p>
+        <p>
+            <div class="progress ml-2" style="width: 50%;">
+                <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" aria-valuenow="@Model.PercentageComplete" aria-valuemin="0" aria-valuemax="100" style="width: @Model.PercentageComplete%"></div>
+            </div>
+        </p>
+        <p>
+            <div class="ml-2">
+                @if (Model.Completed)
+                {
+                    <strong>Completed On:</strong>@Model.CompletedOnDate.ToShortDateString()
+                }
+                else
+                {
+                    <strong>Due Date:</strong>@Model.CompletionDate.ToShortDateString()
+                }
+            </div>
+        </p>
+    </div>
+
+    <div id="collapse@{@Model.SequenceNumber}" class="collapse" aria-labelledby="heading@{@Model.SequenceNumber}">
+        <div class="card-body">
+            <p>
+                <strong>Due Date:</strong> @Model.CompletionDate.ToShortDateString()
+                @if (Model.Completed)
+                {
+                    <br /><strong>Completion Date:</strong>@Model.CompletedOnDate.ToShortDateString()
+                }
+            </p>
+            <p>@Model.Description</p>
+
+            @foreach (var childTaskSummary in Model.ChildTasks)
+            {
+                <partial name="_TaskSummary" model="childTaskSummary" />
+            }
+
+            <p><a asp-page="/TaskGroup/Task/CreateOrEdit" asp-route-id="@Guid.Empty" asp-route-taskgroupid="@Model.Id" class="btn btn-primary btn-sm">Add Task</a> <a asp-page="/TaskGroup/CreateOrEdit" asp-route-id="@Model.Id" class="btn btn-primary btn-sm">Edit Group</a></p>
+        </div>
+    </div>
+</div>
+}

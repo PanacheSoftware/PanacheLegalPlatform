@@ -1,0 +1,20 @@
+﻿@using PanacheSoftware.Core.Domain.API.Language
+@model LangQueryList
+
+<nav id="sidebar" class="sidebar-wrapper">
+    <div class="sidebar-content">
+        <!-- sidebar-brand  -->
+        <div class="sidebar-item sidebar-brand">
+            <a href="#">@Html.GetTitle(Model, 10000)</a>
+        </div>
+        <!-- sidebar-header  -->
+        @await Component.InvokeAsync("SideBarUserProfile")
+        <!-- sidebar-search  -->
+        @await Component.InvokeAsync("SideBarSearch")
+        <!-- sidebar-menu  -->
+        @await Component.InvokeAsync("SideBarMenu")
+        <!-- sidebar-menu  -->
+    </div>
+    <!-- sidebar-footer  -->
+    @await Component.InvokeAsync("SideBarFooter")
+</nav>

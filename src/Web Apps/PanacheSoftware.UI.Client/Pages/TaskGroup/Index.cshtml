@@ -1,0 +1,198 @@
+﻿@page "{id}"
+@model IndexModel
+@{
+    ViewData["Title"] = $"Panche Legal - ({Model.taskGroupSummary.ShortName})";
+    Layout = "_PSMainLayout";
+}
+
+@section Styles {
+    @await Html.PartialAsync("_PLFormCSS")
+    @await Html.PartialAsync("_PLDataTableCSS")
+    <link rel="stylesheet" href="~/css/dhtmlx-gantt/dhtmlxgantt.css">
+}
+
+<div id="overlay" class="overlay"></div>
+<div class="container-fluid p-5">
+    <div class="row">
+        <div class="form-group col-md-12">
+            <div class="breadcrumb-container">
+                <a id="toggle-sidebar" class="btn btn-outline-secondary btn-sm breadcrumb-button" href="#"><i class="fa fa-bars"></i></a>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-page="/Dashboard/Index">@Html.GetTitle(Model.langQueryList, 10121)</a></li>
+                    <li class="breadcrumb-item"><a asp-page="/TaskGroup/TaskGroups">@Html.GetTitle(Model.langQueryList, 10111)</a></li>
+                    <li class="breadcrumb-item active">@Model.taskGroupSummary.LongName</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <form method="post">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card border-light mb-6">
+                    <div class="card-header">@Model.taskGroupSummary.LongName</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                @if (Model.taskGroupSummary.Completed)
+                                {
+                                    <div class="alert alert-success">
+                                        <strong>Complete</strong><br />
+                                        Completion date: @Model.taskGroupSummary.CompletedOnDate.ToShortDateString()
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="alert alert-primary">
+                                        <strong>Incomplete</strong><br />
+                                        Completion due date: @Model.taskGroupSummary.CompletionDate.ToShortDateString()
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <p>@Model.taskGroupSummary.Description</p>
+                            </div>
+                            <div class="col-md-4">
+                                <p><strong>Completion Date:</strong><br />@Model.taskGroupSummary.CompletionDate.ToShortDateString()</p>
+                                <p><strong>Client:</strong><br /><a asp-page="/Client/Index" asp-route-id="@Model.clientSummary.Id">@Model.clientSummary.LongName</a></p>
+                                <p><strong>Main Contact:</strong><br />@Model.clientSummary.MainContactName<br />@Model.clientSummary.Phone<br /><a href="mailto:@Model.clientSummary.Email">@Model.clientSummary.Email</a></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                &nbsp;
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card border-light mb-6">
+                    <div class="card-header">Progress</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <p><strong>Completion progress:</strong></p>
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" aria-valuenow="@Model.taskGroupSummary.PercentageComplete" aria-valuemin="0" aria-valuemax="100" style="width: @Model.taskGroupSummary.PercentageComplete%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                &nbsp;
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <p><strong>Completion Date:</strong><br />@Model.taskGroupSummary.CompletionDate.ToShortDateString()</p>
+                                <p>
+                                    <strong>Overdue tasks:</strong>
+                                    @*<br /><a href="#">Node 3</a> (Due: 01/01/2020)
+                                        <br /><a href="#">Node 5</a> (Due: 01/01/2020)*@
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="accordion" id="accordionExample">
+                                    <div class="card">
+                                        <div class="card-header" id="headingTimeline">
+                                            <h2 class="mb-0">
+                                                <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseTimeline" aria-expanded="true" aria-controls="collapseTimeline">
+                                                    Completion Timeline
+                                                </button>
+                                            </h2>
+                                        </div>
+
+                                        <div id="collapseTimeline" class="collapse" aria-labelledby="headingTimeline">
+                                            <div class="card-body overflow-auto">
+                                                <div id="gantt_here"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                &nbsp;
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card border-light mb-6">
+                    <div class="card-header">Tasks</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+
+                                <div class="accordion" id="accordionTasks">
+
+                                    @foreach (var childTaskGroupSummary in Model.taskGroupSummary.ChildTaskGroups)
+                                    {
+                                        <partial name="_TaskGroupSummary" model="childTaskGroupSummary" />
+                                    }
+
+                                </div>
+                                <p>&nbsp;</p>
+                                <p><a asp-page="/TaskGroup/CreateOrEdit" asp-route-id="@Guid.Empty" asp-route-parentid="@Model.taskGroupSummary.Id" class="btn btn-primary btn-sm">Add Task Group</a></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+
+
+</div>
+
+
+
+@section Scripts {
+    @await Html.PartialAsync("_PLFormJS")
+    @await Html.PartialAsync("_PLDataTableJS")
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script src="~/js/dhtmlx-gantt/dhtmlxgantt.js"></script>
+    <script>
+		gantt.config.date_format = "%Y-%m-%d %H:%i";
+		gantt.config.readonly = true;
+		gantt.config.autosize = "y";
+		gantt.config.columns=[
+			{name:"text",       label:"Task name",  tree:true, width:'*' },
+			{name:"start_date", label:"Start time", align: "center" },
+			{name:"duration",   label:"Duration",   align: "center" },
+		];
+		gantt.init("gantt_here");
+		gantt.parse({
+			data: [
+				{id: "hello1", text: "Project #1", start_date: null, duration: null, parent:"", progress: 0, open: true},
+				{id: "hello2", text: "Task #1", start_date: "2019-08-01 00:00", duration:5, parent:"hello1", progress: 1},
+				{id: "hello3", text: "Task #2", start_date: "2019-08-06 00:00", duration:2, parent:"hello1", progress: 0.5},
+				{id: "hello4", text: "Task #3", start_date: null, duration: null, parent:"hello1", progress: 0.8, open: false},
+				{id: "hello5", text: "Task #3.1", start_date: "2019-08-09 00:00", duration:2, parent:"hello4", progress: 0.2},
+				{id: "hello6", text: "Task #3.2", start_date: "2019-08-11 00:00", duration:1, parent:"hello4", progress: 0}
+			],
+			links:[
+				{id:1, source:"hello2", target:"hello3", type:"0"},
+				{id:2, source:"hello3", target:"hello4", type:"0"},
+				{id:3, source:"hello5", target:"hello6", type:"0"}
+			]
+		});
+    </script>
+}
+
+
+
+
+

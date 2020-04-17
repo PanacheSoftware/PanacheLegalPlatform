@@ -1,0 +1,24 @@
+{
+  "settingHeaders": [
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "description": "User Language",
+      "value": "EN",
+      "defaultValue": "EN",
+      "settingType": "USER",
+      "name": "USER_LANGUAGE",
+      "status": "N",
+      "userSettings": []
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "description": "System Language",
+      "value": "EN",
+      "defaultValue": "EN",
+      "settingType": "SYSTEM",
+      "name": "SYSTEM_LANGUAGE",
+      "status": "N",
+      "userSettings": []
+    }
+  ]
+}

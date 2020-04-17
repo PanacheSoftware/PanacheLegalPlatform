@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>D:\Panache Software\GitHub\PanacheLegalPlatform\src\Services\PanacheSoftware.Service.Client\PanacheSoftware.Service.Client.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
+    <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="3.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Core\Repositories\Client\" />
+    <Folder Include="Persistance\EntityConfiguration\" />
+    <Folder Include="Persistance\Repositories\Client\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\PanacheSoftware.Core\PanacheSoftware.Core.csproj" />
+    <ProjectReference Include="..\..\Core\PanacheSoftware.Database\PanacheSoftware.Database.csproj" />
+    <ProjectReference Include="..\..\Core\PanacheSoftware.Http\PanacheSoftware.Http.csproj" />
+  </ItemGroup>
+
+</Project>

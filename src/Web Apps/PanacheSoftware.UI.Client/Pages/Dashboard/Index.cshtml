@@ -1,0 +1,72 @@
+﻿@page
+@model PanacheSoftware.UI.Client.Pages.Dashboard.IndexModel
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "_PSMainLayout";
+}
+
+<div id="overlay" class="overlay"></div>
+<div class="container-fluid p-5">
+    <div class="row">
+        <div class="form-group col-md-12">
+            <div class="breadcrumb-container">
+                <a id="toggle-sidebar" class="btn btn-outline-secondary btn-sm breadcrumb-button" href="#"><i class="fa fa-bars"></i></a>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item" active>@Html.GetTitle(Model.langQueryList, 10121)</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.taskGroupSummaryList.TaskGroupSummarys.Any())
+    {
+        var rowStart = true;
+        var rowEnd = false;
+        var cardCount = 0;
+        var taskGroupCount = Model.taskGroupSummaryList.TaskGroupSummarys.Count;
+        var currentTaskGroupCount = 0;
+
+        foreach (var currentTaskGroupSummary in Model.taskGroupSummaryList.TaskGroupSummarys)
+        {
+            if (rowStart)
+            {
+                @:<div class="row">
+                    rowStart = false;
+                }
+
+                <div class="form-group col-md-6">
+                    <div class="card border-warning mb-6">
+                        <div class="card-header"><a asp-page="/TaskGroup/Index" asp-route-id="@currentTaskGroupSummary.Id" class="btn btn-outline-warning btn-sm">@currentTaskGroupSummary.ShortName</a></div>
+                        <div class="card-body">
+                            <h4 class="card-title">@currentTaskGroupSummary.LongName</h4>
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" aria-valuenow="@currentTaskGroupSummary.PercentageComplete" aria-valuemin="0" aria-valuemax="100" style="width: @currentTaskGroupSummary.PercentageComplete%"></div>
+                            </div>
+                            <br />
+                            <p class="card-text">
+                                @currentTaskGroupSummary.Description
+                                <br /><br />
+                                <strong>Completion Date:</strong> @currentTaskGroupSummary.CompletionDate.ToShortDateString()
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                cardCount++;
+                currentTaskGroupCount++;
+
+                if (cardCount == 2 || currentTaskGroupCount == taskGroupCount)
+                {
+                    rowEnd = true;
+                    rowStart = true;
+                    cardCount = 0;
+                }
+
+                if (rowEnd)
+                {
+                @:</div>
+                rowEnd = false;
+            }
+        }
+    }
+</div>

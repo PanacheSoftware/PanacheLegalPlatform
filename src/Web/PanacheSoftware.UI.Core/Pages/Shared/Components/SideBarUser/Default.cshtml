@@ -1,0 +1,19 @@
+﻿@using PanacheSoftware.Core.Domain.API.Language
+@model LangQueryList
+
+<li class="sidebar-dropdown @Html.IsSelected(root:"User", page: "", cssClass:"active", cssClassAlt:"")">
+    <a href="#">
+        <i class="fa fa-users"></i>
+        <span class="menu-text">@Html.GetTitle(Model, 10115)</span>
+    </a>
+    <div class="sidebar-submenu" style="@Html.IsSelected(root:"User", page: "", cssClass:"display: block;", cssClassAlt:"")">
+        <ul>
+            <li>
+                <a asp-page="/User/Users">@Html.GetTitle(Model, 10116)</a>
+            </li>
+            <li>
+                <a asp-page="/User/Index" asp-route-Id="">@Html.GetTitle(Model, 10117)</a>
+            </li>
+        </ul>
+    </div>
+</li>

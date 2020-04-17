@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>PanacheSoftware.Service.Team</name>
+    </assembly>
+    <members>
+        <member name="M:PanacheSoftware.Service.Team.Persistance.Repositories.Team.TeamHeaderRepository.TeamNameToId(System.String)">
+            <summary>
+            Returns the TeamHeader ID corresponding to a ShortName
+            </summary>
+            <param name="teamShortName">TeamHeader ShortName</param>
+            <returns>A valid TeamHeader ID or Guid.Empty if no TeamHeader found</returns>
+        </member>
+    </members>
+</doc>

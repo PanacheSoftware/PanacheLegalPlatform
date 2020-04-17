@@ -1,0 +1,20 @@
+﻿@using PanacheSoftware.Core.Domain.API.Language
+@model LangQueryList
+
+<div class="sidebar-item sidebar-header d-flex flex-nowrap">
+    <div class="user-pic">
+        <img class="img-responsive img-rounded" src="@ViewData["Picture"]">
+    </div>
+    <div class="user-info">
+        <a asp-page="/User/Profile" asp-route-id="@ViewData["Id"]">
+            <span class="user-name">
+                @ViewData["FullName"]
+            </span>
+        </a>
+        <span class="user-role">Administrator</span>
+        <span class="user-status">
+            <i class="fa fa-circle"></i>
+            <span>@Html.GetTitle(Model, 10100)</span>
+        </span>
+    </div>
+</div>
