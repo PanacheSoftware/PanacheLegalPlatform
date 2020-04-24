@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>PanacheSoftware.Service.File.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+    <Folder Include="Core\Repositories\File\" />
+    <Folder Include="Manager\" />
+    <Folder Include="Persistance\Context\" />
+    <Folder Include="Persistance\EntityConfiguration\" />
+    <Folder Include="Persistance\Repositories\File\" />
+    <Folder Include="Persistance\SQL\" />
+  </ItemGroup>
+
+
+</Project>

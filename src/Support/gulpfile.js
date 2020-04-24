@@ -44,6 +44,17 @@ gulp.task('merge-sql', function (done) {
 		.pipe(gulp.dest('./SQL/'));
 });
 
-gulp.task('build', gulp.series('merge-sql'));
+gulp.task('merge-drop-sql', function (done) {
+	return gulp.src(['../Web Apps/PanacheSoftware.Identity/Data/SQL/DropTables.sql',
+		'../Services/PanacheSoftware.Service.Client/Persistance/SQL/DropTables.sql',
+		'../Services/PanacheSoftware.Service.Team/Persistance/SQL/DropTables.sql',
+		'../Services/PanacheSoftware.Service.Foundation/Persistance/SQL/DropTables.sql',
+		'../Services/PanacheSoftware.Service.Folder/Persistance/SQL/DropTables.sql',
+		'../Services/PanacheSoftware.Service.Task/Persistance/SQL/DropTables.sql'])
+		.pipe(concat('PanacheLegalDropTables.sql'))
+		.pipe(gulp.dest('./SQL/'));
+});
+
+gulp.task('build', gulp.series('merge-sql', 'merge-drop-sql'));
 
 gulp.task('default', gulp.series('build'));
