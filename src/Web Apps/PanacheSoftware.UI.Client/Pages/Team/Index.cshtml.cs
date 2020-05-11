@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using PanacheSoftware.Core.Domain.API.Language;
+using PanacheSoftware.Core.Domain.API.Settings;
 using PanacheSoftware.Core.Domain.API.Team;
 using PanacheSoftware.Core.Domain.UI;
 using PanacheSoftware.Core.Types;
@@ -38,6 +39,8 @@ namespace PanacheSoftware.UI.Client.Pages.Team
         public LangQueryList langQueryList { get; set; }
         public string SaveState { get; set; }
         public string ErrorString { get; set; }
+        public SaveMessageModel SaveMessageModel { get; set; }
+        public UsrSetting languageCodeSetting { get; set; }
 
         public IndexModel(IAPIHelper apiHelper, IRazorPartialToStringRenderer renderer, IModelHelper modelHelper, IMapper mapper)
         {
@@ -55,7 +58,9 @@ namespace PanacheSoftware.UI.Client.Pages.Team
         {
             SaveState = saveState;
 
-            langQueryList = await _apiHelper.MakeLanguageQuery(accessToken, "EN", new long[] { 10121, 10108, 10400, 10401, 10202, 10203, 10200, 10402, 10201, 10405, 10403, 10404, 10500, 10501 });
+            languageCodeSetting = await _apiHelper.GetUserLanguage(accessToken);
+
+            langQueryList = await _apiHelper.MakeLanguageQuery(accessToken, languageCodeSetting.Value, new long[] { 10121, 10108, 10400, 10401, 10202, 10203, 10200, 10402, 10201, 10405, 10403, 10404, 10500, 10501 });
 
             await CreateTeamSelectList(accessToken);
 
@@ -92,6 +97,8 @@ namespace PanacheSoftware.UI.Client.Pages.Team
 
             await PageConstructor(SaveStates.IGNORE, accessToken);
 
+            SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken);
+
             return Page();
         }
 
@@ -108,12 +115,16 @@ namespace PanacheSoftware.UI.Client.Pages.Team
 
                 await PageConstructor(SaveStates.SUCCESS, accessToken);
 
+                SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken, SaveStates.SUCCESS);
+
                 return Page();
             }
 
             Id = teamHead.Id.ToString();
 
             await PageConstructor(SaveStates.FAILED, accessToken);
+
+            SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken, SaveStates.FAILED);
 
             return Page();
         }

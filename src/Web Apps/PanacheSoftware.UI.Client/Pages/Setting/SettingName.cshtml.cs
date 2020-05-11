@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using PanacheSoftware.Core.Domain.API.Language;
 using PanacheSoftware.Core.Domain.API.Settings;
+using PanacheSoftware.Core.Domain.UI;
 using PanacheSoftware.Core.Types;
 using PanacheSoftware.Http;
 using PanacheSoftware.UI.Core.Headers;
@@ -37,6 +38,7 @@ namespace PanacheSoftware.UI.Client
         public SelectList SettingTypeList { get; }
         public string SaveState { get; set; }
         public string ErrorString { get; set; }
+        public SaveMessageModel SaveMessageModel { get; set; }
 
         public SettingNameModel(IAPIHelper apiHelper, IModelHelper modelHelper)
         {
@@ -77,6 +79,8 @@ namespace PanacheSoftware.UI.Client
                 settingHead = new SettingHead();
             }
 
+            SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken);
+
             return Page();
         }
 
@@ -94,10 +98,14 @@ namespace PanacheSoftware.UI.Client
                 }
                 SaveState = SaveStates.SUCCESS;
 
+                SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken, SaveState);
+
                 return Page();
             }
 
             SaveState = SaveStates.FAILED;
+
+            SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken, SaveState);
 
             return Page();
         }

@@ -28,3 +28,7 @@ DROP TABLE TaskHeader
 DROP TABLE TaskGroupDetail
 DROP TABLE TeamTask
 DROP TABLE TaskGroupHeader
+DROP TABLE FileVersion
+DROP TABLE FileLink
+DROP TABLE FileDetail
+DROP TABLE FileHeader

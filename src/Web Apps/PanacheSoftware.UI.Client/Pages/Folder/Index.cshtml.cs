@@ -46,6 +46,7 @@ namespace PanacheSoftware.UI.Client.Pages.Folder
         public LangQueryList langQueryList { get; set; }
         public string SaveState { get; set; }
         public string ErrorString { get; set; }
+        public SaveMessageModel SaveMessageModel { get; set; }
 
         public IndexModel(IAPIHelper apiHelper, IRazorPartialToStringRenderer renderer, IModelHelper modelHelper, IMapper mapper)
         {
@@ -91,6 +92,8 @@ namespace PanacheSoftware.UI.Client.Pages.Folder
             {
                 Id = Guid.Empty.ToString();
             }
+
+            SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken);
 
             return Page();
         }

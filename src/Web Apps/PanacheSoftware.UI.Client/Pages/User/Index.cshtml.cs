@@ -48,6 +48,7 @@ namespace PanacheSoftware.UI.Client.Pages.User
         public LangQueryList langQueryList { get; set; }
         public string SaveState { get; set; }
         public string ErrorString { get; set; }
+        public SaveMessageModel SaveMessageModel { get; set; }
 
         public IndexModel(
             IMapper mapper,
@@ -121,6 +122,8 @@ namespace PanacheSoftware.UI.Client.Pages.User
 
             //await GeneratePageConstructionModel();
 
+            SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken);
+
             return Page();
         }
 
@@ -183,6 +186,8 @@ namespace PanacheSoftware.UI.Client.Pages.User
 
                 //await GeneratePageConstructionModel();
             }
+
+            SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken, SaveState);
 
             return Page();
         }

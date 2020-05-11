@@ -12,10 +12,7 @@ CREATE TABLE [TaskDetail] (
     [LastUpdateDate] DATETIME2 (7)    NOT NULL,
     [CreatedBy]      UNIQUEIDENTIFIER NOT NULL,
     [LastUpdateBy]   UNIQUEIDENTIFIER NOT NULL,
-    [TaskHeaderId]   UNIQUEIDENTIFIER NOT NULL,
-    [DateFrom]       DATETIME2 (7)    NOT NULL,
-    [DateTo]         DATETIME2 (7)    NOT NULL,
-	[Data]           NVARCHAR (MAX)   NULL,
+    [TaskHeaderId]   UNIQUEIDENTIFIER NOT NULL
 );
 
 

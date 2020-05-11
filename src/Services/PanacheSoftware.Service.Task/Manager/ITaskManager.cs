@@ -17,5 +17,6 @@ namespace PanacheSoftware.Service.Task.Manager
         bool SetNewTaskSequenceNo(TaskHeader taskHeader);
         TaskGroupSummaryList GetMainTaskGroupSummarys();
         TaskGroupSummary GetTaskGroupSummary(Guid taskGroupHeaderId);
+        bool CanCompleteTaskGroup(Guid taskGroupHeaderId);
     }
 }

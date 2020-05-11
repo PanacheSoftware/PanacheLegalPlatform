@@ -1,11 +1,19 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PanacheSoftware.Core.Domain.Task;
+using System;
 
 namespace PanacheSoftware.Service.Task.Persistance.EntityConfiguration
 {
     public class TaskHeaderConfiguration : IEntityTypeConfiguration<TaskHeader>
     {
+        private string _tenantId;
+
+        public TaskHeaderConfiguration(string tenantId)
+        {
+            _tenantId = tenantId;
+        }
+
         public void Configure(EntityTypeBuilder<TaskHeader> builder)
         {
             builder.ToTable("TaskHeader");
@@ -19,6 +27,8 @@ namespace PanacheSoftware.Service.Task.Persistance.EntityConfiguration
                 .HasForeignKey(c => c.TaskGroupHeaderId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasQueryFilter(d => d.TenantId == Guid.Parse(_tenantId));
         }
     }
 }

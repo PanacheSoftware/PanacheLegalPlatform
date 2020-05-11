@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json;
 using PanacheSoftware.Core.Domain.API.Language;
 using PanacheSoftware.Core.Domain.API.Settings;
+using PanacheSoftware.Core.Domain.UI;
+using PanacheSoftware.Core.Types;
 using System;
 using System.Net.Http;
 using System.Text;
@@ -60,6 +62,31 @@ namespace PanacheSoftware.Http
             return new UsrSetting() { Value = "EN" };
         }
 
+        public async Task<SettingHead> GetSystemSetting(string accessToken, string settingName)
+        {
+            var response = await MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FOUNDATION, $"Setting/{settingName}");
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                return response.ContentAsType<SettingHead>();
+            }
+
+            return null;
+        }
+
+        public async Task<SaveMessageModel> GenerateSaveMessageModel(string accessToken, string saveState = default(string), string errorString = default(string), int historyLength = -2)
+        {
+            var usrSetting = await GetUserLanguage(accessToken);
+
+            return new SaveMessageModel()
+            {
+                ErrorString = string.IsNullOrWhiteSpace(errorString) ? string.Empty : errorString,
+                SaveState = string.IsNullOrWhiteSpace(saveState) ? SaveStates.IGNORE : saveState,
+                HistoryLength = historyLength,
+                SaveLangQueryList = await MakeLanguageQuery(accessToken, usrSetting.Value, new long[] { 10500, 10501 })
+            };
+        }
+
         private LangQueryList GetLangQueryList(string languageCode, long[] TextCodes)
         {
             var langQueryList = new LangQueryList();
@@ -93,6 +120,8 @@ namespace PanacheSoftware.Http
                     return "https://localhost:44316";
                 case APITypes.TASK:
                     return "https://localhost:44377";
+                case APITypes.FILE:
+                    return "https://localhost:44324";
                 default:
                     break;
             }

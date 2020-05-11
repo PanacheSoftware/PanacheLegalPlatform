@@ -9,27 +9,27 @@
             </button>
             @if (Model.Completed)
             {
-                <span class="badge badge-success float-right">Complete</span>
+                <span class="badge badge-success float-right">@Html.GetTitle(Model.langQueryList, 10921)</span>
             }
             else
             {
-                <span class="badge badge-primary float-right">In Progress</span>
+                <span class="badge badge-primary float-right">@Html.GetTitle(Model.langQueryList, 10928)</span>
             }
         </p>
         <p>
             <div class="progress ml-2" style="width: 50%;">
-                <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" aria-valuenow="@Model.PercentageComplete" aria-valuemin="0" aria-valuemax="100" style="width: @Model.PercentageComplete%"></div>
+                <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" aria-valuenow="@(Model.PercentageComplete*100)" aria-valuemin="0" aria-valuemax="100" style="width: @(Model.PercentageComplete*100)%"></div>
             </div>
         </p>
         <p>
             <div class="ml-2">
                 @if (Model.Completed)
                 {
-                    <strong>Completed On:</strong>@Model.CompletedOnDate.ToShortDateString()
+                    <strong>@Html.GetTitle(Model.langQueryList, 10912):</strong>@Model.CompletedOnDate.ToShortDateString()
                 }
                 else
                 {
-                    <strong>Due Date:</strong>@Model.CompletionDate.ToShortDateString()
+                    <strong>@Html.GetTitle(Model.langQueryList, 10911):</strong>@Model.CompletionDate.ToShortDateString()
                 }
             </div>
         </p>
@@ -38,20 +38,35 @@
     <div id="collapse@{@Model.SequenceNumber}" class="collapse" aria-labelledby="heading@{@Model.SequenceNumber}">
         <div class="card-body">
             <p>
-                <strong>Due Date:</strong> @Model.CompletionDate.ToShortDateString()
+                <strong>@Html.GetTitle(Model.langQueryList, 10943):</strong> <a asp-page="/User/Index" asp-route-id="@Model.MainUserId">@Model.MainUserName</a>
+            </p>
+            <p>
+                <strong>@Html.GetTitle(Model.langQueryList, 10911):</strong> @Model.CompletionDate.ToShortDateString()
                 @if (Model.Completed)
                 {
-                    <br /><strong>Completion Date:</strong>@Model.CompletedOnDate.ToShortDateString()
+                    <br /><strong>@Html.GetTitle(Model.langQueryList, 10912):</strong>@Model.CompletedOnDate.ToShortDateString()
                 }
             </p>
-            <p>@Model.Description</p>
+            <p style="white-space: pre-line">@Model.Description</p>
 
             @foreach (var childTaskSummary in Model.ChildTasks)
             {
                 <partial name="_TaskSummary" model="childTaskSummary" />
             }
 
-            <p><a asp-page="/TaskGroup/Task/CreateOrEdit" asp-route-id="@Guid.Empty" asp-route-taskgroupid="@Model.Id" class="btn btn-primary btn-sm">Add Task</a> <a asp-page="/TaskGroup/CreateOrEdit" asp-route-id="@Model.Id" class="btn btn-primary btn-sm">Edit Group</a></p>
+            <br /><br />
+            @if (!Model.Completed)
+            {
+                @if (Model.ChildTasks.Any() || Model.ChildTaskGroups.Any())
+                {
+                <form asp-page-handler="Complete" method="post">
+                    <button class="btn btn-success btn-sm">@Html.GetTitle(Model.langQueryList, 10929)</button>
+                    <input type="hidden" name="taskGroupId" value="@Model.Id" />
+                </form>
+                <br />
+                }
+            }
+            <p><a asp-page="/TaskGroup/Task/CreateOrEdit" asp-route-id="@Guid.Empty" asp-route-taskgroupid="@Model.Id" class="btn btn-primary btn-sm">@Html.GetTitle(Model.langQueryList, 10930)</a> <a asp-page="/TaskGroup/CreateOrEdit" asp-route-id="@Model.Id" class="btn btn-primary btn-sm">@Html.GetTitle(Model.langQueryList, 10931)</a></p>
         </div>
     </div>
 </div>

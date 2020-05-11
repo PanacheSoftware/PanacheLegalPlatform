@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using PanacheSoftware.Core.Domain.API.Language;
+using PanacheSoftware.Core.Domain.UI;
 using PanacheSoftware.Core.Types;
 using PanacheSoftware.Http;
 using PanacheSoftware.UI.Core.Headers;
@@ -35,6 +36,7 @@ namespace PanacheSoftware.UI.Client
         public LangQueryList langQueryList { get; set; }
         public string SaveState { get; set; }
         public string ErrorString { get; set; }
+        public SaveMessageModel SaveMessageModel { get; set; }
 
         public LanguageCodeModel(IAPIHelper apiHelper, IRazorPartialToStringRenderer renderer, IModelHelper modelHelper)
         {
@@ -76,6 +78,8 @@ namespace PanacheSoftware.UI.Client
                 }
             }
 
+            SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken);
+
             return Page();
         }
 
@@ -94,10 +98,14 @@ namespace PanacheSoftware.UI.Client
 
                 SaveState = SaveStates.SUCCESS;
 
+                SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken, SaveState);
+
                 return Page();
             }
 
             SaveState = SaveStates.FAILED;
+
+            SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken, SaveState);
 
             return Page();
         }

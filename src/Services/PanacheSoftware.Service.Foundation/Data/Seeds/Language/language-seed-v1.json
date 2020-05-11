@@ -482,6 +482,46 @@
     },
     {
       "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10222,
+      "description": "General titles",
+      "text": "Start Date",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10223,
+      "description": "General titles",
+      "text": "ID",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10224,
+      "description": "General titles",
+      "text": "Dates",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10225,
+      "description": "General titles",
+      "text": "Details",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
       "textCode": 10300,
       "description": "Client Screens",
       "text": "Clients",
@@ -665,6 +705,16 @@
       "textCode": 10407,
       "description": "Team Screens",
       "text": "Add Team",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10408,
+      "description": "Team Screens",
+      "text": "My Teams",
       "dateFrom": "2020-02-17",
       "dateTo": "2119-02-17",
       "languageItems": [],
@@ -952,6 +1002,16 @@
     },
     {
       "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10807,
+      "description": "User Screens",
+      "text": "My Profile",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
       "textCode": 10900,
       "description": "Task Screens",
       "text": "Task ID",
@@ -1054,7 +1114,7 @@
       "id": "00000000-0000-0000-0000-000000000000",
       "textCode": 10910,
       "description": "Task Screens",
-      "text": "Task Completion",
+      "text": "Task Dates",
       "dateFrom": "2020-02-17",
       "dateTo": "2119-02-17",
       "languageItems": [],
@@ -1085,6 +1145,296 @@
       "textCode": 10913,
       "description": "Task Screens",
       "text": "Completed",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10915,
+      "description": "Task Screens",
+      "text": "Task Group",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10916,
+      "description": "Task Screens",
+      "text": "Task Item",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10917,
+      "description": "Task Screens",
+      "text": "Create Task Group",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10918,
+      "description": "Task Screens",
+      "text": "Update Task Group",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10919,
+      "description": "Task Screens",
+      "text": "Create Task Item",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10920,
+      "description": "Task Screens",
+      "text": "Update Task Item",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10921,
+      "description": "Task Screens",
+      "text": "Complete",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10922,
+      "description": "Task Screens",
+      "text": "Incomplete",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10923,
+      "description": "Task Screens",
+      "text": "Progress",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10924,
+      "description": "Task Screens",
+      "text": "Completion Progress",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10925,
+      "description": "Task Screens",
+      "text": "Timeline",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10926,
+      "description": "Task Screens",
+      "text": "Add Task Group",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10927,
+      "description": "Task Screens",
+      "text": "Duration",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10928,
+      "description": "Task Screens",
+      "text": "In Progress",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10929,
+      "description": "Task Screens",
+      "text": "Complete Task Group",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10930,
+      "description": "Task Screens",
+      "text": "Add Task Item",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10931,
+      "description": "Task Screens",
+      "text": "Edit Task Group",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10932,
+      "description": "Task Screens",
+      "text": "Files",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10933,
+      "description": "Task Screens",
+      "text": "Add File",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10934,
+      "description": "Task Screens",
+      "text": "Complete Task Item",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10935,
+      "description": "Task Screens",
+      "text": "Edit Task Item",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10936,
+      "description": "Task Screens",
+      "text": "Ver",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10937,
+      "description": "Task Screens",
+      "text": "File Name",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10938,
+      "description": "Task Screens",
+      "text": "Upload Date",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10939,
+      "description": "Task Screens",
+      "text": "Link",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10940,
+      "description": "Task Screens",
+      "text": "Open",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10941,
+      "description": "Task Screens",
+      "text": "Add File Version",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10942,
+      "description": "Task Screens",
+      "text": "Close",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10943,
+      "description": "Task Screens",
+      "text": "Assigned User",
       "dateFrom": "2020-02-17",
       "dateTo": "2119-02-17",
       "languageItems": [],

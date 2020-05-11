@@ -2,13 +2,16 @@
 using PanacheSoftware.Core.Domain.Task;
 using PanacheSoftware.Core.Domain.Join;
 using PanacheSoftware.Service.Task.Persistance.EntityConfiguration;
+using PanacheSoftware.Http;
 
 namespace PanacheSoftware.Service.Task.Persistance.Context
 {
     public class PanacheSoftwareServiceTaskContext : DbContext
     {
-        public PanacheSoftwareServiceTaskContext(DbContextOptions<PanacheSoftwareServiceTaskContext> options) : base(options)
+        private readonly IUserProvider _userProvider;
+        public PanacheSoftwareServiceTaskContext(DbContextOptions<PanacheSoftwareServiceTaskContext> options, IUserProvider userProvider) : base(options)
         {
+            _userProvider = userProvider;
         }
 
         public virtual DbSet<TaskGroupHeader> TaskGroupHeaders { get; set; }
@@ -18,12 +21,14 @@ namespace PanacheSoftware.Service.Task.Persistance.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            var tenantId = _userProvider.GetTenantId();
+
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.ApplyConfiguration(new TaskGroupHeaderConfiguration());
-            modelBuilder.ApplyConfiguration(new TaskGroupDetailConfiguration());
-            modelBuilder.ApplyConfiguration(new TaskHeaderConfiguration());
-            modelBuilder.ApplyConfiguration(new TaskDetailConfiguration());
+            modelBuilder.ApplyConfiguration(new TaskGroupHeaderConfiguration(tenantId));
+            modelBuilder.ApplyConfiguration(new TaskGroupDetailConfiguration(tenantId));
+            modelBuilder.ApplyConfiguration(new TaskHeaderConfiguration(tenantId));
+            modelBuilder.ApplyConfiguration(new TaskDetailConfiguration(tenantId));
         }
     }
 }

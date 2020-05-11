@@ -15,6 +15,7 @@ using PanacheSoftware.Core.Domain.API.Folder;
 using PanacheSoftware.Core.Domain.API.Language;
 using PanacheSoftware.Core.Domain.API.Team;
 using PanacheSoftware.Core.Domain.Identity.API;
+using PanacheSoftware.Core.Domain.UI;
 using PanacheSoftware.Core.Types;
 using PanacheSoftware.Http;
 using PanacheSoftware.UI.Core.Helpers;
@@ -42,6 +43,7 @@ namespace PanacheSoftware.UI.Client.Pages.Folder
         public LangQueryList langQueryList { get; set; }
         public string SaveState { get; set; }
         public string ErrorString { get; set; }
+        public SaveMessageModel SaveMessageModel { get; set; }
 
         //public string ChartDatasource { get; set; }
 
@@ -99,6 +101,8 @@ namespace PanacheSoftware.UI.Client.Pages.Folder
                 Id = Guid.Empty.ToString();
             }
 
+            SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken);
+
             return Page();
         }
 
@@ -115,6 +119,7 @@ namespace PanacheSoftware.UI.Client.Pages.Folder
                     if(await CreateOrUpdateFolderAsync(accessToken))
                     {
                         SaveState = SaveStates.SUCCESS;
+                        SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken, SaveState);
                         return Page();
                     }
                 }
@@ -123,6 +128,7 @@ namespace PanacheSoftware.UI.Client.Pages.Folder
             Id = folderHead.Id.ToString();
 
             SaveState = SaveStates.FAILED;
+            SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken, SaveState);
 
             return Page();
         }

@@ -1,22 +1,17 @@
-﻿using System;
+﻿using PanacheSoftware.Core.Domain.Core;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace PanacheSoftware.Core.Domain.File
 {
-    public class FileDetail
+    public class FileDetail : PanacheSoftwareEntity
     {
-        public FileDetail()
-        {
-
-        }
-
+        public Guid FileHeaderId { get; set; }
+        public virtual FileHeader FileHeader { get; set; }
         public string FileTitle { get; set; }
         public string Description { get; set; }
         public string FileType { get; set; }
         public string FileExtension { get; set; }
-
-        public DateTime DateFrom { get; set; }
-        public DateTime DateTo { get; set; }
     }
 }

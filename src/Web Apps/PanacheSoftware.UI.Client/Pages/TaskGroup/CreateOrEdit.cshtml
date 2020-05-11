@@ -22,7 +22,14 @@
                     <li class="breadcrumb-item active">
                         @if (Model.taskGroupHead.Id == Guid.Empty)
                         {
-                             @Html.Raw("New Task Group")
+                            if (Model.taskGroupHead.ParentTaskGroupId != null)
+                            {
+                                @Html.GetTitle(Model.langQueryList, 10915)
+                            }
+                            else
+                            {
+                                @Html.GetTitle(Model.langQueryList, 10908)
+                            }
                         }
                         else
                         {
@@ -34,45 +41,34 @@
         </div>
     </div>
 
-    @if (Model.SaveState != SaveStates.IGNORE)
-    {
-        if (Model.SaveState == SaveStates.FAILED)
-        {
-            <div class="alert alert-dismissible alert-danger">
-                <button type="button" class="close" data-dismiss="alert">&times;</button>
-                <strong>@Html.GetTitle(Model.langQueryList, 10500)</strong>
-                @if (!string.IsNullOrWhiteSpace(Model.ErrorString))
-                {
-                    @Model.ErrorString;
-                }
-            </div>
-        }
-        else if (Model.SaveState == SaveStates.SUCCESS)
-        {
-            <div class="alert alert-dismissible alert-success">
-                <button type="button" class="close" data-dismiss="alert">&times;</button>
-                <strong>@Html.GetTitle(Model.langQueryList, 10501)</strong>
-            </div>
-        }
-    }
+    <partial name="_SaveMessage" model="Model.SaveMessageModel" />
 
 <form method="post">
     <div class="row">
         <div class="col-md-12">
             <div class="card border-light mb-6">
-                <div class="card-header">@Html.GetTitle(Model.langQueryList, 10908)</div>
+                <div class="card-header">
+                    @if (Model.taskGroupHead.ParentTaskGroupId != null)
+                    {
+                        @Html.GetTitle(Model.langQueryList, 10915)
+                    }
+                    else
+                    {
+                        @Html.GetTitle(Model.langQueryList, 10908)
+                    }
+                </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label class="bmd-label-floating">@Html.GetTitle(Model.langQueryList, 10900)</label>
+                                <label class="bmd-label-floating">@Html.GetTitle(Model.langQueryList, 10223)</label>
                                 <input asp-for="taskGroupHead.ShortName" class="form-control" />
                                 <span asp-validation-for="taskGroupHead.ShortName" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label class="bmd-label-floating">@Html.GetTitle(Model.langQueryList, 10901)</label>
+                                <label class="bmd-label-floating">@Html.GetTitle(Model.langQueryList, 10218)</label>
                                 <input asp-for="taskGroupHead.LongName" class="form-control" />
                                 <span asp-validation-for="taskGroupHead.LongName" class="text-danger"></span>
                             </div>
@@ -98,9 +94,16 @@
     <div class="row">
         <div class="col-md-12">
             <div class="card border-light mb-6">
-                <div class="card-header">@Html.GetTitle(Model.langQueryList, 10910)</div>
+                <div class="card-header">@Html.GetTitle(Model.langQueryList, 10224)</div>
                 <div class="card-body">
                     <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="bmd-label-floating">@Html.GetTitle(Model.langQueryList, 10222)</label>
+                                <input asp-for="taskGroupHead.StartDate" type="text" class="form-control datepicker" />
+                                <input asp-for="taskGroupHead.OriginalStartDate" type="text" class="form-control datepicker" hidden />
+                            </div>
+                        </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="bmd-label-floating">@Html.GetTitle(Model.langQueryList, 10911)</label>
@@ -110,6 +113,7 @@
                                 <input asp-for="taskGroupHead.OriginalCompletionDate" type="text" class="form-control datepicker" hidden />
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -123,22 +127,8 @@
     <div class="row">
         <div class="col-md-12">
             <div class="card border-light mb-6">
-                <div class="card-header">@Html.GetTitle(Model.langQueryList, 10909)</div>
+                <div class="card-header">@Html.GetTitle(Model.langQueryList, 10225)</div>
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="bmd-label-floating">@Html.GetTitle(Model.langQueryList, 10202)</label>
-                                <input asp-for="taskGroupHead.DateFrom" type="text" class="form-control datepicker" />
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="bmd-label-floating">@Html.GetTitle(Model.langQueryList, 10203)</label>
-                                <input asp-for="taskGroupHead.DateTo" type="text" class="form-control datepicker" />
-                            </div>
-                        </div>
-                    </div>
                     @if (string.IsNullOrWhiteSpace(Model.ParentId))
                     {
                         <div class="row">
@@ -195,11 +185,32 @@
                     <input asp-for="taskGroupHead.ParentTaskGroupId" type="text" class="form-control" hidden />
                     @if (Model.taskGroupHead.Id == Guid.Empty)
                     {
-                        <button type="submit" class="btn btn-primary">@Html.GetTitle(Model.langQueryList, 10906)</button>
+                        <button type="submit" class="btn btn-primary">
+                            @if (Model.taskGroupHead.Id == Guid.Empty)
+                            {
+                                if (Model.taskGroupHead.ParentTaskGroupId != null)
+                                {
+                                    @Html.GetTitle(Model.langQueryList, 10917)
+                                }
+                                else
+                                {
+                                    @Html.GetTitle(Model.langQueryList, 10906)
+                                }
+                            }
+                        </button>
                     }
                     else
                     {
-                        <button type="submit" class="btn btn-primary">@Html.GetTitle(Model.langQueryList, 10907)</button>
+                        <button type="submit" class="btn btn-primary">
+                            @if (Model.taskGroupHead.ParentTaskGroupId != null)
+                            {
+                                @Html.GetTitle(Model.langQueryList, 10918)
+                            }
+                            else
+                            {
+                                @Html.GetTitle(Model.langQueryList, 10907)
+                            }
+                        </button>
                     }
                 </div>
             </div>

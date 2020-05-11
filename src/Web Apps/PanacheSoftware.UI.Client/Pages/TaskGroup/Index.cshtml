@@ -1,4 +1,4 @@
-﻿@page "{id}"
+﻿@page "{id}/{message?}/{messagetype?}"
 @model IndexModel
 @{
     ViewData["Title"] = $"Panche Legal - ({Model.taskGroupSummary.ShortName})";
@@ -19,101 +19,119 @@
                 <a id="toggle-sidebar" class="btn btn-outline-secondary btn-sm breadcrumb-button" href="#"><i class="fa fa-bars"></i></a>
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a asp-page="/Dashboard/Index">@Html.GetTitle(Model.langQueryList, 10121)</a></li>
-                    <li class="breadcrumb-item"><a asp-page="/TaskGroup/TaskGroups">@Html.GetTitle(Model.langQueryList, 10111)</a></li>
+                    <li class="breadcrumb-item"><a asp-page="/TaskGroup/TaskGroups">@Html.GetTitle(Model.langQueryList, 10112)</a></li>
                     <li class="breadcrumb-item active">@Model.taskGroupSummary.LongName</li>
                 </ol>
             </div>
         </div>
     </div>
 
-    <form method="post">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card border-light mb-6">
-                    <div class="card-header">@Model.taskGroupSummary.LongName</div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-12">
-                                @if (Model.taskGroupSummary.Completed)
-                                {
-                                    <div class="alert alert-success">
-                                        <strong>Complete</strong><br />
-                                        Completion date: @Model.taskGroupSummary.CompletedOnDate.ToShortDateString()
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div class="alert alert-primary">
-                                        <strong>Incomplete</strong><br />
-                                        Completion due date: @Model.taskGroupSummary.CompletionDate.ToShortDateString()
-                                    </div>
-                                }
+    @if (!string.IsNullOrWhiteSpace(Model.MessageType) && !string.IsNullOrWhiteSpace(Model.Message))
+    {
+        if (Model.MessageType == SaveStates.FAILED)
+        {
+            <div class="alert alert-dismissible alert-danger">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <strong>@Model.Message</strong>
+            </div>
+        }
+        else if (Model.MessageType == SaveStates.SUCCESS)
+        {
+            <div class="alert alert-dismissible alert-success">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <strong>@Model.Message</strong>
+            </div>
+        }
+    }
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card border-light mb-6">
+                <div class="card-header">@Model.taskGroupSummary.LongName</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            @if (Model.taskGroupSummary.Completed)
+                            {
+                            <div class="alert alert-success">
+                                <strong>@Html.GetTitle(Model.langQueryList, 10921)</strong><br />
+                                @Html.GetTitle(Model.langQueryList, 10912): @Model.taskGroupSummary.CompletedOnDate.ToShortDateString()
                             </div>
+                            }
+                            else
+                            {
+                        <div class="alert alert-primary">
+                            <strong>@Html.GetTitle(Model.langQueryList, 10922)</strong><br />
+                            @Html.GetTitle(Model.langQueryList, 10911): @Model.taskGroupSummary.CompletionDate.ToShortDateString()
                         </div>
-                        <div class="row">
-                            <div class="col-md-8">
-                                <p>@Model.taskGroupSummary.Description</p>
-                            </div>
-                            <div class="col-md-4">
-                                <p><strong>Completion Date:</strong><br />@Model.taskGroupSummary.CompletionDate.ToShortDateString()</p>
-                                <p><strong>Client:</strong><br /><a asp-page="/Client/Index" asp-route-id="@Model.clientSummary.Id">@Model.clientSummary.LongName</a></p>
-                                <p><strong>Main Contact:</strong><br />@Model.clientSummary.MainContactName<br />@Model.clientSummary.Phone<br /><a href="mailto:@Model.clientSummary.Email">@Model.clientSummary.Email</a></p>
-                            </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <p style="white-space: pre-line">@Model.taskGroupSummary.Description</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>@Html.GetTitle(Model.langQueryList, 10943):</strong><br /><a asp-page="/User/Index" asp-route-id="@Model.taskGroupSummary.MainUserId">@Model.taskGroupSummary.MainUserName</a></p>
+                            <p><strong>@Html.GetTitle(Model.langQueryList, 10222):</strong><br />@Model.taskGroupSummary.StartDate.ToShortDateString()</p>
+                            <p><strong>@Html.GetTitle(Model.langQueryList, 10911):</strong><br />@Model.taskGroupSummary.CompletionDate.ToShortDateString()</p>
+                            <p><strong>@Html.GetTitle(Model.langQueryList, 10302):</strong><br /><a asp-page="/Client/Index" asp-route-id="@Model.clientSummary.Id">@Model.clientSummary.LongName</a></p>
+                            <p><strong>@Html.GetTitle(Model.langQueryList, 10306):</strong><br />@Model.clientSummary.MainContactName<br />@Model.clientSummary.Phone<br /><a href="mailto:@Model.clientSummary.Email">@Model.clientSummary.Email</a></p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-12">
-                &nbsp;
-            </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            &nbsp;
         </div>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card border-light mb-6">
-                    <div class="card-header">Progress</div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <p><strong>Completion progress:</strong></p>
-                                <div class="progress">
-                                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" aria-valuenow="@Model.taskGroupSummary.PercentageComplete" aria-valuemin="0" aria-valuemax="100" style="width: @Model.taskGroupSummary.PercentageComplete%"></div>
-                                </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card border-light mb-6">
+                <div class="card-header">@Html.GetTitle(Model.langQueryList, 10923)</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p><strong>@Html.GetTitle(Model.langQueryList, 10924):</strong></p>
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" aria-valuenow="@(Model.taskGroupSummary.PercentageComplete*100)" aria-valuemin="0" aria-valuemax="100" style="width: @(Model.taskGroupSummary.PercentageComplete*100)%"></div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                &nbsp;
-                            </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            &nbsp;
                         </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <p><strong>Completion Date:</strong><br />@Model.taskGroupSummary.CompletionDate.ToShortDateString()</p>
-                                <p>
-                                    <strong>Overdue tasks:</strong>
-                                    @*<br /><a href="#">Node 3</a> (Due: 01/01/2020)
-                                        <br /><a href="#">Node 5</a> (Due: 01/01/2020)*@
-                                </p>
-                            </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p><strong>@Html.GetTitle(Model.langQueryList, 10911):</strong><br />@Model.taskGroupSummary.CompletionDate.ToShortDateString()</p>
+                            <p>
+                                @*<strong>Overdue tasks:</strong>
+                                    <br /><a href="#">Node 3</a> (Due: 01/01/2020)
+                                    <br /><a href="#">Node 5</a> (Due: 01/01/2020)*@
+                            </p>
                         </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="accordion" id="accordionExample">
-                                    <div class="card">
-                                        <div class="card-header" id="headingTimeline">
-                                            <h2 class="mb-0">
-                                                <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseTimeline" aria-expanded="true" aria-controls="collapseTimeline">
-                                                    Completion Timeline
-                                                </button>
-                                            </h2>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="accordion" id="accordionExample">
+                                <div class="card">
+                                    <div class="card-header" id="headingTimeline">
+                                        <h2 class="mb-0">
+                                            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseTimeline" aria-expanded="true" aria-controls="collapseTimeline">
+                                                @Html.GetTitle(Model.langQueryList, 10925)
+                                            </button>
+                                        </h2>
+                                    </div>
+
+                                    <div id="collapseTimeline" class="collapse" aria-labelledby="headingTimeline">
+                                        <div class="card-body overflow-auto">
+                                            <div id="gantt_here"></div>
                                         </div>
-
-                                        <div id="collapseTimeline" class="collapse" aria-labelledby="headingTimeline">
-                                            <div class="card-body overflow-auto">
-                                                <div id="gantt_here"></div>
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -122,37 +140,51 @@
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-12">
-                &nbsp;
-            </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            &nbsp;
         </div>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card border-light mb-6">
-                    <div class="card-header">Tasks</div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-12">
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card border-light mb-6">
+                <div class="card-header">@Html.GetTitle(Model.langQueryList, 10909)</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
 
-                                <div class="accordion" id="accordionTasks">
+                            <div class="accordion" id="accordionTasks">
 
-                                    @foreach (var childTaskGroupSummary in Model.taskGroupSummary.ChildTaskGroups)
-                                    {
-                                        <partial name="_TaskGroupSummary" model="childTaskGroupSummary" />
-                                    }
+                                @foreach (var childTaskGroupSummary in Model.taskGroupSummary.ChildTaskGroups)
+                                {
+                                    <partial name="_TaskGroupSummary" model="childTaskGroupSummary" />
+                                }
 
-                                </div>
-                                <p>&nbsp;</p>
-                                <p><a asp-page="/TaskGroup/CreateOrEdit" asp-route-id="@Guid.Empty" asp-route-parentid="@Model.taskGroupSummary.Id" class="btn btn-primary btn-sm">Add Task Group</a></p>
                             </div>
+                            @if (!Model.taskGroupSummary.Completed)
+                            {
+                                @if (Model.taskGroupSummary.ChildTaskGroups.Any() || Model.taskGroupSummary.ChildTasks.Any())
+                                {
+                                    <p>&nbsp;</p>
+                                    <form asp-page-handler="Complete" method="post">
+                                        <button class="btn btn-success btn-sm">@Html.GetTitle(Model.langQueryList, 10921)</button>
+                                        <input type="hidden" name="taskGroupId" value="@Model.Id" />
+                                    </form>
+                                }
+                            }
+                            <br />
+                            <p><a asp-page="/TaskGroup/CreateOrEdit" asp-route-id="@Guid.Empty" asp-route-parentid="@Model.taskGroupSummary.Id" class="btn btn-primary btn-sm">@Html.GetTitle(Model.langQueryList, 10926)</a></p>
                         </div>
                     </div>
+
+                    <partial name="_TaskFileModals" model="Model.taskGroupSummary" />
+
                 </div>
             </div>
         </div>
+    </div>
 
-    </form>
 
 
 </div>
@@ -169,26 +201,13 @@
 		gantt.config.readonly = true;
 		gantt.config.autosize = "y";
 		gantt.config.columns=[
-			{name:"text",       label:"Task name",  tree:true, width:'*' },
-			{name:"start_date", label:"Start time", align: "center" },
-			{name:"duration",   label:"Duration",   align: "center" },
+			{name:"text",       label:"@Html.GetTitle(Model.langQueryList, 10901)",  tree:true, width:'*' },
+			{name:"start_date", label:"@Html.GetTitle(Model.langQueryList, 10222)", align: "center" },
+			{name:"duration",   label:"@Html.GetTitle(Model.langQueryList, 10927)",   align: "center" },
 		];
-		gantt.init("gantt_here");
-		gantt.parse({
-			data: [
-				{id: "hello1", text: "Project #1", start_date: null, duration: null, parent:"", progress: 0, open: true},
-				{id: "hello2", text: "Task #1", start_date: "2019-08-01 00:00", duration:5, parent:"hello1", progress: 1},
-				{id: "hello3", text: "Task #2", start_date: "2019-08-06 00:00", duration:2, parent:"hello1", progress: 0.5},
-				{id: "hello4", text: "Task #3", start_date: null, duration: null, parent:"hello1", progress: 0.8, open: false},
-				{id: "hello5", text: "Task #3.1", start_date: "2019-08-09 00:00", duration:2, parent:"hello4", progress: 0.2},
-				{id: "hello6", text: "Task #3.2", start_date: "2019-08-11 00:00", duration:1, parent:"hello4", progress: 0}
-			],
-			links:[
-				{id:1, source:"hello2", target:"hello3", type:"0"},
-				{id:2, source:"hello3", target:"hello4", type:"0"},
-				{id:3, source:"hello5", target:"hello6", type:"0"}
-			]
-		});
+        gantt.init("gantt_here");
+        var tmpData = JSON.parse('@Html.Raw(Model.GanttJSON)');
+        gantt.parse(tmpData);
     </script>
 }
 

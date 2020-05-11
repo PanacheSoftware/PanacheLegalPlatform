@@ -9,7 +9,5 @@ namespace PanacheSoftware.Core.Domain.Task
     {
         public Guid TaskGroupHeaderId { get; set; }
         public virtual TaskGroupHeader TaskGroupHeader { get; set; }
-        public DateTime DateFrom { get; set; }
-        public DateTime DateTo { get; set; }
     }
 }

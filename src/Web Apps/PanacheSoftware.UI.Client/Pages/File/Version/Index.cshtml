@@ -1,0 +1,165 @@
+﻿@page "{fileHeaderId}/{Id?}"
+@model PanacheSoftware.UI.Client.Pages.File.Version.IndexModel
+@{
+    ViewData["Title"] = $"Panche Legal - File Version";
+    Layout = "_PSMainLayout";
+}
+
+@section Styles {
+    @await Html.PartialAsync("_PLFormCSS")
+    @await Html.PartialAsync("_PLDataTableCSS")
+}
+
+<div id="overlay" class="overlay"></div>
+<div class="container-fluid p-5">
+    <div class="row">
+        <div class="form-group col-md-12">
+            <div class="breadcrumb-container">
+                <a id="toggle-sidebar" class="btn btn-outline-secondary btn-sm breadcrumb-button" href="#"><i class="fa fa-bars"></i></a>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-page="/Dashboard/Index">@Html.GetTitle(Model.langQueryList, 10121)</a></li>
+                    <li class="breadcrumb-item active">
+                        @if (Model.FileVersionUploadModel.FileVersion.Id == Guid.Empty)
+                        {
+                            @Html.Raw("New Version")
+                        }
+                        else
+                        {
+                            @Model.FileVersionUploadModel.FileVersion.TrustedName
+                        }
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <partial name="_SaveMessage" model="Model.SaveMessageModel" />
+
+    <form enctype="multipart/form-data" method="post">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card border-light mb-6">
+                    <div class="card-header">File</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="bmd-label-floating">File Title</label>
+                                    <input asp-for="@Model.FileVersionUploadModel.FileTitle" class="form-control" readonly />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="bmd-label-floating">File Description</label>
+                                    <textarea asp-for="@Model.FileVersionUploadModel.Description" class="form-control" rows="5" readonly></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (Model.FileVersionUploadModel.FileVersion.Id == Guid.Empty)
+                        {
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="bmd-label-floating">Upload</label>
+                                        <input asp-for="@Model.FileVersionUploadModel.FormFile" type="file" />
+                                        <span asp-validation-for="@Model.FileVersionUploadModel.FormFile"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    Or
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="bmd-label-floating">Link</label>
+                                        <input asp-for="@Model.FileVersionUploadModel.URI" class="form-control" />
+                                        <span asp-validation-for="@Model.FileVersionUploadModel.URI" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            if (!string.IsNullOrWhiteSpace(Model.FileVersionUploadModel.FileVersion.TrustedName))
+                            {
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="bmd-label-floating">File Name</label>
+                                            <input asp-for="@Model.FileVersionUploadModel.FileVersion.TrustedName" class="form-control" readonly />
+                                            <input asp-for="@Model.FileVersionUploadModel.FileVersion.URI" class="form-control" hidden />
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="bmd-label-floating">URI</label>
+                                            <input asp-for="@Model.FileVersionUploadModel.FileVersion.URI" class="form-control" readonly />
+                                            <input asp-for="@Model.FileVersionUploadModel.FileVersion.TrustedName" class="form-control" hidden />
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="bmd-label-floating">Upload Date</label>
+                                        <input asp-for="@Model.FileVersionUploadModel.FileVersion.UploadDate" type="text" class="form-control datepicker" readonly />
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @*<input asp-for="@Model.FileVersionUploadModel.FileVersion.VersionNumber" class="form-control" readonly />
+                                    <input asp-for="@Model.FileVersionUploadModel.FileVersion.Size" class="form-control" hidden />
+                                    <input asp-for="@Model.FileVersionUploadModel.FileVersion.Status" class="form-control" hidden />
+                                    <input asp-for="@Model.FileVersionUploadModel.FileVersion.UntrustedName" class="form-control" hidden />*@
+                                    <input asp-for="@Model.FileVersionUploadModel.FileVersion.FileHeaderId" class="form-control" hidden />
+                                    <input asp-for="@Model.FileVersionUploadModel.FileVersion.Id" class="form-control" hidden />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                &nbsp;
+            </div>
+        </div>     
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card border-light mb-6">
+                    <div class="card-body">
+                        @if (Model.FileVersionUploadModel.FileVersion.Id == Guid.Empty)
+                        {
+                            <button type="submit" class="btn btn-primary">Upload File</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_PLFormJS")
+    @await Html.PartialAsync("_PLDataTableJS")
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+}
+
+

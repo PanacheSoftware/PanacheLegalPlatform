@@ -111,6 +111,28 @@ namespace PanacheSoftware.Core.Types
         }
     }
 
+    public struct LinkTypes
+    {
+        public const string TaskGroup = "TaskGroup";
+        public const string Task = "Task";
+        public const string Client = "Client";
+        public const string Team = "Team";
+        public const string Folder = "Folder";
+
+        public IDictionary<string, string> GetLinkTypesDictionary()
+        {
+            Dictionary<string, string> LinkTypesDictionary = new Dictionary<string, string>();
+
+            LinkTypesDictionary.Add(TaskGroup, TaskGroup);
+            LinkTypesDictionary.Add(Task, Task);
+            LinkTypesDictionary.Add(Client, Client);
+            LinkTypesDictionary.Add(Team, Team);
+            LinkTypesDictionary.Add(Folder, Folder);
+
+            return LinkTypesDictionary;
+        }
+    }
+
     public struct EntityType
     {
         public const string Client = "Client";
@@ -147,6 +169,7 @@ namespace PanacheSoftware.Core.Types
         public const string FolderService = "PanacheSoftware.Service.Folder";
         public const string FoundationService = "PanacheSoftware.Service.Foundation";
         public const string TaskService = "PanacheSoftware.Service.Task";
+        public const string FileService = "PanacheSoftware.Service.File";
     }
 
     public struct PanacheSoftwareClaims

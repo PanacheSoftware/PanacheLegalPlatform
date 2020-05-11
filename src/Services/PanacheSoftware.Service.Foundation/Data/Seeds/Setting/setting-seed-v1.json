@@ -19,6 +19,26 @@
       "name": "SYSTEM_LANGUAGE",
       "status": "N",
       "userSettings": []
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "description": "File Upload Size Limit (MB)",
+      "value": "100",
+      "defaultValue": "100",
+      "settingType": "SYSTEM",
+      "name": "FILE_UPLOAD_MAX",
+      "status": "N",
+      "userSettings": []
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "description": "Permitted File Upload Extensions",
+      "value": "txt, csv, docx, gif, png, jpeg, jpg, pdf, zip, doc, xls, xlsx",
+      "defaultValue": "txt, csv, docx, gif, png, jpeg, jpg, pdf, zip, doc, xls, xlsx",
+      "settingType": "SYSTEM",
+      "name": "FILE_UPLOAD_EXT",
+      "status": "N",
+      "userSettings": []
     }
   ]
 }

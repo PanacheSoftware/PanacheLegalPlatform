@@ -900,8 +900,8 @@ CREATE TABLE [TaskGroupHeader] (
     [ShortName]                 NVARCHAR (1000)   NULL,
     [LongName]                  NVARCHAR (1000)   NULL,
     [Description]               NVARCHAR (4000)   NULL,
-    [DateFrom]                  DATETIME2 (7)    NOT NULL,
-    [DateTo]                    DATETIME2 (7)    NOT NULL,
+    [StartDate]                 DATETIME2 (7)    NOT NULL,
+    [OriginalStartDate]         DATETIME2 (7)    NOT NULL,
     [ParentTaskGroupId]         UNIQUEIDENTIFIER NULL,
 	[MainUserId]	            UNIQUEIDENTIFIER NOT NULL,
 	[TeamHeaderId]	            UNIQUEIDENTIFIER NOT NULL,
@@ -951,9 +951,7 @@ CREATE TABLE [TaskGroupDetail] (
     [LastUpdateDate] DATETIME2 (7)    NOT NULL,
     [CreatedBy]      UNIQUEIDENTIFIER NOT NULL,
     [LastUpdateBy]   UNIQUEIDENTIFIER NOT NULL,
-    [TaskGroupHeaderId] UNIQUEIDENTIFIER NOT NULL,
-    [DateFrom]       DATETIME2 (7)    NOT NULL,
-    [DateTo]         DATETIME2 (7)    NOT NULL
+    [TaskGroupHeaderId] UNIQUEIDENTIFIER NOT NULL
 );
 
 
@@ -985,8 +983,9 @@ CREATE TABLE [TaskHeader] (
     [CreatedBy]					UNIQUEIDENTIFIER	NOT NULL,
     [LastUpdateBy]				UNIQUEIDENTIFIER	NOT NULL,
     [TaskGroupHeaderId]			UNIQUEIDENTIFIER	NOT NULL,
-    [DateFrom]					DATETIME2 (7)		NOT NULL,
-    [DateTo]					DATETIME2 (7)		NOT NULL,
+    [MainUserId]	            UNIQUEIDENTIFIER    NOT NULL,
+    [StartDate]                 DATETIME2 (7)       NOT NULL,
+    [OriginalStartDate]         DATETIME2 (7)       NOT NULL,
 	[Description]				NVARCHAR (4000)		NULL,
 	[Title]						NVARCHAR (1000)		NULL,
 	[CompletionDate]			DATETIME2 (7)		NOT NULL,
@@ -1026,10 +1025,7 @@ CREATE TABLE [TaskDetail] (
     [LastUpdateDate] DATETIME2 (7)    NOT NULL,
     [CreatedBy]      UNIQUEIDENTIFIER NOT NULL,
     [LastUpdateBy]   UNIQUEIDENTIFIER NOT NULL,
-    [TaskHeaderId]   UNIQUEIDENTIFIER NOT NULL,
-    [DateFrom]       DATETIME2 (7)    NOT NULL,
-    [DateTo]         DATETIME2 (7)    NOT NULL,
-	[Data]           NVARCHAR (MAX)   NULL,
+    [TaskHeaderId]   UNIQUEIDENTIFIER NOT NULL
 );
 
 
@@ -1085,3 +1081,144 @@ ALTER TABLE [TeamTask]
 GO
 ALTER TABLE [TeamTask]
     ADD CONSTRAINT [FK_TeamTask_TaskGroupHeader_TaskGroupHeaderId] FOREIGN KEY ([TaskGroupHeaderId]) REFERENCES [TaskGroupHeader] ([Id]) ON DELETE CASCADE;
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [FileHeader] (
+    [TenantId]                  UNIQUEIDENTIFIER NOT NULL,
+    [Id]                        UNIQUEIDENTIFIER NOT NULL,
+    [Status]                    NVARCHAR (25)   NULL,
+    [CreatedDate]               DATETIME2 (7)    NOT NULL,
+    [LastUpdateDate]            DATETIME2 (7)    NOT NULL,
+    [CreatedBy]                 UNIQUEIDENTIFIER NOT NULL,
+    [LastUpdateBy]              UNIQUEIDENTIFIER NOT NULL
+);
+
+
+GO
+
+ALTER TABLE [FileHeader]
+    ADD CONSTRAINT [PK_FileHeader] PRIMARY KEY CLUSTERED ([Id] ASC);
+GO
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [FileDetail] (
+    [TenantId]       UNIQUEIDENTIFIER NOT NULL,
+    [Id]             UNIQUEIDENTIFIER NOT NULL,
+    [Status]         NVARCHAR (25)   NOT NULL,
+    [CreatedDate]    DATETIME2 (7)    NOT NULL,
+    [LastUpdateDate] DATETIME2 (7)    NOT NULL,
+    [CreatedBy]      UNIQUEIDENTIFIER NOT NULL,
+    [LastUpdateBy]   UNIQUEIDENTIFIER NOT NULL,
+    [FileHeaderId]   UNIQUEIDENTIFIER NOT NULL,
+    [FileTitle]      NVARCHAR (1000)   NULL,
+    [Description]    NVARCHAR (1000)   NULL,
+    [FileType]       NVARCHAR (1000)   NULL,
+    [FileExtension]  NVARCHAR (1000)   NULL
+);
+
+
+GO
+CREATE UNIQUE NONCLUSTERED INDEX [IX_FileDetail_FileHeaderId]
+    ON [FileDetail]([FileHeaderId] ASC);
+
+
+GO
+ALTER TABLE [FileDetail]
+    ADD CONSTRAINT [PK_FileDetail] PRIMARY KEY CLUSTERED ([Id] ASC);
+
+
+GO
+ALTER TABLE [FileDetail]
+    ADD CONSTRAINT [FK_FileDetail_FileHeader_FileHeaderId] FOREIGN KEY ([FileHeaderId]) REFERENCES [FileHeader] ([Id]) ON DELETE CASCADE;
+
+GO
+
+
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [FileVersion] (
+    [TenantId]                  UNIQUEIDENTIFIER    NOT NULL,
+    [Id]						UNIQUEIDENTIFIER	NOT NULL,
+    [Status]					NVARCHAR (25)		NULL,
+    [CreatedDate]				DATETIME2 (7)		NOT NULL,
+    [LastUpdateDate]			DATETIME2 (7)		NOT NULL,
+    [CreatedBy]					UNIQUEIDENTIFIER	NOT NULL,
+    [LastUpdateBy]				UNIQUEIDENTIFIER	NOT NULL,
+    [FileHeaderId]              UNIQUEIDENTIFIER    NOT NULL,
+    [Content]			        VARBINARY (MAX) 	NOT NULL,
+    [URI]				        NVARCHAR (4000)		NULL,
+	[UntrustedName]				NVARCHAR (1000)		NULL,
+    [TrustedName]				NVARCHAR (1000)		NULL,
+	[UploadDate]			    DATETIME2 (7)		NOT NULL,
+    [VersionNumber]		    	INT					NOT NULL,
+	[Size]			    		BIGINT				NOT NULL
+);
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_FileVersion_FileHeaderId]
+    ON [FileVersion]([FileHeaderId] ASC);
+
+
+GO
+ALTER TABLE [FileVersion]
+    ADD CONSTRAINT [PK_FileVersion] PRIMARY KEY CLUSTERED ([Id] ASC);
+
+
+GO
+ALTER TABLE [FileVersion]
+    ADD CONSTRAINT [FK_FileVersion_FileHeader_FileHeaderId] FOREIGN KEY ([FileHeaderId]) REFERENCES [FileHeader] ([Id]) ON DELETE CASCADE;
+
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [FileLink] (
+    [TenantId]       UNIQUEIDENTIFIER NOT NULL,
+    [Id]             UNIQUEIDENTIFIER NOT NULL,
+    [Status]         NVARCHAR (25)    NULL,
+    [CreatedDate]    DATETIME2 (7)    NOT NULL,
+    [LastUpdateDate] DATETIME2 (7)    NOT NULL,
+    [CreatedBy]      UNIQUEIDENTIFIER NOT NULL,
+    [LastUpdateBy]   UNIQUEIDENTIFIER NOT NULL,
+    [LinkId]         UNIQUEIDENTIFIER NOT NULL,
+    [LinkType]	     NVARCHAR (1000)  NULL,
+    [FileHeaderId]   UNIQUEIDENTIFIER NOT NULL
+);
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_FileLink_FileHeaderId]
+    ON [FileLink]([FileHeaderId] ASC);
+
+
+GO
+CREATE NONCLUSTERED INDEX [IX_FileLink_LinkId]
+    ON [FileLink]([LinkId] ASC);
+
+
+GO
+ALTER TABLE [FileLink]
+    ADD CONSTRAINT [PK_FileLink] PRIMARY KEY CLUSTERED ([Id] ASC);
+
+
+GO
+ALTER TABLE [FileLink]
+    ADD CONSTRAINT [FK_FileLink_FileHeader_FileHeaderId] FOREIGN KEY ([FileHeaderId]) REFERENCES [FileHeader] ([Id]) ON DELETE CASCADE;

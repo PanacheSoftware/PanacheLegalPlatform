@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using PanacheSoftware.Core.Domain.API.Language;
 using PanacheSoftware.Core.Domain.API.Settings;
+using PanacheSoftware.Core.Domain.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +21,9 @@ namespace PanacheSoftware.Http
         Task<bool> AuthCheck(string accessToken, string userId);
 
         Task<UsrSetting> GetUserLanguage(string accessToken);
+
+        Task<SaveMessageModel> GenerateSaveMessageModel(string accessToken, string saveState = default(string), string errorString = default(string), int historyLength = -2);
+        Task<SettingHead> GetSystemSetting(string accessToken, string settingName);
         //string GetScope(string apiType);
     }
 }

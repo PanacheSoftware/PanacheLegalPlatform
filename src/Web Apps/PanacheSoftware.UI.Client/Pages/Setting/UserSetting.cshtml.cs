@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using PanacheSoftware.Core.Domain.API.Language;
 using PanacheSoftware.Core.Domain.API.Settings;
+using PanacheSoftware.Core.Domain.UI;
 using PanacheSoftware.Core.Types;
 using PanacheSoftware.Http;
 using PanacheSoftware.UI.Core.Headers;
@@ -33,6 +34,7 @@ namespace PanacheSoftware.UI.Client.Pages.Setting
         public SelectList LanguageCodeSelectList { get; set; }
         public string SaveState { get; set; }
         public string ErrorString { get; set; }
+        public SaveMessageModel SaveMessageModel { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public UserSettingModel(IAPIHelper apiHelper, IModelHelper modelHelper)
         {
@@ -44,9 +46,7 @@ namespace PanacheSoftware.UI.Client.Pages.Setting
         {
             SaveState = saveState;
 
-            var languageSetting = await _apiHelper.GetUserLanguage(accessToken);
-
-            langQueryList = await _apiHelper.MakeLanguageQuery(accessToken, languageSetting.Value, new long[] { 10121, 10122, 10500, 10501, 10600, 10601 });
+            langQueryList = await _apiHelper.MakeLanguageQuery(accessToken, userLanguageSetting.Value, new long[] { 10121, 10122, 10500, 10501, 10600, 10601 });
 
             if(!await CreateLanguageCodeSelectList(accessToken))
             {
@@ -65,9 +65,11 @@ namespace PanacheSoftware.UI.Client.Pages.Setting
                 return RedirectToPage("/Logout");
             }
 
+            userLanguageSetting = await GetUserSetting("USER_LANGUAGE", accessToken);
+
             await PageConstructor(SaveStates.IGNORE, accessToken);
 
-            userLanguageSetting = await GetUserSetting("USER_LANGUAGE", accessToken);
+            SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken);
 
             return Page();
         }

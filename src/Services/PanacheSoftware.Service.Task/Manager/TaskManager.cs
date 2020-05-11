@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore.Internal;
 using PanacheSoftware.Core.Domain.API.Task;
 using PanacheSoftware.Core.Domain.Task;
 using PanacheSoftware.Service.Task.Core;
@@ -66,7 +67,9 @@ namespace PanacheSoftware.Service.Task.Manager
 
             foreach (var currentTaskGroupHeader in _unitOfWork.TaskGroupHeaders.GetMainTaskGroups(true))
             {
-                taskGroupSummaryList.TaskGroupSummarys.Add(_mapper.Map<TaskGroupSummary>(currentTaskGroupHeader));
+                var taskSummary = _mapper.Map<TaskGroupSummary>(currentTaskGroupHeader);
+                UpdatePercentages(taskSummary);
+                taskGroupSummaryList.TaskGroupSummarys.Add(taskSummary);
             }
 
             return taskGroupSummaryList;
@@ -76,15 +79,54 @@ namespace PanacheSoftware.Service.Task.Manager
         {
             var taskGroupHeader = _unitOfWork.TaskGroupHeaders.GetTaskGroupHeaderWithRelations(taskGroupHeaderId, true);
 
-            if(taskGroupHeader != null)
+            if (taskGroupHeader != null)
             {
-                if(taskGroupHeader.ParentTaskGroupId == null)
+                if (taskGroupHeader.ParentTaskGroupId == null)
                 {
-                    return _mapper.Map<TaskGroupSummary>(taskGroupHeader);
+                    var taskSummary = _mapper.Map<TaskGroupSummary>(taskGroupHeader);
+                    UpdatePercentages(taskSummary);
+                    return taskSummary;
                 }
             }
 
             return null;
+        }
+
+        private void UpdatePercentages(TaskGroupSummary taskSummary)
+        {
+            double childTaskCompletion = 0;
+            double childTaskGroupCompletion = 0;
+
+            if(taskSummary.ChildTasks.Any())
+            {
+                childTaskCompletion = Convert.ToDouble(taskSummary.ChildTasks.Where(c => c.Completed).Count()) / Convert.ToDouble(taskSummary.ChildTasks.Count());
+            }
+
+            if (taskSummary.ChildTaskGroups.Any())
+            {
+                for (int iCount = 0; iCount < taskSummary.ChildTaskGroups.Count; iCount++)
+                {
+                    UpdatePercentages(taskSummary.ChildTaskGroups[iCount]);
+
+                    childTaskGroupCompletion += taskSummary.ChildTaskGroups[iCount].PercentageComplete;
+                }
+            }
+
+            if(taskSummary.ChildTasks.Any() && taskSummary.ChildTaskGroups.Any())
+            {
+                taskSummary.PercentageComplete = (childTaskCompletion + childTaskGroupCompletion) / (taskSummary.ChildTaskGroups.Count + 1);
+            }
+            else if (taskSummary.ChildTasks.Any())
+            {
+                taskSummary.PercentageComplete = childTaskCompletion;
+            }
+            else
+            {
+                taskSummary.PercentageComplete = childTaskGroupCompletion / taskSummary.ChildTaskGroups.Count;
+            }
+
+            if (Double.IsNaN(taskSummary.PercentageComplete))
+                taskSummary.PercentageComplete = 0.0;
         }
 
         public TaskGroupList GetTaskGroupList(Guid taskGroupHeaderId = default, bool validParents = false)
@@ -119,7 +161,7 @@ namespace PanacheSoftware.Service.Task.Manager
             return taskGroupList;
         }
 
-        
+
 
         public bool SetNewTaskGroupSequenceNo(TaskGroupHeader taskGroupHeader)
         {
@@ -182,6 +224,10 @@ namespace PanacheSoftware.Service.Task.Manager
                 taskGroupHeader.ClientHeaderId = Guid.Empty;
                 taskGroupHeader.TeamHeaderId = Guid.Empty;
                 //taskGroupHeader.MainUserId = Guid.Empty;
+
+                //Make sure the start and completion dates don't fall outside of the group headers dates
+                taskGroupHeader.StartDate = (taskGroupHeader.StartDate < parentTaskGroupHeader.StartDate) ? parentTaskGroupHeader.StartDate : taskGroupHeader.StartDate;
+                taskGroupHeader.CompletionDate = (taskGroupHeader.CompletionDate > parentTaskGroupHeader.CompletionDate) ? parentTaskGroupHeader.CompletionDate : taskGroupHeader.CompletionDate;
             }
             else
             {
@@ -190,5 +236,36 @@ namespace PanacheSoftware.Service.Task.Manager
 
             return true;
         }
+
+        public bool CanCompleteTaskGroup(Guid taskGroupHeaderId)
+        {
+            var taskGroupHeader = _unitOfWork.TaskGroupHeaders.GetTaskGroupHeaderWithRelations(taskGroupHeaderId, true);
+
+            if (taskGroupHeader != null)
+            {
+                if (taskGroupHeader.ChildTaskGroups.Any())
+                {
+                    foreach (var childTaskGroupHeader in taskGroupHeader.ChildTaskGroups)
+                    {
+                        if (!childTaskGroupHeader.Completed)
+                        {
+                            if (!CanCompleteTaskGroup(childTaskGroupHeader.Id))
+                                return false;
+                        }
+                    }
+                }
+
+                if (taskGroupHeader.ChildTasks.Any())
+                {
+                    if(taskGroupHeader.ChildTasks.Where(c => c.Completed == false).Any())
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
     }
 }

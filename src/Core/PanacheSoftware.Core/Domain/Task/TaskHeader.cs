@@ -13,6 +13,7 @@ namespace PanacheSoftware.Core.Domain.Task
         }
 
         public Guid TaskGroupHeaderId { get; set; }
+        public Guid MainUserId { get; set; }
         public virtual TaskGroupHeader TaskGroupHeader { get; set; }
 
         public string Description { get; set; }
@@ -22,8 +23,8 @@ namespace PanacheSoftware.Core.Domain.Task
         public DateTime OriginalCompletionDate { get; set; }
         public DateTime CompletedOnDate { get; set; }
 
-        public DateTime DateFrom { get; set; }
-        public DateTime DateTo { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime OriginalStartDate { get; set; }
 
         public string TaskType { get; set; }
 

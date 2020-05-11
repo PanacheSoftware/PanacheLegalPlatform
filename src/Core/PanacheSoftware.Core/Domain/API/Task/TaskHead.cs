@@ -10,8 +10,8 @@ namespace PanacheSoftware.Core.Domain.API.Task
     {
         public TaskHead()
         {
-            DateFrom = DateTime.Today;
-            DateTo = DateTime.Today.AddYears(1);
+            StartDate = DateTime.Today;
+            OriginalStartDate = DateTime.Today;
             CompletionDate = DateTime.Now;
             OriginalCompletionDate = DateTime.Now;
             CompletedOnDate = DateTime.Parse("01/01/1900");
@@ -25,10 +25,10 @@ namespace PanacheSoftware.Core.Domain.API.Task
         public Guid TaskGroupHeaderId { get; set; }
         [Required, DataType(DataType.DateTime, ErrorMessage = "Must be a valid DateTime")]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
-        public DateTime DateFrom { get; set; }
+        public DateTime StartDate { get; set; }
         [Required, DataType(DataType.DateTime, ErrorMessage = "Must be a valid DateTime")]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
-        public DateTime DateTo { get; set; }
+        public DateTime OriginalStartDate { get; set; }
         [Required]
         public string Status { get; set; }
 
@@ -56,5 +56,6 @@ namespace PanacheSoftware.Core.Domain.API.Task
         public int SequenceNumber { get; set; }
 
         public TaskDet TaskDetail { get; set; }
+        public Guid MainUserId { get; set; }
     }
 }

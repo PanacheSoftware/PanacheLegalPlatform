@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using PanacheSoftware.Core.Domain.API.Folder;
 using PanacheSoftware.Core.Domain.API.Language;
 using PanacheSoftware.Core.Domain.API.Task;
+using PanacheSoftware.Core.Domain.UI;
 using PanacheSoftware.Core.Types;
 using PanacheSoftware.Http;
 using PanacheSoftware.UI.Core.Headers;
@@ -27,6 +28,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
         public LangQueryList langQueryList { get; set; }
         public string SaveState { get; set; }
         public string ErrorString { get; set; }
+        public SaveMessageModel SaveMessageModel { get; set; }
 
         public TaskGroupsModel(IAPIHelper apiHelper)
         {
@@ -37,7 +39,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
         {
             SaveState = saveState;
 
-            langQueryList = await _apiHelper.MakeLanguageQuery(accessToken, "EN", new long[] { 10121, 10111, 10112, 10900, 10901, 10200, 10201, 10202, 10203, 10204, 10911, 10912, 10913 });
+            langQueryList = await _apiHelper.MakeLanguageQuery(accessToken, "EN", new long[] { 10121, 10111, 10112, 10900, 10901, 10200, 10201, 10202, 10203, 10204, 10911, 10912, 10913, 10222 });
 
             return true;
         }
@@ -63,6 +65,8 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
             {
                 taskGroupList = new TaskGroupList();
             }
+
+            SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken);
 
             return Page();
         }

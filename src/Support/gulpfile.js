@@ -39,7 +39,11 @@ gulp.task('merge-sql', function (done) {
 		'../Services/PanacheSoftware.Service.Task/Persistance/SQL/TaskGroupDetail.sql',
 		'../Services/PanacheSoftware.Service.Task/Persistance/SQL/TaskHeader.sql',
 		'../Services/PanacheSoftware.Service.Task/Persistance/SQL/TaskDetail.sql',
-		'../Services/PanacheSoftware.Service.Task/Persistance/SQL/TeamTask.sql'])
+		'../Services/PanacheSoftware.Service.Task/Persistance/SQL/TeamTask.sql',
+		'../Services/PanacheSoftware.Service.File/Persistance/SQL/FileHeader.sql',
+		'../Services/PanacheSoftware.Service.File/Persistance/SQL/FileDetail.sql',
+		'../Services/PanacheSoftware.Service.File/Persistance/SQL/FileVersion.sql',
+		'../Services/PanacheSoftware.Service.File/Persistance/SQL/FileLink.sql'])
 		.pipe(concat('PanacheLegalTables.sql'))
 		.pipe(gulp.dest('./SQL/'));
 });
@@ -50,7 +54,8 @@ gulp.task('merge-drop-sql', function (done) {
 		'../Services/PanacheSoftware.Service.Team/Persistance/SQL/DropTables.sql',
 		'../Services/PanacheSoftware.Service.Foundation/Persistance/SQL/DropTables.sql',
 		'../Services/PanacheSoftware.Service.Folder/Persistance/SQL/DropTables.sql',
-		'../Services/PanacheSoftware.Service.Task/Persistance/SQL/DropTables.sql'])
+		'../Services/PanacheSoftware.Service.Task/Persistance/SQL/DropTables.sql',
+		'../Services/PanacheSoftware.Service.File/Persistance/SQL/DropTables.sql'])
 		.pipe(concat('PanacheLegalDropTables.sql'))
 		.pipe(gulp.dest('./SQL/'));
 });

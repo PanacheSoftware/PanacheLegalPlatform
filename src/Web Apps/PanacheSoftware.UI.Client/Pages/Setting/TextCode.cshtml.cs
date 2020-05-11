@@ -39,6 +39,7 @@ namespace PanacheSoftware.UI.Client.Pages.Setting
         public LangQueryList langQueryList { get; set; }
         public string SaveState { get; set; }
         public string ErrorString { get; set; }
+        public SaveMessageModel SaveMessageModel { get; set; }
 
         public TextCodeModel(IAPIHelper apiHelper, IRazorPartialToStringRenderer renderer, IModelHelper modelHelper)
         {
@@ -84,6 +85,8 @@ namespace PanacheSoftware.UI.Client.Pages.Setting
 
             await PageConstructor(SaveStates.IGNORE, accessToken);
 
+            SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken);
+
             return Page();
         }
 
@@ -102,10 +105,14 @@ namespace PanacheSoftware.UI.Client.Pages.Setting
 
                 SaveState = SaveStates.SUCCESS;
 
+                SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken, SaveState);
+
                 return Page();
             }
 
             SaveState = SaveStates.FAILED;
+
+            SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken, SaveState);
 
             return Page();
         }

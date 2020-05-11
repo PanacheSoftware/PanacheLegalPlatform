@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using PanacheSoftware.Core.Domain.API.Client;
 using PanacheSoftware.Core.Domain.API.Language;
+using PanacheSoftware.Core.Domain.UI;
 using PanacheSoftware.Core.Types;
 using PanacheSoftware.Http;
 using PanacheSoftware.UI.Core.Headers;
@@ -23,6 +24,7 @@ namespace PanacheSoftware.UI.Client.Pages.Client
         public LangQueryList langQueryList { get; set; }
         public string SaveState { get; set; }
         public string ErrorString { get; set; }
+        public SaveMessageModel SaveMessageModel { get; set; }
 
         public ClientsModel(IAPIHelper apiHelper)
         {
@@ -59,6 +61,8 @@ namespace PanacheSoftware.UI.Client.Pages.Client
             {
                 clientList = new ClientList();
             }
+
+            SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken);
 
             return Page();
         }

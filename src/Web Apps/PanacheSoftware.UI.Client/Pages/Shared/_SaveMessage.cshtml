@@ -1,0 +1,26 @@
+﻿@model PanacheSoftware.Core.Domain.UI.SaveMessageModel
+@using PanacheSoftware.UI.Core.Helpers
+@using PanacheSoftware.Core.Types
+
+@if (Model.SaveState != SaveStates.IGNORE)
+{
+    if (Model.SaveState == SaveStates.FAILED)
+    {
+        <div class="alert alert-dismissible alert-danger">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <strong>@Html.GetTitle(Model.SaveLangQueryList, 10500)</strong>
+            @if (!string.IsNullOrWhiteSpace(Model.ErrorString))
+            {
+                @Model.ErrorString;
+            }
+        </div>
+    }
+    else if (Model.SaveState == SaveStates.SUCCESS)
+    {
+        <div class="alert alert-dismissible alert-success">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <strong>@Html.GetTitle(Model.SaveLangQueryList, 10501)</strong>
+            <br /><a href="##" onClick="history.go(@Model.HistoryLength); return false;"> Return to previous page</a>
+        </div>
+    }
+}

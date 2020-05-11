@@ -16,6 +16,7 @@ using PanacheSoftware.Core.Domain.API.Language;
 using PanacheSoftware.Core.Domain.API.Task;
 using PanacheSoftware.Core.Domain.API.Team;
 using PanacheSoftware.Core.Domain.Identity.API;
+using PanacheSoftware.Core.Domain.UI;
 using PanacheSoftware.Core.Types;
 using PanacheSoftware.Http;
 using PanacheSoftware.UI.Core.Helpers;
@@ -43,6 +44,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
         public LangQueryList langQueryList { get; set; }
         public string SaveState { get; set; }
         public string ErrorString { get; set; }
+        public SaveMessageModel SaveMessageModel { get; set; }
 
         //public string ChartDatasource { get; set; }
 
@@ -67,7 +69,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
             await CreateUserSelectList(accessToken);
             await CreateClientSelectList(accessToken);
 
-            langQueryList = await _apiHelper.MakeLanguageQuery(accessToken, "EN", new long[] { 10121, 10111, 10500, 10501, 10900, 10901, 10200, 10202, 10203, 10902, 10903, 10904, 10905, 10201, 10906, 10907, 10908, 10909, 10910, 10911 });
+            langQueryList = await _apiHelper.MakeLanguageQuery(accessToken, "EN", new long[] { 10121, 10111, 10915, 10908, 10223, 10218, 10200, 10224, 10222, 10911, 10225, 10902, 10904, 10905, 10201, 10906, 10907, 10917, 10918 });
 
             return true;
         }
@@ -127,6 +129,8 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
                 Id = Guid.Empty.ToString();
             }
 
+            SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken);
+
             return Page();
         }
 
@@ -143,6 +147,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
                     if(await CreateOrUpdateTaskGroupAsync(accessToken))
                     {
                         SaveState = SaveStates.SUCCESS;
+                        SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken, SaveState);
                         return Page();
                     }
                 }
@@ -151,6 +156,8 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
             Id = taskGroupHead.Id.ToString();
 
             SaveState = SaveStates.FAILED;
+
+            SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken, SaveState);
 
             return Page();
         }

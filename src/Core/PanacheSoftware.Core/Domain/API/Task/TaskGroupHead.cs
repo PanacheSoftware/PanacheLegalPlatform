@@ -13,11 +13,11 @@ namespace PanacheSoftware.Core.Domain.API.Task
             ChildTaskGroups = new List<TaskGroupHead>();
             ChildTasks = new List<TaskHead>();
             TaskGroupDetail = new TaskGroupDet();
-            DateFrom = DateTime.Today;
-            DateTo = DateTime.Today.AddYears(1);
+            StartDate = DateTime.Today;
+            OriginalStartDate = DateTime.Today;
             Status = StatusTypes.Open;
-            CompletionDate = DateTime.Now;
-            OriginalCompletionDate = DateTime.Now;
+            CompletionDate = DateTime.Today;
+            OriginalCompletionDate = DateTime.Today;
             CompletedOnDate = DateTime.Parse("01/01/1900");
             Completed = false;
         }
@@ -33,10 +33,10 @@ namespace PanacheSoftware.Core.Domain.API.Task
         public string Description { get; set; }
         [Required, DataType(DataType.DateTime, ErrorMessage = "Must be a valid DateTime")]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
-        public DateTime DateFrom { get; set; }
+        public DateTime StartDate { get; set; }
         [Required, DataType(DataType.DateTime, ErrorMessage = "Must be a valid DateTime")]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
-        public DateTime DateTo { get; set; }
+        public DateTime OriginalStartDate { get; set; }
         public Guid? ParentTaskGroupId { get; set; }
         public Guid MainUserId { get; set; }
         public Guid TeamHeaderId { get; set; }

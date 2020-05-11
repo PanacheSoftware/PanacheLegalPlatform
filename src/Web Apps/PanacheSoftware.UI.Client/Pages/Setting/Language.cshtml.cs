@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using PanacheSoftware.Core.Domain.API.Language;
+using PanacheSoftware.Core.Domain.UI;
 using PanacheSoftware.Core.Types;
 using PanacheSoftware.Http;
 using PanacheSoftware.UI.Core.Headers;
@@ -26,6 +27,7 @@ namespace PanacheSoftware.UI.Client.Pages.Setting
         public LangQueryList langQueryList { get; set; }
         public string SaveState { get; set; }
         public string ErrorString { get; set; }
+        public SaveMessageModel SaveMessageModel { get; set; }
 
         public LanguageModel(IAPIHelper apiHelper)
         {
@@ -73,6 +75,8 @@ namespace PanacheSoftware.UI.Client.Pages.Setting
             {
                 langCodeList = new LangCodeList();
             }
+
+            SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken);
 
             return Page();
         }

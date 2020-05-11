@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using PanacheSoftware.Core.Domain.API.Folder;
 using PanacheSoftware.Core.Domain.API.Language;
+using PanacheSoftware.Core.Domain.UI;
 using PanacheSoftware.Core.Types;
 using PanacheSoftware.Http;
 using PanacheSoftware.UI.Core.Headers;
@@ -26,6 +27,7 @@ namespace PanacheSoftware.UI.Client.Pages.Folder
         public LangQueryList langQueryList { get; set; }
         public string SaveState { get; set; }
         public string ErrorString { get; set; }
+        public SaveMessageModel SaveMessageModel { get; set; }
 
         public FoldersModel(IAPIHelper apiHelper)
         {
@@ -62,6 +64,8 @@ namespace PanacheSoftware.UI.Client.Pages.Folder
             {
                 folderList = new FolderList();
             }
+
+            SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken);
 
             return Page();
         }

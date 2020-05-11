@@ -35,15 +35,9 @@
     "gulp": "^4.0.2",
     "gulp-autoprefixer": "^7.0.1",
     "gulp-sass": "^4.0.2",
-    "node-sass": "^4.13.0"
+    "node-sass": "^4.14.1"
   },
   "scripts": {
     "start": "gulp"
-  },
-  "-vs-binding": {
-    "BeforeBuild": [
-      "install",
-      "start"
-    ]
   }
 }

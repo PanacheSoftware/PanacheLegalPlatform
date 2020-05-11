@@ -70,6 +70,10 @@ namespace PanacheSoftware.Service.Task.Controllers
 
                         var taskHeader = _mapper.Map<TaskHeader>(taskHead);
 
+                        //Make sure the start and completion dates don't fall outside of the group headers dates
+                        taskHeader.StartDate = (taskHeader.StartDate < taskGroupHeader.StartDate) ? taskGroupHeader.StartDate : taskHeader.StartDate;
+                        taskHeader.CompletionDate = (taskHeader.CompletionDate > taskGroupHeader.CompletionDate) ? taskGroupHeader.CompletionDate : taskHeader.CompletionDate;
+
                         if (!_taskManager.SetNewTaskSequenceNo(taskHeader))
                             return BadRequest();
 
@@ -104,13 +108,26 @@ namespace PanacheSoftware.Service.Task.Controllers
 
                     var taskHead = _mapper.Map<TaskHead>(taskHeader);
 
-                    taskHeadPatch.ApplyTo(taskHead);
+                    TaskGroupHeader taskGroupHeader = _unitOfWork.TaskGroupHeaders.SingleOrDefault(c => c.Id == taskHead.TaskGroupHeaderId, true);
 
-                    _mapper.Map(taskHead, taskHeader);
+                    if (taskGroupHeader != null)
+                    {
+                        taskHeadPatch.ApplyTo(taskHead);
 
-                    _unitOfWork.Complete();
+                        //Make sure the Original dates do not get changed
+                        taskHead.OriginalCompletionDate = taskHeader.OriginalCompletionDate;
+                        taskHead.OriginalStartDate = taskHeader.OriginalStartDate;
 
-                    return CreatedAtRoute("Get", new { id = _mapper.Map<TaskHead>(taskHeader).Id }, _mapper.Map<TaskHead>(taskHeader));
+                        //Make sure the start and completion dates don't fall outside of the group headers dates
+                        taskHead.StartDate = (taskHeader.StartDate < taskGroupHeader.StartDate) ? taskGroupHeader.StartDate : taskHeader.StartDate;
+                        taskHead.CompletionDate = (taskHeader.CompletionDate > taskGroupHeader.CompletionDate) ? taskGroupHeader.CompletionDate : taskHeader.CompletionDate;
+
+                        _mapper.Map(taskHead, taskHeader);
+
+                        _unitOfWork.Complete();
+
+                        return CreatedAtRoute("Get", new { id = _mapper.Map<TaskHead>(taskHeader).Id }, _mapper.Map<TaskHead>(taskHeader));
+                    }
                 }
             }
             catch (Exception e)
@@ -119,6 +136,46 @@ namespace PanacheSoftware.Service.Task.Controllers
             }
 
             return BadRequest();
+        }
+
+        [Route("[action]/{id}")]
+        [HttpPost]
+        public IActionResult Complete(string id)
+        {
+            try
+            {
+                if (Guid.TryParse(id, out Guid parsedId))
+                {
+                    var taskHeader = _unitOfWork.TaskHeaders.Get(parsedId);
+
+                    if (taskHeader != null)
+                    {
+                        if (!taskHeader.Completed)
+                        {
+                            taskHeader.Completed = true;
+                            
+                            if(DateTime.Today <= taskHeader.StartDate)
+                            {
+                                taskHeader.CompletedOnDate = taskHeader.CompletionDate;
+                            }
+                            else
+                            {
+                                taskHeader.CompletedOnDate = DateTime.Today;
+                            }
+                            
+                            _unitOfWork.Complete();
+
+                            return Ok(_mapper.Map<TaskHead>(taskHeader));
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                string message = e.Message;
+            }
+
+            return NotFound();
         }
     }
 }

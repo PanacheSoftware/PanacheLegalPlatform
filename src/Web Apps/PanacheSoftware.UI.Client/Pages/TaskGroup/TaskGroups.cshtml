@@ -37,6 +37,7 @@
                                             <th>@Html.GetTitle(Model.langQueryList, 10900)</th>
                                             <th>@Html.GetTitle(Model.langQueryList, 10901)</th>
                                             <th>@Html.GetTitle(Model.langQueryList, 10200)</th>
+                                            <th>@Html.GetTitle(Model.langQueryList, 10222)</th>
                                             <th>@Html.GetTitle(Model.langQueryList, 10913)</th>
                                             <th>@Html.GetTitle(Model.langQueryList, 10911)</th>
                                             <th>@Html.GetTitle(Model.langQueryList, 10912)</th>
@@ -52,6 +53,7 @@
                                                 <td>@taskGroupHeader.ShortName</td>
                                                 <td>@taskGroupHeader.LongName</td>
                                                 <td>@taskGroupHeader.Description</td>
+                                                <td>@taskGroupHeader.StartDate.ToShortDateString()</td>
                                                 <td>
                                                     @if (taskGroupHeader.Completed)
                                                     {

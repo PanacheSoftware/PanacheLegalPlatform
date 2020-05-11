@@ -134,8 +134,24 @@ namespace PanacheSoftware.Service.Task.Controllers
                     var taskGroupHeader = _unitOfWork.TaskGroupHeaders.Get(parsedId);
 
                     var taskGroupHead = _mapper.Map<TaskGroupHead>(taskGroupHeader);
-
+                  
                     taskGroupHeadPatch.ApplyTo(taskGroupHead);
+
+                    //Make sure the Original dates do not get changed
+                    taskGroupHead.OriginalCompletionDate = taskGroupHeader.OriginalCompletionDate;
+                    taskGroupHead.OriginalStartDate = taskGroupHeader.OriginalStartDate;
+
+                    if (taskGroupHeader.ParentTaskGroupId != null)
+                    {
+                        TaskGroupHeader parentTaskGroupHeader = _unitOfWork.TaskGroupHeaders.SingleOrDefault(c => c.Id == taskGroupHeader.ParentTaskGroupId, true);
+
+                        if(parentTaskGroupHeader != null)
+                        {
+                            //Make sure the start and completion dates don't fall outside of the group headers dates
+                            taskGroupHead.StartDate = (taskGroupHead.StartDate < parentTaskGroupHeader.StartDate) ? parentTaskGroupHeader.StartDate : taskGroupHead.StartDate;
+                            taskGroupHead.CompletionDate = (taskGroupHead.CompletionDate > parentTaskGroupHeader.CompletionDate) ? parentTaskGroupHeader.CompletionDate : taskGroupHead.CompletionDate;
+                        }
+                    }
 
                     _mapper.Map(taskGroupHead, taskGroupHeader);
 
@@ -153,6 +169,55 @@ namespace PanacheSoftware.Service.Task.Controllers
             }
 
             return BadRequest();
+        }
+
+        [Route("[action]/{id}")]
+        [HttpPost]
+        public IActionResult Complete(string id)
+        {
+            try
+            {
+                if (Guid.TryParse(id, out Guid parsedId))
+                {
+                    var taskGroupHeaderReadOnly = _unitOfWork.TaskGroupHeaders.GetTaskGroupHeaderWithRelations(parsedId, true);
+
+                    if(taskGroupHeaderReadOnly != null)
+                    {
+                        if (!taskGroupHeaderReadOnly.Completed)
+                        {
+                            if (_taskManager.CanCompleteTaskGroup(taskGroupHeaderReadOnly.Id))
+                            {
+                                var taskGroupHeader = _unitOfWork.TaskGroupHeaders.Get(taskGroupHeaderReadOnly.Id);
+
+                                if (taskGroupHeader != null)
+                                {
+                                    taskGroupHeader.Completed = true;
+
+                                    if (DateTime.Today <= taskGroupHeader.StartDate)
+                                    {
+                                        taskGroupHeader.CompletedOnDate = taskGroupHeader.CompletionDate;
+                                    }
+                                    else
+                                    {
+                                        taskGroupHeader.CompletedOnDate = DateTime.Today;
+                                    }
+
+                                    _unitOfWork.Complete();
+
+                                    return Ok(_mapper.Map<TaskGroupHead>(taskGroupHeader));
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+            catch (Exception e)
+            {
+                string message = e.Message;
+            }
+
+            return NotFound();
         }
 
         [Route("[action]")]

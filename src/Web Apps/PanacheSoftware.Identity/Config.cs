@@ -34,7 +34,8 @@ namespace PanacheSoftware.Identity
                 new ApiResource(PanacheSoftwareScopeNames.TeamService){ UserClaims = { "tenantid" }, ApiSecrets = { new Secret("5C9BF545-3C20-4448-9EEC-6B3E745B671E".Sha256()) } },
                 new ApiResource(PanacheSoftwareScopeNames.FolderService){ UserClaims = { "tenantid" }, ApiSecrets = { new Secret("22357BD0-32D6-429F-9A75-322046EE3FA2".Sha256()) } },
                 new ApiResource(PanacheSoftwareScopeNames.FoundationService){ UserClaims = { "tenantid" }, ApiSecrets = { new Secret("70CD8BB9-5256-42CF-8B95-DD61C1051AD0".Sha256()) } },
-                new ApiResource(PanacheSoftwareScopeNames.TaskService){ UserClaims = { "tenantid" }, ApiSecrets = { new Secret("AC654B02-E46B-4359-B908-87479CBE1CEB".Sha256()) } }
+                new ApiResource(PanacheSoftwareScopeNames.TaskService){ UserClaims = { "tenantid" }, ApiSecrets = { new Secret("AC654B02-E46B-4359-B908-87479CBE1CEB".Sha256()) } },
+                new ApiResource(PanacheSoftwareScopeNames.FileService){ UserClaims = { "tenantid" }, ApiSecrets = { new Secret("839C649E-4FE3-410C-B43F-69C017A52676".Sha256()) } }
             };
         }
 
@@ -43,36 +44,36 @@ namespace PanacheSoftware.Identity
             return new[]
             {
                 // client credentials flow client
-                new Client
-                {
-                    ClientId = "client",
-                    ClientName = "Client Credentials Client",
+                //new Client
+                //{
+                //    ClientId = "client",
+                //    ClientName = "Client Credentials Client",
 
-                    AllowedGrantTypes = GrantTypes.ClientCredentials,
-                    ClientSecrets = { new Secret("511536EF-F270-4058-80CA-1C89C192F69A".Sha256()) },
+                //    AllowedGrantTypes = GrantTypes.ClientCredentials,
+                //    ClientSecrets = { new Secret("511536EF-F270-4058-80CA-1C89C192F69A".Sha256()) },
 
-                    AllowedScopes = { LocalApi.ScopeName }
-                },
+                //    AllowedScopes = { LocalApi.ScopeName }
+                //},
 
                 // MVC client using hybrid flow
-                new Client
-                {
-                    ClientId = "mvc",
-                    ClientName = "MVC Client",
+                //new Client
+                //{
+                //    ClientId = "mvc",
+                //    ClientName = "MVC Client",
 
-                    //Don't show consent page
-                    RequireConsent = false,
+                //    //Don't show consent page
+                //    RequireConsent = false,
 
-                    AllowedGrantTypes = GrantTypes.HybridAndClientCredentials,
-                    ClientSecrets = { new Secret("49C1A7E1-0C79-4A89-A3D6-A37998FB86B0".Sha256()) },
+                //    AllowedGrantTypes = GrantTypes.HybridAndClientCredentials,
+                //    ClientSecrets = { new Secret("49C1A7E1-0C79-4A89-A3D6-A37998FB86B0".Sha256()) },
 
-                    RedirectUris = { "http://localhost:5002/signin-oidc" },
-                    FrontChannelLogoutUri = "http://localhost:5002/signout-oidc",
-                    PostLogoutRedirectUris = { "http://localhost:5002/signout-callback-oidc" },
+                //    RedirectUris = { "http://localhost:5002/signin-oidc" },
+                //    FrontChannelLogoutUri = "http://localhost:5002/signout-oidc",
+                //    PostLogoutRedirectUris = { "http://localhost:5002/signout-callback-oidc" },
 
-                    AllowOfflineAccess = true,
-                    AllowedScopes = { StandardScopes.OpenId, StandardScopes.Profile, LocalApi.ScopeName, StandardScopes.Email }
-                },
+                //    AllowOfflineAccess = true,
+                //    AllowedScopes = { StandardScopes.OpenId, StandardScopes.Profile, LocalApi.ScopeName, StandardScopes.Email }
+                //},
 
                 //new Client
                 //{
@@ -132,33 +133,34 @@ namespace PanacheSoftware.Identity
                         PanacheSoftwareScopeNames.TeamService,
                         PanacheSoftwareScopeNames.FolderService,
                         PanacheSoftwareScopeNames.FoundationService,
-                        PanacheSoftwareScopeNames.TaskService
+                        PanacheSoftwareScopeNames.TaskService,
+                        PanacheSoftwareScopeNames.FileService
                     }
                 },
 
                 // SPA client using implicit flow
-                new Client
-                {
-                    ClientId = "spa",
-                    ClientName = "SPA Client",
-                    ClientUri = "http://identityserver.io",
+                //new Client
+                //{
+                //    ClientId = "spa",
+                //    ClientName = "SPA Client",
+                //    ClientUri = "http://identityserver.io",
 
-                    AllowedGrantTypes = GrantTypes.Implicit,
-                    AllowAccessTokensViaBrowser = true,
+                //    AllowedGrantTypes = GrantTypes.Implicit,
+                //    AllowAccessTokensViaBrowser = true,
 
-                    RedirectUris =
-                    {
-                        "http://localhost:5002/index.html",
-                        "http://localhost:5002/callback.html",
-                        "http://localhost:5002/silent.html",
-                        "http://localhost:5002/popup.html",
-                    },
+                //    RedirectUris =
+                //    {
+                //        "http://localhost:5002/index.html",
+                //        "http://localhost:5002/callback.html",
+                //        "http://localhost:5002/silent.html",
+                //        "http://localhost:5002/popup.html",
+                //    },
 
-                    PostLogoutRedirectUris = { "http://localhost:5002/index.html" },
-                    AllowedCorsOrigins = { "http://localhost:5002" },
+                //    PostLogoutRedirectUris = { "http://localhost:5002/index.html" },
+                //    AllowedCorsOrigins = { "http://localhost:5002" },
 
-                    AllowedScopes = {  StandardScopes.OpenId, StandardScopes.Profile, LocalApi.ScopeName }
-                }
+                //    AllowedScopes = {  StandardScopes.OpenId, StandardScopes.Profile, LocalApi.ScopeName }
+                //}
             };
         }
     }

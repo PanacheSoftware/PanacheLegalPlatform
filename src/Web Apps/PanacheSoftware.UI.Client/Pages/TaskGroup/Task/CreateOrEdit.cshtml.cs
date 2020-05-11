@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using PanacheSoftware.Core.Domain.API.Language;
 using PanacheSoftware.Core.Domain.API.Task;
 using PanacheSoftware.Core.Domain.Identity.API;
+using PanacheSoftware.Core.Domain.UI;
 using PanacheSoftware.Core.Types;
 using PanacheSoftware.Http;
 using PanacheSoftware.UI.Core.Helpers;
@@ -37,6 +38,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup.Task
         public LangQueryList langQueryList { get; set; }
         public string SaveState { get; set; }
         public string ErrorString { get; set; }
+        public SaveMessageModel SaveMessageModel { get; set; }
 
         public CreateOrEditModel(IAPIHelper apiHelper, IRazorPartialToStringRenderer renderer, IModelHelper modelHelper, IMapper mapper)
         {
@@ -85,6 +87,9 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup.Task
                             {
                                 var taskGroupHead = response.ContentAsType<TaskGroupHead>();
                                 taskHead.TaskGroupHeaderId = taskGroupHead.Id;
+                                taskHead.StartDate = taskGroupHead.StartDate;
+                                taskHead.CompletionDate = taskGroupHead.CompletionDate;
+                                taskHead.MainUserId = taskGroupHead.MainUserId;
                             }
                         }
                         else
@@ -98,6 +103,8 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup.Task
             {
                 return RedirectToPage("/TaskGroup/TaskGroups");
             }
+
+            SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken);
 
             return Page();
         }
@@ -115,6 +122,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup.Task
                     if (await CreateOrUpdateTaskAsync(accessToken))
                     {
                         SaveState = SaveStates.SUCCESS;
+                        SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken, SaveState);
                         return Page();
                     }
                 }
@@ -125,6 +133,8 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup.Task
 
             SaveState = SaveStates.FAILED;
 
+            SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken, SaveState);
+
             return Page();
         }
 
@@ -134,7 +144,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup.Task
 
             await CreateUserSelectList(accessToken);
 
-            langQueryList = await _apiHelper.MakeLanguageQuery(accessToken, "EN", new long[] { 10121, 10111, 10500, 10501, 10900, 10901, 10200, 10202, 10203, 10902, 10903, 10904, 10905, 10201, 10906, 10907, 10908, 10909, 10910, 10911 });
+            langQueryList = await _apiHelper.MakeLanguageQuery(accessToken, "EN", new long[] { 10121, 10111, 10500, 10501, 10900, 10901, 10200, 10222, 10203, 10902, 10903, 10904, 10905, 10201, 10906, 10907, 10908, 10909, 10910, 10911, 10918, 10917 });
 
             return true;
         }

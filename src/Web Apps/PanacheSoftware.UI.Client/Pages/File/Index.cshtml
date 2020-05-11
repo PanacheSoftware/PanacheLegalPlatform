@@ -1,0 +1,182 @@
+﻿@page "{Id}/{linkId?}/{linkType?}"
+@model PanacheSoftware.UI.Client.Pages.File.IndexModel
+@{
+    ViewData["Title"] = $"Panche Legal - File";
+    Layout = "_PSMainLayout";
+}
+
+@section Styles {
+    @await Html.PartialAsync("_PLFormCSS")
+    @await Html.PartialAsync("_PLDataTableCSS")
+}
+
+<div id="overlay" class="overlay"></div>
+<div class="container-fluid p-5">
+    <div class="row">
+        <div class="form-group col-md-12">
+            <div class="breadcrumb-container">
+                <a id="toggle-sidebar" class="btn btn-outline-secondary btn-sm breadcrumb-button" href="#"><i class="fa fa-bars"></i></a>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-page="/Dashboard/Index">@Html.GetTitle(Model.langQueryList, 10121)</a></li>
+                    <li class="breadcrumb-item active">
+                        @if (Model.FileUploadModel.FileHeader.Id == Guid.Empty)
+                        {
+                            @Html.Raw("New File")
+                        }
+                        else
+                        {
+                            @Model.FileUploadModel.FileHeader.FileDetail.FileTitle
+                        }
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <partial name="_SaveMessage" model="Model.SaveMessageModel" />
+
+    <form enctype="multipart/form-data" method="post">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card border-light mb-6">
+                    <div class="card-header">File</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="bmd-label-floating">File Title</label>
+                                    <input asp-for="@Model.FileUploadModel.FileHeader.FileDetail.FileTitle" class="form-control" />
+                                    <span asp-validation-for="@Model.FileUploadModel.FileHeader.FileDetail.FileTitle" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="bmd-label-floating">File Description</label>
+                                    <textarea asp-for="@Model.FileUploadModel.FileHeader.FileDetail.Description" class="form-control" rows="5"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        @if (Model.FileUploadModel.FileHeader.Id == Guid.Empty)
+                        {
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="bmd-label-floating">Upload</label>
+                                        <input asp-for="@Model.FileUploadModel.FormFile" type="file" />
+                                        <span asp-validation-for="@Model.FileUploadModel.FormFile"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    Or
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="bmd-label-floating">Link</label>
+                                        <input asp-for="@Model.FileUploadModel.URI" class="form-control" />
+                                        <span asp-validation-for="@Model.FileUploadModel.URI" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <input asp-for="@Model.FileUploadModel.FormFile" type="file" hidden />
+                            <input asp-for="@Model.FileUploadModel.URI" class="form-control" hidden/>
+
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                &nbsp;
+            </div>
+        </div>
+        @if (Model.FileUploadModel.FileHeader.Id != Guid.Empty)
+        {
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card border-light mb-6">
+                        <div class="card-header">File Versions</div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <table id="datatable" class="table table-striped table-bordered datatable display nowrap" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th>Version</th>
+                                                <th>File Name</th>
+                                                <th>Uploaded</th>
+                                                <th>Link</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var currentVersion in Model.FileUploadModel.FileHeader.FileVersions)
+                                            {
+                                                <tr>
+                                                    <td></td>
+                                                    <td>@currentVersion.VersionNumber</td>
+                                                    <td>@currentVersion.TrustedName</td>
+                                                    <td>@currentVersion.UploadDate.ToShortDateString()</td>
+                                                    <td><a href="#">link</a></td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                    <a class="btn btn-primary" asp-page="/Setting/LanguageCode">@Html.GetTitle(Model.langQueryList, 10204)</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    &nbsp;
+                </div>
+            </div>
+        }
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card border-light mb-6">
+                    <div class="card-body">
+                        <input asp-for="@Model.FileUploadModel.linkId" type="text" class="form-control" hidden />
+                        <input asp-for="@Model.FileUploadModel.linkType" type="text" class="form-control" hidden />
+                        <input asp-for="@Model.FileUploadModel.FileHeader.Id" type="text" class="form-control" hidden />
+                        <input asp-for="@Model.FileUploadModel.FileHeader.Status" type="text" class="form-control" hidden />
+                        <input asp-for="@Model.FileUploadModel.FileHeader.FileDetail.Id" type="text" class="form-control" hidden />
+                        <input asp-for="@Model.FileUploadModel.FileHeader.FileDetail.FileHeaderId" type="text" class="form-control" hidden />
+                        <input asp-for="@Model.FileUploadModel.FileHeader.FileDetail.FileType" type="text" class="form-control" hidden />
+                        <input asp-for="@Model.FileUploadModel.FileHeader.FileDetail.FileExtension" type="text" class="form-control" hidden />
+                        <input asp-for="@Model.FileUploadModel.FileHeader.FileDetail.Status" type="text" class="form-control" hidden />
+                        @if (Model.FileUploadModel.FileHeader.Id == Guid.Empty)
+                        {
+                            <button type="submit" class="btn btn-primary">Upload File</button>
+                        }
+                        else
+                        {
+                            <button type="submit" class="btn btn-primary">Edit File</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_PLFormJS")
+    @await Html.PartialAsync("_PLDataTableJS")
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+}
+

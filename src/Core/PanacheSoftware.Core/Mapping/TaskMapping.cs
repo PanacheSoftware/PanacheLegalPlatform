@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using PanacheSoftware.Core.Domain.API.Task;
 using PanacheSoftware.Core.Domain.Task;
+using System;
+using System.Linq;
 
 namespace PanacheSoftware.Core.Mapping
 {

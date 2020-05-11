@@ -1,5 +1,5 @@
 ﻿$(document).ready(function () {
-    $('.datatable').DataTable({
+    $('table.datatable').DataTable({
         responsive: {
             details: {
                 type: 'column'
@@ -10,4 +10,10 @@
         ],
         order: [1, 'asc']
     });
+	$('.modal').on('shown.bs.modal', function (e) {
+		$(this).find('table.datatable').each(function () {
+			var dTable = $(this).DataTable();
+			dTable.columns.adjust().draw();
+		});
+	});
 });
