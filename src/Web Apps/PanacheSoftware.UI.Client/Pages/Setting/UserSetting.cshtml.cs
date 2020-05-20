@@ -34,7 +34,7 @@ namespace PanacheSoftware.UI.Client.Pages.Setting
         public SelectList LanguageCodeSelectList { get; set; }
         public string SaveState { get; set; }
         public string ErrorString { get; set; }
-        public SaveMessageModel SaveMessageModel { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public SaveMessageModel SaveMessageModel { get; set; }
 
         public UserSettingModel(IAPIHelper apiHelper, IModelHelper modelHelper)
         {
@@ -89,10 +89,14 @@ namespace PanacheSoftware.UI.Client.Pages.Setting
 
                 SaveState = SaveStates.SUCCESS;
 
+                SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken, SaveState);
+
                 return Page();
             }
 
             SaveState = SaveStates.FAILED;
+
+            SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken, SaveState);
 
             return Page();
         }
