@@ -23,29 +23,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{5E
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PanacheSoftware.Service.Client", "Services\PanacheSoftware.Service.Client\PanacheSoftware.Service.Client.csproj", "{E40346B2-25C9-4B8A-8C7E-2E03E326D426}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PanacheSoftware.Service.Folder", "Services\PanacheSoftware.Service.Folder\PanacheSoftware.Service.Folder.csproj", "{BBD99688-B85D-40C7-B2FE-4E43190B03FE}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PanacheSoftware.Service.Team", "Services\PanacheSoftware.Service.Team\PanacheSoftware.Service.Team.csproj", "{5DF48F50-E0D1-4B87-B00D-7DA8C519AF55}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PanacheSoftware.UI.Client", "Web Apps\PanacheSoftware.UI.Client\PanacheSoftware.UI.Client.csproj", "{0A81633F-FEF9-4F65-AD44-9D73469840F3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PanacheSoftware.Service.Foundation", "Services\PanacheSoftware.Service.Foundation\PanacheSoftware.Service.Foundation.csproj", "{AE41E8A6-105A-491E-B8A9-1101552B4B6F}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Support", "Support", "{AC3EB7E6-6773-40D4-B99A-F964CA33213A}"
-	ProjectSection(SolutionItems) = preProject
-		Support\gulpfile.js = Support\gulpfile.js
-		Support\package.json = Support\package.json
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQL", "SQL", "{FBF0F141-81BD-4FA0-BBCA-30DA8FD576DC}"
-	ProjectSection(SolutionItems) = preProject
-		Support\SQL\PanacheLegalDropTables.sql = Support\SQL\PanacheLegalDropTables.sql
-		Support\SQL\PanacheLegalTables.sql = Support\SQL\PanacheLegalTables.sql
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PanacheSoftware.Service.Task", "Services\PanacheSoftware.Service.Task\PanacheSoftware.Service.Task.csproj", "{0200D136-3C5F-47D9-B32C-30A9CD420774}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PanacheSoftware.Service.File", "Services\PanacheSoftware.Service.File\PanacheSoftware.Service.File.csproj", "{A506BE9C-2D49-4094-98D7-E483A83E03D0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PanacheSoftware.Service.Identity", "Services\PanacheSoftware.Service.Identity\PanacheSoftware.Service.Identity.csproj", "{11CD63A2-95EB-46DC-BA24-9AFD90DF24A5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -77,10 +65,6 @@ Global
 		{E40346B2-25C9-4B8A-8C7E-2E03E326D426}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E40346B2-25C9-4B8A-8C7E-2E03E326D426}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E40346B2-25C9-4B8A-8C7E-2E03E326D426}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BBD99688-B85D-40C7-B2FE-4E43190B03FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BBD99688-B85D-40C7-B2FE-4E43190B03FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BBD99688-B85D-40C7-B2FE-4E43190B03FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BBD99688-B85D-40C7-B2FE-4E43190B03FE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5DF48F50-E0D1-4B87-B00D-7DA8C519AF55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5DF48F50-E0D1-4B87-B00D-7DA8C519AF55}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5DF48F50-E0D1-4B87-B00D-7DA8C519AF55}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -101,6 +85,10 @@ Global
 		{A506BE9C-2D49-4094-98D7-E483A83E03D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A506BE9C-2D49-4094-98D7-E483A83E03D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A506BE9C-2D49-4094-98D7-E483A83E03D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11CD63A2-95EB-46DC-BA24-9AFD90DF24A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11CD63A2-95EB-46DC-BA24-9AFD90DF24A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11CD63A2-95EB-46DC-BA24-9AFD90DF24A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11CD63A2-95EB-46DC-BA24-9AFD90DF24A5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -112,13 +100,12 @@ Global
 		{5B64A1A5-F558-485C-BDD4-BC0440A325DB} = {D5919A9E-9A25-4176-9D91-6BBAAB1F5008}
 		{011617E2-40F2-483F-9C25-71A2D341B33E} = {142DA5F6-BC1A-4A09-A309-FA5ACF8289BA}
 		{E40346B2-25C9-4B8A-8C7E-2E03E326D426} = {5E9AA283-F03D-46FB-8509-58B20DEDF48F}
-		{BBD99688-B85D-40C7-B2FE-4E43190B03FE} = {5E9AA283-F03D-46FB-8509-58B20DEDF48F}
 		{5DF48F50-E0D1-4B87-B00D-7DA8C519AF55} = {5E9AA283-F03D-46FB-8509-58B20DEDF48F}
 		{0A81633F-FEF9-4F65-AD44-9D73469840F3} = {142DA5F6-BC1A-4A09-A309-FA5ACF8289BA}
 		{AE41E8A6-105A-491E-B8A9-1101552B4B6F} = {5E9AA283-F03D-46FB-8509-58B20DEDF48F}
-		{FBF0F141-81BD-4FA0-BBCA-30DA8FD576DC} = {AC3EB7E6-6773-40D4-B99A-F964CA33213A}
 		{0200D136-3C5F-47D9-B32C-30A9CD420774} = {5E9AA283-F03D-46FB-8509-58B20DEDF48F}
 		{A506BE9C-2D49-4094-98D7-E483A83E03D0} = {5E9AA283-F03D-46FB-8509-58B20DEDF48F}
+		{11CD63A2-95EB-46DC-BA24-9AFD90DF24A5} = {5E9AA283-F03D-46FB-8509-58B20DEDF48F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B4BFE431-1987-48B6-9BE4-94174F3989E9}

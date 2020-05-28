@@ -102,6 +102,8 @@ namespace PanacheSoftware.Identity
             services.AddTransient<IUserProvider, UserProvider>();
             //services.AddScoped<APIModelValidate>();
 
+            services.AddHostedService<MigrationHostedService>();
+
             services.AddControllersWithViews().AddNewtonsoftJson();
 
             //services.AddScoped<IProfileService, ProfileService>();

@@ -15,13 +15,10 @@ using PanacheSoftware.Http;
 using PanacheSoftware.Service.Client.Persistance;
 using PanacheSoftware.Service.Foundation.Core;
 using PanacheSoftware.Service.Foundation.Core.Repositories;
-using PanacheSoftware.Service.Foundation.Manager;
 using PanacheSoftware.Service.Foundation.Persistance.Context;
 using PanacheSoftware.Service.Foundation.Persistance.Repositories;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.IO;
-using System.Security.Claims;
 
 namespace PanacheSoftware.Service.Foundation
 {
@@ -84,15 +81,15 @@ namespace PanacheSoftware.Service.Foundation
             services.AddTransient<ILanguageHeaderRepository, LanguageHeaderRepository>();
             services.AddTransient<ILanguageCodeRepository, LanguageCodeRepository>();
             services.AddTransient<ILanguageItemRepository, LanguageItemRepository>();
-            services.AddTransient<ILanguageManager, LanguageManager>();
 
             services.AddTransient<ISettingHeaderRepository, SettingHeaderRepository>();
             services.AddTransient<IUserSettingRepository, UserSettingRepository>();
-            services.AddTransient<ISettingManager, SettingManager>();
 
             services.AddTransient<IUserProvider, UserProvider>();
             services.AddTransient<IStaticFileReader, StaticFileReader>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+            services.AddHostedService<MigrationHostedService>();
 
             services.AddAutoMapper(System.Reflection.Assembly.Load("PanacheSoftware.Core"));
 

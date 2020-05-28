@@ -1,18 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using PanacheSoftware.Core.Domain.API.Settings;
 using PanacheSoftware.Core.Domain.Settings;
 using PanacheSoftware.Core.Types;
 using PanacheSoftware.Service.Foundation.Core;
-using PanacheSoftware.Service.Foundation.Manager;
 
 namespace PanacheSoftware.Service.Foundation.Controllers
 {
@@ -23,14 +18,11 @@ namespace PanacheSoftware.Service.Foundation.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly ISettingManager _settingManager;
 
-        public SettingController(IUnitOfWork unitOfWork, IMapper mapper, ISettingManager settingManager)
+        public SettingController(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _settingManager = settingManager;
-            _settingManager.SeedSettings();
         }
 
         [HttpGet]

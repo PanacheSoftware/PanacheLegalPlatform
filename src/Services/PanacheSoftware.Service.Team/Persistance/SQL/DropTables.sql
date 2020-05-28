@@ -1,3 +1,0 @@
-﻿DROP TABLE TeamDetail
-DROP TABLE UserTeam
-DROP TABLE TeamHeader

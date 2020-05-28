@@ -81,7 +81,6 @@ namespace PanacheSoftware.UI.Client
                     options.Scope.Add(PanacheSoftwareScopeNames.IdentityResourceProfile);
                     options.Scope.Add(PanacheSoftwareScopeNames.ClientService);
                     options.Scope.Add(PanacheSoftwareScopeNames.TeamService);
-                    options.Scope.Add(PanacheSoftwareScopeNames.FolderService);
                     options.Scope.Add(PanacheSoftwareScopeNames.FoundationService);
                     options.Scope.Add(PanacheSoftwareScopeNames.TaskService);
                     options.Scope.Add(PanacheSoftwareScopeNames.FileService);

@@ -85,6 +85,8 @@ namespace PanacheSoftware.Service.File
             services.AddTransient<IUserProvider, UserProvider>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
+            services.AddHostedService<MigrationHostedService>();
+
             services.AddAutoMapper(System.Reflection.Assembly.Load("PanacheSoftware.Core"));
 
             services.AddControllersWithViews().AddNewtonsoftJson();
