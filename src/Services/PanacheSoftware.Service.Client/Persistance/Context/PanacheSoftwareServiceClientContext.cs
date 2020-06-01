@@ -2,6 +2,7 @@
 using PanacheSoftware.Core.Domain.Client;
 using PanacheSoftware.Http;
 using PanacheSoftware.Service.Client.Persistance.EntityConfiguration;
+using System;
 
 namespace PanacheSoftware.Service.Client.Persistance.Context
 {
@@ -12,7 +13,6 @@ namespace PanacheSoftware.Service.Client.Persistance.Context
         public PanacheSoftwareServiceClientContext(DbContextOptions<PanacheSoftwareServiceClientContext> options, IUserProvider userProvider) : base(options)
         {
             _userProvider = userProvider;
-            
         }
 
         public virtual DbSet<ClientHeader> ClientHeaders { get; set; }
@@ -22,14 +22,17 @@ namespace PanacheSoftware.Service.Client.Persistance.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            var tenantId = _userProvider.GetTenantId();
-
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.ApplyConfiguration(new ClientHeaderConfiguration(tenantId));
-            modelBuilder.ApplyConfiguration(new ClientDetailConfiguration(tenantId));
-            modelBuilder.ApplyConfiguration(new ClientContactConfiguration(tenantId));
-            modelBuilder.ApplyConfiguration(new ClientAddressConfiguration(tenantId));
+            modelBuilder.ApplyConfiguration(new ClientHeaderConfiguration());
+            modelBuilder.ApplyConfiguration(new ClientDetailConfiguration());
+            modelBuilder.ApplyConfiguration(new ClientContactConfiguration());
+            modelBuilder.ApplyConfiguration(new ClientAddressConfiguration());
+
+            modelBuilder.Entity<ClientHeader>().HasQueryFilter(e => EF.Property<Guid>(e, "TenantId") == Guid.Parse(_userProvider.GetTenantId()));
+            modelBuilder.Entity<ClientDetail>().HasQueryFilter(e => EF.Property<Guid>(e, "TenantId") == Guid.Parse(_userProvider.GetTenantId()));
+            modelBuilder.Entity<ClientContact>().HasQueryFilter(e => EF.Property<Guid>(e, "TenantId") == Guid.Parse(_userProvider.GetTenantId()));
+            modelBuilder.Entity<ClientAddress>().HasQueryFilter(e => EF.Property<Guid>(e, "TenantId") == Guid.Parse(_userProvider.GetTenantId()));
         }
     }
 }

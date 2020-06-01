@@ -14,5 +14,6 @@ namespace PanacheSoftware.Http
         public const string FOUNDATION = "FOUNDATION";
         public const string TASK = "TASK";
         public const string FILE = "FILE";
+        public const string GATEWAY = "GATEWAY";
     }
 }

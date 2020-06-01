@@ -10,11 +10,8 @@ namespace PanacheSoftware.Service.File.Persistance.EntityConfiguration
 {
     public class FileHeaderConfiguration : IEntityTypeConfiguration<FileHeader>
     {
-        private string _tenantId;
-
-        public FileHeaderConfiguration(string tenantId)
+        public FileHeaderConfiguration()
         {
-            _tenantId = tenantId;
         }
 
         public void Configure(EntityTypeBuilder<FileHeader> builder)
@@ -43,8 +40,6 @@ namespace PanacheSoftware.Service.File.Persistance.EntityConfiguration
                 .HasForeignKey<FileDetail>(d => d.FileHeaderId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
-
-            builder.HasQueryFilter(f => f.TenantId == Guid.Parse(_tenantId));
         }
     }
 }

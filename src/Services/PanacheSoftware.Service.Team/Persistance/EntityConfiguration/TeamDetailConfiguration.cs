@@ -7,11 +7,9 @@ namespace PanacheSoftware.Service.Team.Persistance.EntityConfiguration
 {
     public class TeamDetailConfiguration : IEntityTypeConfiguration<TeamDetail>
     {
-        private string _tenantId;
 
-        public TeamDetailConfiguration(string tenantId)
+        public TeamDetailConfiguration()
         {
-            _tenantId = tenantId;
         }
 
         public void Configure(EntityTypeBuilder<TeamDetail> builder)
@@ -27,8 +25,6 @@ namespace PanacheSoftware.Service.Team.Persistance.EntityConfiguration
                 .HasForeignKey<TeamDetail>(d => d.TeamHeaderId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
-
-            builder.HasQueryFilter(d => d.TenantId == Guid.Parse(_tenantId));
         }
     }
 }

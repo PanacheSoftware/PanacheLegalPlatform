@@ -34,7 +34,8 @@ namespace PanacheSoftware.Identity
                 new ApiResource(PanacheSoftwareScopeNames.TeamService){ UserClaims = { "tenantid" }, ApiSecrets = { new Secret("5C9BF545-3C20-4448-9EEC-6B3E745B671E".Sha256()) } },
                 new ApiResource(PanacheSoftwareScopeNames.FoundationService){ UserClaims = { "tenantid" }, ApiSecrets = { new Secret("70CD8BB9-5256-42CF-8B95-DD61C1051AD0".Sha256()) } },
                 new ApiResource(PanacheSoftwareScopeNames.TaskService){ UserClaims = { "tenantid" }, ApiSecrets = { new Secret("AC654B02-E46B-4359-B908-87479CBE1CEB".Sha256()) } },
-                new ApiResource(PanacheSoftwareScopeNames.FileService){ UserClaims = { "tenantid" }, ApiSecrets = { new Secret("839C649E-4FE3-410C-B43F-69C017A52676".Sha256()) } }
+                new ApiResource(PanacheSoftwareScopeNames.FileService){ UserClaims = { "tenantid" }, ApiSecrets = { new Secret("839C649E-4FE3-410C-B43F-69C017A52676".Sha256()) } },
+                new ApiResource(PanacheSoftwareScopeNames.APIGateway){ UserClaims = {"tenantid"}, ApiSecrets = { new Secret("DDDCB193-213C-43FB-967A-5A911D2EFC04".Sha256()) }}
             };
         }
 
@@ -132,7 +133,8 @@ namespace PanacheSoftware.Identity
                         PanacheSoftwareScopeNames.TeamService,
                         PanacheSoftwareScopeNames.FoundationService,
                         PanacheSoftwareScopeNames.TaskService,
-                        PanacheSoftwareScopeNames.FileService
+                        PanacheSoftwareScopeNames.FileService,
+                        PanacheSoftwareScopeNames.APIGateway
                     }
                 },
 

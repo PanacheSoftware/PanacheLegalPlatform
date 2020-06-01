@@ -73,7 +73,7 @@ namespace PanacheSoftware.Service.Client
             //services.AddDbContext<PanacheSoftwareServiceClientContext>(options =>
             //    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddTransient<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddTransient<IClientHeaderRepository, ClientHeaderRepository>();
             services.AddTransient<IClientDetailRepository, ClientDetailRepository>();
             services.AddTransient<IClientContactRepository, ClientContactRepository>();
@@ -81,7 +81,7 @@ namespace PanacheSoftware.Service.Client
             services.AddTransient<IClientManager, ClientManager>();
 
             services.AddTransient<IUserProvider, UserProvider>();
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 
             services.AddHostedService<MigrationHostedService>();
 

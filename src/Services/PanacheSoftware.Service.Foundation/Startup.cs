@@ -87,7 +87,7 @@ namespace PanacheSoftware.Service.Foundation
 
             services.AddTransient<IUserProvider, UserProvider>();
             services.AddTransient<IStaticFileReader, StaticFileReader>();
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 
             services.AddHostedService<MigrationHostedService>();
 

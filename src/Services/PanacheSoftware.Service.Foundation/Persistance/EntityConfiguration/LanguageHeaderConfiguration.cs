@@ -8,11 +8,8 @@ namespace PanacheSoftware.Service.Foundation.Persistance.EntityConfiguration
 {
     public class LanguageHeaderConfiguration : IEntityTypeConfiguration<LanguageHeader>
     {
-        private string _tenantId;
-
-        public LanguageHeaderConfiguration(string tenantId)
+        public LanguageHeaderConfiguration()
         {
-            _tenantId = tenantId;
         }
 
         public void Configure(EntityTypeBuilder<LanguageHeader> builder)
@@ -24,8 +21,6 @@ namespace PanacheSoftware.Service.Foundation.Persistance.EntityConfiguration
             builder.Property(l => l.Status).IsRequired();
             builder.Property(l => l.TextCode).IsRequired();
             builder.Property(l => l.Text).IsRequired();
-
-            builder.HasQueryFilter(l => l.TenantId == Guid.Parse(_tenantId));
         }
     }
 }

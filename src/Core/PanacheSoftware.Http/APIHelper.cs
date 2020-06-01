@@ -19,7 +19,13 @@ namespace PanacheSoftware.Http
 
         public async Task<HttpResponseMessage> MakeAPICallAsync(string accessToken, HttpMethod httpMethod, string apiType, string uriPart, HttpContent contentPost)
         {
-            var requestUri = $"{GetBaseURL(apiType)}/api/{uriPart}";
+            var addAPIString = string.Empty;
+
+            if (apiType != APITypes.GATEWAY)
+                addAPIString = "api/";
+
+
+            var requestUri = $"{GetBaseURL(apiType)}/{addAPIString}{uriPart}";
 
             var httpRequestBuilder = new HttpRequestBuilder();
             httpRequestBuilder.AddBearerToken(accessToken);
@@ -122,6 +128,8 @@ namespace PanacheSoftware.Http
                     return "https://localhost:44377";
                 case APITypes.FILE:
                     return "https://localhost:44324";
+                case APITypes.GATEWAY:
+                    return "https://localhost:44346";
                 default:
                     break;
             }

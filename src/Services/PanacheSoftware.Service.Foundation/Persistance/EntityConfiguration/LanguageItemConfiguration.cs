@@ -8,11 +8,8 @@ namespace PanacheSoftware.Service.Foundation.Persistance.EntityConfiguration
 {
     public class LanguageItemConfiguration : IEntityTypeConfiguration<LanguageItem>
     {
-        private string _tenantId;
-
-        public LanguageItemConfiguration(string tenantId)
+        public LanguageItemConfiguration()
         {
-            _tenantId = tenantId;
         }
 
         public void Configure(EntityTypeBuilder<LanguageItem> builder)
@@ -30,8 +27,6 @@ namespace PanacheSoftware.Service.Foundation.Persistance.EntityConfiguration
                 .HasForeignKey(l => l.LanguageHeaderId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
-
-            builder.HasQueryFilter(l => l.TenantId == Guid.Parse(_tenantId));
         }
     }
 }

@@ -7,12 +7,10 @@ namespace PanacheSoftware.Service.Client.Persistance.EntityConfiguration
 {
     public class ClientContactConfiguration : IEntityTypeConfiguration<ClientContact>
     {
-        private string _tenantId;
-
-        public ClientContactConfiguration(string tenantId)
+        public ClientContactConfiguration()
         {
-            _tenantId = tenantId;
         }
+
         public void Configure(EntityTypeBuilder<ClientContact> builder)
         {
             builder.ToTable("ClientContact");
@@ -26,8 +24,6 @@ namespace PanacheSoftware.Service.Client.Persistance.EntityConfiguration
                 .HasForeignKey(c => c.ClientHeaderId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
-
-            builder.HasQueryFilter(c => c.TenantId == Guid.Parse(_tenantId));
         }
     }
 }

@@ -7,11 +7,10 @@ namespace PanacheSoftware.Service.Client.Persistance.EntityConfiguration
 {
     public class ClientHeaderConfiguration : IEntityTypeConfiguration<ClientHeader>
     {
-        private string _tenantId;
 
-        public ClientHeaderConfiguration(string tenantId)
+        public ClientHeaderConfiguration()
         {
-            _tenantId = tenantId;
+
         }
 
         public void Configure(EntityTypeBuilder<ClientHeader> builder)
@@ -23,8 +22,6 @@ namespace PanacheSoftware.Service.Client.Persistance.EntityConfiguration
             builder.Property(c => c.Status).IsRequired();
             builder.Property(c => c.ShortName).IsRequired();
             builder.Property(c => c.LongName).IsRequired();
-
-            builder.HasQueryFilter(c => c.TenantId == Guid.Parse(_tenantId));
         }
     }
 }

@@ -7,11 +7,8 @@ namespace PanacheSoftware.Service.Task.Persistance.EntityConfiguration
 {
     public class TaskGroupDetailConfiguration : IEntityTypeConfiguration<TaskGroupDetail>
     {
-        private string _tenantId;
-
-        public TaskGroupDetailConfiguration(string tenantId)
+        public TaskGroupDetailConfiguration()
         {
-            _tenantId = tenantId;
         }
         public void Configure(EntityTypeBuilder<TaskGroupDetail> builder)
         {
@@ -26,8 +23,6 @@ namespace PanacheSoftware.Service.Task.Persistance.EntityConfiguration
                 .HasForeignKey<TaskGroupDetail>(d => d.TaskGroupHeaderId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
-
-            builder.HasQueryFilter(d => d.TenantId == Guid.Parse(_tenantId));
         }
     }
 }

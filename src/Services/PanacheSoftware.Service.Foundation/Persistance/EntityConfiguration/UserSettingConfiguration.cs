@@ -10,11 +10,8 @@ namespace PanacheSoftware.Service.Foundation.Persistance.EntityConfiguration
 {
     public class UserSettingConfiguration : IEntityTypeConfiguration<UserSetting>
     {
-        private string _tenantId;
-
-        public UserSettingConfiguration(string tenantId)
+        public UserSettingConfiguration()
         {
-            _tenantId = tenantId;
         }
 
         public void Configure(EntityTypeBuilder<UserSetting> builder)
@@ -31,8 +28,6 @@ namespace PanacheSoftware.Service.Foundation.Persistance.EntityConfiguration
                 .HasForeignKey(u => u.SettingHeaderId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
-
-            builder.HasQueryFilter(u => u.TenantId == Guid.Parse(_tenantId));
         }
     }
 }

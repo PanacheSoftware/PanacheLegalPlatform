@@ -3,6 +3,7 @@ using PanacheSoftware.Core.Domain.Task;
 using PanacheSoftware.Core.Domain.Join;
 using PanacheSoftware.Service.Task.Persistance.EntityConfiguration;
 using PanacheSoftware.Http;
+using System;
 
 namespace PanacheSoftware.Service.Task.Persistance.Context
 {
@@ -21,14 +22,17 @@ namespace PanacheSoftware.Service.Task.Persistance.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            var tenantId = _userProvider.GetTenantId();
-
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.ApplyConfiguration(new TaskGroupHeaderConfiguration(tenantId));
-            modelBuilder.ApplyConfiguration(new TaskGroupDetailConfiguration(tenantId));
-            modelBuilder.ApplyConfiguration(new TaskHeaderConfiguration(tenantId));
-            modelBuilder.ApplyConfiguration(new TaskDetailConfiguration(tenantId));
+            modelBuilder.ApplyConfiguration(new TaskGroupHeaderConfiguration());
+            modelBuilder.ApplyConfiguration(new TaskGroupDetailConfiguration());
+            modelBuilder.ApplyConfiguration(new TaskHeaderConfiguration());
+            modelBuilder.ApplyConfiguration(new TaskDetailConfiguration());
+
+            modelBuilder.Entity<TaskGroupHeader>().HasQueryFilter(e => EF.Property<Guid>(e, "TenantId") == Guid.Parse(_userProvider.GetTenantId()));
+            modelBuilder.Entity<TaskGroupDetail>().HasQueryFilter(e => EF.Property<Guid>(e, "TenantId") == Guid.Parse(_userProvider.GetTenantId()));
+            modelBuilder.Entity<TaskHeader>().HasQueryFilter(e => EF.Property<Guid>(e, "TenantId") == Guid.Parse(_userProvider.GetTenantId()));
+            modelBuilder.Entity<TaskDetail>().HasQueryFilter(e => EF.Property<Guid>(e, "TenantId") == Guid.Parse(_userProvider.GetTenantId()));
         }
     }
 }
