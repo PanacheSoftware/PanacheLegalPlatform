@@ -22,6 +22,7 @@ namespace PanacheSoftware.Service.Foundation.Persistance.Context
 
         public virtual DbSet<SettingHeader> SettingHeaders { get; set; }
         public virtual DbSet<UserSetting> UserSettings { get; set; }
+        public virtual DbSet<TenantSetting> TenantSettings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -32,12 +33,14 @@ namespace PanacheSoftware.Service.Foundation.Persistance.Context
             modelBuilder.ApplyConfiguration(new LanguageItemConfiguration());
             modelBuilder.ApplyConfiguration(new SettingHeaderConfiguration());
             modelBuilder.ApplyConfiguration(new UserSettingConfiguration());
+            modelBuilder.ApplyConfiguration(new TenantSettingConfiguration());
 
             modelBuilder.Entity<LanguageHeader>().HasQueryFilter(e => EF.Property<Guid>(e, "TenantId") == Guid.Parse(_userProvider.GetTenantId()) || EF.Property<Guid>(e, "TenantId") == Guid.Empty);
             modelBuilder.Entity<LanguageCode>().HasQueryFilter(e => EF.Property<Guid>(e, "TenantId") == Guid.Parse(_userProvider.GetTenantId()) || EF.Property<Guid>(e, "TenantId") == Guid.Empty);
             modelBuilder.Entity<LanguageItem>().HasQueryFilter(e => EF.Property<Guid>(e, "TenantId") == Guid.Parse(_userProvider.GetTenantId()));
             modelBuilder.Entity<SettingHeader>().HasQueryFilter(e => EF.Property<Guid>(e, "TenantId") == Guid.Parse(_userProvider.GetTenantId()) || EF.Property<Guid>(e, "TenantId") == Guid.Empty);
             modelBuilder.Entity<UserSetting>().HasQueryFilter(e => EF.Property<Guid>(e, "TenantId") == Guid.Parse(_userProvider.GetTenantId()));
+            modelBuilder.Entity<TenantSetting>().HasQueryFilter(e => EF.Property<Guid>(e, "TenantId") == Guid.Parse(_userProvider.GetTenantId()));
         }
     }
 }

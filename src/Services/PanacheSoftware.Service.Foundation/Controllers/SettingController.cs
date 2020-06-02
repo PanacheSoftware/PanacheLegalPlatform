@@ -34,15 +34,22 @@ namespace PanacheSoftware.Service.Foundation.Controllers
         {
             try
             {
-                SettingList settingList = new SettingList();
+                TenantSettingList tenantSettingList = new TenantSettingList();
 
-                foreach (var currentSetting in _unitOfWork.SettingHeaders.GetSettingHeaders(includeUser: false))
+                foreach (var currentTenantSetting in _unitOfWork.TenantSettings.GetTenantSettings())
                 {
-                    settingList.SettingHeaders.Add(_mapper.Map<SettingHead>(currentSetting));
+                    tenantSettingList.TenantSettings.Add(_mapper.Map<TenSetting>(currentTenantSetting));
                 }
 
-                if (settingList.SettingHeaders.Count > 0)
-                    return Ok(settingList);
+                //SettingList settingList = new SettingList();
+
+                //foreach (var currentSetting in _unitOfWork.SettingHeaders.GetSettingHeaders(includeUser: false))
+                //{
+                //    settingList.SettingHeaders.Add(_mapper.Map<SettingHead>(currentSetting));
+                //}
+
+                if (tenantSettingList.TenantSettings.Count > 0)
+                    return Ok(tenantSettingList);
             }
             catch (Exception e)
             {
@@ -61,27 +68,30 @@ namespace PanacheSoftware.Service.Foundation.Controllers
         {
             try
             {
-                SettingHeader settingHeader;
+                TenantSetting tenantSetting;
+                //SettingHeader settingHeader;
 
                 if (Guid.TryParse(id, out Guid foundId))
                 {
-                    settingHeader = _unitOfWork.SettingHeaders.GetSettingHeader(settingHeaderId: foundId, includeUser: false);
+                    tenantSetting = _unitOfWork.TenantSettings.GetTenantSetting(foundId);
+                    //settingHeader = _unitOfWork.SettingHeaders.GetSettingHeader(settingHeaderId: foundId, includeUser: false);
                 }
                 else
                 {
                     if (!string.IsNullOrWhiteSpace(id))
                     {
-                        settingHeader = _unitOfWork.SettingHeaders.GetSettingHeader(settingHeaderName: id, includeUser: false);
+                        tenantSetting = _unitOfWork.TenantSettings.GetTenantSetting(id);
+                        //settingHeader = _unitOfWork.SettingHeaders.GetSettingHeader(settingHeaderName: id, includeUser: false);
                     }
                     else
                     {
-                        settingHeader = null;
+                        tenantSetting = null;
                     }
                 }
 
-                if (settingHeader != null)
+                if (tenantSetting != null)
                 {
-                    return Ok(_mapper.Map<SettingHead>(settingHeader));
+                    return Ok(_mapper.Map<TenSetting>(tenantSetting));
                 }
             }
             catch (Exception e)
@@ -93,25 +103,26 @@ namespace PanacheSoftware.Service.Foundation.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody]SettingHead settingHead)
+        public IActionResult Post([FromBody] TenSetting tenSetting)
         {
             try
             {
-                if (settingHead.Id == Guid.Empty)
+                if (tenSetting.Id == Guid.Empty)
                 {
-                    var foundExisting = _unitOfWork.SettingHeaders.GetSettingHeader(settingHead.Id, includeUser: false);
+                    var foundExisting = _unitOfWork.TenantSettings.GetTenantSetting(tenSetting.Id);
 
                     if (foundExisting == null)
                     {
                         //var userId = User.FindFirstValue("sub");
 
-                        var settingHeader = _mapper.Map<SettingHeader>(settingHead);
+                        var tenantSetting = _mapper.Map<TenantSetting>(tenSetting);
+                        tenantSetting.Status = StatusTypes.Open;
 
-                        _unitOfWork.SettingHeaders.Add(settingHeader);
+                        _unitOfWork.TenantSettings.Add(tenantSetting);
 
                         _unitOfWork.Complete();
 
-                        return Created(new Uri($"{Request.Path}/{settingHeader.Id}", UriKind.Relative), _mapper.Map<SettingHead>(settingHeader));
+                        return Created(new Uri($"{Request.Path}/{tenantSetting.Id}", UriKind.Relative), _mapper.Map<TenSetting>(tenantSetting));
                     }
                 }
             }
@@ -128,7 +139,7 @@ namespace PanacheSoftware.Service.Foundation.Controllers
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
         [ProducesResponseType(401)]
-        public IActionResult Patch(string id, [FromBody]JsonPatchDocument<SettingHead> settingHeadPatch)
+        public IActionResult Patch(string id, [FromBody]JsonPatchDocument<TenSetting> tenantSettingPatch)
         {
             try
             {
@@ -136,17 +147,17 @@ namespace PanacheSoftware.Service.Foundation.Controllers
                 {
                     //var userId = User.FindFirstValue("sub");
 
-                    SettingHeader settingHeader = _unitOfWork.SettingHeaders.Get(parsedId);
+                    TenantSetting tenantSetting = _unitOfWork.TenantSettings.Get(parsedId);
 
-                    SettingHead settingHead = _mapper.Map<SettingHead>(settingHeader);
+                    TenSetting tenSetting = _mapper.Map<TenSetting>(tenantSetting);
 
-                    settingHeadPatch.ApplyTo(settingHead);
+                    tenantSettingPatch.ApplyTo(tenSetting);
 
-                    _mapper.Map(settingHead, settingHeader);
+                    _mapper.Map(tenSetting, tenantSetting);
 
                     _unitOfWork.Complete();
 
-                    return CreatedAtRoute("Get", new { id = _mapper.Map<SettingHead>(settingHeader).Id }, _mapper.Map<SettingHead>(settingHeader));
+                    return CreatedAtRoute("Get", new { id = _mapper.Map<TenSetting>(tenantSetting).Id }, _mapper.Map<TenSetting>(tenantSetting));
                 }
             }
             catch (Exception e)

@@ -12,5 +12,6 @@ namespace PanacheSoftware.Service.Foundation.Core
 
         ISettingHeaderRepository SettingHeaders { get; }
         IUserSettingRepository UserSettings { get; }
+        ITenantSettingRepository TenantSettings { get; }
     }
 }

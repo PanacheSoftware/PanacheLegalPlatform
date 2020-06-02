@@ -70,7 +70,7 @@ namespace PanacheSoftware.UI.Client
 
             if (!string.IsNullOrWhiteSpace(Id))
             {
-                var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FOUNDATION, $"Language/Code/{Id}");
+                var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"Language/Code/{Id}");
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
@@ -116,7 +116,7 @@ namespace PanacheSoftware.UI.Client
             {
                 if (langCode.Id != Guid.Empty)
                 {
-                    var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.FOUNDATION, $"Language/Code/{langCode.Id}");
+                    var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.GATEWAY, $"Language/Code/{langCode.Id}");
 
                     if (response.StatusCode == System.Net.HttpStatusCode.OK)
                     {
@@ -124,7 +124,7 @@ namespace PanacheSoftware.UI.Client
 
                         if (foundLangCode != null)
                         {
-                            if (!await _modelHelper.ProcessPatch(foundLangCode, langCode, foundLangCode.Id, apiAccessToken, APITypes.FOUNDATION, "Language/Code"))
+                            if (!await _modelHelper.ProcessPatch(foundLangCode, langCode, foundLangCode.Id, apiAccessToken, APITypes.GATEWAY, "Language/Code"))
                             {
                                 return false;
                             }
@@ -137,7 +137,7 @@ namespace PanacheSoftware.UI.Client
 
                     try
                     {
-                        var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.FOUNDATION, $"Language/Code", contentPost);
+                        var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.GATEWAY, $"Language/Code", contentPost);
 
                         if (response.StatusCode != System.Net.HttpStatusCode.Created)
                         {

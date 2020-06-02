@@ -46,7 +46,7 @@ namespace PanacheSoftware.Http
 
             HttpContent contentPost = new StringContent(JsonConvert.SerializeObject(langQueryList), Encoding.UTF8, "application/json");
 
-            var response = await MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FOUNDATION, $"Language/LanguageQuery", contentPost);
+            var response = await MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"Language/LanguageQuery", contentPost);
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
@@ -58,7 +58,7 @@ namespace PanacheSoftware.Http
 
         public async Task<UsrSetting> GetUserLanguage(string accessToken)
         {
-            var response = await MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FOUNDATION, $"Setting/UserSetting/USER_LANGUAGE");
+            var response = await MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"Setting/UserSetting/USER_LANGUAGE");
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
@@ -70,7 +70,7 @@ namespace PanacheSoftware.Http
 
         public async Task<SettingHead> GetSystemSetting(string accessToken, string settingName)
         {
-            var response = await MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FOUNDATION, $"Setting/{settingName}");
+            var response = await MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"Setting/{settingName}");
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {

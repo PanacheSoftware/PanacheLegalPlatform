@@ -51,7 +51,7 @@ namespace PanacheSoftware.UI.Client.Pages.Client
                 return RedirectToPage("/Logout");
             }
 
-            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.CLIENT, $"Client");
+            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"Client");
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
@@ -62,12 +62,12 @@ namespace PanacheSoftware.UI.Client.Pages.Client
                 clientList = new ClientList();
             }
 
-            var response2 = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"Client");
+            //var response2 = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"Client");
 
-            if (response2.StatusCode == System.Net.HttpStatusCode.OK)
-            {
-                var clientList2 = response.ContentAsType<ClientList>();
-            }
+            //if (response2.StatusCode == System.Net.HttpStatusCode.OK)
+            //{
+            //    var clientList2 = response.ContentAsType<ClientList>();
+            //}
 
 
             SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken);

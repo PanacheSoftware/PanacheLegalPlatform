@@ -83,7 +83,7 @@ namespace PanacheSoftware.UI.Client.Pages.Client
 
             if (!string.IsNullOrWhiteSpace(Id))
             {
-                var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.CLIENT, $"Client/{Id}");
+                var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"Client/{Id}");
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
@@ -264,7 +264,7 @@ namespace PanacheSoftware.UI.Client.Pages.Client
             {
                 if (clientHead.Id != Guid.Empty)
                 {
-                    var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.CLIENT, $"Client/{clientHead.Id}");
+                    var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.GATEWAY, $"Client/{clientHead.Id}");
 
                     if (response.StatusCode == System.Net.HttpStatusCode.OK)
                     {
@@ -272,12 +272,12 @@ namespace PanacheSoftware.UI.Client.Pages.Client
 
                         if (foundClientHead != null)
                         {
-                            if(!await _modelHelper.ProcessPatch(foundClientHead, clientHead, foundClientHead.Id, apiAccessToken, APITypes.CLIENT, "Client"))
+                            if(!await _modelHelper.ProcessPatch(foundClientHead, clientHead, foundClientHead.Id, apiAccessToken, APITypes.GATEWAY, "Client"))
                             {
                                 return false;
                             }
 
-                            response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.CLIENT, $"Detail/{clientHead.ClientDetail.Id}");
+                            response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.GATEWAY, $"Client/Detail/{clientHead.ClientDetail.Id}");
 
                             if(response.StatusCode == System.Net.HttpStatusCode.OK)
                             {
@@ -285,7 +285,7 @@ namespace PanacheSoftware.UI.Client.Pages.Client
 
                                 if(foundClientDet != null)
                                 {
-                                    if (!await _modelHelper.ProcessPatch(foundClientDet, clientHead.ClientDetail, foundClientDet.Id, apiAccessToken, APITypes.CLIENT, "Detail"))
+                                    if (!await _modelHelper.ProcessPatch(foundClientDet, clientHead.ClientDetail, foundClientDet.Id, apiAccessToken, APITypes.GATEWAY, "Client/Detail"))
                                     {
                                         return false;
                                     }
@@ -308,7 +308,7 @@ namespace PanacheSoftware.UI.Client.Pages.Client
 
                     try
                     {
-                        var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.CLIENT, $"Client", contentPost);
+                        var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.GATEWAY, $"Client", contentPost);
 
                         if(response.StatusCode != System.Net.HttpStatusCode.Created)
                         {
@@ -332,7 +332,7 @@ namespace PanacheSoftware.UI.Client.Pages.Client
             { 
                 if (clientCon.Id != Guid.Empty)
                 {
-                    var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.CLIENT, $"Contact/{clientCon.Id}");
+                    var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.GATEWAY, $"Contact/{clientCon.Id}");
 
                     if (response.StatusCode == System.Net.HttpStatusCode.OK)
                     {
@@ -340,7 +340,7 @@ namespace PanacheSoftware.UI.Client.Pages.Client
 
                         if (foundClientCon != null)
                         {
-                            if(!await _modelHelper.ProcessPatch(foundClientCon, clientCon, foundClientCon.Id, apiAccessToken, APITypes.CLIENT, "Contact"))
+                            if(!await _modelHelper.ProcessPatch(foundClientCon, clientCon, foundClientCon.Id, apiAccessToken, APITypes.GATEWAY, "Contact"))
                             {
                                 return false;
                             }
@@ -361,7 +361,7 @@ namespace PanacheSoftware.UI.Client.Pages.Client
 
                     try
                     {
-                        var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.CLIENT, $"Contact", contentPost);
+                        var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.GATEWAY, $"Contact", contentPost);
 
                         if (response.StatusCode != System.Net.HttpStatusCode.Created)
                         {
@@ -385,7 +385,7 @@ namespace PanacheSoftware.UI.Client.Pages.Client
             {
                 if (clientAddr.Id != Guid.Empty)
                 {
-                    var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.CLIENT, $"Address/{clientAddr.Id}");
+                    var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.GATEWAY, $"Address/{clientAddr.Id}");
 
                     if (response.StatusCode == System.Net.HttpStatusCode.OK)
                     {
@@ -393,7 +393,7 @@ namespace PanacheSoftware.UI.Client.Pages.Client
 
                         if (foundClientAddr != null)
                         {
-                            if(!await _modelHelper.ProcessPatch(foundClientAddr, clientAddr, foundClientAddr.Id, apiAccessToken, APITypes.CLIENT, "Address"))
+                            if(!await _modelHelper.ProcessPatch(foundClientAddr, clientAddr, foundClientAddr.Id, apiAccessToken, APITypes.GATEWAY, "Address"))
                             {
                                 return false;
                             }
@@ -406,7 +406,7 @@ namespace PanacheSoftware.UI.Client.Pages.Client
 
                     try
                     {
-                        var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.CLIENT, $"Address", contentPost);
+                        var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.GATEWAY, $"Address", contentPost);
 
                         if (response.StatusCode != System.Net.HttpStatusCode.Created)
                         {

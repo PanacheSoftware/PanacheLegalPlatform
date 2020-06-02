@@ -18,7 +18,7 @@
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a asp-page="/Dashboard/Index">@Html.GetTitle(Model.langQueryList, 10121)</a></li>
                     <li class="breadcrumb-item"><a asp-page="/Setting/SystemSetting">@Html.GetTitle(Model.langQueryList, 10123)</a></li>
-                    <li class="breadcrumb-item active">@Model.settingHead.Name</li>
+                    <li class="breadcrumb-item active">@Model.tenSetting.Name</li>
                 </ol>
             </div>
         </div>
@@ -36,15 +36,8 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="textCode">@Html.GetTitle(Model.langQueryList, 10602)</label>
-                                    @if (Model.settingHead.Id != Guid.Empty)
-                                    {
-                                        <input asp-for="settingHead.Name" class="form-control" readonly />
-                                    }
-                                    else
-                                    {
-                                        <input asp-for="settingHead.Name" class="form-control" />
-                                    }
-                                    <span asp-validation-for="settingHead.Name" class="text-danger"></span>
+                                    <input asp-for="tenSetting.Name" class="form-control" readonly />
+                                    <span asp-validation-for="tenSetting.Name" class="text-danger"></span>
                                 </div>
                             </div>
                         </div>
@@ -52,24 +45,8 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="status">@Html.GetTitle(Model.langQueryList, 10219)</label>
-                                    <input asp-for="settingHead.Value" class="form-control" />
-                                    <span asp-validation-for="settingHead.Value" class="text-danger"></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label for="status">@Html.GetTitle(Model.langQueryList, 10220)</label>
-                                    @if (Model.settingHead.Id != Guid.Empty)
-                                    {
-                                        <input asp-for="settingHead.DefaultValue" class="form-control" readonly />
-                                    }
-                                    else
-                                    {
-                                        <input asp-for="settingHead.DefaultValue" class="form-control" />
-                                    }
-                                    <span asp-validation-for="settingHead.DefaultValue" class="text-danger"></span>
+                                    <input asp-for="tenSetting.Value" class="form-control" />
+                                    <span asp-validation-for="tenSetting.Value" class="text-danger"></span>
                                 </div>
                             </div>
                         </div>
@@ -77,17 +54,9 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="description">@Html.GetTitle(Model.langQueryList, 10200)</label>
-                                    <textarea asp-for="settingHead.Description" class="form-control" rows="5"></textarea>
-                                    <input asp-for="settingHead.Status" class="form-control" hidden>
-                                    <input asp-for="settingHead.Id" class="form-control" hidden />
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="status">@Html.GetTitle(Model.langQueryList, 10212)</label>
-                                    <select asp-for="settingHead.SettingType" asp-items="@Model.SettingTypeList" class="custom-select"></select>
+                                    <textarea asp-for="tenSetting.Description" class="form-control" rows="5" readonly></textarea>
+                                    <input asp-for="tenSetting.Id" class="form-control" hidden />
+                                    <input asp-for="tenSetting.SettingHeaderId" class="form-control" hidden />
                                 </div>
                             </div>
                         </div>
@@ -104,14 +73,7 @@
             <div class="col-md-12">
                 <div class="card border-light mb-6">
                     <div class="card-body">
-                        @if (Model.settingHead.Id == Guid.Empty)
-                        {
-                            <button type="submit" class="btn btn-primary">@Html.GetTitle(Model.langQueryList, 10603)</button>
-                        }
-                        else
-                        {
-                            <button type="submit" class="btn btn-primary">@Html.GetTitle(Model.langQueryList, 10604)</button>
-                        }
+                        <button type="submit" class="btn btn-primary">@Html.GetTitle(Model.langQueryList, 10604)</button>
                     </div>
                 </div>
             </div>
