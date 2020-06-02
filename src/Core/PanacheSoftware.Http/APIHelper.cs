@@ -116,18 +116,16 @@ namespace PanacheSoftware.Http
             {
                 case APITypes.IDENTITY:
                     return "https://localhost:44397";
-                case APITypes.CLIENT:
-                    return "https://localhost:44359";
-                case APITypes.TEAM:
-                    return "https://localhost:44357";
-                case APITypes.FOLDER:
-                    return "https://localhost:44337";
-                case APITypes.FOUNDATION:
-                    return "https://localhost:44316";
-                case APITypes.TASK:
-                    return "https://localhost:44377";
-                case APITypes.FILE:
-                    return "https://localhost:44324";
+                //case APITypes.CLIENT:
+                //    return "https://localhost:44359";
+                //case APITypes.TEAM:
+                //    return "https://localhost:44357";
+                //case APITypes.FOUNDATION:
+                //    return "https://localhost:44316";
+                //case APITypes.TASK:
+                //    return "https://localhost:44377";
+                //case APITypes.FILE:
+                //    return "https://localhost:44324";
                 case APITypes.GATEWAY:
                     return "https://localhost:44346";
                 default:

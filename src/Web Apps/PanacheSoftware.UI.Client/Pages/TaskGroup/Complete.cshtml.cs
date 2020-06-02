@@ -59,7 +59,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
                     {
                         if (parsedId != Guid.Empty)
                         {
-                            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.TASK, $"TaskGroup/{parsedId}");
+                            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"TaskGroup/{parsedId}");
 
                             if (response.StatusCode == System.Net.HttpStatusCode.OK)
                             {
@@ -75,7 +75,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
 
                                             if(childTask != null)
                                             {
-                                                response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.TASK, $"Task/Complete/{parsedTaskId}");
+                                                response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"Task/Complete/{parsedTaskId}");
 
                                                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                                                 {
@@ -87,7 +87,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
                                 }
                                 else
                                 {
-                                    response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.TASK, $"TaskGroup/Complete/{parsedId}");
+                                    response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"TaskGroup/Complete/{parsedId}");
 
                                     if (response.StatusCode == System.Net.HttpStatusCode.OK)
                                     {

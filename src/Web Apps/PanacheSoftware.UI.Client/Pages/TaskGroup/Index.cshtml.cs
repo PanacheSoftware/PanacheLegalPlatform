@@ -89,7 +89,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
 
             if (!string.IsNullOrWhiteSpace(Id))
             {
-                var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.TASK, $"TaskGroup/GetTaskGroupSummary/{Id}");
+                var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"TaskGroup/GetTaskGroupSummary/{Id}");
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
@@ -109,7 +109,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
             {
                 await GetFileLinks(accessToken);
 
-                var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.CLIENT, $"Client/GetClientSummary/{taskGroupSummary.ClientHeaderId}");
+                var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"Client/GetClientSummary/{taskGroupSummary.ClientHeaderId}");
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
@@ -191,7 +191,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
                     {
                         if (parsedId != Guid.Empty)
                         {
-                            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.TASK, $"TaskGroup/{parsedId}");
+                            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"TaskGroup/{parsedId}");
 
                             if (response.StatusCode == System.Net.HttpStatusCode.OK)
                             {
@@ -207,7 +207,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
 
                                             if (childTask != null)
                                             {
-                                                response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Post, APITypes.TASK, $"Task/Complete/{parsedTaskId}");
+                                                response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Post, APITypes.GATEWAY, $"Task/Complete/{parsedTaskId}");
 
                                                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                                                 {
@@ -223,7 +223,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
                                 }
                                 else
                                 {
-                                    response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Post, APITypes.TASK, $"TaskGroup/Complete/{parsedId}");
+                                    response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Post, APITypes.GATEWAY, $"TaskGroup/Complete/{parsedId}");
 
                                     if (response.StatusCode == System.Net.HttpStatusCode.OK)
                                     {
@@ -280,7 +280,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
 
         private async Task<FileList> GetLinksForTask(string accessToken, string linkType, Guid linkId)
         {
-            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FILE, $"FileLink/GetFilesForLink/{linkType}/{linkId}");
+            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"File/Link/GetFilesForLink/{linkType}/{linkId}");
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {

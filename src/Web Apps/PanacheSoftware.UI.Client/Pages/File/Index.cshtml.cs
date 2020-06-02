@@ -70,7 +70,7 @@ namespace PanacheSoftware.UI.Client.Pages.File
                 {
                     if(parsedId != Guid.Empty)
                     {
-                        var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FILE, $"File/{parsedId}");
+                        var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"File/{parsedId}");
 
                         if (response.StatusCode == System.Net.HttpStatusCode.OK)
                         {
@@ -190,7 +190,7 @@ namespace PanacheSoftware.UI.Client.Pages.File
             {
                 if (FileUploadModel.FileHeader.Id != Guid.Empty)
                 {
-                    var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.FILE, $"File/{FileUploadModel.FileHeader.Id}");
+                    var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.GATEWAY, $"File/{FileUploadModel.FileHeader.Id}");
 
                     if (response.StatusCode == HttpStatusCode.OK)
                     {
@@ -198,12 +198,12 @@ namespace PanacheSoftware.UI.Client.Pages.File
 
                         if (foundFileHeader != null)
                         {
-                            if (!await _modelHelper.ProcessPatch(foundFileHeader, FileUploadModel.FileHeader, foundFileHeader.Id, apiAccessToken, APITypes.FILE, "File"))
+                            if (!await _modelHelper.ProcessPatch(foundFileHeader, FileUploadModel.FileHeader, foundFileHeader.Id, apiAccessToken, APITypes.GATEWAY, "File"))
                             {
                                 return false;
                             }
 
-                            if (!await _modelHelper.ProcessPatch(foundFileHeader.FileDetail, FileUploadModel.FileHeader.FileDetail, foundFileHeader.FileDetail.Id, apiAccessToken, APITypes.FILE, "FileDetail"))
+                            if (!await _modelHelper.ProcessPatch(foundFileHeader.FileDetail, FileUploadModel.FileHeader.FileDetail, foundFileHeader.FileDetail.Id, apiAccessToken, APITypes.GATEWAY, "File/Detail"))
                             {
                                 return false;
                             }
@@ -216,7 +216,7 @@ namespace PanacheSoftware.UI.Client.Pages.File
 
                     try
                     {
-                        var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.FILE, $"File", contentPost);
+                        var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.GATEWAY, $"File", contentPost);
 
                         if (response.StatusCode != HttpStatusCode.Created)
                         {

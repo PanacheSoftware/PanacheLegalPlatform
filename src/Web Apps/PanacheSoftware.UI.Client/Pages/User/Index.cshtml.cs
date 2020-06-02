@@ -214,7 +214,7 @@ namespace PanacheSoftware.UI.Client.Pages.User
 
         private async Task<bool> CreateOrUpdateUserTeamJoins(string accessToken)
         {
-            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.TEAM, $"UserTeam/GetTeamsForUser/{userProfileModel.userModel.Id.ToString()}");
+            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"UserTeam/GetTeamsForUser/{userProfileModel.userModel.Id.ToString()}");
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK || response.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
@@ -239,7 +239,7 @@ namespace PanacheSoftware.UI.Client.Pages.User
 
                             try
                             {
-                                response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Post, APITypes.TEAM, $"UserTeam", contentPost);
+                                response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Post, APITypes.GATEWAY, $"UserTeam", contentPost);
 
                                 if (response.StatusCode != System.Net.HttpStatusCode.Created)
                                 {
@@ -261,7 +261,7 @@ namespace PanacheSoftware.UI.Client.Pages.User
 
         private async Task<bool> CreateTeamSelectList(string accessToken)
         {
-            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.TEAM, $"Team/");
+            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"Team/");
             Dictionary<string, string> TeamListDictionary = new Dictionary<string, string>();
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
@@ -281,7 +281,7 @@ namespace PanacheSoftware.UI.Client.Pages.User
 
         private async Task<bool> CreateUserTeamModelList(string accessToken)
         {
-            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.TEAM, $"UserTeam/GetTeamsForUser/{userProfileModel.userModel.Id}");
+            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"UserTeam/GetTeamsForUser/{userProfileModel.userModel.Id}");
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {

@@ -51,7 +51,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
                 return RedirectToPage("/Logout");
             }
 
-            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.TASK, $"TaskGroup/GetMainTaskGroups");
+            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"TaskGroup/GetMainTaskGroups");
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {

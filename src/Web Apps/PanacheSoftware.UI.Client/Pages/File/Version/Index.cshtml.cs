@@ -67,7 +67,7 @@ namespace PanacheSoftware.UI.Client.Pages.File.Version
                 {
                     if (parsedId != Guid.Empty)
                     {
-                        var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FILE, $"File/{parsedId}");
+                        var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"File/{parsedId}");
 
                         if (response.StatusCode == HttpStatusCode.OK)
                         {
@@ -191,7 +191,7 @@ namespace PanacheSoftware.UI.Client.Pages.File.Version
 
                     try
                     {
-                        var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.FILE, $"FileVersion", contentPost);
+                        var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.GATEWAY, $"File/Version", contentPost);
 
                         if (response.StatusCode != HttpStatusCode.Created)
                         {

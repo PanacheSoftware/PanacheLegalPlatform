@@ -93,7 +93,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
                 {
                     if (parsedId != Guid.Empty)
                     {
-                        var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.TASK, $"TaskGroup/{Id}");
+                        var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"TaskGroup/{Id}");
 
                         if (response.StatusCode == System.Net.HttpStatusCode.OK)
                         {
@@ -108,7 +108,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
                     {
                         if(!string.IsNullOrWhiteSpace(ParentId))
                         {
-                            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.TASK, $"TaskGroup/{ParentId}");
+                            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"TaskGroup/{ParentId}");
 
                             if (response.StatusCode == System.Net.HttpStatusCode.OK)
                             {
@@ -163,7 +163,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
 
         private async Task<bool> CreateTeamSelectList(string accessToken)
         {
-            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.TEAM, $"Team");
+            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"Team");
 
             Dictionary<string, string> TeamListDictionary = new Dictionary<string, string>();
             TeamListDictionary.Add(Guid.Empty.ToString(), "None");
@@ -193,7 +193,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
 
             if (!string.IsNullOrWhiteSpace(ParentId))
             {
-                var findTaskGroupResponse = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.TASK, $"TaskGroup/{ParentId}");
+                var findTaskGroupResponse = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"TaskGroup/{ParentId}");
 
                 if (findTaskGroupResponse.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                 {
@@ -208,7 +208,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
             }
             else
             {
-                var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.TASK, $"TaskGroup/GetValidParents/{Id}");
+                var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"TaskGroup/GetValidParents/{Id}");
 
                 TaskGroupListDictionary.Add("", "None");
 
@@ -260,7 +260,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
 
         private async Task<bool> CreateClientSelectList(string accessToken)
         {
-            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.CLIENT, $"Client");
+            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"Client");
 
             Dictionary<string, string> ClientListDictionary = new Dictionary<string, string>();
             ClientListDictionary.Add(Guid.Empty.ToString(), "None");
@@ -290,7 +290,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
             {
                 if (taskGroupHead.Id != Guid.Empty)
                 {
-                    var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.TASK, $"TaskGroup/{taskGroupHead.Id}");
+                    var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.GATEWAY, $"TaskGroup/{taskGroupHead.Id}");
 
                     if (response.StatusCode == System.Net.HttpStatusCode.OK)
                     {
@@ -298,12 +298,12 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
 
                         if (foundTaskGroupHead != null)
                         {
-                            if (!await _modelHelper.ProcessPatch(foundTaskGroupHead, taskGroupHead, foundTaskGroupHead.Id, apiAccessToken, APITypes.TASK, "TaskGroup"))
+                            if (!await _modelHelper.ProcessPatch(foundTaskGroupHead, taskGroupHead, foundTaskGroupHead.Id, apiAccessToken, APITypes.GATEWAY, "TaskGroup"))
                             {
                                 return false;
                             }
 
-                            response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.TASK, $"TaskGroupDetail/{taskGroupHead.TaskGroupDetail.Id}");
+                            response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.GATEWAY, $"TaskGroup/Detail/{taskGroupHead.TaskGroupDetail.Id}");
 
                             if (response.StatusCode == System.Net.HttpStatusCode.OK)
                             {
@@ -311,7 +311,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
 
                                 if (foundTaskGroupDet != null)
                                 {
-                                    if (!await _modelHelper.ProcessPatch(foundTaskGroupDet, taskGroupHead.TaskGroupDetail, foundTaskGroupDet.Id, apiAccessToken, APITypes.TASK, "TaskGroupDetail"))
+                                    if (!await _modelHelper.ProcessPatch(foundTaskGroupDet, taskGroupHead.TaskGroupDetail, foundTaskGroupDet.Id, apiAccessToken, APITypes.GATEWAY, "TaskGroup/Detail"))
                                     {
                                         return false;
                                     }
@@ -326,7 +326,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
 
                     try
                     {
-                        var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.TASK, $"TaskGroup", contentPost);
+                        var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.GATEWAY, $"TaskGroup", contentPost);
 
                         if (response.StatusCode != System.Net.HttpStatusCode.Created)
                         {

@@ -15,7 +15,7 @@ using PanacheSoftware.Service.File.Manager;
 namespace PanacheSoftware.Service.File.Controllers
 {
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("api/File/Link")]
     [ApiController]
     public class FileLinkController : ControllerBase
     {

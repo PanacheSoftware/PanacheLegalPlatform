@@ -14,7 +14,7 @@ using PanacheSoftware.Service.File.Core.Repositories;
 namespace PanacheSoftware.Service.File.Controllers
 {
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("api/File/Detail")]
     [ApiController]
     public class FileDetailController : ControllerBase
     {
