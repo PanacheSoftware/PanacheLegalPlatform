@@ -1,11 +1,14 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore.Internal;
 using PanacheSoftware.Core.Domain.API.Task;
+using PanacheSoftware.Core.Domain.API.Team;
 using PanacheSoftware.Core.Domain.Task;
+using PanacheSoftware.Http;
 using PanacheSoftware.Service.Task.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace PanacheSoftware.Service.Task.Manager
@@ -14,46 +17,50 @@ namespace PanacheSoftware.Service.Task.Manager
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IUserProvider _userProvider;
+        private readonly IAPIHelper _apiHelper;
 
-        public TaskManager(IUnitOfWork unitOfWork, IMapper mapper)
+        public TaskManager(IUnitOfWork unitOfWork, IMapper mapper, IUserProvider userProvider, IAPIHelper apiHelper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _userProvider = userProvider;
+            _apiHelper = apiHelper;
         }
 
-        public List<Guid> GetChildTaskGroupIds(Guid taskGroupHeaderId)
-        {
-            List<Guid> childTaskGroupHeaders = new List<Guid>();
+        //public List<Guid> GetChildTaskGroupIds(Guid taskGroupHeaderId)
+        //{
+        //    List<Guid> childTaskGroupHeaders = new List<Guid>();
 
-            var taskGroupTree = _unitOfWork.TaskGroupHeaders.GetTaskGroupTree(taskGroupHeaderId);
+        //    var taskGroupTree = _unitOfWork.TaskGroupHeaders.GetTaskGroupTree(taskGroupHeaderId);
 
-            if (taskGroupTree.Any())
-            {
-                var queue = new Queue<TaskGroupHeader>();
-                queue.Enqueue(taskGroupTree[0]);
+        //    if (taskGroupTree.Any())
+        //    {
+        //        var queue = new Queue<TaskGroupHeader>();
+        //        queue.Enqueue(taskGroupTree[0]);
 
-                while (queue.Count > 0)
-                {
-                    var node = queue.Dequeue();
+        //        while (queue.Count > 0)
+        //        {
+        //            var node = queue.Dequeue();
 
-                    foreach (var childTaskGroupHeader in node.ChildTaskGroups)
-                    {
-                        if (!childTaskGroupHeaders.Contains(childTaskGroupHeader.Id))
-                            childTaskGroupHeaders.Add(childTaskGroupHeader.Id);
+        //            foreach (var childTaskGroupHeader in node.ChildTaskGroups)
+        //            {
+        //                if (!childTaskGroupHeaders.Contains(childTaskGroupHeader.Id))
+        //                    childTaskGroupHeaders.Add(childTaskGroupHeader.Id);
 
-                        queue.Enqueue(childTaskGroupHeader);
-                    }
-                }
-            }
+        //                queue.Enqueue(childTaskGroupHeader);
+        //            }
+        //        }
+        //    }
 
-            return childTaskGroupHeaders;
-        }
+        //    return childTaskGroupHeaders;
+        //}
 
-        public TaskGroupList GetMainTaskGroups()
+        public async Task<TaskGroupList> GetMainTaskGroupsAsync(string accessToken)
         {
             TaskGroupList taskGroupList = new TaskGroupList();
 
-            foreach (var currentTaskGroupHeader in _unitOfWork.TaskGroupHeaders.GetMainTaskGroups(false))
+            foreach (var currentTaskGroupHeader in await _unitOfWork.TaskGroupHeaders.GetMainTaskGroupsAsync(false, accessToken))
             {
                 taskGroupList.TaskGroupHeaders.Add(_mapper.Map<TaskGroupHead>(currentTaskGroupHeader));
             }
@@ -61,11 +68,11 @@ namespace PanacheSoftware.Service.Task.Manager
             return taskGroupList;
         }
 
-        public TaskGroupSummaryList GetMainTaskGroupSummarys()
+        public async Task<TaskGroupSummaryList> GetMainTaskGroupSummarysAsync(string accessToken)
         {
             TaskGroupSummaryList taskGroupSummaryList = new TaskGroupSummaryList();
 
-            foreach (var currentTaskGroupHeader in _unitOfWork.TaskGroupHeaders.GetMainTaskGroups(true))
+            foreach (var currentTaskGroupHeader in await _unitOfWork.TaskGroupHeaders.GetMainTaskGroupsAsync(true, accessToken))
             {
                 var taskSummary = _mapper.Map<TaskGroupSummary>(currentTaskGroupHeader);
                 UpdatePercentages(taskSummary);
@@ -75,9 +82,9 @@ namespace PanacheSoftware.Service.Task.Manager
             return taskGroupSummaryList;
         }
 
-        public TaskGroupSummary GetTaskGroupSummary(Guid taskGroupHeaderId)
+        public async Task<TaskGroupSummary> GetTaskGroupSummaryAsync(Guid taskGroupHeaderId, string accessToken)
         {
-            var taskGroupHeader = _unitOfWork.TaskGroupHeaders.GetTaskGroupHeaderWithRelations(taskGroupHeaderId, true);
+            var taskGroupHeader = await _unitOfWork.TaskGroupHeaders.GetTaskGroupHeaderWithRelationsAsync(taskGroupHeaderId, true, accessToken);
 
             if (taskGroupHeader != null)
             {
@@ -129,48 +136,46 @@ namespace PanacheSoftware.Service.Task.Manager
                 taskSummary.PercentageComplete = 0.0;
         }
 
-        public TaskGroupList GetTaskGroupList(Guid taskGroupHeaderId = default, bool validParents = false)
+        public async Task<TaskGroupList> GetTaskGroupListAsync(string accessToken)
         {
+            var userTeams = await _apiHelper.GetTeamsForUserId(accessToken, _userProvider.GetUserId());
+
             TaskGroupList taskGroupList = new TaskGroupList();
 
-            if (taskGroupHeaderId == Guid.Empty)
+            foreach (var currentTaskGroupHeader in _unitOfWork.TaskGroupHeaders.GetAll(true))
             {
-                foreach (var currentTaskGroupHeader in _unitOfWork.TaskGroupHeaders.GetAll(true))
+                if (currentTaskGroupHeader.ParentTaskGroupId != null)
                 {
-                    taskGroupList.TaskGroupHeaders.Add(_mapper.Map<TaskGroupHead>(currentTaskGroupHeader));
-                }
-            }
-            else
-            {
-                var childFolders = new List<Guid>();
+                    var parentTaskGroup = _unitOfWork.TaskGroupHeaders.Get(currentTaskGroupHeader.ParentTaskGroupId ?? Guid.Empty);
 
-                //Check if we only want to return teams that would be applicable as a parent for the passed in TeamHeader Id (i.e. aren't already a child of the TeamHeader passed in)
-                if (validParents)
-                {
-                    childFolders = GetChildTaskGroupIds(taskGroupHeaderId);
-                    childFolders.Add(taskGroupHeaderId);
+                    if (parentTaskGroup != null)
+                    {
+                        if (userTeams.Contains(parentTaskGroup.TeamHeaderId))
+                        {
+                            taskGroupList.TaskGroupHeaders.Add(_mapper.Map<TaskGroupHead>(currentTaskGroupHeader));
+                        }
+                    }
                 }
-
-                foreach (var currentTaskGroupHeader in _unitOfWork.TaskGroupHeaders.GetAll(true))
+                else
                 {
-                    if (!childFolders.Contains(currentTaskGroupHeader.Id))
+                    if (userTeams.Contains(currentTaskGroupHeader.TeamHeaderId))
+                    {
                         taskGroupList.TaskGroupHeaders.Add(_mapper.Map<TaskGroupHead>(currentTaskGroupHeader));
+                    }
                 }
             }
 
             return taskGroupList;
         }
 
-
-
-        public bool SetNewTaskGroupSequenceNo(TaskGroupHeader taskGroupHeader)
+        public async Task<bool> SetNewTaskGroupSequenceNoAsync(TaskGroupHeader taskGroupHeader, string accessToken)
         {
             taskGroupHeader.SequenceNumber = 0;
 
             Guid parentTaskGroupId = taskGroupHeader.ParentTaskGroupId ?? Guid.Empty;
             if (parentTaskGroupId != Guid.Empty)
             {
-                TaskGroupHeader parentTaskGroupHeader = _unitOfWork.TaskGroupHeaders.GetTaskGroupHeaderWithRelations(parentTaskGroupId, true);
+                TaskGroupHeader parentTaskGroupHeader = await _unitOfWork.TaskGroupHeaders.GetTaskGroupHeaderWithRelationsAsync(parentTaskGroupId, true, accessToken);
 
                 if (parentTaskGroupHeader != null)
                 {
@@ -186,14 +191,14 @@ namespace PanacheSoftware.Service.Task.Manager
             return true;
         }
 
-        public bool SetNewTaskSequenceNo(TaskHeader taskHeader)
+        public async Task<bool> SetNewTaskSequenceNoAsync(TaskHeader taskHeader, string accessToken)
         {
             taskHeader.SequenceNumber = 0;
 
             Guid parentTaskGroupHeaderId = taskHeader.TaskGroupHeaderId;
             if (parentTaskGroupHeaderId != Guid.Empty)
             {
-                TaskGroupHeader parentTaskGroupHeader = _unitOfWork.TaskGroupHeaders.GetTaskGroupHeaderWithRelations(parentTaskGroupHeaderId, true);
+                TaskGroupHeader parentTaskGroupHeader = await _unitOfWork.TaskGroupHeaders.GetTaskGroupHeaderWithRelationsAsync(parentTaskGroupHeaderId, true, accessToken);
 
                 if (parentTaskGroupHeader != null)
                 {
@@ -209,12 +214,17 @@ namespace PanacheSoftware.Service.Task.Manager
             return true;
         }
 
-        public bool TaskGroupParentOkay(TaskGroupHeader taskGroupHeader)
+        public async Task<bool> TaskGroupParentOkayAsync(TaskGroupHeader taskGroupHeader, string accessToken)
         {
             Guid parentTaskGroupId = taskGroupHeader.ParentTaskGroupId ?? Guid.Empty;
             if (parentTaskGroupId != Guid.Empty)
             {
                 TaskGroupHeader parentTaskGroupHeader = _unitOfWork.TaskGroupHeaders.Get(parentTaskGroupId);
+
+                var userTeams = await _apiHelper.GetTeamsForUserId(accessToken, _userProvider.GetUserId());
+
+                if (!userTeams.Contains(parentTaskGroupHeader.TeamHeaderId))
+                    parentTaskGroupHeader = null;
 
                 if (parentTaskGroupHeader == null)
                 {
@@ -237,9 +247,19 @@ namespace PanacheSoftware.Service.Task.Manager
             return true;
         }
 
-        public bool CanCompleteTaskGroup(Guid taskGroupHeaderId)
+        public async Task<bool> TaskGroupTeamOkayAsync(TaskGroupHeader taskGroupHeader, string accessToken)
         {
-            var taskGroupHeader = _unitOfWork.TaskGroupHeaders.GetTaskGroupHeaderWithRelations(taskGroupHeaderId, true);
+            var userTeams = await _apiHelper.GetTeamsForUserId(accessToken, _userProvider.GetUserId());
+
+            if (userTeams.Contains(taskGroupHeader.TeamHeaderId))
+                return true;
+
+            return false;
+        }
+
+        public async Task<bool> CanCompleteTaskGroupAsync(Guid taskGroupHeaderId, string accessToken)
+        {
+            var taskGroupHeader = await _unitOfWork.TaskGroupHeaders.GetTaskGroupHeaderWithRelationsAsync(taskGroupHeaderId, true, accessToken);
 
             if (taskGroupHeader != null)
             {
@@ -249,7 +269,7 @@ namespace PanacheSoftware.Service.Task.Manager
                     {
                         if (!childTaskGroupHeader.Completed)
                         {
-                            if (!CanCompleteTaskGroup(childTaskGroupHeader.Id))
+                            if (!await CanCompleteTaskGroupAsync(childTaskGroupHeader.Id, accessToken))
                                 return false;
                         }
                     }
@@ -266,6 +286,47 @@ namespace PanacheSoftware.Service.Task.Manager
 
             return true;
         }
+
+        public async Task<bool> CanAccessTaskGroupHeaderAsync(Guid taskGroupHeaderId, string accessToken)
+        {
+            var userTeams = await _apiHelper.GetTeamsForUserId(accessToken, _userProvider.GetUserId());
+
+            var taskGroupHeader = _unitOfWork.TaskGroupHeaders.Get(taskGroupHeaderId);
+
+            if(taskGroupHeader != null)
+            {
+                if(taskGroupHeader.ParentTaskGroupId != null)
+                {
+                    return await CanAccessTaskGroupHeaderAsync(taskGroupHeader.ParentTaskGroupId ?? Guid.Empty, accessToken);
+                }
+                else
+                {
+                    if (userTeams.Contains(taskGroupHeader.TeamHeaderId))
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
+        //private async Task<List<Guid>> GetTeamsForUser(string accessToken)
+        //{
+        //    var userTeams = new List<Guid>();
+
+        //    var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"UserTeam/GetTeamsForUser/{_userProvider.GetUserId()}");
+
+        //    if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        //    {
+        //        TeamList teamList = response.ContentAsType<TeamList>();
+
+        //        foreach (var teamHead in teamList.TeamHeaders)
+        //        {
+        //            userTeams.Add(teamHead.Id);
+        //        }
+        //    }
+
+        //    return userTeams;
+        //}
 
     }
 }

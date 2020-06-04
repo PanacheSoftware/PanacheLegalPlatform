@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using AutoMapper;
 using PanacheSoftware.Core.Domain.API.Join;
 using PanacheSoftware.Core.Domain.API.Team;
 using PanacheSoftware.Core.Domain.Join;
+using PanacheSoftware.Core.Domain.Team;
 using PanacheSoftware.Service.Team.Core;
 
 namespace PanacheSoftware.Service.Team.Manager
@@ -27,7 +29,29 @@ namespace PanacheSoftware.Service.Team.Manager
 
             foreach (var teamHeader in teamHeaders)
             {
-                teamList.TeamHeaders.Add(_mapper.Map<TeamHead>(teamHeader));
+                var teamTree = _unitOfWork.TeamHeaders.GetTeamTree(teamHeader.Id);
+
+                if (teamTree.Any())
+                {
+                    var queue = new Queue<TeamHeader>();
+                    queue.Enqueue(teamTree[0]);
+
+                    while (queue.Count > 0)
+                    {
+                        var node = queue.Dequeue();
+
+                        if(!teamList.TeamHeaders.Where(th => th.Id == node.Id).Any())
+                            teamList.TeamHeaders.Add(_mapper.Map<TeamHead>(node));
+
+                        foreach (var childTeam in node.ChildTeams)
+                        {
+                            if (!teamList.TeamHeaders.Where(th => th.Id == childTeam.Id).Any())
+                                teamList.TeamHeaders.Add(_mapper.Map<TeamHead>(childTeam));
+
+                            queue.Enqueue(childTeam);
+                        }
+                    }
+                }
             }
 
             return teamList;

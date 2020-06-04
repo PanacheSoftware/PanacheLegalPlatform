@@ -80,6 +80,7 @@ namespace PanacheSoftware.Service.Task
 
             services.AddTransient<IUserProvider, UserProvider>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<IAPIHelper, APIHelper>();
 
             services.AddHostedService<MigrationHostedService>();
 

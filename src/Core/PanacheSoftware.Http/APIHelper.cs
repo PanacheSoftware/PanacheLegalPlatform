@@ -1,9 +1,11 @@
 ﻿using Newtonsoft.Json;
 using PanacheSoftware.Core.Domain.API.Language;
 using PanacheSoftware.Core.Domain.API.Settings;
+using PanacheSoftware.Core.Domain.API.Team;
 using PanacheSoftware.Core.Domain.UI;
 using PanacheSoftware.Core.Types;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -78,6 +80,25 @@ namespace PanacheSoftware.Http
             }
 
             return null;
+        }
+
+        public async Task<List<Guid>> GetTeamsForUserId(string accessToken, string userId)
+        {
+            var userTeams = new List<Guid>();
+
+            var response = await MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"UserTeam/GetTeamsForUser/{userId}");
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                TeamList teamList = response.ContentAsType<TeamList>();
+
+                foreach (var teamHead in teamList.TeamHeaders)
+                {
+                    userTeams.Add(teamHead.Id);
+                }
+            }
+
+            return userTeams;
         }
 
         public async Task<SaveMessageModel> GenerateSaveMessageModel(string accessToken, string saveState = default(string), string errorString = default(string), int historyLength = -2)

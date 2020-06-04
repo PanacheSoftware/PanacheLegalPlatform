@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
@@ -36,15 +37,20 @@ namespace PanacheSoftware.Service.Task.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(404)]
-        public IActionResult Get(string id)
+        public async Task<IActionResult> Get(string id)
         {
             try
             {
                 if (Guid.TryParse(id, out Guid parsedId))
                 {
+                    var accessToken = await HttpContext.GetTokenAsync("access_token");
+
                     var taskHeader = _unitOfWork.TaskHeaders.GetTaskHeader(parsedId, true);
 
-                    return Ok(_mapper.Map<TaskHead>(taskHeader));
+                    if (await _taskManager.CanAccessTaskGroupHeaderAsync(taskHeader.TaskGroupHeaderId, accessToken))
+                    {
+                        return Ok(_mapper.Map<TaskHead>(taskHeader));
+                    }
                 }
             }
             catch (Exception e)
@@ -56,32 +62,37 @@ namespace PanacheSoftware.Service.Task.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody]TaskHead taskHead)
+        public async Task<IActionResult> Post([FromBody]TaskHead taskHead)
         {
             try
             {
+                var accessToken = await HttpContext.GetTokenAsync("access_token");
+
                 if (taskHead.Id == Guid.Empty)
                 {
                     TaskGroupHeader taskGroupHeader = _unitOfWork.TaskGroupHeaders.SingleOrDefault(c => c.Id == taskHead.TaskGroupHeaderId, true);
-
-                    if (taskGroupHeader.Id != Guid.Empty)
+                    if (taskGroupHeader != null)
                     {
-                        //var userId = User.FindFirstValue("sub");
+                        if (await _taskManager.CanAccessTaskGroupHeaderAsync(taskGroupHeader.Id, accessToken))
+                        {
+                            if (taskGroupHeader.Id != Guid.Empty)
+                            {
+                                var taskHeader = _mapper.Map<TaskHeader>(taskHead);
 
-                        var taskHeader = _mapper.Map<TaskHeader>(taskHead);
+                                //Make sure the start and completion dates don't fall outside of the group headers dates
+                                taskHeader.StartDate = (taskHeader.StartDate < taskGroupHeader.StartDate) ? taskGroupHeader.StartDate : taskHeader.StartDate;
+                                taskHeader.CompletionDate = (taskHeader.CompletionDate > taskGroupHeader.CompletionDate) ? taskGroupHeader.CompletionDate : taskHeader.CompletionDate;
 
-                        //Make sure the start and completion dates don't fall outside of the group headers dates
-                        taskHeader.StartDate = (taskHeader.StartDate < taskGroupHeader.StartDate) ? taskGroupHeader.StartDate : taskHeader.StartDate;
-                        taskHeader.CompletionDate = (taskHeader.CompletionDate > taskGroupHeader.CompletionDate) ? taskGroupHeader.CompletionDate : taskHeader.CompletionDate;
+                                if (!await _taskManager.SetNewTaskSequenceNoAsync(taskHeader, accessToken))
+                                    return BadRequest();
 
-                        if (!_taskManager.SetNewTaskSequenceNo(taskHeader))
-                            return BadRequest();
+                                _unitOfWork.TaskHeaders.Add(taskHeader);
 
-                        _unitOfWork.TaskHeaders.Add(taskHeader);
+                                _unitOfWork.Complete();
 
-                        _unitOfWork.Complete();
-
-                        return Created(new Uri($"{Request.Path}/{taskHeader.Id}", UriKind.Relative), _mapper.Map<TaskHead>(taskHeader));
+                                return Created(new Uri($"{Request.Path}/{taskHeader.Id}", UriKind.Relative), _mapper.Map<TaskHead>(taskHeader));
+                            }
+                        }
                     }
                 }
             }
@@ -98,10 +109,12 @@ namespace PanacheSoftware.Service.Task.Controllers
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
         [ProducesResponseType(401)]
-        public IActionResult Patch(string id, [FromBody]JsonPatchDocument<TaskHead> taskHeadPatch)
+        public async Task<IActionResult> Patch(string id, [FromBody]JsonPatchDocument<TaskHead> taskHeadPatch)
         {
             try
             {
+                var accessToken = await HttpContext.GetTokenAsync("access_token");
+
                 if (Guid.TryParse(id, out Guid parsedId))
                 {
                     var taskHeader = _unitOfWork.TaskHeaders.Get(parsedId);
@@ -112,21 +125,24 @@ namespace PanacheSoftware.Service.Task.Controllers
 
                     if (taskGroupHeader != null)
                     {
-                        taskHeadPatch.ApplyTo(taskHead);
+                        if (await _taskManager.CanAccessTaskGroupHeaderAsync(taskGroupHeader.Id, accessToken))
+                        {
+                            taskHeadPatch.ApplyTo(taskHead);
 
-                        //Make sure the Original dates do not get changed
-                        taskHead.OriginalCompletionDate = taskHeader.OriginalCompletionDate;
-                        taskHead.OriginalStartDate = taskHeader.OriginalStartDate;
+                            //Make sure the Original dates do not get changed
+                            taskHead.OriginalCompletionDate = taskHeader.OriginalCompletionDate;
+                            taskHead.OriginalStartDate = taskHeader.OriginalStartDate;
 
-                        //Make sure the start and completion dates don't fall outside of the group headers dates
-                        taskHead.StartDate = (taskHeader.StartDate < taskGroupHeader.StartDate) ? taskGroupHeader.StartDate : taskHeader.StartDate;
-                        taskHead.CompletionDate = (taskHeader.CompletionDate > taskGroupHeader.CompletionDate) ? taskGroupHeader.CompletionDate : taskHeader.CompletionDate;
+                            //Make sure the start and completion dates don't fall outside of the group headers dates
+                            taskHead.StartDate = (taskHeader.StartDate < taskGroupHeader.StartDate) ? taskGroupHeader.StartDate : taskHeader.StartDate;
+                            taskHead.CompletionDate = (taskHeader.CompletionDate > taskGroupHeader.CompletionDate) ? taskGroupHeader.CompletionDate : taskHeader.CompletionDate;
 
-                        _mapper.Map(taskHead, taskHeader);
+                            _mapper.Map(taskHead, taskHeader);
 
-                        _unitOfWork.Complete();
+                            _unitOfWork.Complete();
 
-                        return CreatedAtRoute("Get", new { id = _mapper.Map<TaskHead>(taskHeader).Id }, _mapper.Map<TaskHead>(taskHeader));
+                            return CreatedAtRoute("Get", new { id = _mapper.Map<TaskHead>(taskHeader).Id }, _mapper.Map<TaskHead>(taskHeader));
+                        }
                     }
                 }
             }
@@ -140,32 +156,37 @@ namespace PanacheSoftware.Service.Task.Controllers
 
         [Route("[action]/{id}")]
         [HttpPost]
-        public IActionResult Complete(string id)
+        public async Task<IActionResult> Complete(string id)
         {
             try
             {
+                var accessToken = await HttpContext.GetTokenAsync("access_token");
+
                 if (Guid.TryParse(id, out Guid parsedId))
                 {
                     var taskHeader = _unitOfWork.TaskHeaders.Get(parsedId);
 
                     if (taskHeader != null)
                     {
-                        if (!taskHeader.Completed)
+                        if (await _taskManager.CanAccessTaskGroupHeaderAsync(taskHeader.TaskGroupHeaderId, accessToken))
                         {
-                            taskHeader.Completed = true;
-                            
-                            if(DateTime.Today <= taskHeader.StartDate)
+                            if (!taskHeader.Completed)
                             {
-                                taskHeader.CompletedOnDate = taskHeader.CompletionDate;
-                            }
-                            else
-                            {
-                                taskHeader.CompletedOnDate = DateTime.Today;
-                            }
-                            
-                            _unitOfWork.Complete();
+                                taskHeader.Completed = true;
 
-                            return Ok(_mapper.Map<TaskHead>(taskHeader));
+                                if (DateTime.Today <= taskHeader.StartDate)
+                                {
+                                    taskHeader.CompletedOnDate = taskHeader.CompletionDate;
+                                }
+                                else
+                                {
+                                    taskHeader.CompletedOnDate = DateTime.Today;
+                                }
+
+                                _unitOfWork.Complete();
+
+                                return Ok(_mapper.Map<TaskHead>(taskHeader));
+                            }
                         }
                     }
                 }

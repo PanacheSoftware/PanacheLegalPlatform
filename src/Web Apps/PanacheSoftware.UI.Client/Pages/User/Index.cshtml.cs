@@ -214,7 +214,7 @@ namespace PanacheSoftware.UI.Client.Pages.User
 
         private async Task<bool> CreateOrUpdateUserTeamJoins(string accessToken)
         {
-            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"UserTeam/GetTeamsForUser/{userProfileModel.userModel.Id.ToString()}");
+            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"UserTeam/GetUserTeamsForUser/{userProfileModel.userModel.Id.ToString()}");
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK || response.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
@@ -281,7 +281,7 @@ namespace PanacheSoftware.UI.Client.Pages.User
 
         private async Task<bool> CreateUserTeamModelList(string accessToken)
         {
-            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"UserTeam/GetTeamsForUser/{userProfileModel.userModel.Id}");
+            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"UserTeam/GetUserTeamsForUser/{userProfileModel.userModel.Id}");
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {

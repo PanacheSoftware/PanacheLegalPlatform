@@ -4,6 +4,7 @@ using PanacheSoftware.Database.Persistance;
 using PanacheSoftware.Http;
 using PanacheSoftware.Service.Team.Core;
 using PanacheSoftware.Service.Team.Core.Repositories;
+using PanacheSoftware.Service.Team.Manager;
 using PanacheSoftware.Service.Team.Persistance.Context;
 using PanacheSoftware.Service.Team.Persistance.Repositories.Join;
 using PanacheSoftware.Service.Team.Persistance.Repositories.Team;

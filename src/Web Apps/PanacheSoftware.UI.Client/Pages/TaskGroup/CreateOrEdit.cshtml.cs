@@ -39,7 +39,6 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
         public SelectList TeamSelectList { get; set; }
         public SelectList UserSelectList { get; set; }
         public SelectList ClientSelectList { get; set; }
-        public SelectList TaskGroupSelectList { get; set; }
         public LangQueryList langQueryList { get; set; }
         public string SaveState { get; set; }
         public string ErrorString { get; set; }
@@ -64,7 +63,6 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
             SaveState = saveState;
 
             await CreateTeamSelectList(accessToken);
-            await CreateTaskGroupSelectList(accessToken);
             await CreateUserSelectList(accessToken);
             await CreateClientSelectList(accessToken);
 
@@ -163,7 +161,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
 
         private async Task<bool> CreateTeamSelectList(string accessToken)
         {
-            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"Team");
+            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"UserTeam/GetTeamsForUser/{User.FindFirst("sub").Value}");
 
             Dictionary<string, string> TeamListDictionary = new Dictionary<string, string>();
             TeamListDictionary.Add(Guid.Empty.ToString(), "None");
@@ -183,51 +181,6 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
             }
 
             TeamSelectList = new SelectList(TeamListDictionary, "Key", "Value");
-
-            return true;
-        }
-
-        private async Task<bool> CreateTaskGroupSelectList(string accessToken)
-        {
-            Dictionary<string, string> TaskGroupListDictionary = new Dictionary<string, string>();
-
-            if (!string.IsNullOrWhiteSpace(ParentId))
-            {
-                var findTaskGroupResponse = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"TaskGroup/{ParentId}");
-
-                if (findTaskGroupResponse.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-                {
-                    return false;
-                }
-                else if (findTaskGroupResponse.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    TaskGroupHead taskGroupHead = findTaskGroupResponse.ContentAsType<TaskGroupHead>();
-
-                    TaskGroupListDictionary.Add(taskGroupHead.Id.ToString(), taskGroupHead.ShortName);
-                }
-            }
-            else
-            {
-                var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"TaskGroup/GetValidParents/{Id}");
-
-                TaskGroupListDictionary.Add("", "None");
-
-                if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-                {
-                    return false;
-                }
-                else if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    TaskGroupList taskGroupList = response.ContentAsType<TaskGroupList>();
-
-                    foreach (var taskGroupHeader in taskGroupList.TaskGroupHeaders.OrderBy(h => h.ShortName))
-                    {
-                        TaskGroupListDictionary.Add(taskGroupHeader.Id.ToString(), taskGroupHeader.ShortName);
-                    }
-                }
-            }
-
-            TaskGroupSelectList = new SelectList(TaskGroupListDictionary, "Key", "Value");
 
             return true;
         }
