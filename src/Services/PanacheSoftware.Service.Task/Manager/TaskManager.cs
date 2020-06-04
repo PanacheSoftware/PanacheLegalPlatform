@@ -19,6 +19,7 @@ namespace PanacheSoftware.Service.Task.Manager
         private readonly IMapper _mapper;
         private readonly IUserProvider _userProvider;
         private readonly IAPIHelper _apiHelper;
+        private List<Guid> _userTeams;
 
         public TaskManager(IUnitOfWork unitOfWork, IMapper mapper, IUserProvider userProvider, IAPIHelper apiHelper)
         {
@@ -138,7 +139,7 @@ namespace PanacheSoftware.Service.Task.Manager
 
         public async Task<TaskGroupList> GetTaskGroupListAsync(string accessToken)
         {
-            var userTeams = await _apiHelper.GetTeamsForUserId(accessToken, _userProvider.GetUserId());
+            var userTeams = await GetUserTeamsAsync(accessToken);
 
             TaskGroupList taskGroupList = new TaskGroupList();
 
@@ -221,7 +222,7 @@ namespace PanacheSoftware.Service.Task.Manager
             {
                 TaskGroupHeader parentTaskGroupHeader = _unitOfWork.TaskGroupHeaders.Get(parentTaskGroupId);
 
-                var userTeams = await _apiHelper.GetTeamsForUserId(accessToken, _userProvider.GetUserId());
+                var userTeams = await GetUserTeamsAsync(accessToken);
 
                 if (!userTeams.Contains(parentTaskGroupHeader.TeamHeaderId))
                     parentTaskGroupHeader = null;
@@ -249,7 +250,7 @@ namespace PanacheSoftware.Service.Task.Manager
 
         public async Task<bool> TaskGroupTeamOkayAsync(TaskGroupHeader taskGroupHeader, string accessToken)
         {
-            var userTeams = await _apiHelper.GetTeamsForUserId(accessToken, _userProvider.GetUserId());
+            var userTeams = await GetUserTeamsAsync(accessToken);
 
             if (userTeams.Contains(taskGroupHeader.TeamHeaderId))
                 return true;
@@ -289,7 +290,7 @@ namespace PanacheSoftware.Service.Task.Manager
 
         public async Task<bool> CanAccessTaskGroupHeaderAsync(Guid taskGroupHeaderId, string accessToken)
         {
-            var userTeams = await _apiHelper.GetTeamsForUserId(accessToken, _userProvider.GetUserId());
+            var userTeams = await GetUserTeamsAsync(accessToken);
 
             var taskGroupHeader = _unitOfWork.TaskGroupHeaders.Get(taskGroupHeaderId);
 
@@ -307,6 +308,14 @@ namespace PanacheSoftware.Service.Task.Manager
             }
 
             return false;
+        }
+
+        private async Task<List<Guid>> GetUserTeamsAsync(string accessToken)
+        {
+            if(_userTeams == null)
+                _userTeams = await _apiHelper.GetTeamsForUserId(accessToken, _userProvider.GetUserId());
+
+            return _userTeams;
         }
 
         //private async Task<List<Guid>> GetTeamsForUser(string accessToken)

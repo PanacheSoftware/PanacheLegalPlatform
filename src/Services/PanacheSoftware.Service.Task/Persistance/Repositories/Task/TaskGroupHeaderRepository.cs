@@ -18,6 +18,7 @@ namespace PanacheSoftware.Service.Task.Persistance.Repositories.Task
     {
         private readonly IUserProvider _userProvider;
         private readonly IAPIHelper _apiHelper;
+        private List<Guid> _userTeams;
 
         public TaskGroupHeaderRepository(PanacheSoftwareServiceTaskContext context, IUserProvider userProvider, IAPIHelper apiHelper) : base(context)
         {
@@ -32,7 +33,7 @@ namespace PanacheSoftware.Service.Task.Persistance.Repositories.Task
 
         public async Task<List<TaskGroupHeader>> GetMainTaskGroupsAsync(bool includeChildren, string accessToken)
         {
-            var userTeams = await _apiHelper.GetTeamsForUserId(accessToken, _userProvider.GetUserId()); 
+            var userTeams = await GetUserTeamsAsync(accessToken);
 
             if (includeChildren)
                 return PanacheSoftwareServiceTaskContext.TaskGroupHeaders
@@ -60,7 +61,7 @@ namespace PanacheSoftware.Service.Task.Persistance.Repositories.Task
 
         public async Task<TaskGroupHeader> GetTaskGroupHeaderWithRelationsAsync(Guid taskGroupHeaderId, bool readOnly, string accessToken)
         {
-            var userTeams = await _apiHelper.GetTeamsForUserId(accessToken, _userProvider.GetUserId());
+            var userTeams = await GetUserTeamsAsync(accessToken);
 
             TaskGroupHeader taskGroupHeader; 
 
@@ -132,6 +133,14 @@ namespace PanacheSoftware.Service.Task.Persistance.Repositories.Task
                 foundGuid = foundTaskGroupHeader.Id;
 
             return foundGuid;
+        }
+
+        private async Task<List<Guid>> GetUserTeamsAsync(string accessToken)
+        {
+            if (_userTeams == null)
+                _userTeams = await _apiHelper.GetTeamsForUserId(accessToken, _userProvider.GetUserId());
+
+            return _userTeams;
         }
     }
 }
