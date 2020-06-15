@@ -82,7 +82,7 @@ namespace PanacheSoftware.Http
 
             HttpClient client;
 
-            if(this.requestUri.StartsWith("https"))
+            if (this.requestUri.StartsWith("https"))
             {
                 HttpClientHandler handler = new HttpClientHandler();
                 handler.ClientCertificates.Add(GetCertificateFromStore());

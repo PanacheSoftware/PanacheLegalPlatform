@@ -47,7 +47,7 @@ namespace PanacheSoftware.Service.Task
                 .AddIdentityServerAuthentication(options =>
                 {
                     // base-address of your identityserver
-                    options.Authority = "https://localhost:44397/";
+                    options.Authority = "https://localhost:44302/";
 
                     // name of the API resource
                     options.ApiName = PanacheSoftwareScopeNames.TaskService;
@@ -103,7 +103,7 @@ namespace PanacheSoftware.Service.Task
             }
 
             app.UseAuthentication();
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseMvc();
         }
     }

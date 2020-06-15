@@ -45,7 +45,7 @@ namespace PanacheSoftware.API.Gateway
             var authenticationProviderKey = "GatewayKey";
             Action<IdentityServerAuthenticationOptions> options = o =>
             {
-                o.Authority = "https://localhost:44397/";
+                o.Authority = "https://localhost:44302/";
                 o.ApiName = PanacheSoftwareScopeNames.APIGateway;
                 o.SupportedTokens = SupportedTokens.Both;
                 o.ApiSecret = "DDDCB193-213C-43FB-967A-5A911D2EFC04";
@@ -66,7 +66,7 @@ namespace PanacheSoftware.API.Gateway
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseRouting();
 

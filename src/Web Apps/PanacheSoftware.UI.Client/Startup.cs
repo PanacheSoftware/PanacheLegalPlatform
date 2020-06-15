@@ -64,7 +64,7 @@ namespace PanacheSoftware.UI.Client
                 .AddOpenIdConnect("oidc", options =>
                 {
                     options.SignInScheme = "Cookies";
-                    options.Authority = "https://localhost:44397/";
+                    options.Authority = "https://localhost:44302/";
                     options.RequireHttpsMetadata = false;
 
                     options.ClientId = PanacheSoftwareScopeNames.ClientUI;
@@ -107,6 +107,8 @@ namespace PanacheSoftware.UI.Client
             }
 
             app.UseAuthentication();
+
+            app.UseHttpsRedirection();
 
             app.UseStaticFiles();
             app.UseCookiePolicy();

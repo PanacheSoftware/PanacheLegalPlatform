@@ -136,7 +136,7 @@ namespace PanacheSoftware.Http
             switch (apiType)
             {
                 case APITypes.IDENTITY:
-                    return "https://localhost:44397";
+                    return "http://localhost:55002";
                 //case APITypes.CLIENT:
                 //    return "https://localhost:44359";
                 //case APITypes.TEAM:
@@ -148,7 +148,7 @@ namespace PanacheSoftware.Http
                 //case APITypes.FILE:
                 //    return "https://localhost:44324";
                 case APITypes.GATEWAY:
-                    return "https://localhost:44346";
+                    return "http://localhost:55003";
                 default:
                     break;
             }

@@ -3,11 +3,11 @@
     //--------------------------------------------------Client
     {
       "DownstreamPathTemplate": "/api/Client/",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44359
+          "Port": 55005
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -20,11 +20,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Client/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44359
+          "Port": 55005
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -37,11 +37,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Client/GetClientSummary/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44359
+          "Port": 55005
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -55,11 +55,11 @@
     //--------------------------------------------------Detail
     {
       "DownstreamPathTemplate": "/api/Client/Detail/",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44359
+          "Port": 55005
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -72,11 +72,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Client/Detail/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44359
+          "Port": 55005
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -90,11 +90,11 @@
     //--------------------------------------------------Contact
     {
       "DownstreamPathTemplate": "/api/Contact/",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44359
+          "Port": 55005
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -107,11 +107,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Contact/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44359
+          "Port": 55005
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -125,11 +125,11 @@
     //--------------------------------------------------Address
     {
       "DownstreamPathTemplate": "/api/Address/",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44359
+          "Port": 55005
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -142,11 +142,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Address/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44359
+          "Port": 55005
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -160,11 +160,11 @@
     //--------------------------------------------------Setting
     {
       "DownstreamPathTemplate": "/api/Setting/",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44316
+          "Port": 55004
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -177,11 +177,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Setting/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44316
+          "Port": 55004
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -194,11 +194,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Setting/UserSetting",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44316
+          "Port": 55004
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -211,11 +211,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Setting/UserSetting/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44316
+          "Port": 55004
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -229,11 +229,11 @@
     //--------------------------------------------------Language
     {
       "DownstreamPathTemplate": "/api/Language/",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44316
+          "Port": 55004
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -246,11 +246,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Language/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44316
+          "Port": 55004
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -263,11 +263,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Language/Item",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44316
+          "Port": 55004
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -280,11 +280,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Language/Item/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44316
+          "Port": 55004
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -297,11 +297,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Language/Code",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44316
+          "Port": 55004
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -314,11 +314,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Language/Code/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44316
+          "Port": 55004
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -331,11 +331,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Language/LanguageQuery",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44316
+          "Port": 55004
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -349,11 +349,11 @@
     //--------------------------------------------------File
     {
       "DownstreamPathTemplate": "/api/File/",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44324
+          "Port": 55008
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -366,11 +366,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/File/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44324
+          "Port": 55008
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -384,11 +384,11 @@
     //--------------------------------------------------FileDetail
     {
       "DownstreamPathTemplate": "/api/File/Detail/",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44324
+          "Port": 55008
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -401,11 +401,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/File/Detail/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44324
+          "Port": 55008
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -419,11 +419,11 @@
     //--------------------------------------------------FileLink
     {
       "DownstreamPathTemplate": "/api/File/Link/",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44324
+          "Port": 55008
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -436,11 +436,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/File/Link/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44324
+          "Port": 55008
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -453,11 +453,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/File/Link/GetFilesForLink/{linkType}/{linkId}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44324
+          "Port": 55008
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -471,11 +471,11 @@
     //--------------------------------------------------FileVersion
     {
       "DownstreamPathTemplate": "/api/File/Version/",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44324
+          "Port": 55008
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -488,11 +488,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/File/Version/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44324
+          "Port": 55008
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -506,11 +506,11 @@
     //--------------------------------------------------Team
     {
       "DownstreamPathTemplate": "/api/Team/",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44357
+          "Port": 55006
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -523,11 +523,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Team/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44357
+          "Port": 55006
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -540,11 +540,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Team/GetValidParents/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44357
+          "Port": 55006
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -557,11 +557,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Team/GetTeamStructure/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44357
+          "Port": 55006
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -575,11 +575,11 @@
     //--------------------------------------------------TeamDetail
     {
       "DownstreamPathTemplate": "/api/Team/Detail/",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44357
+          "Port": 55006
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -592,11 +592,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Team/Detail/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44357
+          "Port": 55006
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -610,11 +610,11 @@
     //--------------------------------------------------UserTeam
     {
       "DownstreamPathTemplate": "/api/UserTeam/",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44357
+          "Port": 55006
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -627,11 +627,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/UserTeam/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44357
+          "Port": 55006
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -644,11 +644,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/UserTeam/GetTeamsForUser/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44357
+          "Port": 55006
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -661,11 +661,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/UserTeam/GetUserTeamsForUser/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44357
+          "Port": 55006
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -678,11 +678,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/UserTeam/GetUserTeamsForTeam/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44357
+          "Port": 55006
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -696,11 +696,11 @@
     //--------------------------------------------------Task
     {
       "DownstreamPathTemplate": "/api/Task/",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44377
+          "Port": 55007
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -713,11 +713,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Task/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44377
+          "Port": 55007
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -730,11 +730,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Task/Complete/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44377
+          "Port": 55007
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -747,11 +747,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Task/Detail",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44377
+          "Port": 55007
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -764,11 +764,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/Task/Detail/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44377
+          "Port": 55007
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -782,11 +782,11 @@
     //--------------------------------------------------TaskGroup
     {
       "DownstreamPathTemplate": "/api/TaskGroup/",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44377
+          "Port": 55007
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -799,11 +799,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/TaskGroup/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44377
+          "Port": 55007
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -816,11 +816,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/TaskGroup/Complete/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44377
+          "Port": 55007
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -833,11 +833,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/TaskGroup/GetMainTaskGroups",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44377
+          "Port": 55007
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -850,11 +850,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/TaskGroup/GetTaskGroupSummary",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44377
+          "Port": 55007
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -867,11 +867,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/TaskGroup/GetTaskGroupSummary/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44377
+          "Port": 55007
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -884,11 +884,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/TaskGroup/GetValidParents/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44377
+          "Port": 55007
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -901,11 +901,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/TaskGroup/Detail",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44377
+          "Port": 55007
         }
       ],
       "ReRouteIsCaseSensitive": true,
@@ -918,11 +918,11 @@
     },
     {
       "DownstreamPathTemplate": "/api/TaskGroup/Detail/{id}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 44377
+          "Port": 55007
         }
       ],
       "ReRouteIsCaseSensitive": true,

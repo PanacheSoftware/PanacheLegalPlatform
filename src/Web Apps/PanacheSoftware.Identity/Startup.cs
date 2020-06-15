@@ -124,7 +124,7 @@ namespace PanacheSoftware.Identity
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseStaticFiles();
             //app.UseCookiePolicy();
             app.UseIdentityServer();

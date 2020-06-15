@@ -46,8 +46,8 @@ namespace PanacheSoftware.UI.Core.ViewComponents
             //clientID.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", idToken);
             //var content3 = await clientID.GetStringAsync("https://localhost:44397/connect/userinfo");
 
-            var discoveryClient = new HttpClient();// new DiscoveryClient("https://localhost:44397");
-            var doc = await discoveryClient.GetDiscoveryDocumentAsync("https://localhost:44397");
+            var discoveryClient = new HttpClient();// new DiscoveryClient("https://localhost:44302");
+            var doc = await discoveryClient.GetDiscoveryDocumentAsync("https://localhost:44302");
 
             //var tokenEndpoint = doc.TokenEndpoint;
             //var keys = doc.KeySet.Keys;
