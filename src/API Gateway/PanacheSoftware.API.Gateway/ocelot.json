@@ -2,7 +2,7 @@
   "ReRoutes": [
     //--------------------------------------------------Client
     {
-      "DownstreamPathTemplate": "/api/Client/",
+      "DownstreamPathTemplate": "/Client/",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -19,7 +19,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/Client/{id}",
+      "DownstreamPathTemplate": "/Client/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -36,7 +36,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/Client/GetClientSummary/{id}",
+      "DownstreamPathTemplate": "/Client/GetClientSummary/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -54,7 +54,7 @@
     },
     //--------------------------------------------------Detail
     {
-      "DownstreamPathTemplate": "/api/Client/Detail/",
+      "DownstreamPathTemplate": "/Client/Detail/",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -71,7 +71,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/Client/Detail/{id}",
+      "DownstreamPathTemplate": "/Client/Detail/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -89,7 +89,7 @@
     },
     //--------------------------------------------------Contact
     {
-      "DownstreamPathTemplate": "/api/Contact/",
+      "DownstreamPathTemplate": "/Contact/",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -106,7 +106,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/Contact/{id}",
+      "DownstreamPathTemplate": "/Contact/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -124,7 +124,7 @@
     },
     //--------------------------------------------------Address
     {
-      "DownstreamPathTemplate": "/api/Address/",
+      "DownstreamPathTemplate": "/Address/",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -141,7 +141,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/Address/{id}",
+      "DownstreamPathTemplate": "/Address/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -159,7 +159,7 @@
     },
     //--------------------------------------------------Setting
     {
-      "DownstreamPathTemplate": "/api/Setting/",
+      "DownstreamPathTemplate": "/Setting/",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -176,7 +176,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/Setting/{id}",
+      "DownstreamPathTemplate": "/Setting/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -193,7 +193,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/Setting/UserSetting",
+      "DownstreamPathTemplate": "/Setting/UserSetting",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -210,7 +210,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/Setting/UserSetting/{id}",
+      "DownstreamPathTemplate": "/Setting/UserSetting/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -228,7 +228,7 @@
     },
     //--------------------------------------------------Language
     {
-      "DownstreamPathTemplate": "/api/Language/",
+      "DownstreamPathTemplate": "/Language/",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -245,7 +245,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/Language/{id}",
+      "DownstreamPathTemplate": "/Language/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -262,7 +262,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/Language/Item",
+      "DownstreamPathTemplate": "/Language/Item",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -279,7 +279,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/Language/Item/{id}",
+      "DownstreamPathTemplate": "/Language/Item/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -296,7 +296,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/Language/Code",
+      "DownstreamPathTemplate": "/Language/Code",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -313,7 +313,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/Language/Code/{id}",
+      "DownstreamPathTemplate": "/Language/Code/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -330,7 +330,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/Language/LanguageQuery",
+      "DownstreamPathTemplate": "/Language/LanguageQuery",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -348,7 +348,7 @@
     },
     //--------------------------------------------------File
     {
-      "DownstreamPathTemplate": "/api/File/",
+      "DownstreamPathTemplate": "/File/",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -365,7 +365,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/File/{id}",
+      "DownstreamPathTemplate": "/File/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -383,7 +383,7 @@
     },
     //--------------------------------------------------FileDetail
     {
-      "DownstreamPathTemplate": "/api/File/Detail/",
+      "DownstreamPathTemplate": "/File/Detail/",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -400,7 +400,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/File/Detail/{id}",
+      "DownstreamPathTemplate": "/File/Detail/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -418,7 +418,7 @@
     },
     //--------------------------------------------------FileLink
     {
-      "DownstreamPathTemplate": "/api/File/Link/",
+      "DownstreamPathTemplate": "/File/Link/",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -435,7 +435,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/File/Link/{id}",
+      "DownstreamPathTemplate": "/File/Link/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -452,7 +452,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/File/Link/GetFilesForLink/{linkType}/{linkId}",
+      "DownstreamPathTemplate": "/File/Link/GetFilesForLink/{linkType}/{linkId}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -470,7 +470,7 @@
     },
     //--------------------------------------------------FileVersion
     {
-      "DownstreamPathTemplate": "/api/File/Version/",
+      "DownstreamPathTemplate": "/File/Version/",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -487,7 +487,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/File/Version/{id}",
+      "DownstreamPathTemplate": "/File/Version/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -505,7 +505,7 @@
     },
     //--------------------------------------------------Team
     {
-      "DownstreamPathTemplate": "/api/Team/",
+      "DownstreamPathTemplate": "/Team/",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -522,7 +522,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/Team/{id}",
+      "DownstreamPathTemplate": "/Team/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -539,7 +539,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/Team/GetValidParents/{id}",
+      "DownstreamPathTemplate": "/Team/GetValidParents/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -556,7 +556,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/Team/GetTeamStructure/{id}",
+      "DownstreamPathTemplate": "/Team/GetTeamStructure/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -574,7 +574,7 @@
     },
     //--------------------------------------------------TeamDetail
     {
-      "DownstreamPathTemplate": "/api/Team/Detail/",
+      "DownstreamPathTemplate": "/Team/Detail/",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -591,7 +591,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/Team/Detail/{id}",
+      "DownstreamPathTemplate": "/Team/Detail/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -609,7 +609,7 @@
     },
     //--------------------------------------------------UserTeam
     {
-      "DownstreamPathTemplate": "/api/UserTeam/",
+      "DownstreamPathTemplate": "/UserTeam/",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -626,7 +626,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/UserTeam/{id}",
+      "DownstreamPathTemplate": "/UserTeam/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -643,7 +643,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/UserTeam/GetTeamsForUser/{id}",
+      "DownstreamPathTemplate": "/UserTeam/GetTeamsForUser/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -660,7 +660,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/UserTeam/GetUserTeamsForUser/{id}",
+      "DownstreamPathTemplate": "/UserTeam/GetUserTeamsForUser/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -677,7 +677,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/UserTeam/GetUserTeamsForTeam/{id}",
+      "DownstreamPathTemplate": "/UserTeam/GetUserTeamsForTeam/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -695,7 +695,7 @@
     },
     //--------------------------------------------------Task
     {
-      "DownstreamPathTemplate": "/api/Task/",
+      "DownstreamPathTemplate": "/Task/",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -712,7 +712,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/Task/{id}",
+      "DownstreamPathTemplate": "/Task/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -729,7 +729,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/Task/Complete/{id}",
+      "DownstreamPathTemplate": "/Task/Complete/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -746,7 +746,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/Task/Detail",
+      "DownstreamPathTemplate": "/Task/Detail",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -763,7 +763,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/Task/Detail/{id}",
+      "DownstreamPathTemplate": "/Task/Detail/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -781,7 +781,7 @@
     },
     //--------------------------------------------------TaskGroup
     {
-      "DownstreamPathTemplate": "/api/TaskGroup/",
+      "DownstreamPathTemplate": "/TaskGroup/",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -798,7 +798,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/TaskGroup/{id}",
+      "DownstreamPathTemplate": "/TaskGroup/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -815,7 +815,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/TaskGroup/Complete/{id}",
+      "DownstreamPathTemplate": "/TaskGroup/Complete/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -832,7 +832,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/TaskGroup/GetMainTaskGroups",
+      "DownstreamPathTemplate": "/TaskGroup/GetMainTaskGroups",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -849,7 +849,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/TaskGroup/GetTaskGroupSummary",
+      "DownstreamPathTemplate": "/TaskGroup/GetTaskGroupSummary",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -866,7 +866,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/TaskGroup/GetTaskGroupSummary/{id}",
+      "DownstreamPathTemplate": "/TaskGroup/GetTaskGroupSummary/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -883,7 +883,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/TaskGroup/GetValidParents/{id}",
+      "DownstreamPathTemplate": "/TaskGroup/GetValidParents/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -900,7 +900,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/TaskGroup/Detail",
+      "DownstreamPathTemplate": "/TaskGroup/Detail",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -917,7 +917,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/TaskGroup/Detail/{id}",
+      "DownstreamPathTemplate": "/TaskGroup/Detail/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {

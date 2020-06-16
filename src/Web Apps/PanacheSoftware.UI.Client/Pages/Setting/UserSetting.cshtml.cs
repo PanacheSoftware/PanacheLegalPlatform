@@ -111,7 +111,7 @@ namespace PanacheSoftware.UI.Client.Pages.Setting
 
                     if (foundUserLanguageSetting != null)
                     {
-                        if (!await _modelHelper.ProcessPatch(foundUserLanguageSetting, userLanguageSetting, foundUserLanguageSetting.Id, apiAccessToken, APITypes.GATEWAY, "Setting/UserSetting"))
+                        if (!await _modelHelper.ProcessPatch(foundUserLanguageSetting, userLanguageSetting, foundUserLanguageSetting.Id, apiAccessToken, APITypes.FOUNDATION, "Setting/UserSetting"))
                         {
                             return false;
                         }
@@ -123,7 +123,7 @@ namespace PanacheSoftware.UI.Client.Pages.Setting
 
                     try
                     {
-                        var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.GATEWAY, $"Setting/UserSetting", contentPost);
+                        var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.FOUNDATION, $"Setting/UserSetting", contentPost);
 
                         if (response.StatusCode != System.Net.HttpStatusCode.Created)
                         {
@@ -145,7 +145,7 @@ namespace PanacheSoftware.UI.Client.Pages.Setting
 
         private async Task<UsrSetting> GetUserSetting(string userSettingName, string accessToken)
         {
-            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"Setting/UserSetting/{userSettingName}");
+            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FOUNDATION, $"Setting/UserSetting/{userSettingName}");
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
@@ -157,7 +157,7 @@ namespace PanacheSoftware.UI.Client.Pages.Setting
 
         private async Task<bool> CreateLanguageCodeSelectList(string accessToken)
         {
-            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"Language/Code");
+            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FOUNDATION, $"Language/Code");
 
             Dictionary<string, string> LanguageCodeDictionary = new Dictionary<string, string>();
 

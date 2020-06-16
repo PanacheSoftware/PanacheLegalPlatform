@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PanacheSoftware.Core.Domain.Configuration;
 using PanacheSoftware.Core.Types;
 using PanacheSoftware.Http;
 using PanacheSoftware.UI.Core.Helpers;
@@ -55,6 +56,9 @@ namespace PanacheSoftware.UI.Client
 
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
+            var panacheSoftwareConfiguration = new PanacheSoftwareConfiguration();
+            Configuration.Bind("PanacheSoftware", panacheSoftwareConfiguration);
+
             services.AddAuthentication(options =>
             {
                 options.DefaultScheme = "Cookies";
@@ -64,11 +68,11 @@ namespace PanacheSoftware.UI.Client
                 .AddOpenIdConnect("oidc", options =>
                 {
                     options.SignInScheme = "Cookies";
-                    options.Authority = "https://localhost:44302/";
+                    options.Authority = bool.Parse(panacheSoftwareConfiguration.CallMethod.UICallsSecure) ? panacheSoftwareConfiguration.Url.IdentityServerURLSecure : panacheSoftwareConfiguration.Url.IdentityServerURL;
                     options.RequireHttpsMetadata = false;
 
                     options.ClientId = PanacheSoftwareScopeNames.ClientUI;
-                    options.ClientSecret = "49C1A7E1-0C79-4A89-A3D6-A37998FB86B0";
+                    options.ClientSecret = panacheSoftwareConfiguration.Secret.UIClientSecret;
                     options.ResponseType = "code id_token";
 
                     options.SaveTokens = true;

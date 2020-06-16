@@ -91,7 +91,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
                 {
                     if (parsedId != Guid.Empty)
                     {
-                        var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"TaskGroup/{Id}");
+                        var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.TASK, $"TaskGroup/{Id}");
 
                         if (response.StatusCode == System.Net.HttpStatusCode.OK)
                         {
@@ -106,7 +106,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
                     {
                         if(!string.IsNullOrWhiteSpace(ParentId))
                         {
-                            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"TaskGroup/{ParentId}");
+                            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.TASK, $"TaskGroup/{ParentId}");
 
                             if (response.StatusCode == System.Net.HttpStatusCode.OK)
                             {
@@ -161,7 +161,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
 
         private async Task<bool> CreateTeamSelectList(string accessToken)
         {
-            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"UserTeam/GetTeamsForUser/{User.FindFirst("sub").Value}");
+            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.TEAM, $"UserTeam/GetTeamsForUser/{User.FindFirst("sub").Value}");
 
             Dictionary<string, string> TeamListDictionary = new Dictionary<string, string>();
             TeamListDictionary.Add(Guid.Empty.ToString(), "None");
@@ -213,7 +213,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
 
         private async Task<bool> CreateClientSelectList(string accessToken)
         {
-            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"Client");
+            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.CLIENT, $"Client");
 
             Dictionary<string, string> ClientListDictionary = new Dictionary<string, string>();
             ClientListDictionary.Add(Guid.Empty.ToString(), "None");
@@ -243,7 +243,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
             {
                 if (taskGroupHead.Id != Guid.Empty)
                 {
-                    var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.GATEWAY, $"TaskGroup/{taskGroupHead.Id}");
+                    var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.TASK, $"TaskGroup/{taskGroupHead.Id}");
 
                     if (response.StatusCode == System.Net.HttpStatusCode.OK)
                     {
@@ -251,12 +251,12 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
 
                         if (foundTaskGroupHead != null)
                         {
-                            if (!await _modelHelper.ProcessPatch(foundTaskGroupHead, taskGroupHead, foundTaskGroupHead.Id, apiAccessToken, APITypes.GATEWAY, "TaskGroup"))
+                            if (!await _modelHelper.ProcessPatch(foundTaskGroupHead, taskGroupHead, foundTaskGroupHead.Id, apiAccessToken, APITypes.TASK, "TaskGroup"))
                             {
                                 return false;
                             }
 
-                            response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.GATEWAY, $"TaskGroup/Detail/{taskGroupHead.TaskGroupDetail.Id}");
+                            response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.TASK, $"TaskGroup/Detail/{taskGroupHead.TaskGroupDetail.Id}");
 
                             if (response.StatusCode == System.Net.HttpStatusCode.OK)
                             {
@@ -264,7 +264,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
 
                                 if (foundTaskGroupDet != null)
                                 {
-                                    if (!await _modelHelper.ProcessPatch(foundTaskGroupDet, taskGroupHead.TaskGroupDetail, foundTaskGroupDet.Id, apiAccessToken, APITypes.GATEWAY, "TaskGroup/Detail"))
+                                    if (!await _modelHelper.ProcessPatch(foundTaskGroupDet, taskGroupHead.TaskGroupDetail, foundTaskGroupDet.Id, apiAccessToken, APITypes.TASK, "TaskGroup/Detail"))
                                     {
                                         return false;
                                     }
@@ -279,7 +279,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
 
                     try
                     {
-                        var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.GATEWAY, $"TaskGroup", contentPost);
+                        var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.TASK, $"TaskGroup", contentPost);
 
                         if (response.StatusCode != System.Net.HttpStatusCode.Created)
                         {

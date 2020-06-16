@@ -75,7 +75,7 @@ namespace PanacheSoftware.UI.Client.Pages.Setting
 
             if (!string.IsNullOrWhiteSpace(Id))
             {
-                var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"Language/{Id}");
+                var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FOUNDATION, $"Language/{Id}");
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
@@ -123,7 +123,7 @@ namespace PanacheSoftware.UI.Client.Pages.Setting
             {
                 if (langHead.Id != Guid.Empty)
                 {
-                    var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.GATEWAY, $"Language/{langHead.Id}");
+                    var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.FOUNDATION, $"Language/{langHead.Id}");
 
                     if (response.StatusCode == System.Net.HttpStatusCode.OK)
                     {
@@ -131,7 +131,7 @@ namespace PanacheSoftware.UI.Client.Pages.Setting
 
                         if (foundLangHead != null)
                         {
-                            if (!await _modelHelper.ProcessPatch(foundLangHead, langHead, foundLangHead.Id, apiAccessToken, APITypes.GATEWAY, "Language"))
+                            if (!await _modelHelper.ProcessPatch(foundLangHead, langHead, foundLangHead.Id, apiAccessToken, APITypes.FOUNDATION, "Language"))
                             {
                                 return false;
                             }
@@ -152,7 +152,7 @@ namespace PanacheSoftware.UI.Client.Pages.Setting
 
                     try
                     {
-                        var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.GATEWAY, $"Language", contentPost);
+                        var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.FOUNDATION, $"Language", contentPost);
 
                         if (response.StatusCode != System.Net.HttpStatusCode.Created)
                         {
@@ -176,7 +176,7 @@ namespace PanacheSoftware.UI.Client.Pages.Setting
             {
                 if (langItem.Id != Guid.Empty)
                 {
-                    var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.GATEWAY, $"Language/Item/{langItem.Id}");
+                    var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.FOUNDATION, $"Language/Item/{langItem.Id}");
 
                     if (response.StatusCode == System.Net.HttpStatusCode.OK)
                     {
@@ -184,7 +184,7 @@ namespace PanacheSoftware.UI.Client.Pages.Setting
 
                         if (foundItem != null)
                         {
-                            if (!await _modelHelper.ProcessPatch(foundItem, langItem, foundItem.Id, apiAccessToken, APITypes.GATEWAY, "Language/Item"))
+                            if (!await _modelHelper.ProcessPatch(foundItem, langItem, foundItem.Id, apiAccessToken, APITypes.FOUNDATION, "Language/Item"))
                             {
                                 return false;
                             }
@@ -197,7 +197,7 @@ namespace PanacheSoftware.UI.Client.Pages.Setting
 
                     try
                     {
-                        var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.GATEWAY, $"Language/Item", contentPost);
+                        var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.FOUNDATION, $"Language/Item", contentPost);
 
                         if (response.StatusCode != System.Net.HttpStatusCode.Created)
                         {
@@ -279,7 +279,7 @@ namespace PanacheSoftware.UI.Client.Pages.Setting
 
         private async Task<bool> CreateLanguageCodeSelectList(string accessToken)
         {
-            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"Language/Code");
+            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FOUNDATION, $"Language/Code");
 
             Dictionary<string, string> LanguageCodeDictionary = new Dictionary<string, string>();
 

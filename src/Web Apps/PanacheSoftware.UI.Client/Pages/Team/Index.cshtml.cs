@@ -82,7 +82,7 @@ namespace PanacheSoftware.UI.Client.Pages.Team
 
             if (!string.IsNullOrWhiteSpace(Id))
             {
-                var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"Team/{Id}");
+                var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.TEAM, $"Team/{Id}");
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
@@ -131,7 +131,7 @@ namespace PanacheSoftware.UI.Client.Pages.Team
 
         private async Task<bool> GetTeamStructure(string accessToken)
         {
-            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"Team/GetTeamStructure/{Id}");
+            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.TEAM, $"Team/GetTeamStructure/{Id}");
 
             if(response.StatusCode == System.Net.HttpStatusCode.OK)
             {
@@ -147,7 +147,7 @@ namespace PanacheSoftware.UI.Client.Pages.Team
 
         private async Task<bool> CreateTeamSelectList(string accessToken)
         {
-            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"Team/GetValidParents/{Id}");
+            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.TEAM, $"Team/GetValidParents/{Id}");
 
             Dictionary<string, string> TeamListDictionary = new Dictionary<string, string>();
             TeamListDictionary.Add("", "None");
@@ -177,7 +177,7 @@ namespace PanacheSoftware.UI.Client.Pages.Team
             {
                 if (teamHead.Id != Guid.Empty)
                 {
-                    var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.GATEWAY, $"Team/{teamHead.Id}");
+                    var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.TEAM, $"Team/{teamHead.Id}");
 
                     if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                     {
@@ -189,12 +189,12 @@ namespace PanacheSoftware.UI.Client.Pages.Team
 
                         if (foundTeamHead != null)
                         {
-                            if (!await _modelHelper.ProcessPatch(foundTeamHead, teamHead, foundTeamHead.Id, apiAccessToken, APITypes.GATEWAY, "Team"))
+                            if (!await _modelHelper.ProcessPatch(foundTeamHead, teamHead, foundTeamHead.Id, apiAccessToken, APITypes.TEAM, "Team"))
                             {
                                 return false;
                             }
 
-                            response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.GATEWAY, $"Team/Detail/{teamHead.TeamDetail.Id}");
+                            response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.TEAM, $"Team/Detail/{teamHead.TeamDetail.Id}");
                             
                             if (response.StatusCode == System.Net.HttpStatusCode.OK)
                             {
@@ -202,7 +202,7 @@ namespace PanacheSoftware.UI.Client.Pages.Team
 
                                 if (foundTeamDet != null)
                                 {
-                                    if (!await _modelHelper.ProcessPatch(foundTeamDet, teamHead.TeamDetail, foundTeamDet.Id, apiAccessToken, APITypes.GATEWAY, "Team/Detail"))
+                                    if (!await _modelHelper.ProcessPatch(foundTeamDet, teamHead.TeamDetail, foundTeamDet.Id, apiAccessToken, APITypes.TEAM, "Team/Detail"))
                                     {
                                         return false;
                                     }
@@ -217,7 +217,7 @@ namespace PanacheSoftware.UI.Client.Pages.Team
 
                     try
                     {
-                        var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.GATEWAY, $"Team", contentPost);
+                        var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.TEAM, $"Team", contentPost);
 
                         if (response.StatusCode != System.Net.HttpStatusCode.Created)
                         {

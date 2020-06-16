@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using Swashbuckle.AspNetCore.Swagger;
 using IdentityServer4.AccessTokenValidation;
 using PanacheSoftware.Service.Client.Manager;
+using PanacheSoftware.Core.Domain.Configuration;
 
 namespace PanacheSoftware.Service.Client
 {
@@ -47,16 +48,19 @@ namespace PanacheSoftware.Service.Client
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
             services.AddAuthorization();
-            
+
+            var panacheSoftwareConfiguration = new PanacheSoftwareConfiguration();
+            Configuration.Bind("PanacheSoftware", panacheSoftwareConfiguration);
+
             services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
                 .AddIdentityServerAuthentication(options =>
                 {
                     // base-address of your identityserver
-                    options.Authority = "https://localhost:44302/";
+                    options.Authority = bool.Parse(panacheSoftwareConfiguration.CallMethod.UICallsSecure) ? panacheSoftwareConfiguration.Url.IdentityServerURLSecure : panacheSoftwareConfiguration.Url.IdentityServerURL;
 
                     // name of the API resource
                     options.ApiName = PanacheSoftwareScopeNames.ClientService;
-                    options.ApiSecret = "1314EF18-40FA-4B16-83DF-B276FF0D92A9";
+                    options.ApiSecret = panacheSoftwareConfiguration.Secret.ClientServiceSecret;
                     options.RequireHttpsMetadata = false;
                     options.EnableCaching = true;
                 });

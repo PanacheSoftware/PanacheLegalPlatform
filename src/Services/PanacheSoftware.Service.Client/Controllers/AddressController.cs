@@ -11,7 +11,7 @@ using System.Security.Claims;
 namespace PanacheSoftware.Service.Client.Controllers
 {
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class AddressController : ControllerBase
     {

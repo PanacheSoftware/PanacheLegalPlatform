@@ -9,11 +9,20 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using PanacheSoftware.Core.Domain.Configuration;
 
 namespace PanacheSoftware.Http
 {
     public class APIHelper : IAPIHelper
     {
+        private readonly IConfiguration _configuration;
+
+        public APIHelper(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         public async Task<HttpResponseMessage> MakeAPICallAsync(string accessToken, HttpMethod httpMethod, string apiType, string uriPart)
         {
             return await MakeAPICallAsync(accessToken, httpMethod, apiType, uriPart, null);
@@ -22,10 +31,6 @@ namespace PanacheSoftware.Http
         public async Task<HttpResponseMessage> MakeAPICallAsync(string accessToken, HttpMethod httpMethod, string apiType, string uriPart, HttpContent contentPost)
         {
             var addAPIString = string.Empty;
-
-            if (apiType != APITypes.GATEWAY)
-                addAPIString = "api/";
-
 
             var requestUri = $"{GetBaseURL(apiType)}/{addAPIString}{uriPart}";
 
@@ -48,7 +53,7 @@ namespace PanacheSoftware.Http
 
             HttpContent contentPost = new StringContent(JsonConvert.SerializeObject(langQueryList), Encoding.UTF8, "application/json");
 
-            var response = await MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"Language/LanguageQuery", contentPost);
+            var response = await MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FOUNDATION, $"Language/LanguageQuery", contentPost);
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
@@ -60,7 +65,7 @@ namespace PanacheSoftware.Http
 
         public async Task<UsrSetting> GetUserLanguage(string accessToken)
         {
-            var response = await MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"Setting/UserSetting/USER_LANGUAGE");
+            var response = await MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FOUNDATION, $"Setting/UserSetting/USER_LANGUAGE");
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
@@ -72,7 +77,7 @@ namespace PanacheSoftware.Http
 
         public async Task<SettingHead> GetSystemSetting(string accessToken, string settingName)
         {
-            var response = await MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"Setting/{settingName}");
+            var response = await MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FOUNDATION, $"Setting/{settingName}");
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
@@ -86,7 +91,7 @@ namespace PanacheSoftware.Http
         {
             var userTeams = new List<Guid>();
 
-            var response = await MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"UserTeam/GetTeamsForUser/{userId}");
+            var response = await MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.TEAM, $"UserTeam/GetTeamsForUser/{userId}");
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
@@ -131,27 +136,54 @@ namespace PanacheSoftware.Http
             return langQueryList;
         }
 
-        private string GetBaseURL(string apiType)
+        public string GetBaseURL(string apiType)
         {
+            var panacheSoftwareConfiguration = new PanacheSoftwareConfiguration();
+            _configuration.Bind("PanacheSoftware", panacheSoftwareConfiguration);
+
+            //If appsttings specifies we should use the API gateway force all API requests through their
+            if(bool.Parse(panacheSoftwareConfiguration.CallMethod.UseAPIGateway))
+                return bool.Parse(panacheSoftwareConfiguration.CallMethod.APICallsSecure)
+                    ? panacheSoftwareConfiguration.Url.APIGatewayURLSecure
+                    : panacheSoftwareConfiguration.Url.APIGatewayURL;
+
+            //Otherwise return the URL specific to the APIType passed in
             switch (apiType)
             {
-                case APITypes.IDENTITY:
-                    return "http://localhost:55002";
-                //case APITypes.CLIENT:
-                //    return "https://localhost:44359";
-                //case APITypes.TEAM:
-                //    return "https://localhost:44357";
-                //case APITypes.FOUNDATION:
-                //    return "https://localhost:44316";
-                //case APITypes.TASK:
-                //    return "https://localhost:44377";
-                //case APITypes.FILE:
-                //    return "https://localhost:44324";
+                case APITypes.CLIENT:
+                    return bool.Parse(panacheSoftwareConfiguration.CallMethod.APICallsSecure)
+                        ? panacheSoftwareConfiguration.Url.ClientServiceURLSecure
+                        : panacheSoftwareConfiguration.Url.ClientServiceURL;
+                case APITypes.FILE:
+                    return bool.Parse(panacheSoftwareConfiguration.CallMethod.APICallsSecure)
+                        ? panacheSoftwareConfiguration.Url.FileServiceURLSecure
+                        : panacheSoftwareConfiguration.Url.FileServiceURL;
+                case APITypes.FOUNDATION:
+                    return bool.Parse(panacheSoftwareConfiguration.CallMethod.APICallsSecure)
+                        ? panacheSoftwareConfiguration.Url.FoundationServiceURLSecure
+                        : panacheSoftwareConfiguration.Url.FoundationServiceURL;
                 case APITypes.GATEWAY:
-                    return "http://localhost:55003";
-                default:
-                    break;
+                    return bool.Parse(panacheSoftwareConfiguration.CallMethod.APICallsSecure)
+                        ? panacheSoftwareConfiguration.Url.APIGatewayURLSecure
+                        : panacheSoftwareConfiguration.Url.APIGatewayURL;
+                case APITypes.IDENTITY:
+                    return bool.Parse(panacheSoftwareConfiguration.CallMethod.APICallsSecure)
+                        ? panacheSoftwareConfiguration.Url.IdentityServerURLSecure
+                        : panacheSoftwareConfiguration.Url.IdentityServerURL;
+                case APITypes.TASK:
+                    return bool.Parse(panacheSoftwareConfiguration.CallMethod.APICallsSecure)
+                        ? panacheSoftwareConfiguration.Url.TaskServiceURLSecure
+                        : panacheSoftwareConfiguration.Url.TaskServiceURL;
+                case APITypes.TEAM:
+                    return bool.Parse(panacheSoftwareConfiguration.CallMethod.APICallsSecure)
+                        ? panacheSoftwareConfiguration.Url.TeamServiceURLSecure
+                        : panacheSoftwareConfiguration.Url.TeamServiceURL;
+                case APITypes.UICLIENT:
+                    return bool.Parse(panacheSoftwareConfiguration.CallMethod.APICallsSecure)
+                        ? panacheSoftwareConfiguration.Url.UIClientURLSecure
+                        : panacheSoftwareConfiguration.Url.UIClientURL;
             }
+
             return string.Empty;
         }
 

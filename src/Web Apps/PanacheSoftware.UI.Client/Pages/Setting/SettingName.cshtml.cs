@@ -68,7 +68,7 @@ namespace PanacheSoftware.UI.Client
                 return RedirectToPage("/Logout");
             }
 
-            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"Setting/{Id}");
+            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FOUNDATION, $"Setting/{Id}");
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
@@ -116,7 +116,7 @@ namespace PanacheSoftware.UI.Client
             {
                 if (tenSetting.Id != Guid.Empty)
                 {
-                    var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.GATEWAY, $"Setting/{tenSetting.Id}");
+                    var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.FOUNDATION, $"Setting/{tenSetting.Id}");
 
                     if (response.StatusCode == System.Net.HttpStatusCode.OK)
                     {
@@ -124,7 +124,7 @@ namespace PanacheSoftware.UI.Client
 
                         if (foundSystemSetting != null)
                         {
-                            if (!await _modelHelper.ProcessPatch(foundSystemSetting, tenSetting, foundSystemSetting.Id, apiAccessToken, APITypes.GATEWAY, "Setting"))
+                            if (!await _modelHelper.ProcessPatch(foundSystemSetting, tenSetting, foundSystemSetting.Id, apiAccessToken, APITypes.FOUNDATION, "Setting"))
                             {
                                 return false;
                             }
@@ -137,7 +137,7 @@ namespace PanacheSoftware.UI.Client
 
                     try
                     {
-                        var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.GATEWAY, $"Setting", contentPost);
+                        var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.FOUNDATION, $"Setting", contentPost);
 
                         if (response.StatusCode != System.Net.HttpStatusCode.Created)
                         {

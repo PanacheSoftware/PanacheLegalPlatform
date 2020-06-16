@@ -17,7 +17,7 @@ using PanacheSoftware.Service.Task.Manager;
 namespace PanacheSoftware.Service.Task.Controllers
 {
     [Authorize]
-    [Route("api/TaskGroup/Detail")]
+    [Route("TaskGroup/Detail")]
     [ApiController]
     public class TaskGroupDetailController : ControllerBase
     {

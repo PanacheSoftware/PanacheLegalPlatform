@@ -25,6 +25,8 @@ namespace PanacheSoftware.Http
         Task<SaveMessageModel> GenerateSaveMessageModel(string accessToken, string saveState = default(string), string errorString = default(string), int historyLength = -2);
         Task<SettingHead> GetSystemSetting(string accessToken, string settingName);
         Task<List<Guid>> GetTeamsForUserId(string accessToken, string userId);
+
+        string GetBaseURL(string apiType);
         //string GetScope(string apiType);
     }
 }

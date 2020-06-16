@@ -13,7 +13,7 @@ namespace PanacheSoftware.Service.Foundation.Controllers
 {
     [Produces("application/json")]
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class SettingController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;

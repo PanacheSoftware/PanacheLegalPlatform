@@ -7,6 +7,8 @@ using IdentityModel.Client;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using PanacheSoftware.Core.Domain.Configuration;
 using PanacheSoftware.Core.Types;
 using PanacheSoftware.Http;
 using PanacheSoftware.UI.Core.Headers;
@@ -19,52 +21,28 @@ namespace PanacheSoftware.UI.Core.ViewComponents
     public class SideBarUserProfileViewComponent : ViewComponent
     {
         private readonly IAPIHelper _apiHelper;
+        private readonly IConfiguration _configuration;
 
-        public SideBarUserProfileViewComponent(IAPIHelper apiHelper)
+        public SideBarUserProfileViewComponent(IAPIHelper apiHelper, IConfiguration configuration)
         {
             _apiHelper = apiHelper;
+            _configuration = configuration;
         }
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            //var currentUser = await _userManager.GetUserAsync(HttpContext.User);
-
             var accessToken = await HttpContext.GetTokenAsync("access_token");
 
             var languageSetting = await _apiHelper.GetUserLanguage(accessToken);
 
             var langQueryList = await _apiHelper.MakeLanguageQuery(accessToken, languageSetting.Value, new long[] { 10100 });
 
-            //var idToken = await HttpContext.GetTokenAsync("id_token");
+            var panacheSoftwareConfiguration = new PanacheSoftwareConfiguration();
+            _configuration.Bind("PanacheSoftware", panacheSoftwareConfiguration);
 
-            //var client = new HttpClient();
-            //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", accessToken);
-            //var content1 = await client.GetStringAsync("https://localhost:44397/api/identity");
-            //var content2 = await client.GetStringAsync("https://localhost:44397/.well-known/openid-configuration");
-
-            //var clientID = new HttpClient();
-            //clientID.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", idToken);
-            //var content3 = await clientID.GetStringAsync("https://localhost:44397/connect/userinfo");
-
-            var discoveryClient = new HttpClient();// new DiscoveryClient("https://localhost:44302");
-            var doc = await discoveryClient.GetDiscoveryDocumentAsync("https://localhost:44302");
-
-            //var tokenEndpoint = doc.TokenEndpoint;
-            //var keys = doc.KeySet.Keys;
-
-            //var refreshToken = await HttpContext.GetTokenAsync("refresh_token");
-
-            //var rt = await HttpContext.GetTokenAsync("refresh_token");
-            //var tokenClient = new HttpClient();
-
-            //var tokenResult = await tokenClient.RequestRefreshTokenAsync(new RefreshTokenRequest
-            //{
-            //    Address = doc.TokenEndpoint,
-
-            //    ClientId = PanacheSoftwareScopeNames.ClientUI,
-            //    ClientSecret = "49C1A7E1-0C79-4A89-A3D6-A37998FB86B0",
-            //    RefreshToken = rt
-            //});
+            var discoveryClient = new HttpClient();
+            //var doc = await discoveryClient.GetDiscoveryDocumentAsync("https://localhost:44302");
+            var doc = await discoveryClient.GetDiscoveryDocumentAsync(bool.Parse(panacheSoftwareConfiguration.CallMethod.UICallsSecure) ? panacheSoftwareConfiguration.Url.IdentityServerURLSecure : panacheSoftwareConfiguration.Url.IdentityServerURL);
 
             var userInfoClient = new HttpClient();
             var userInfoResponse = await userInfoClient.GetUserInfoAsync(new UserInfoRequest
@@ -89,11 +67,6 @@ namespace PanacheSoftware.UI.Core.ViewComponents
                 ViewData["Picture"] = Base64Images.PanacheSoftwareDot;
                 ViewData["Id"] = string.Empty;
             }
-
-            //var currentUser = await _userManager.GetUserAsync(HttpContext.User);
-
-            //ViewData["FullName"] = currentUser.FullName;
-            //ViewData["Picture"] = currentUser.Base64ProfileImage;
 
             return View(langQueryList);
         }

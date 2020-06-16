@@ -51,7 +51,7 @@ namespace PanacheSoftware.UI.Client.Pages.Client
                 return RedirectToPage("/Logout");
             }
 
-            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"Client");
+            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.CLIENT, $"Client");
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {

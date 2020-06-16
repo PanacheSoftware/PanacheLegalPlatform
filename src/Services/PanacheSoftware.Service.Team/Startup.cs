@@ -17,6 +17,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using PanacheSoftware.Core.Domain.Configuration;
 using PanacheSoftware.Core.Types;
 using PanacheSoftware.Http;
 using PanacheSoftware.Service.Team.Core;
@@ -53,15 +54,18 @@ namespace PanacheSoftware.Service.Team
 
             services.AddAuthorization();
 
+            var panacheSoftwareConfiguration = new PanacheSoftwareConfiguration();
+            Configuration.Bind("PanacheSoftware", panacheSoftwareConfiguration);
+
             services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
                 .AddIdentityServerAuthentication(options =>
                 {
                     // base-address of your identityserver
-                    options.Authority = "https://localhost:44302/";
+                    options.Authority = bool.Parse(panacheSoftwareConfiguration.CallMethod.UICallsSecure) ? panacheSoftwareConfiguration.Url.IdentityServerURLSecure : panacheSoftwareConfiguration.Url.IdentityServerURL;
 
                     // name of the API resource
                     options.ApiName = PanacheSoftwareScopeNames.TeamService;
-                    options.ApiSecret = "5C9BF545-3C20-4448-9EEC-6B3E745B671E";
+                    options.ApiSecret = panacheSoftwareConfiguration.Secret.TeamServiceSecret;
                     options.RequireHttpsMetadata = false;
                     options.EnableCaching = true;
                 });

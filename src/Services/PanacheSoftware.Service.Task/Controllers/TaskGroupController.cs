@@ -18,7 +18,7 @@ namespace PanacheSoftware.Service.Task.Controllers
 {
     [Produces("application/json")]
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class TaskGroupController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;

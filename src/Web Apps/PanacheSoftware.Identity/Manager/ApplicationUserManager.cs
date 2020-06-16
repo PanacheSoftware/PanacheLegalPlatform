@@ -7,11 +7,12 @@ using PanacheSoftware.Core.Domain.Identity.API;
 using PanacheSoftware.Core.Types;
 using PanacheSoftware.Identity.Data;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using PanacheSoftware.Core.Domain.Configuration;
 
 namespace PanacheSoftware.Identity.Manager
 {
@@ -20,15 +21,18 @@ namespace PanacheSoftware.Identity.Manager
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IMapper _mapper;
         private readonly ApplicationDbContext _context;
+        private readonly IConfiguration _configuration;
 
         public ApplicationUserManager(
             UserManager<ApplicationUser> userManager,
             IMapper mapper,
-            ApplicationDbContext context)
+            ApplicationDbContext context,
+            IConfiguration configuration)
         {
             _userManager = userManager;
             _mapper = mapper;
             _context = context;
+            _configuration = configuration;
         }
 
         public async Task<IdentityResult> ChangeUserPassword(PasswordModel passwordModel, ModelStateDictionary modelState)
@@ -134,14 +138,23 @@ namespace PanacheSoftware.Identity.Manager
                         }
                         else
                         {
+                            var panacheSoftwareConfiguration = new PanacheSoftwareConfiguration();
+                            _configuration.Bind("PanacheSoftware", panacheSoftwareConfiguration);
+
+                            var UIClientURL = bool.Parse(panacheSoftwareConfiguration.CallMethod.UICallsSecure)
+                                ? panacheSoftwareConfiguration.Url.IdentityServerURLSecure
+                                : panacheSoftwareConfiguration.Url.IdentityServerURL;
+
                             result = _userManager.AddClaimsAsync(newUser, new Claim[]
                                 {
                                     new Claim(JwtClaimTypes.Name, newUser.FullName),
                                     new Claim(JwtClaimTypes.GivenName, newUser.FirstName),
                                     new Claim(JwtClaimTypes.FamilyName, newUser.Surname),
                                     new Claim(JwtClaimTypes.Email, newUser.Email),
-                                    new Claim(JwtClaimTypes.WebSite, $"https://localhost:44380/User/{newUser.Id}"),
-                                    new Claim(JwtClaimTypes.Picture, $"https://localhost:44380/User/{newUser.Id}/ProfileImage"),
+                                    new Claim(JwtClaimTypes.WebSite, $"{UIClientURL}/User/{newUser.Id}"),
+                                    new Claim(JwtClaimTypes.Picture, $"{UIClientURL}/User/{newUser.Id}/ProfileImage"),
+                                    //new Claim(JwtClaimTypes.WebSite, $"https://localhost:44380/User/{newUser.Id}"),
+                                    //new Claim(JwtClaimTypes.Picture, $"https://localhost:44380/User/{newUser.Id}/ProfileImage"),
                                     new Claim(PanacheSoftwareClaims.TenantId, identityTenant.Id.ToString())
                                 }).Result;
 

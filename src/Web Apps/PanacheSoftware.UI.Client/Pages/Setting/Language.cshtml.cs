@@ -54,7 +54,7 @@ namespace PanacheSoftware.UI.Client.Pages.Setting
                 return RedirectToPage("/Logout");
             }
 
-            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"Language");
+            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FOUNDATION, $"Language");
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
@@ -65,7 +65,7 @@ namespace PanacheSoftware.UI.Client.Pages.Setting
                 languageList = new LangList();
             }
 
-            response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"Language/Code");
+            response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FOUNDATION, $"Language/Code");
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {

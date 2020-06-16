@@ -13,6 +13,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
+using PanacheSoftware.Core.Domain.Configuration;
 using PanacheSoftware.Core.Types;
 
 namespace PanacheSoftware.API.Gateway
@@ -42,13 +43,16 @@ namespace PanacheSoftware.API.Gateway
             //        options.EnableCaching = true;
             //    });
 
+            var panacheSoftwareConfiguration = new PanacheSoftwareConfiguration();
+            Configuration.Bind("PanacheSoftware", panacheSoftwareConfiguration);
+
             var authenticationProviderKey = "GatewayKey";
             Action<IdentityServerAuthenticationOptions> options = o =>
             {
-                o.Authority = "https://localhost:44302/";
+                o.Authority = bool.Parse(panacheSoftwareConfiguration.CallMethod.UICallsSecure) ? panacheSoftwareConfiguration.Url.IdentityServerURLSecure : panacheSoftwareConfiguration.Url.IdentityServerURL;
                 o.ApiName = PanacheSoftwareScopeNames.APIGateway;
                 o.SupportedTokens = SupportedTokens.Both;
-                o.ApiSecret = "DDDCB193-213C-43FB-967A-5A911D2EFC04";
+                o.ApiSecret = panacheSoftwareConfiguration.Secret.APIGatewaySecret;
             };
 
             services.AddAuthentication()

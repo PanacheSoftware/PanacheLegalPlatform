@@ -70,7 +70,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup.Task
                 {
                     if (parsedId != Guid.Empty)
                     {
-                        var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"Task/{Id}");
+                        var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.TASK, $"Task/{Id}");
 
                         if (response.StatusCode == System.Net.HttpStatusCode.OK)
                         {
@@ -81,7 +81,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup.Task
                     {
                         if (!string.IsNullOrWhiteSpace(TaskGroupId))
                         {
-                            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"TaskGroup/{TaskGroupId}");
+                            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.TASK, $"TaskGroup/{TaskGroupId}");
 
                             if (response.StatusCode == System.Net.HttpStatusCode.OK)
                             {
@@ -181,7 +181,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup.Task
             {
                 if (taskHead.Id != Guid.Empty)
                 {
-                    var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.GATEWAY, $"Task/{taskHead.Id}");
+                    var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.TASK, $"Task/{taskHead.Id}");
 
                     if (response.StatusCode == System.Net.HttpStatusCode.OK)
                     {
@@ -189,12 +189,12 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup.Task
 
                         if (foundTaskHead != null)
                         {
-                            if (!await _modelHelper.ProcessPatch(foundTaskHead, taskHead, foundTaskHead.Id, apiAccessToken, APITypes.GATEWAY, "Task"))
+                            if (!await _modelHelper.ProcessPatch(foundTaskHead, taskHead, foundTaskHead.Id, apiAccessToken, APITypes.TASK, "Task"))
                             {
                                 return false;
                             }
 
-                            response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.GATEWAY, $"Task/Detail/{taskHead.TaskDetail.Id}");
+                            response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.TASK, $"Task/Detail/{taskHead.TaskDetail.Id}");
 
                             if (response.StatusCode == System.Net.HttpStatusCode.OK)
                             {
@@ -202,7 +202,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup.Task
 
                                 if (foundTaskDet != null)
                                 {
-                                    if (!await _modelHelper.ProcessPatch(foundTaskDet, taskHead.TaskDetail, foundTaskDet.Id, apiAccessToken, APITypes.GATEWAY, "Task/Detail"))
+                                    if (!await _modelHelper.ProcessPatch(foundTaskDet, taskHead.TaskDetail, foundTaskDet.Id, apiAccessToken, APITypes.TASK, "Task/Detail"))
                                     {
                                         return false;
                                     }
@@ -217,7 +217,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup.Task
 
                     try
                     {
-                        var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.GATEWAY, $"Task", contentPost);
+                        var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.TASK, $"Task", contentPost);
 
                         if (response.StatusCode != System.Net.HttpStatusCode.Created)
                         {

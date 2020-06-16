@@ -15,7 +15,7 @@ using PanacheSoftware.Service.File.Manager;
 namespace PanacheSoftware.Service.File.Controllers
 {
     [Authorize]
-    [Route("api/File/Version")]
+    [Route("File/Version")]
     [ApiController]
     public class FileVersionController : ControllerBase
     {

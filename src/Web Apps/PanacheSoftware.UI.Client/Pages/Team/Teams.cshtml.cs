@@ -48,7 +48,7 @@ namespace PanacheSoftware.UI.Client.Pages.Team
                 return RedirectToPage("/Logout");
             }
 
-            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"Team");
+            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.TEAM, $"Team");
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {

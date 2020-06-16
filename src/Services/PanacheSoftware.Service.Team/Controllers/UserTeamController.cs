@@ -15,7 +15,7 @@ using PanacheSoftware.Service.Team.Manager;
 namespace PanacheSoftware.Service.Team.Controllers
 {
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class UserTeamController : ControllerBase
     {
