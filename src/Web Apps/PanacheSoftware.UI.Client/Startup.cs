@@ -112,7 +112,7 @@ namespace PanacheSoftware.UI.Client
 
             app.UseAuthentication();
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseStaticFiles();
             app.UseCookiePolicy();

@@ -1,14 +1,9 @@
-﻿using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
+﻿using System.Security.Claims;
 using System.Threading.Tasks;
 using IdentityModel;
-using IdentityModel.Client;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using PanacheSoftware.Core.Domain.Configuration;
 using PanacheSoftware.Core.Types;
 using PanacheSoftware.Http;
 using PanacheSoftware.UI.Core.Headers;
@@ -21,12 +16,10 @@ namespace PanacheSoftware.UI.Core.ViewComponents
     public class SideBarUserProfileViewComponent : ViewComponent
     {
         private readonly IAPIHelper _apiHelper;
-        private readonly IConfiguration _configuration;
 
-        public SideBarUserProfileViewComponent(IAPIHelper apiHelper, IConfiguration configuration)
+        public SideBarUserProfileViewComponent(IAPIHelper apiHelper)
         {
             _apiHelper = apiHelper;
-            _configuration = configuration;
         }
 
         public async Task<IViewComponentResult> InvokeAsync()
@@ -37,34 +30,34 @@ namespace PanacheSoftware.UI.Core.ViewComponents
 
             var langQueryList = await _apiHelper.MakeLanguageQuery(accessToken, languageSetting.Value, new long[] { 10100 });
 
-            var panacheSoftwareConfiguration = new PanacheSoftwareConfiguration();
-            _configuration.Bind("PanacheSoftware", panacheSoftwareConfiguration);
+            var name = ((ClaimsIdentity)User.Identity).FindFirst(JwtClaimTypes.Name);
+            var picture = ((ClaimsIdentity)User.Identity).FindFirst(JwtClaimTypes.Picture);
+            var id = ((ClaimsIdentity)User.Identity).FindFirst(JwtClaimTypes.Subject);
 
-            var discoveryClient = new HttpClient();
-            //var doc = await discoveryClient.GetDiscoveryDocumentAsync("https://localhost:44302");
-            var doc = await discoveryClient.GetDiscoveryDocumentAsync(bool.Parse(panacheSoftwareConfiguration.CallMethod.UICallsSecure) ? panacheSoftwareConfiguration.Url.IdentityServerURLSecure : panacheSoftwareConfiguration.Url.IdentityServerURL);
-
-            var userInfoClient = new HttpClient();
-            var userInfoResponse = await userInfoClient.GetUserInfoAsync(new UserInfoRequest
+            if (name != null)
             {
-                Address = doc.UserInfoEndpoint,
-                Token = accessToken
-            });
-
-            if (userInfoResponse.HttpStatusCode == System.Net.HttpStatusCode.OK)
-            {
-                var name = userInfoResponse.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Name);
-                var picture = userInfoResponse.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Picture);
-                var id = userInfoResponse.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Subject);
-
                 ViewData["FullName"] = name.Value;
-                ViewData["Picture"] = picture.Value;
-                ViewData["Id"] = id.Value;
             }
             else
             {
                 ViewData["FullName"] = string.Empty;
+            }
+
+            if (picture != null)
+            {
+                ViewData["Picture"] = picture.Value;
+            }
+            else
+            {
                 ViewData["Picture"] = Base64Images.PanacheSoftwareDot;
+            }
+
+            if (id != null)
+            {
+                ViewData["Id"] = id.Value;
+            }
+            else
+            {
                 ViewData["Id"] = string.Empty;
             }
 

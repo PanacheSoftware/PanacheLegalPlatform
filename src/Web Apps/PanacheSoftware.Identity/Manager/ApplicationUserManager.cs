@@ -142,8 +142,8 @@ namespace PanacheSoftware.Identity.Manager
                             _configuration.Bind("PanacheSoftware", panacheSoftwareConfiguration);
 
                             var UIClientURL = bool.Parse(panacheSoftwareConfiguration.CallMethod.UICallsSecure)
-                                ? panacheSoftwareConfiguration.Url.IdentityServerURLSecure
-                                : panacheSoftwareConfiguration.Url.IdentityServerURL;
+                                ? panacheSoftwareConfiguration.Url.UIClientURLSecure
+                                : panacheSoftwareConfiguration.Url.UIClientURL;
 
                             result = _userManager.AddClaimsAsync(newUser, new Claim[]
                                 {
