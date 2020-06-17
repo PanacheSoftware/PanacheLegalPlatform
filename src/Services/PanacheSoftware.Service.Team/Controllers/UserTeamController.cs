@@ -15,7 +15,7 @@ using PanacheSoftware.Service.Team.Manager;
 namespace PanacheSoftware.Service.Team.Controllers
 {
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class UserTeamController : ControllerBase
     {
@@ -156,12 +156,14 @@ namespace PanacheSoftware.Service.Team.Controllers
             {
                 if (Guid.TryParse(id, out Guid parsedId))
                 {
-                    UserTeamJoinList userTeamJoinList = new UserTeamJoinList();
+                    TeamList teamList = _userTeamManager.GetTeamsForUser(parsedId);
 
-                    userTeamJoinList.UserTeamJoins = _mapper.Map<List<UserTeam>, List<UserTeamJoin>>(_unitOfWork.UserTeams.GetUserTeamsForUser(parsedId, true));
+                    //UserTeamJoinList userTeamJoinList = new UserTeamJoinList();
 
-                    if (userTeamJoinList.UserTeamJoins.Count() > 0)
-                        return Ok(userTeamJoinList);
+                    //userTeamJoinList.UserTeamJoins = _mapper.Map<List<UserTeam>, List<UserTeamJoin>>(_unitOfWork.UserTeams.GetUserTeamsForUser(parsedId, true));
+
+                    if (teamList.TeamHeaders.Count() > 0)
+                        return Ok(teamList);
 
                     return NotFound();
                 }
@@ -199,17 +201,26 @@ namespace PanacheSoftware.Service.Team.Controllers
         [HttpGet]
         public IActionResult GetUserTeamsForUser(string id)
         {
-            UserTeamJoinList userTeamJoinList = new UserTeamJoinList();
-
-            if (Guid.TryParse(id, out Guid parsedId))
+            try
             {
-                userTeamJoinList = _userTeamManager.GetUserTeamListForUser(parsedId);
+                if (Guid.TryParse(id, out Guid parsedId))
+                {
+                    UserTeamJoinList userTeamJoinList = new UserTeamJoinList();
+
+                    userTeamJoinList.UserTeamJoins = _mapper.Map<List<UserTeam>, List<UserTeamJoin>>(_unitOfWork.UserTeams.GetUserTeamsForUser(parsedId, true));
+
+                    if (userTeamJoinList.UserTeamJoins.Count() > 0)
+                        return Ok(userTeamJoinList);
+
+                    return NotFound();
+                }
+            }
+            catch (Exception e)
+            {
+                string message = e.Message;
             }
 
-            if (userTeamJoinList.UserTeamJoins.Any())
-                return Ok(userTeamJoinList);
-
-            return NotFound();
+            return BadRequest();
         }
 
         [Route("[action]/{id}")]

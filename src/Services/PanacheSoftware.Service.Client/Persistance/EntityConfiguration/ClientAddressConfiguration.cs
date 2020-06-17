@@ -7,11 +7,8 @@ namespace PanacheSoftware.Service.Client.Persistance.EntityConfiguration
 {
     public class ClientAddressConfiguration : IEntityTypeConfiguration<ClientAddress>
     {
-        private string _tenantId;
-
-        public ClientAddressConfiguration(string tenantId)
+        public ClientAddressConfiguration()
         {
-            _tenantId = tenantId;
         }
 
         public void Configure(EntityTypeBuilder<ClientAddress> builder)
@@ -28,8 +25,6 @@ namespace PanacheSoftware.Service.Client.Persistance.EntityConfiguration
                 .HasForeignKey(c => c.ClientContactId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
-
-            builder.HasQueryFilter(c => c.TenantId == Guid.Parse(_tenantId));
         }
     }
 }

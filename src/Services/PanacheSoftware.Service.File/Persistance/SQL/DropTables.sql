@@ -1,4 +1,0 @@
-﻿DROP TABLE FileVersion
-DROP TABLE FileLink
-DROP TABLE FileDetail
-DROP TABLE FileHeader

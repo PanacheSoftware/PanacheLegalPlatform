@@ -3,6 +3,7 @@ using PanacheSoftware.Core.Domain.Join;
 using PanacheSoftware.Core.Domain.Team;
 using PanacheSoftware.Http;
 using PanacheSoftware.Service.Team.Persistance.EntityConfiguration;
+using System;
 
 namespace PanacheSoftware.Service.Team.Persistance.Context
 {
@@ -23,9 +24,13 @@ namespace PanacheSoftware.Service.Team.Persistance.Context
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.ApplyConfiguration(new TeamHeaderConfiguration(_userProvider.GetTenantId()));
-            modelBuilder.ApplyConfiguration(new TeamDetailConfiguration(_userProvider.GetTenantId()));
-            modelBuilder.ApplyConfiguration(new UserTeamConfiguration(_userProvider.GetTenantId()));
+            modelBuilder.ApplyConfiguration(new TeamHeaderConfiguration());
+            modelBuilder.ApplyConfiguration(new TeamDetailConfiguration());
+            modelBuilder.ApplyConfiguration(new UserTeamConfiguration());
+
+            modelBuilder.Entity<TeamHeader>().HasQueryFilter(e => EF.Property<Guid>(e, "TenantId") == Guid.Parse(_userProvider.GetTenantId()));
+            modelBuilder.Entity<TeamDetail>().HasQueryFilter(e => EF.Property<Guid>(e, "TenantId") == Guid.Parse(_userProvider.GetTenantId()));
+            modelBuilder.Entity<UserTeam>().HasQueryFilter(e => EF.Property<Guid>(e, "TenantId") == Guid.Parse(_userProvider.GetTenantId()));
         }
     }
 }

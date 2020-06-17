@@ -20,6 +20,7 @@ namespace PanacheSoftware.Service.Client.Persistance
             LanguageItems = new LanguageItemRepository(context);
             SettingHeaders = new SettingHeaderRepository(context);
             UserSettings = new UserSettingRepository(context);
+            TenantSettings = new TenantSettingRepository(context, userProvider);
         }
 
         public ILanguageHeaderRepository LanguageHeaders { get; private set; }
@@ -31,6 +32,7 @@ namespace PanacheSoftware.Service.Client.Persistance
         public ISettingHeaderRepository SettingHeaders { get; private set; }
 
         public IUserSettingRepository UserSettings { get; private set; }
+        public ITenantSettingRepository TenantSettings { get; private set; }
 
     }
 }

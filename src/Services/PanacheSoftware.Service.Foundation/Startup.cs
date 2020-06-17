@@ -10,18 +10,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using PanacheSoftware.Core.Domain.Configuration;
 using PanacheSoftware.Core.Types;
 using PanacheSoftware.Http;
 using PanacheSoftware.Service.Client.Persistance;
 using PanacheSoftware.Service.Foundation.Core;
 using PanacheSoftware.Service.Foundation.Core.Repositories;
-using PanacheSoftware.Service.Foundation.Manager;
 using PanacheSoftware.Service.Foundation.Persistance.Context;
 using PanacheSoftware.Service.Foundation.Persistance.Repositories;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.IO;
-using System.Security.Claims;
 
 namespace PanacheSoftware.Service.Foundation
 {
@@ -49,6 +47,9 @@ namespace PanacheSoftware.Service.Foundation
 
             services.AddAuthorization();
 
+            var panacheSoftwareConfiguration = new PanacheSoftwareConfiguration();
+            Configuration.Bind("PanacheSoftware", panacheSoftwareConfiguration);
+
             //JwtSecurityTokenHandler.DefaultMapInboundClaimTypes = true;
             //JwtSecurityTokenHandler.DefaultMapInboundClaims = true;
             //JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
@@ -57,11 +58,11 @@ namespace PanacheSoftware.Service.Foundation
                 .AddIdentityServerAuthentication(options =>
                 {
                     // base-address of your identityserver
-                    options.Authority = "https://localhost:44397/";
+                    options.Authority = bool.Parse(panacheSoftwareConfiguration.CallMethod.UICallsSecure) ? panacheSoftwareConfiguration.Url.IdentityServerURLSecure : panacheSoftwareConfiguration.Url.IdentityServerURL;
 
                     // name of the API resource
                     options.ApiName = PanacheSoftwareScopeNames.FoundationService;
-                    options.ApiSecret = "70CD8BB9-5256-42CF-8B95-DD61C1051AD0";
+                    options.ApiSecret = panacheSoftwareConfiguration.Secret.FoundationServiceSecret;
                     options.RequireHttpsMetadata = false;
                     options.EnableCaching = true;
                 });
@@ -84,15 +85,15 @@ namespace PanacheSoftware.Service.Foundation
             services.AddTransient<ILanguageHeaderRepository, LanguageHeaderRepository>();
             services.AddTransient<ILanguageCodeRepository, LanguageCodeRepository>();
             services.AddTransient<ILanguageItemRepository, LanguageItemRepository>();
-            services.AddTransient<ILanguageManager, LanguageManager>();
 
             services.AddTransient<ISettingHeaderRepository, SettingHeaderRepository>();
             services.AddTransient<IUserSettingRepository, UserSettingRepository>();
-            services.AddTransient<ISettingManager, SettingManager>();
 
             services.AddTransient<IUserProvider, UserProvider>();
             services.AddTransient<IStaticFileReader, StaticFileReader>();
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
+
+            services.AddHostedService<MigrationHostedService>();
 
             services.AddAutoMapper(System.Reflection.Assembly.Load("PanacheSoftware.Core"));
 
@@ -100,9 +101,9 @@ namespace PanacheSoftware.Service.Foundation
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Panache Software Foundation API", Version = "v1" });
-                var filePath = Path.Combine(System.AppContext.BaseDirectory, "PanacheSoftware.Service.Foundation.xml");
-                c.IncludeXmlComments(filePath);
+                //c.SwaggerDoc("v1", new OpenApiInfo { Title = "Panache Software Foundation API", Version = "v1" });
+                //var filePath = Path.Combine(System.AppContext.BaseDirectory, "PanacheSoftware.Service.Foundation.xml");
+                //c.IncludeXmlComments(filePath);
 
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
@@ -162,7 +163,7 @@ namespace PanacheSoftware.Service.Foundation
             });
 
             app.UseAuthentication();
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseMvc();
         }
     }

@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PanacheSoftware.Core.Domain.Configuration;
 using PanacheSoftware.Core.Types;
 using PanacheSoftware.Http;
 using PanacheSoftware.UI.Core.Helpers;
@@ -51,9 +52,10 @@ namespace PanacheSoftware.UI.Client
                     //options.SuppressUseValidationProblemDetailsForInvalidModelStateResponses = true;
                 });
 
-            services.AddPanaceSoftwareResources();
-
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
+            var panacheSoftwareConfiguration = new PanacheSoftwareConfiguration();
+            Configuration.Bind("PanacheSoftware", panacheSoftwareConfiguration);
 
             services.AddAuthentication(options =>
             {
@@ -64,11 +66,11 @@ namespace PanacheSoftware.UI.Client
                 .AddOpenIdConnect("oidc", options =>
                 {
                     options.SignInScheme = "Cookies";
-                    options.Authority = "https://localhost:44397/";
+                    options.Authority = bool.Parse(panacheSoftwareConfiguration.CallMethod.UICallsSecure) ? panacheSoftwareConfiguration.Url.IdentityServerURLSecure : panacheSoftwareConfiguration.Url.IdentityServerURL;
                     options.RequireHttpsMetadata = false;
 
                     options.ClientId = PanacheSoftwareScopeNames.ClientUI;
-                    options.ClientSecret = "49C1A7E1-0C79-4A89-A3D6-A37998FB86B0";
+                    options.ClientSecret = panacheSoftwareConfiguration.Secret.UIClientSecret;
                     options.ResponseType = "code id_token";
 
                     options.SaveTokens = true;
@@ -81,10 +83,10 @@ namespace PanacheSoftware.UI.Client
                     options.Scope.Add(PanacheSoftwareScopeNames.IdentityResourceProfile);
                     options.Scope.Add(PanacheSoftwareScopeNames.ClientService);
                     options.Scope.Add(PanacheSoftwareScopeNames.TeamService);
-                    options.Scope.Add(PanacheSoftwareScopeNames.FolderService);
                     options.Scope.Add(PanacheSoftwareScopeNames.FoundationService);
                     options.Scope.Add(PanacheSoftwareScopeNames.TaskService);
                     options.Scope.Add(PanacheSoftwareScopeNames.FileService);
+                    options.Scope.Add(PanacheSoftwareScopeNames.APIGateway);
 
                     options.ClaimActions.MapUniqueJsonKey("tenantid", "tenantid");
                 });
@@ -107,6 +109,8 @@ namespace PanacheSoftware.UI.Client
             }
 
             app.UseAuthentication();
+
+            //app.UseHttpsRedirection();
 
             app.UseStaticFiles();
             app.UseCookiePolicy();

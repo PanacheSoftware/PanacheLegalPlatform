@@ -12,7 +12,7 @@ using PanacheSoftware.Service.Team.Manager;
 namespace PanacheSoftware.Service.Team.Controllers
 {
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class TeamController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;

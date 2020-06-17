@@ -1,11 +1,16 @@
 ﻿using System;
+using System.Net.Http;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using PanacheSoftware.Core.Domain.API.Join;
 using PanacheSoftware.Core.Domain.API.Task;
 using PanacheSoftware.Core.Domain.Task;
+using PanacheSoftware.Http;
 using PanacheSoftware.Service.Task.Core;
 using PanacheSoftware.Service.Task.Manager;
 
@@ -13,18 +18,22 @@ namespace PanacheSoftware.Service.Task.Controllers
 {
     [Produces("application/json")]
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class TaskGroupController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ITaskManager _taskManager;
+        private readonly IUserProvider _userProvider;
+        private readonly IAPIHelper _apiHelper;
 
-        public TaskGroupController(IUnitOfWork unitOfWork, IMapper mapper, ITaskManager taskManager)
+        public TaskGroupController(IUnitOfWork unitOfWork, IMapper mapper, ITaskManager taskManager, IUserProvider userProvider, IAPIHelper apiHelper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _taskManager = taskManager;
+            _userProvider = userProvider;
+            _apiHelper = apiHelper;
         }
 
         [HttpGet]
@@ -32,11 +41,13 @@ namespace PanacheSoftware.Service.Task.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(404)]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
             try
             {
-                var taskGroupList = _taskManager.GetTaskGroupList();
+                var accessToken = await HttpContext.GetTokenAsync("access_token");
+
+                var taskGroupList = await _taskManager.GetTaskGroupListAsync(accessToken);
 
                 if (taskGroupList.TaskGroupHeaders.Count > 0)
                     return Ok(taskGroupList);
@@ -54,19 +65,21 @@ namespace PanacheSoftware.Service.Task.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(404)]
-        public IActionResult Get(string id)
+        public async Task<IActionResult> Get(string id)
         {
             try
             {
+                var accessToken = await HttpContext.GetTokenAsync("access_token");
+
                 TaskGroupHeader taskGroupHeader = null;
 
                 if (Guid.TryParse(id, out Guid parsedId))
                 {
-                    taskGroupHeader = _unitOfWork.TaskGroupHeaders.GetTaskGroupHeaderWithRelations(parsedId, false);
+                    taskGroupHeader = await _unitOfWork.TaskGroupHeaders.GetTaskGroupHeaderWithRelationsAsync(parsedId, false, accessToken);
                 }
                 else
                 {
-                    taskGroupHeader = _unitOfWork.TaskGroupHeaders.GetTaskGroupHeaderWithRelations(id, false);
+                    taskGroupHeader = await _unitOfWork.TaskGroupHeaders.GetTaskGroupHeaderWithRelationsAsync(id, false, accessToken);
                 }
 
                 if (taskGroupHeader != null)
@@ -83,20 +96,25 @@ namespace PanacheSoftware.Service.Task.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody]TaskGroupHead taskGroupHead)
+        public async Task<IActionResult> Post([FromBody]TaskGroupHead taskGroupHead)
         {
             try
             {
+                var accessToken = await HttpContext.GetTokenAsync("access_token");
+
                 if (taskGroupHead.Id == Guid.Empty)
                 {
                     //var userId = User.FindFirstValue("sub");
 
                     var taskGroupHeader = _mapper.Map<TaskGroupHeader>(taskGroupHead);
 
-                    if (!_taskManager.TaskGroupParentOkay(taskGroupHeader))
+                    if (!await _taskManager.TaskGroupTeamOkayAsync(taskGroupHeader, accessToken))
                         return BadRequest();
 
-                    if (!_taskManager.SetNewTaskGroupSequenceNo(taskGroupHeader))
+                    if (!await _taskManager.TaskGroupParentOkayAsync(taskGroupHeader, accessToken))
+                        return BadRequest();
+
+                    if (!await _taskManager.SetNewTaskGroupSequenceNoAsync(taskGroupHeader, accessToken))
                         return BadRequest();
 
                     taskGroupHeader.OriginalCompletionDate = taskGroupHeader.CompletionDate;
@@ -123,44 +141,52 @@ namespace PanacheSoftware.Service.Task.Controllers
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
         [ProducesResponseType(401)]
-        public IActionResult Patch(string id, [FromBody]JsonPatchDocument<TaskGroupHead> taskGroupHeadPatch)
+        public async Task<IActionResult> Patch(string id, [FromBody]JsonPatchDocument<TaskGroupHead> taskGroupHeadPatch)
         {
             try
             {
+                var accessToken = await HttpContext.GetTokenAsync("access_token");
+
                 if (Guid.TryParse(id, out Guid parsedId))
                 {
                     //var userId = User.FindFirstValue("sub");
 
                     var taskGroupHeader = _unitOfWork.TaskGroupHeaders.Get(parsedId);
 
-                    var taskGroupHead = _mapper.Map<TaskGroupHead>(taskGroupHeader);
-                  
-                    taskGroupHeadPatch.ApplyTo(taskGroupHead);
-
-                    //Make sure the Original dates do not get changed
-                    taskGroupHead.OriginalCompletionDate = taskGroupHeader.OriginalCompletionDate;
-                    taskGroupHead.OriginalStartDate = taskGroupHeader.OriginalStartDate;
-
-                    if (taskGroupHeader.ParentTaskGroupId != null)
+                    if (taskGroupHeader != null)
                     {
-                        TaskGroupHeader parentTaskGroupHeader = _unitOfWork.TaskGroupHeaders.SingleOrDefault(c => c.Id == taskGroupHeader.ParentTaskGroupId, true);
-
-                        if(parentTaskGroupHeader != null)
+                        if (await _taskManager.CanAccessTaskGroupHeaderAsync(taskGroupHeader.Id, accessToken))
                         {
-                            //Make sure the start and completion dates don't fall outside of the group headers dates
-                            taskGroupHead.StartDate = (taskGroupHead.StartDate < parentTaskGroupHeader.StartDate) ? parentTaskGroupHeader.StartDate : taskGroupHead.StartDate;
-                            taskGroupHead.CompletionDate = (taskGroupHead.CompletionDate > parentTaskGroupHeader.CompletionDate) ? parentTaskGroupHeader.CompletionDate : taskGroupHead.CompletionDate;
+                            var taskGroupHead = _mapper.Map<TaskGroupHead>(taskGroupHeader);
+
+                            taskGroupHeadPatch.ApplyTo(taskGroupHead);
+
+                            //Make sure the Original dates do not get changed
+                            taskGroupHead.OriginalCompletionDate = taskGroupHeader.OriginalCompletionDate;
+                            taskGroupHead.OriginalStartDate = taskGroupHeader.OriginalStartDate;
+
+                            if (taskGroupHeader.ParentTaskGroupId != null)
+                            {
+                                TaskGroupHeader parentTaskGroupHeader = _unitOfWork.TaskGroupHeaders.SingleOrDefault(c => c.Id == taskGroupHeader.ParentTaskGroupId, true);
+
+                                if (parentTaskGroupHeader != null)
+                                {
+                                    //Make sure the start and completion dates don't fall outside of the group headers dates
+                                    taskGroupHead.StartDate = (taskGroupHead.StartDate < parentTaskGroupHeader.StartDate) ? parentTaskGroupHeader.StartDate : taskGroupHead.StartDate;
+                                    taskGroupHead.CompletionDate = (taskGroupHead.CompletionDate > parentTaskGroupHeader.CompletionDate) ? parentTaskGroupHeader.CompletionDate : taskGroupHead.CompletionDate;
+                                }
+                            }
+
+                            _mapper.Map(taskGroupHead, taskGroupHeader);
+
+                            if (!await _taskManager.TaskGroupParentOkayAsync(taskGroupHeader, accessToken))
+                                return BadRequest();
+
+                            _unitOfWork.Complete();
+
+                            return CreatedAtRoute("Get", new { id = _mapper.Map<TaskGroupHead>(taskGroupHeader).Id }, _mapper.Map<TaskGroupHead>(taskGroupHeader));
                         }
                     }
-
-                    _mapper.Map(taskGroupHead, taskGroupHeader);
-
-                    if (!_taskManager.TaskGroupParentOkay(taskGroupHeader))
-                        return BadRequest();
-
-                    _unitOfWork.Complete();
-
-                    return CreatedAtRoute("Get", new { id = _mapper.Map<TaskGroupHead>(taskGroupHeader).Id }, _mapper.Map<TaskGroupHead>(taskGroupHeader));
                 }
             }
             catch (Exception e)
@@ -173,19 +199,21 @@ namespace PanacheSoftware.Service.Task.Controllers
 
         [Route("[action]/{id}")]
         [HttpPost]
-        public IActionResult Complete(string id)
+        public async Task<IActionResult> Complete(string id)
         {
             try
             {
                 if (Guid.TryParse(id, out Guid parsedId))
                 {
-                    var taskGroupHeaderReadOnly = _unitOfWork.TaskGroupHeaders.GetTaskGroupHeaderWithRelations(parsedId, true);
+                    var accessToken = await HttpContext.GetTokenAsync("access_token");
+
+                    var taskGroupHeaderReadOnly = await _unitOfWork.TaskGroupHeaders.GetTaskGroupHeaderWithRelationsAsync(parsedId, true, accessToken);
 
                     if(taskGroupHeaderReadOnly != null)
                     {
                         if (!taskGroupHeaderReadOnly.Completed)
                         {
-                            if (_taskManager.CanCompleteTaskGroup(taskGroupHeaderReadOnly.Id))
+                            if (await _taskManager.CanCompleteTaskGroupAsync(taskGroupHeaderReadOnly.Id, accessToken))
                             {
                                 var taskGroupHeader = _unitOfWork.TaskGroupHeaders.Get(taskGroupHeaderReadOnly.Id);
 
@@ -222,11 +250,13 @@ namespace PanacheSoftware.Service.Task.Controllers
 
         [Route("[action]")]
         [HttpGet]
-        public IActionResult GetMainTaskGroups()
+        public async Task<IActionResult> GetMainTaskGroups()
         {
             try
             {
-                var taskGroupList = _taskManager.GetMainTaskGroups();
+                var accessToken = await HttpContext.GetTokenAsync("access_token");
+
+                var taskGroupList = await _taskManager.GetMainTaskGroupsAsync(accessToken);
 
                 if (taskGroupList.TaskGroupHeaders.Count > 0)
                     return Ok(taskGroupList);
@@ -241,11 +271,13 @@ namespace PanacheSoftware.Service.Task.Controllers
 
         [Route("[action]")]
         [HttpGet]
-        public IActionResult GetTaskGroupSummary()
+        public async Task<IActionResult> GetTaskGroupSummary()
         {
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+
             try
             {
-                var taskGroupList = _taskManager.GetMainTaskGroupSummarys();
+                var taskGroupList = await _taskManager.GetMainTaskGroupSummarysAsync(accessToken);
 
                 if (taskGroupList.TaskGroupSummarys.Count > 0)
                     return Ok(taskGroupList);
@@ -260,11 +292,13 @@ namespace PanacheSoftware.Service.Task.Controllers
 
         [Route("[action]/{id}")]
         [HttpGet]
-        public IActionResult GetTaskGroupSummary(string id)
+        public async Task<IActionResult> GetTaskGroupSummary(string id)
         {
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+
             if (Guid.TryParse(id, out Guid parsedId))
             {
-                var taskGroupSummary = _taskManager.GetTaskGroupSummary(parsedId);
+                var taskGroupSummary = await _taskManager.GetTaskGroupSummaryAsync(parsedId, accessToken);
 
                 if (taskGroupSummary != null)
                         return Ok(taskGroupSummary);
@@ -275,23 +309,25 @@ namespace PanacheSoftware.Service.Task.Controllers
             return BadRequest();
         }
 
-        [Route("[action]/{id}")]
-        [HttpGet]
-        public IActionResult GetValidParents(string id)
-        {
-            TaskGroupList taskGroupList;
+        //[Route("[action]/{id}")]
+        //[HttpGet]
+        //public async Task<IActionResult> GetValidParents(string id)
+        //{
+        //    TaskGroupList taskGroupList;
 
-            if (Guid.TryParse(id, out Guid parsedId))
-            {
-                taskGroupList = _taskManager.GetTaskGroupList(parsedId, true);
+        //    var accessToken = await HttpContext.GetTokenAsync("access_token");
 
-                if (taskGroupList.TaskGroupHeaders.Count > 0)
-                    return Ok(taskGroupList);
+        //    if (Guid.TryParse(id, out Guid parsedId))
+        //    {
+        //        taskGroupList = await _taskManager.GetTaskGroupListAsync(accessToken, parsedId, true);
 
-                return NotFound();
-            }
+        //        if (taskGroupList.TaskGroupHeaders.Count > 0)
+        //            return Ok(taskGroupList);
 
-            return BadRequest();
-        }
+        //        return NotFound();
+        //    }
+
+        //    return BadRequest();
+        //}
     }
 }

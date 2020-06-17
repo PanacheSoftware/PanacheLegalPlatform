@@ -18,7 +18,7 @@ using static IdentityServer4.IdentityServerConstants;
 
 namespace PanacheSoftware.Identity.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     [Authorize(LocalApi.PolicyName)]
     public class UserController : ControllerBase
@@ -116,7 +116,7 @@ namespace PanacheSoftware.Identity.Controllers
 
                     if (result.Succeeded)
                     {
-                        return Created(new Uri($"https://localhost:44380/User/{userModel.Id}", UriKind.Absolute), userModel);
+                        return Created(new Uri($"{Request.Path}/{userModel.Id}", UriKind.Absolute), userModel);
                     }
                 }
             }
@@ -152,7 +152,7 @@ namespace PanacheSoftware.Identity.Controllers
 
                     if (updateUserResult.Succeeded)
                     {
-                        return Created(new Uri($"https://localhost:44380/User/{userModel.Id}", UriKind.Absolute), userModel);
+                        return CreatedAtRoute("Get", new { id = userModel.Id }, userModel);
                     }
                 }
             }

@@ -29,10 +29,15 @@ namespace PanacheSoftware.Service.File.Persistance.Context
 
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.ApplyConfiguration(new FileHeaderConfiguration(tenantId));
-            modelBuilder.ApplyConfiguration(new FileDetailConfiguration(tenantId));
-            modelBuilder.ApplyConfiguration(new FileVersionConfiguration(tenantId));
-            modelBuilder.ApplyConfiguration(new FileLinkConfiguration(tenantId));
+            modelBuilder.ApplyConfiguration(new FileHeaderConfiguration());
+            modelBuilder.ApplyConfiguration(new FileDetailConfiguration());
+            modelBuilder.ApplyConfiguration(new FileVersionConfiguration());
+            modelBuilder.ApplyConfiguration(new FileLinkConfiguration());
+
+            modelBuilder.Entity<FileHeader>().HasQueryFilter(e => EF.Property<Guid>(e, "TenantId") == Guid.Parse(_userProvider.GetTenantId()));
+            modelBuilder.Entity<FileDetail>().HasQueryFilter(e => EF.Property<Guid>(e, "TenantId") == Guid.Parse(_userProvider.GetTenantId()));
+            modelBuilder.Entity<FileVersion>().HasQueryFilter(e => EF.Property<Guid>(e, "TenantId") == Guid.Parse(_userProvider.GetTenantId()));
+            modelBuilder.Entity<FileLink>().HasQueryFilter(e => EF.Property<Guid>(e, "TenantId") == Guid.Parse(_userProvider.GetTenantId()));
         }
     }
 }

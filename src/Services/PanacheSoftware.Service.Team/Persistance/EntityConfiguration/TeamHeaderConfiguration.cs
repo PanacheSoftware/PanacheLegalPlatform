@@ -7,11 +7,9 @@ namespace PanacheSoftware.Service.Team.Persistance.EntityConfiguration
 {
     public class TeamHeaderConfiguration : IEntityTypeConfiguration<TeamHeader>
     {
-        private string _tenantId;
 
-        public TeamHeaderConfiguration(string tenantId)
+        public TeamHeaderConfiguration()
         {
-            _tenantId = tenantId;
         }
 
         public void Configure(EntityTypeBuilder<TeamHeader> builder)
@@ -27,8 +25,6 @@ namespace PanacheSoftware.Service.Team.Persistance.EntityConfiguration
             builder.HasOne(t => t.ParentTeam)
                 .WithMany(t => t.ChildTeams)
                 .HasForeignKey(t => t.ParentTeamId);
-
-            builder.HasQueryFilter(t => t.TenantId == Guid.Parse(_tenantId));
         }
     }
 }

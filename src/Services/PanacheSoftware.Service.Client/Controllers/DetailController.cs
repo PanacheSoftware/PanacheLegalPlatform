@@ -12,7 +12,7 @@ using PanacheSoftware.Service.Client.Core;
 namespace PanacheSoftware.Service.Client.Controllers
 {
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("Client/[controller]")]
     [ApiController]
     public class DetailController : ControllerBase
     {

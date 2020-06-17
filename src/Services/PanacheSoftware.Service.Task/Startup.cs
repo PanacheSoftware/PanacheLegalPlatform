@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using PanacheSoftware.Core.Domain.Configuration;
 using PanacheSoftware.Core.Types;
 using PanacheSoftware.Http;
 using PanacheSoftware.Service.Task.Core;
@@ -43,15 +44,18 @@ namespace PanacheSoftware.Service.Task
 
             services.AddAuthorization();
 
+            var panacheSoftwareConfiguration = new PanacheSoftwareConfiguration();
+            Configuration.Bind("PanacheSoftware", panacheSoftwareConfiguration);
+
             services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
                 .AddIdentityServerAuthentication(options =>
                 {
                     // base-address of your identityserver
-                    options.Authority = "https://localhost:44397/";
+                    options.Authority = bool.Parse(panacheSoftwareConfiguration.CallMethod.UICallsSecure) ? panacheSoftwareConfiguration.Url.IdentityServerURLSecure : panacheSoftwareConfiguration.Url.IdentityServerURL;
 
                     // name of the API resource
                     options.ApiName = PanacheSoftwareScopeNames.TaskService;
-                    options.ApiSecret = "AC654B02-E46B-4359-B908-87479CBE1CEB";
+                    options.ApiSecret = panacheSoftwareConfiguration.Secret.TaskServiceSecret;
                     options.RequireHttpsMetadata = false;
                     options.EnableCaching = true;
                 });
@@ -80,6 +84,9 @@ namespace PanacheSoftware.Service.Task
 
             services.AddTransient<IUserProvider, UserProvider>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<IAPIHelper, APIHelper>();
+
+            services.AddHostedService<MigrationHostedService>();
 
             services.AddAutoMapper(System.Reflection.Assembly.Load("PanacheSoftware.Core"));
 
@@ -100,7 +107,7 @@ namespace PanacheSoftware.Service.Task
             }
 
             app.UseAuthentication();
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseMvc();
         }
     }

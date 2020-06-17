@@ -166,10 +166,10 @@ namespace PanacheSoftware.Core.Types
         public const string ClientUI = "PanacheSoftware.UI.Client";
         public const string ClientService = "PanacheSoftware.Service.Client";
         public const string TeamService = "PanacheSoftware.Service.Team";
-        public const string FolderService = "PanacheSoftware.Service.Folder";
         public const string FoundationService = "PanacheSoftware.Service.Foundation";
         public const string TaskService = "PanacheSoftware.Service.Task";
         public const string FileService = "PanacheSoftware.Service.File";
+        public const string APIGateway = "PanacheSoftware.API.Gateway";
     }
 
     public struct PanacheSoftwareClaims

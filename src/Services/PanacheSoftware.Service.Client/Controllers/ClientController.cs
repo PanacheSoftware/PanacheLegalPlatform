@@ -15,7 +15,7 @@ namespace PanacheSoftware.Service.Client.Controllers
 {
     [Produces("application/json")]
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class ClientController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;

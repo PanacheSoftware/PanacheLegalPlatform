@@ -35,29 +35,24 @@
                                         <tr>
                                             <th></th>
                                             <th>@Html.GetTitle(Model.langQueryList, 10218)</th>
-                                            <th>@Html.GetTitle(Model.langQueryList, 10212)</th>
                                             <th>@Html.GetTitle(Model.langQueryList, 10219)</th>
-                                            <th>@Html.GetTitle(Model.langQueryList, 10220)</th>
                                             <th>@Html.GetTitle(Model.langQueryList, 10200)</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach (var currentSettingHeader in Model.settingList.SettingHeaders)
+                                        @foreach (var currentTenantSetting in Model.settingList.TenantSettings)
                                         {
                                             <tr>
                                                 <td>
-                                                    <a asp-page="/Setting/SettingName" asp-route-id="@currentSettingHeader.Name" class="btn btn-primary btn-sm"><i class="fa fa-edit"></i></a>
+                                                    <a asp-page="/Setting/SettingName" asp-route-id="@currentTenantSetting.Name" class="btn btn-primary btn-sm"><i class="fa fa-edit"></i></a>
                                                 </td>
-                                                <td>@currentSettingHeader.Name</td>
-                                                <td>@currentSettingHeader.SettingType</td>
-                                                <td>@currentSettingHeader.Value</td>
-                                                <td>@currentSettingHeader.DefaultValue</td>
-                                                <td>@currentSettingHeader.Description</td>
+                                                <td>@currentTenantSetting.Name</td>
+                                                <td>@currentTenantSetting.Value</td>
+                                                <td>@currentTenantSetting.Description</td>
                                             </tr>
                                         }
                                     </tbody>
                                 </table>
-                                <a class="btn btn-primary" asp-page="/Setting/SettingName">@Html.GetTitle(Model.langQueryList, 10204)</a>
                             </div>
                         </div>
                     </div>

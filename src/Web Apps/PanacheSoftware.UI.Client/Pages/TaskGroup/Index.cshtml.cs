@@ -1,30 +1,23 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
 //using Newtonsoft.Json;
 using PanacheSoftware.Core.Domain.API.Client;
-using PanacheSoftware.Core.Domain.API.Folder;
-using PanacheSoftware.Core.Domain.API.Team;
 using PanacheSoftware.Core.Domain.Identity.API;
 using PanacheSoftware.Core.Domain.UI;
 using PanacheSoftware.Core.Types;
 using PanacheSoftware.Http;
 using PanacheSoftware.UI.Core.Helpers;
-using PanacheSoftware.Core.Extensions;
 using PanacheSoftware.UI.Core.PageModel;
 using PanacheSoftware.Core.Domain.API.Language;
 using PanacheSoftware.Core.Domain.API.Task;
 using PanacheSoftware.Core.Domain.API.File;
-using Microsoft.EntityFrameworkCore.Internal;
 
 namespace PanacheSoftware.UI.Client.Pages.TaskGroup
 {
@@ -287,7 +280,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
 
         private async Task<FileList> GetLinksForTask(string accessToken, string linkType, Guid linkId)
         {
-            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FILE, $"FileLink/GetFilesForLink/{linkType}/{linkId}");
+            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FILE, $"File/Link/GetFilesForLink/{linkType}/{linkId}");
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {

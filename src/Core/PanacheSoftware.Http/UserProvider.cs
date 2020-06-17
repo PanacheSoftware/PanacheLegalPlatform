@@ -23,10 +23,16 @@ namespace PanacheSoftware.Http
 
         public string GetTenantId()
         {
-            var curUsr = _accessor.HttpContext.User;
-            if (curUsr.Identity != null)
+            if (_accessor.HttpContext != null)
             {
-                return curUsr.FindFirst("tenantid").Value;
+                if (_accessor.HttpContext.User != null)
+                {
+                    var curUsr = _accessor.HttpContext.User;
+                    if (curUsr.Identity != null)
+                    {
+                        return curUsr.FindFirst("tenantid").Value;
+                    }
+                }
             }
             return Guid.Empty.ToString();
         }

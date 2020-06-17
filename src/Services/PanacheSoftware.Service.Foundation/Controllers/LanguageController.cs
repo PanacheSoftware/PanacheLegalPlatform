@@ -1,35 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using PanacheSoftware.Core.Domain.API.Language;
 using PanacheSoftware.Core.Domain.Language;
 using PanacheSoftware.Service.Foundation.Core;
-using PanacheSoftware.Service.Foundation.Manager;
 
 namespace PanacheSoftware.Service.Foundation.Controllers
 {
     [Produces("application/json")]
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class LanguageController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly ILanguageManager _languageManager;
 
-        public LanguageController(IUnitOfWork unitOfWork, IMapper mapper, ILanguageManager languageManager)
+        public LanguageController(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _languageManager = languageManager;
-            _languageManager.SeedLanguage();
         }
 
         [HttpGet]

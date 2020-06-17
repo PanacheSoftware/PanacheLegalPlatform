@@ -1,36 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using PanacheSoftware.Core.Domain.API.Settings;
 using PanacheSoftware.Core.Domain.Settings;
 using PanacheSoftware.Core.Types;
 using PanacheSoftware.Service.Foundation.Core;
-using PanacheSoftware.Service.Foundation.Manager;
 
 namespace PanacheSoftware.Service.Foundation.Controllers
 {
     [Produces("application/json")]
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class SettingController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly ISettingManager _settingManager;
 
-        public SettingController(IUnitOfWork unitOfWork, IMapper mapper, ISettingManager settingManager)
+        public SettingController(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _settingManager = settingManager;
-            _settingManager.SeedSettings();
         }
 
         [HttpGet]
@@ -42,15 +34,22 @@ namespace PanacheSoftware.Service.Foundation.Controllers
         {
             try
             {
-                SettingList settingList = new SettingList();
+                TenantSettingList tenantSettingList = new TenantSettingList();
 
-                foreach (var currentSetting in _unitOfWork.SettingHeaders.GetSettingHeaders(includeUser: false))
+                foreach (var currentTenantSetting in _unitOfWork.TenantSettings.GetTenantSettings())
                 {
-                    settingList.SettingHeaders.Add(_mapper.Map<SettingHead>(currentSetting));
+                    tenantSettingList.TenantSettings.Add(_mapper.Map<TenSetting>(currentTenantSetting));
                 }
 
-                if (settingList.SettingHeaders.Count > 0)
-                    return Ok(settingList);
+                //SettingList settingList = new SettingList();
+
+                //foreach (var currentSetting in _unitOfWork.SettingHeaders.GetSettingHeaders(includeUser: false))
+                //{
+                //    settingList.SettingHeaders.Add(_mapper.Map<SettingHead>(currentSetting));
+                //}
+
+                if (tenantSettingList.TenantSettings.Count > 0)
+                    return Ok(tenantSettingList);
             }
             catch (Exception e)
             {
@@ -69,27 +68,30 @@ namespace PanacheSoftware.Service.Foundation.Controllers
         {
             try
             {
-                SettingHeader settingHeader;
+                TenantSetting tenantSetting;
+                //SettingHeader settingHeader;
 
                 if (Guid.TryParse(id, out Guid foundId))
                 {
-                    settingHeader = _unitOfWork.SettingHeaders.GetSettingHeader(settingHeaderId: foundId, includeUser: false);
+                    tenantSetting = _unitOfWork.TenantSettings.GetTenantSetting(foundId);
+                    //settingHeader = _unitOfWork.SettingHeaders.GetSettingHeader(settingHeaderId: foundId, includeUser: false);
                 }
                 else
                 {
                     if (!string.IsNullOrWhiteSpace(id))
                     {
-                        settingHeader = _unitOfWork.SettingHeaders.GetSettingHeader(settingHeaderName: id, includeUser: false);
+                        tenantSetting = _unitOfWork.TenantSettings.GetTenantSetting(id);
+                        //settingHeader = _unitOfWork.SettingHeaders.GetSettingHeader(settingHeaderName: id, includeUser: false);
                     }
                     else
                     {
-                        settingHeader = null;
+                        tenantSetting = null;
                     }
                 }
 
-                if (settingHeader != null)
+                if (tenantSetting != null)
                 {
-                    return Ok(_mapper.Map<SettingHead>(settingHeader));
+                    return Ok(_mapper.Map<TenSetting>(tenantSetting));
                 }
             }
             catch (Exception e)
@@ -101,25 +103,26 @@ namespace PanacheSoftware.Service.Foundation.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody]SettingHead settingHead)
+        public IActionResult Post([FromBody] TenSetting tenSetting)
         {
             try
             {
-                if (settingHead.Id == Guid.Empty)
+                if (tenSetting.Id == Guid.Empty)
                 {
-                    var foundExisting = _unitOfWork.SettingHeaders.GetSettingHeader(settingHead.Id, includeUser: false);
+                    var foundExisting = _unitOfWork.TenantSettings.GetTenantSetting(tenSetting.Id);
 
                     if (foundExisting == null)
                     {
                         //var userId = User.FindFirstValue("sub");
 
-                        var settingHeader = _mapper.Map<SettingHeader>(settingHead);
+                        var tenantSetting = _mapper.Map<TenantSetting>(tenSetting);
+                        tenantSetting.Status = StatusTypes.Open;
 
-                        _unitOfWork.SettingHeaders.Add(settingHeader);
+                        _unitOfWork.TenantSettings.Add(tenantSetting);
 
                         _unitOfWork.Complete();
 
-                        return Created(new Uri($"{Request.Path}/{settingHeader.Id}", UriKind.Relative), _mapper.Map<SettingHead>(settingHeader));
+                        return Created(new Uri($"{Request.Path}/{tenantSetting.Id}", UriKind.Relative), _mapper.Map<TenSetting>(tenantSetting));
                     }
                 }
             }
@@ -136,7 +139,7 @@ namespace PanacheSoftware.Service.Foundation.Controllers
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
         [ProducesResponseType(401)]
-        public IActionResult Patch(string id, [FromBody]JsonPatchDocument<SettingHead> settingHeadPatch)
+        public IActionResult Patch(string id, [FromBody]JsonPatchDocument<TenSetting> tenantSettingPatch)
         {
             try
             {
@@ -144,17 +147,17 @@ namespace PanacheSoftware.Service.Foundation.Controllers
                 {
                     //var userId = User.FindFirstValue("sub");
 
-                    SettingHeader settingHeader = _unitOfWork.SettingHeaders.Get(parsedId);
+                    TenantSetting tenantSetting = _unitOfWork.TenantSettings.Get(parsedId);
 
-                    SettingHead settingHead = _mapper.Map<SettingHead>(settingHeader);
+                    TenSetting tenSetting = _mapper.Map<TenSetting>(tenantSetting);
 
-                    settingHeadPatch.ApplyTo(settingHead);
+                    tenantSettingPatch.ApplyTo(tenSetting);
 
-                    _mapper.Map(settingHead, settingHeader);
+                    _mapper.Map(tenSetting, tenantSetting);
 
                     _unitOfWork.Complete();
 
-                    return CreatedAtRoute("Get", new { id = _mapper.Map<SettingHead>(settingHeader).Id }, _mapper.Map<SettingHead>(settingHeader));
+                    return CreatedAtRoute("Get", new { id = _mapper.Map<TenSetting>(tenantSetting).Id }, _mapper.Map<TenSetting>(tenantSetting));
                 }
             }
             catch (Exception e)

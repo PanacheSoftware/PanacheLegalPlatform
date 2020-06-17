@@ -7,11 +7,8 @@ namespace PanacheSoftware.Service.Foundation.Persistance.EntityConfiguration
 {
     public class LanguageCodeConfiguration : IEntityTypeConfiguration<LanguageCode>
     {
-        private string _tenantId;
-
-        public LanguageCodeConfiguration(string tenantId)
+        public LanguageCodeConfiguration()
         {
-            _tenantId = tenantId;
         }
 
         public void Configure(EntityTypeBuilder<LanguageCode> builder)
@@ -22,8 +19,6 @@ namespace PanacheSoftware.Service.Foundation.Persistance.EntityConfiguration
             builder.Property(l => l.Id).ValueGeneratedOnAdd();
             builder.Property(l => l.Status).IsRequired();
             builder.Property(l => l.LanguageCodeId).IsRequired();
-
-            builder.HasQueryFilter(l => l.TenantId == Guid.Parse(_tenantId));
         }
     }
 }

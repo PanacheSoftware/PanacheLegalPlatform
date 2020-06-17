@@ -7,11 +7,9 @@ namespace PanacheSoftware.Service.Team.Persistance.EntityConfiguration
 {
     public class UserTeamConfiguration : IEntityTypeConfiguration<UserTeam>
     {
-        private string _tenantId;
 
-        public UserTeamConfiguration(string tenantId)
+        public UserTeamConfiguration()
         {
-            _tenantId = tenantId;
         }
 
         public void Configure(EntityTypeBuilder<UserTeam> builder)
@@ -24,8 +22,6 @@ namespace PanacheSoftware.Service.Team.Persistance.EntityConfiguration
             builder.Property(p => p.Status).IsRequired();
 
             //builder.HasKey(k => new { k.UserId, k.TeamHeaderId });
-
-            builder.HasQueryFilter(p => p.TenantId == Guid.Parse(_tenantId));
         }
     }
 }

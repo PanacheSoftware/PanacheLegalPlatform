@@ -30,7 +30,7 @@ namespace PanacheSoftware.UI.Client
         private readonly IModelHelper _modelHelper;
 
         [BindProperty]
-        public SettingHead settingHead { get; set; }
+        public TenSetting tenSetting { get; set; }
         [BindProperty(SupportsGet = true)]
         public string Id { get; set; }
         
@@ -72,11 +72,11 @@ namespace PanacheSoftware.UI.Client
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                settingHead = response.ContentAsType<SettingHead>();
+                tenSetting = response.ContentAsType<TenSetting>();
             }
             else
             {
-                settingHead = new SettingHead();
+                tenSetting = new TenSetting();
             }
 
             SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken);
@@ -92,7 +92,7 @@ namespace PanacheSoftware.UI.Client
 
             if (ModelState.IsValid)
             {
-                if (settingHead != null)
+                if (tenSetting != null)
                 {
                     await CreateOrUpdateSystemSettingAsync(accessToken);
                 }
@@ -112,19 +112,19 @@ namespace PanacheSoftware.UI.Client
 
         private async Task<bool> CreateOrUpdateSystemSettingAsync(string apiAccessToken)
         {
-            if (settingHead != null)
+            if (tenSetting != null)
             {
-                if (settingHead.Id != Guid.Empty)
+                if (tenSetting.Id != Guid.Empty)
                 {
-                    var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.FOUNDATION, $"Setting/{settingHead.Id}");
+                    var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.FOUNDATION, $"Setting/{tenSetting.Id}");
 
                     if (response.StatusCode == System.Net.HttpStatusCode.OK)
                     {
-                        var foundSystemSetting = response.ContentAsType<SettingHead>();
+                        var foundSystemSetting = response.ContentAsType<TenSetting>();
 
                         if (foundSystemSetting != null)
                         {
-                            if (!await _modelHelper.ProcessPatch(foundSystemSetting, settingHead, foundSystemSetting.Id, apiAccessToken, APITypes.FOUNDATION, "Setting"))
+                            if (!await _modelHelper.ProcessPatch(foundSystemSetting, tenSetting, foundSystemSetting.Id, apiAccessToken, APITypes.FOUNDATION, "Setting"))
                             {
                                 return false;
                             }
@@ -133,7 +133,7 @@ namespace PanacheSoftware.UI.Client
                 }
                 else
                 {
-                    HttpContent contentPost = new StringContent(JsonConvert.SerializeObject(settingHead), Encoding.UTF8, "application/json");
+                    HttpContent contentPost = new StringContent(JsonConvert.SerializeObject(tenSetting), Encoding.UTF8, "application/json");
 
                     try
                     {

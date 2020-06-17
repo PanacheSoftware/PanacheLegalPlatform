@@ -12,6 +12,8 @@ namespace PanacheSoftware.Core.Mapping
             CreateMap<SettingHead, SettingHeader>();
             CreateMap<UserSetting, UsrSetting>();
             CreateMap<UsrSetting, UserSetting>();
+            CreateMap<TenantSetting, TenSetting>();
+            CreateMap<TenSetting, TenantSetting>();
         }
     }
 }

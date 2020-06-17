@@ -24,17 +24,17 @@ namespace PanacheSoftware.Service.Task.Persistance.Repositories.Task
         public TaskDetail GetDetail(Guid taskDetailId, bool readOnly)
         {
             if (readOnly)
-                return PanacheSoftwareServiceTaskContext.TaskDetails.AsNoTracking().FirstOrDefault(fnd => fnd.Id == taskDetailId);
+                return PanacheSoftwareServiceTaskContext.TaskDetails.Include(d => d.TaskHeader).AsNoTracking().FirstOrDefault(fnd => fnd.Id == taskDetailId);
 
-            return PanacheSoftwareServiceTaskContext.TaskDetails.FirstOrDefault(fnd => fnd.Id == taskDetailId);
+            return PanacheSoftwareServiceTaskContext.TaskDetails.Include(d => d.TaskHeader).FirstOrDefault(fnd => fnd.Id == taskDetailId);
         }
 
         public TaskDetail GetTaskDetail(Guid taskHeaderId, bool readOnly)
         {
             if (readOnly)
-                return PanacheSoftwareServiceTaskContext.TaskDetails.AsNoTracking().FirstOrDefault(fnd => fnd.TaskHeaderId == taskHeaderId);
+                return PanacheSoftwareServiceTaskContext.TaskDetails.Include(d => d.TaskHeader).AsNoTracking().FirstOrDefault(fnd => fnd.TaskHeaderId == taskHeaderId);
 
-            return PanacheSoftwareServiceTaskContext.TaskDetails.FirstOrDefault(fnd => fnd.TaskHeaderId == taskHeaderId);
+            return PanacheSoftwareServiceTaskContext.TaskDetails.Include(d => d.TaskHeader).FirstOrDefault(fnd => fnd.TaskHeaderId == taskHeaderId);
         }
     }
 }

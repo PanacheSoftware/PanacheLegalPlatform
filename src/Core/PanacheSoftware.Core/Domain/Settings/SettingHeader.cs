@@ -10,6 +10,7 @@ namespace PanacheSoftware.Core.Domain.Settings
         public SettingHeader()
         {
             UserSettings = new HashSet<UserSetting>();
+            TenantSettings = new HashSet<TenantSetting>();
         }
 
         public string Description { get; set; }
@@ -19,5 +20,6 @@ namespace PanacheSoftware.Core.Domain.Settings
         public string Name { get; set; }
 
         public virtual ICollection<UserSetting> UserSettings { get; set; }
+        public virtual ICollection<TenantSetting> TenantSettings { get; set; }
     }
 }

@@ -13,9 +13,9 @@ namespace PanacheSoftware.Service.Task.Persistance
 {
     public class UnitOfWork : PanacheSoftwareUnitOfWork, IUnitOfWork
     {
-        public UnitOfWork(PanacheSoftwareServiceTaskContext context, IUserProvider userProvider) : base(context, userProvider)
+        public UnitOfWork(PanacheSoftwareServiceTaskContext context, IUserProvider userProvider, IAPIHelper apiHelper) : base(context, userProvider)
         {
-            TaskGroupHeaders = new TaskGroupHeaderRepository((PanacheSoftwareServiceTaskContext)_context);
+            TaskGroupHeaders = new TaskGroupHeaderRepository((PanacheSoftwareServiceTaskContext)_context, userProvider, apiHelper);
             TaskGroupDetails = new TaskGroupDetailRepository((PanacheSoftwareServiceTaskContext)_context, TaskGroupHeaders);
             TaskHeaders = new TaskHeaderRepository((PanacheSoftwareServiceTaskContext)_context, TaskGroupHeaders);
             TaskDetails = new TaskDetailRepository((PanacheSoftwareServiceTaskContext)_context);

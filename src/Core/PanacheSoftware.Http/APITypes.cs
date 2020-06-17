@@ -10,9 +10,10 @@ namespace PanacheSoftware.Http
         public const string IDENTITY = "IDENTITY";
         public const string CLIENT = "CLIENT";
         public const string TEAM = "TEAM";
-        public const string FOLDER = "FOLDER";
         public const string FOUNDATION = "FOUNDATION";
         public const string TASK = "TASK";
         public const string FILE = "FILE";
+        public const string GATEWAY = "GATEWAY";
+        public const string UICLIENT = "UICLIENT";
     }
 }

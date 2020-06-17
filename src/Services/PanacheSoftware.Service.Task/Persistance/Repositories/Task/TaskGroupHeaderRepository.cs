@@ -1,21 +1,29 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PanacheSoftware.Core.Domain.API.Join;
+using PanacheSoftware.Core.Domain.API.Team;
 using PanacheSoftware.Core.Domain.Task;
 using PanacheSoftware.Database.Repositories;
+using PanacheSoftware.Http;
 using PanacheSoftware.Service.Task.Core.Repositories;
 using PanacheSoftware.Service.Task.Persistance.Context;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace PanacheSoftware.Service.Task.Persistance.Repositories.Task
 {
     public class TaskGroupHeaderRepository : PanacheSoftwareRepository<TaskGroupHeader>, ITaskGroupHeaderRepository
     {
-        public TaskGroupHeaderRepository(PanacheSoftwareServiceTaskContext context) : base(context)
-        {
+        private readonly IUserProvider _userProvider;
+        private readonly IAPIHelper _apiHelper;
+        private List<Guid> _userTeams;
 
+        public TaskGroupHeaderRepository(PanacheSoftwareServiceTaskContext context, IUserProvider userProvider, IAPIHelper apiHelper) : base(context)
+        {
+            _userProvider = userProvider;
+            _apiHelper = apiHelper;
         }
 
         public PanacheSoftwareServiceTaskContext PanacheSoftwareServiceTaskContext
@@ -23,16 +31,19 @@ namespace PanacheSoftware.Service.Task.Persistance.Repositories.Task
             get { return Context as PanacheSoftwareServiceTaskContext; }
         }
 
-        public List<TaskGroupHeader> GetMainTaskGroups(bool includeChildren)
+        public async Task<List<TaskGroupHeader>> GetMainTaskGroupsAsync(bool includeChildren, string accessToken)
         {
-            if(includeChildren)
+            var userTeams = await GetUserTeamsAsync(accessToken);
+
+            if (includeChildren)
                 return PanacheSoftwareServiceTaskContext.TaskGroupHeaders
                 .Include(t => t.ChildTaskGroups)
                 .Include(t => t.ChildTasks)
                 .AsEnumerable()
-                .Where(t => t.ParentTaskGroupId == null).ToList();
+                .Where(t => t.ParentTaskGroupId == null)
+                .Where(t => userTeams.Contains(t.TeamHeaderId)).ToList();
 
-            return PanacheSoftwareServiceTaskContext.TaskGroupHeaders.AsEnumerable().Where(f => f.ParentTaskGroupId == null).ToList();
+            return PanacheSoftwareServiceTaskContext.TaskGroupHeaders.AsEnumerable().Where(f => f.ParentTaskGroupId == null).Where(t => userTeams.Contains(t.TeamHeaderId)).ToList();
         }
 
         public TaskGroupHeader GetTaskGroupHeader(string taskGroupShortName, bool readOnly)
@@ -43,15 +54,19 @@ namespace PanacheSoftware.Service.Task.Persistance.Repositories.Task
             return PanacheSoftwareServiceTaskContext.TaskGroupHeaders.Find(TaskGroupNameToId(taskGroupShortName));
         }
 
-        public TaskGroupHeader GetTaskGroupHeaderWithRelations(string taskGroupShortName, bool readOnly)
+        public async Task<TaskGroupHeader> GetTaskGroupHeaderWithRelationsAsync(string taskGroupShortName, bool readOnly, string accessToken)
         {
-            return GetTaskGroupHeaderWithRelations(TaskGroupNameToId(taskGroupShortName), readOnly);
+            return await GetTaskGroupHeaderWithRelationsAsync(TaskGroupNameToId(taskGroupShortName), readOnly, accessToken);
         }
 
-        public TaskGroupHeader GetTaskGroupHeaderWithRelations(Guid taskGroupHeaderId, bool readOnly)
+        public async Task<TaskGroupHeader> GetTaskGroupHeaderWithRelationsAsync(Guid taskGroupHeaderId, bool readOnly, string accessToken)
         {
+            var userTeams = await GetUserTeamsAsync(accessToken);
+
+            TaskGroupHeader taskGroupHeader; 
+
             if (readOnly)
-                return PanacheSoftwareServiceTaskContext.TaskGroupHeaders
+                taskGroupHeader = PanacheSoftwareServiceTaskContext.TaskGroupHeaders
                 .Include(t => t.TaskGroupDetail)
                 .Include(t => t.ChildTasks)
                 .Include(t => t.ChildTaskGroups)
@@ -59,50 +74,37 @@ namespace PanacheSoftware.Service.Task.Persistance.Repositories.Task
                 .AsNoTracking()
                 .SingleOrDefault(t => t.Id == taskGroupHeaderId);
 
-            return PanacheSoftwareServiceTaskContext.TaskGroupHeaders
+            taskGroupHeader = PanacheSoftwareServiceTaskContext.TaskGroupHeaders
                 .Include(t => t.TaskGroupDetail)
                 .Include(t => t.ChildTasks)
                 .Include(t => t.ChildTaskGroups)
                 .ThenInclude(ct => ct.ChildTasks)
                 .SingleOrDefault(t => t.Id == taskGroupHeaderId);
 
-            //List<TaskGroupHeader> taskGroupHeader = null;
+            if(taskGroupHeader != null)
+            {
+                if (taskGroupHeader.ParentTaskGroupId != null)
+                {
+                    var parentTaskGroup = PanacheSoftwareServiceTaskContext.TaskGroupHeaders.Where(th => th.Id == taskGroupHeader.ParentTaskGroupId).FirstOrDefault();
 
-            //if (readOnly)
-            //{
-            //    taskGroupHeader = PanacheSoftwareServiceTaskContext.TaskGroupHeaders
-            //        .Include(t => t.TaskGroupDetail)
-            //        .Include(t => t.ChildTasks)
-            //        .Include(t => t.ChildTaskGroups)
-            //        .ThenInclude(ct => ct.ChildTasks)
-            //        //.Include(t => t.ParentTaskGroup)
+                    if (parentTaskGroup != null)
+                    {
+                        if (userTeams.Contains(parentTaskGroup.TeamHeaderId))
+                        {
+                            return taskGroupHeader;
+                        }
+                    }
+                }
+                else
+                {
+                    if (userTeams.Contains(taskGroupHeader.TeamHeaderId))
+                    {
+                        return taskGroupHeader;
+                    }
+                }
+            }
 
-            //        .AsNoTracking()
-            //        .AsEnumerable()
-            //        .Where(t => t.Id == taskGroupHeaderId).ToList();
-            //}
-            //else
-            //{
-            //    taskGroupHeader = PanacheSoftwareServiceTaskContext.TaskGroupHeaders
-            //        .Include(t => t.TaskGroupDetail)
-            //        .Include(t => t.ChildTasks)
-            //        .Include(t => t.ChildTaskGroups)
-            //        .ThenInclude(ct => ct.ChildTasks)
-            //        //.Include(t => t.ParentTaskGroup)
-
-            //        .AsEnumerable()
-            //        .Where(t => t.Id == taskGroupHeaderId).ToList();
-            //}
-
-            //if(taskGroupHeader != null)
-            //{
-            //    if(taskGroupHeader.Any())
-            //    {
-            //        return taskGroupHeader.FirstOrDefault();
-            //    }
-            //}
-
-            //return null;
+            return null;
         }
 
         public List<TaskGroupHeader> GetTaskGroupTree(string taskGroupShortName)
@@ -131,6 +133,14 @@ namespace PanacheSoftware.Service.Task.Persistance.Repositories.Task
                 foundGuid = foundTaskGroupHeader.Id;
 
             return foundGuid;
+        }
+
+        private async Task<List<Guid>> GetUserTeamsAsync(string accessToken)
+        {
+            if (_userTeams == null)
+                _userTeams = await _apiHelper.GetTeamsForUserId(accessToken, _userProvider.GetUserId());
+
+            return _userTeams;
         }
     }
 }

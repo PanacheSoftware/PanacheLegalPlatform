@@ -62,6 +62,14 @@ namespace PanacheSoftware.UI.Client.Pages.Client
                 clientList = new ClientList();
             }
 
+            //var response2 = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"Client");
+
+            //if (response2.StatusCode == System.Net.HttpStatusCode.OK)
+            //{
+            //    var clientList2 = response.ContentAsType<ClientList>();
+            //}
+
+
             SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken);
 
             return Page();

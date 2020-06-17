@@ -194,7 +194,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup.Task
                                 return false;
                             }
 
-                            response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.TASK, $"TaskDetail/{taskHead.TaskDetail.Id}");
+                            response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.TASK, $"Task/Detail/{taskHead.TaskDetail.Id}");
 
                             if (response.StatusCode == System.Net.HttpStatusCode.OK)
                             {
@@ -202,7 +202,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup.Task
 
                                 if (foundTaskDet != null)
                                 {
-                                    if (!await _modelHelper.ProcessPatch(foundTaskDet, taskHead.TaskDetail, foundTaskDet.Id, apiAccessToken, APITypes.TASK, "TaskDetail"))
+                                    if (!await _modelHelper.ProcessPatch(foundTaskDet, taskHead.TaskDetail, foundTaskDet.Id, apiAccessToken, APITypes.TASK, "Task/Detail"))
                                     {
                                         return false;
                                     }

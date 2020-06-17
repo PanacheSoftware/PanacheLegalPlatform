@@ -7,6 +7,7 @@ using PanacheSoftware.Service.Team.Core.Repositories;
 using PanacheSoftware.Service.Team.Persistance.Context;
 using PanacheSoftware.Core.Domain.Team;
 using PanacheSoftware.Database.Repositories;
+using PanacheSoftware.Service.Team.Manager;
 
 namespace PanacheSoftware.Service.Team.Persistance.Repositories.Join
 {

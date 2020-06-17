@@ -12,7 +12,7 @@
                 <a asp-page="/TaskGroup/TaskGroups">@Html.GetTitle(Model, 10112)</a>
             </li>
             <li>
-                <a asp-page="/TaskGroup/CreateOrEdit">@Html.GetTitle(Model, 10113)</a>
+                <a asp-page="/TaskGroup/CreateOrEdit" asp-route-Id="" asp-route-parentId="">@Html.GetTitle(Model, 10113)</a>
             </li>
         </ul>
     </div>

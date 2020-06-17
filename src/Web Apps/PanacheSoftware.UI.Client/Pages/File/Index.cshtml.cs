@@ -203,7 +203,7 @@ namespace PanacheSoftware.UI.Client.Pages.File
                                 return false;
                             }
 
-                            if (!await _modelHelper.ProcessPatch(foundFileHeader.FileDetail, FileUploadModel.FileHeader.FileDetail, foundFileHeader.FileDetail.Id, apiAccessToken, APITypes.FILE, "FileDetail"))
+                            if (!await _modelHelper.ProcessPatch(foundFileHeader.FileDetail, FileUploadModel.FileHeader.FileDetail, foundFileHeader.FileDetail.Id, apiAccessToken, APITypes.FILE, "File/Detail"))
                             {
                                 return false;
                             }

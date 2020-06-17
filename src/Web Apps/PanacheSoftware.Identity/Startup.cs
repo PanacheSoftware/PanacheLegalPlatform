@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PanacheSoftware.Core.Domain.Configuration;
 using PanacheSoftware.Core.Domain.Identity;
 using PanacheSoftware.Core.Extensions;
 using PanacheSoftware.Http;
@@ -43,9 +44,6 @@ namespace PanacheSoftware.Identity
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-            //This adds the resources (css, js etc.) from the PanacheSoftware.UI.Core Razor Class Library
-            services.AddPanaceSoftwareResources();
-
             services.AddMvc(options =>
                 {
                     options.EnableEndpointRouting = false;
@@ -61,6 +59,10 @@ namespace PanacheSoftware.Identity
                     //options.SuppressUseValidationProblemDetailsForInvalidModelStateResponses = true;
                 });
 
+            var panacheSoftwareConfiguration = new PanacheSoftwareConfiguration();
+            Configuration.Bind("PanacheSoftware", panacheSoftwareConfiguration);
+
+            var identityServerConfig = new Config(panacheSoftwareConfiguration);
 
             var builder = services.AddIdentityServer(options =>
             {
@@ -69,9 +71,9 @@ namespace PanacheSoftware.Identity
                 options.Events.RaiseFailureEvents = true;
                 options.Events.RaiseSuccessEvents = true;
             })
-                .AddInMemoryIdentityResources(Config.GetIdentityResources())
-                .AddInMemoryApiResources(Config.GetApis())
-                .AddInMemoryClients(Config.GetClients())
+                .AddInMemoryIdentityResources(identityServerConfig.GetIdentityResources())
+                .AddInMemoryApiResources(identityServerConfig.GetApis())
+                .AddInMemoryClients(identityServerConfig.GetClients())
                 .AddAspNetIdentity<ApplicationUser>()
                 .AddInMemoryPersistedGrants()
                 .AddInMemoryCaching();
@@ -100,7 +102,10 @@ namespace PanacheSoftware.Identity
 
             services.AddTransient<IApplicationUserManager, ApplicationUserManager>();
             services.AddTransient<IUserProvider, UserProvider>();
+            services.AddTransient<IAPIHelper, APIHelper>();
             //services.AddScoped<APIModelValidate>();
+
+            services.AddHostedService<MigrationHostedService>();
 
             services.AddControllersWithViews().AddNewtonsoftJson();
 
@@ -122,7 +127,7 @@ namespace PanacheSoftware.Identity
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseStaticFiles();
             //app.UseCookiePolicy();
             app.UseIdentityServer();

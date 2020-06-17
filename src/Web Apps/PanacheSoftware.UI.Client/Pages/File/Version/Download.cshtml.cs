@@ -58,7 +58,7 @@ namespace PanacheSoftware.UI.Client.Pages.File.Version
                 {
                     if (parsedId != Guid.Empty)
                     {
-                        var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FILE, $"FileVersion/{parsedId}");
+                        var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FILE, $"File/Version/{parsedId}");
 
                         if (response.StatusCode == System.Net.HttpStatusCode.OK)
                         {

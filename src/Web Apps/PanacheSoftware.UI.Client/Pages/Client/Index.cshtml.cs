@@ -277,7 +277,7 @@ namespace PanacheSoftware.UI.Client.Pages.Client
                                 return false;
                             }
 
-                            response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.CLIENT, $"Detail/{clientHead.ClientDetail.Id}");
+                            response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.CLIENT, $"Client/Detail/{clientHead.ClientDetail.Id}");
 
                             if(response.StatusCode == System.Net.HttpStatusCode.OK)
                             {
@@ -285,7 +285,7 @@ namespace PanacheSoftware.UI.Client.Pages.Client
 
                                 if(foundClientDet != null)
                                 {
-                                    if (!await _modelHelper.ProcessPatch(foundClientDet, clientHead.ClientDetail, foundClientDet.Id, apiAccessToken, APITypes.CLIENT, "Detail"))
+                                    if (!await _modelHelper.ProcessPatch(foundClientDet, clientHead.ClientDetail, foundClientDet.Id, apiAccessToken, APITypes.CLIENT, "Client/Detail"))
                                     {
                                         return false;
                                     }

@@ -10,11 +10,8 @@ namespace PanacheSoftware.Service.File.Persistance.EntityConfiguration
 {
     public class FileVersionConfiguration : IEntityTypeConfiguration<FileVersion>
     {
-        private string _tenantId;
-
-        public FileVersionConfiguration(string tenantId)
+        public FileVersionConfiguration()
         {
-            _tenantId = tenantId;
         }
         public void Configure(EntityTypeBuilder<FileVersion> builder)
         {
@@ -29,8 +26,6 @@ namespace PanacheSoftware.Service.File.Persistance.EntityConfiguration
             //    .HasForeignKey(h => h.FileHeaderId)
             //    .IsRequired()
             //    .OnDelete(DeleteBehavior.Cascade);
-
-            builder.HasQueryFilter(c => c.TenantId == Guid.Parse(_tenantId));
         }
     }
 }

@@ -12,6 +12,7 @@ namespace PanacheSoftware.Core.Domain.API.Settings
         {
             Status = StatusTypes.Open;
             UserSettings = new List<UsrSetting>();
+            TenantSettings = new List<TenSetting>();
         }
 
         public Guid Id { get; set; }
@@ -25,5 +26,6 @@ namespace PanacheSoftware.Core.Domain.API.Settings
         public string Status { get; set; }
 
         public List<UsrSetting> UserSettings { get; set; }
+        public List<TenSetting> TenantSettings { get; set; }
     }
 }

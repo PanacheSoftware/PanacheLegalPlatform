@@ -10,11 +10,8 @@ namespace PanacheSoftware.Service.File.Persistance.EntityConfiguration
 {
     public class FileLinkConfiguration : IEntityTypeConfiguration<FileLink>
     {
-        private string _tenantId;
-
-        public FileLinkConfiguration(string tenantId)
+        public FileLinkConfiguration()
         {
-            _tenantId = tenantId;
         }
 
         public void Configure(EntityTypeBuilder<FileLink> builder)
@@ -35,8 +32,6 @@ namespace PanacheSoftware.Service.File.Persistance.EntityConfiguration
             //    .HasForeignKey(l => l.FileHeaderId)
             //    .IsRequired()
             //    .OnDelete(DeleteBehavior.Cascade);
-
-            builder.HasQueryFilter(l => l.TenantId == Guid.Parse(_tenantId));
         }
     }
 }

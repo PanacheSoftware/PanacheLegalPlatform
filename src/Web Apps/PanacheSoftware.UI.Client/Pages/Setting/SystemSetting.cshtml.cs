@@ -24,7 +24,7 @@ namespace PanacheSoftware.UI.Client.Pages.Setting
     {
         private readonly IAPIHelper _apiHelper;
 
-        public SettingList settingList { get; set; }
+        public TenantSettingList settingList { get; set; }
         public LangQueryList langQueryList { get; set; }
         public string SaveState { get; set; }
         public string ErrorString { get; set; }
@@ -57,11 +57,11 @@ namespace PanacheSoftware.UI.Client.Pages.Setting
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                settingList = response.ContentAsType<SettingList>();
+                settingList = response.ContentAsType<TenantSettingList>();
             }
             else
             {
-                settingList = new SettingList();
+                settingList = new TenantSettingList();
             }
 
             SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken);

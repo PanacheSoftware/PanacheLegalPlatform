@@ -3,6 +3,7 @@ using PanacheSoftware.Core.Domain.Language;
 using PanacheSoftware.Core.Domain.Settings;
 using PanacheSoftware.Http;
 using PanacheSoftware.Service.Foundation.Persistance.EntityConfiguration;
+using System;
 
 namespace PanacheSoftware.Service.Foundation.Persistance.Context
 {
@@ -21,17 +22,25 @@ namespace PanacheSoftware.Service.Foundation.Persistance.Context
 
         public virtual DbSet<SettingHeader> SettingHeaders { get; set; }
         public virtual DbSet<UserSetting> UserSettings { get; set; }
+        public virtual DbSet<TenantSetting> TenantSettings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.ApplyConfiguration(new LanguageHeaderConfiguration(_userProvider.GetTenantId()));
-            modelBuilder.ApplyConfiguration(new LanguageCodeConfiguration(_userProvider.GetTenantId()));
-            modelBuilder.ApplyConfiguration(new LanguageItemConfiguration(_userProvider.GetTenantId()));
+            modelBuilder.ApplyConfiguration(new LanguageHeaderConfiguration());
+            modelBuilder.ApplyConfiguration(new LanguageCodeConfiguration());
+            modelBuilder.ApplyConfiguration(new LanguageItemConfiguration());
+            modelBuilder.ApplyConfiguration(new SettingHeaderConfiguration());
+            modelBuilder.ApplyConfiguration(new UserSettingConfiguration());
+            modelBuilder.ApplyConfiguration(new TenantSettingConfiguration());
 
-            modelBuilder.ApplyConfiguration(new SettingHeaderConfiguration(_userProvider.GetTenantId()));
-            modelBuilder.ApplyConfiguration(new UserSettingConfiguration(_userProvider.GetTenantId()));
+            modelBuilder.Entity<LanguageHeader>().HasQueryFilter(e => EF.Property<Guid>(e, "TenantId") == Guid.Parse(_userProvider.GetTenantId()) || EF.Property<Guid>(e, "TenantId") == Guid.Empty);
+            modelBuilder.Entity<LanguageCode>().HasQueryFilter(e => EF.Property<Guid>(e, "TenantId") == Guid.Parse(_userProvider.GetTenantId()) || EF.Property<Guid>(e, "TenantId") == Guid.Empty);
+            modelBuilder.Entity<LanguageItem>().HasQueryFilter(e => EF.Property<Guid>(e, "TenantId") == Guid.Parse(_userProvider.GetTenantId()));
+            modelBuilder.Entity<SettingHeader>().HasQueryFilter(e => EF.Property<Guid>(e, "TenantId") == Guid.Parse(_userProvider.GetTenantId()) || EF.Property<Guid>(e, "TenantId") == Guid.Empty);
+            modelBuilder.Entity<UserSetting>().HasQueryFilter(e => EF.Property<Guid>(e, "TenantId") == Guid.Parse(_userProvider.GetTenantId()));
+            modelBuilder.Entity<TenantSetting>().HasQueryFilter(e => EF.Property<Guid>(e, "TenantId") == Guid.Parse(_userProvider.GetTenantId()));
         }
     }
 }

@@ -1,0 +1,937 @@
+{
+  "ReRoutes": [
+    //--------------------------------------------------Client
+    {
+      "DownstreamPathTemplate": "/Client/",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55005
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/Client/",
+      "UpstreamHttpMethod": [ "Get", "Post" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/Client/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55005
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/Client/{id}",
+      "UpstreamHttpMethod": [ "Get", "Patch" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/Client/GetClientSummary/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55005
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/Client/GetClientSummary/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    //--------------------------------------------------Detail
+    {
+      "DownstreamPathTemplate": "/Client/Detail/",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55005
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/Client/Detail/",
+      "UpstreamHttpMethod": [ "Post" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/Client/Detail/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55005
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/Client/Detail/{id}",
+      "UpstreamHttpMethod": [ "Get", "Patch" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    //--------------------------------------------------Contact
+    {
+      "DownstreamPathTemplate": "/Contact/",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55005
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/Contact/",
+      "UpstreamHttpMethod": [ "Post" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/Contact/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55005
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/Contact/{id}",
+      "UpstreamHttpMethod": [ "Get", "Patch" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    //--------------------------------------------------Address
+    {
+      "DownstreamPathTemplate": "/Address/",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55005
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/Address/",
+      "UpstreamHttpMethod": [ "Post" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/Address/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55005
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/Address/{id}",
+      "UpstreamHttpMethod": [ "Get", "Patch" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    //--------------------------------------------------Setting
+    {
+      "DownstreamPathTemplate": "/Setting/",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55004
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/Setting/",
+      "UpstreamHttpMethod": [ "Get", "Post" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/Setting/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55004
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/Setting/{id}",
+      "UpstreamHttpMethod": [ "Get", "Patch" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/Setting/UserSetting",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55004
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/Setting/UserSetting",
+      "UpstreamHttpMethod": [ "Get", "Post" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/Setting/UserSetting/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55004
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/Setting/UserSetting/{id}",
+      "UpstreamHttpMethod": [ "Get", "Patch" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    //--------------------------------------------------Language
+    {
+      "DownstreamPathTemplate": "/Language/",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55004
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/Language/",
+      "UpstreamHttpMethod": [ "Get", "Post" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/Language/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55004
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/Language/{id}",
+      "UpstreamHttpMethod": [ "Get", "Patch" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/Language/Item",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55004
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/Language/Item",
+      "UpstreamHttpMethod": [ "Post" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/Language/Item/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55004
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/Language/Item/{id}",
+      "UpstreamHttpMethod": [ "Get", "Patch" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/Language/Code",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55004
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/Language/Code",
+      "UpstreamHttpMethod": [ "Get", "Post" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/Language/Code/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55004
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/Language/Code/{id}",
+      "UpstreamHttpMethod": [ "Get", "Patch" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/Language/LanguageQuery",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55004
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/Language/LanguageQuery",
+      "UpstreamHttpMethod": [ "Get" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    //--------------------------------------------------File
+    {
+      "DownstreamPathTemplate": "/File/",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55008
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/File/",
+      "UpstreamHttpMethod": [ "Get", "Post" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/File/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55008
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/File/{id}",
+      "UpstreamHttpMethod": [ "Get", "Patch" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    //--------------------------------------------------FileDetail
+    {
+      "DownstreamPathTemplate": "/File/Detail/",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55008
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/File/Detail/",
+      "UpstreamHttpMethod": [ "Post" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/File/Detail/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55008
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/File/Detail/{id}",
+      "UpstreamHttpMethod": [ "Get", "Patch" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    //--------------------------------------------------FileLink
+    {
+      "DownstreamPathTemplate": "/File/Link/",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55008
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/File/Link/",
+      "UpstreamHttpMethod": [ "Post" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/File/Link/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55008
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/File/Link/{id}",
+      "UpstreamHttpMethod": [ "Get", "Patch" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/File/Link/GetFilesForLink/{linkType}/{linkId}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55008
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/File/Link/GetFilesForLink/{linkType}/{linkId}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    //--------------------------------------------------FileVersion
+    {
+      "DownstreamPathTemplate": "/File/Version/",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55008
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/File/Version/",
+      "UpstreamHttpMethod": [ "Post" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/File/Version/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55008
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/File/Version/{id}",
+      "UpstreamHttpMethod": [ "Get", "Patch" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    //--------------------------------------------------Team
+    {
+      "DownstreamPathTemplate": "/Team/",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55006
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/Team/",
+      "UpstreamHttpMethod": [ "Get", "Post" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/Team/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55006
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/Team/{id}",
+      "UpstreamHttpMethod": [ "Get", "Patch" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/Team/GetValidParents/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55006
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/Team/GetValidParents/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/Team/GetTeamStructure/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55006
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/Team/GetTeamStructure/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    //--------------------------------------------------TeamDetail
+    {
+      "DownstreamPathTemplate": "/Team/Detail/",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55006
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/Team/Detail/",
+      "UpstreamHttpMethod": [ "Post" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/Team/Detail/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55006
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/Team/Detail/{id}",
+      "UpstreamHttpMethod": [ "Get", "Patch" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    //--------------------------------------------------UserTeam
+    {
+      "DownstreamPathTemplate": "/UserTeam/",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55006
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/UserTeam/",
+      "UpstreamHttpMethod": [ "Get", "Post" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/UserTeam/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55006
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/UserTeam/{id}",
+      "UpstreamHttpMethod": [ "Get", "Patch" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/UserTeam/GetTeamsForUser/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55006
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/UserTeam/GetTeamsForUser/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/UserTeam/GetUserTeamsForUser/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55006
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/UserTeam/GetUserTeamsForUser/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/UserTeam/GetUserTeamsForTeam/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55006
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/UserTeam/GetUserTeamsForTeam/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    //--------------------------------------------------Task
+    {
+      "DownstreamPathTemplate": "/Task/",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55007
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/Task/",
+      "UpstreamHttpMethod": [ "Post" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/Task/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55007
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/Task/{id}",
+      "UpstreamHttpMethod": [ "Get", "Patch" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/Task/Complete/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55007
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/Task/Complete/{id}",
+      "UpstreamHttpMethod": [ "Post" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/Task/Detail",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55007
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/Task/Detail",
+      "UpstreamHttpMethod": [ "Post" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/Task/Detail/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55007
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/Task/Detail/{id}",
+      "UpstreamHttpMethod": [ "Get", "Patch" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    //--------------------------------------------------TaskGroup
+    {
+      "DownstreamPathTemplate": "/TaskGroup/",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55007
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/TaskGroup/",
+      "UpstreamHttpMethod": [ "Get", "Post" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/TaskGroup/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55007
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/TaskGroup/{id}",
+      "UpstreamHttpMethod": [ "Get", "Patch" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/TaskGroup/Complete/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55007
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/TaskGroup/Complete/{id}",
+      "UpstreamHttpMethod": [ "Post" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/TaskGroup/GetMainTaskGroups",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55007
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/TaskGroup/GetMainTaskGroups",
+      "UpstreamHttpMethod": [ "Get" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/TaskGroup/GetTaskGroupSummary",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55007
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/TaskGroup/GetTaskGroupSummary",
+      "UpstreamHttpMethod": [ "Get" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/TaskGroup/GetTaskGroupSummary/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55007
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/TaskGroup/GetTaskGroupSummary/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/TaskGroup/GetValidParents/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55007
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/TaskGroup/GetValidParents/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/TaskGroup/Detail",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55007
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/TaskGroup/Detail",
+      "UpstreamHttpMethod": [ "Post" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/TaskGroup/Detail/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55007
+        }
+      ],
+      "ReRouteIsCaseSensitive": true,
+      "UpstreamPathTemplate": "/TaskGroup/Detail/{id}",
+      "UpstreamHttpMethod": [ "Get", "Patch" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayKey",
+        "AllowedScopes": []
+      }
+    }
+  ]
+}

@@ -194,7 +194,7 @@ namespace PanacheSoftware.UI.Client.Pages.Team
                                 return false;
                             }
 
-                            response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.TEAM, $"TeamDetail/{teamHead.TeamDetail.Id}");
+                            response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.TEAM, $"Team/Detail/{teamHead.TeamDetail.Id}");
                             
                             if (response.StatusCode == System.Net.HttpStatusCode.OK)
                             {
@@ -202,7 +202,7 @@ namespace PanacheSoftware.UI.Client.Pages.Team
 
                                 if (foundTeamDet != null)
                                 {
-                                    if (!await _modelHelper.ProcessPatch(foundTeamDet, teamHead.TeamDetail, foundTeamDet.Id, apiAccessToken, APITypes.TEAM, "TeamDetail"))
+                                    if (!await _modelHelper.ProcessPatch(foundTeamDet, teamHead.TeamDetail, foundTeamDet.Id, apiAccessToken, APITypes.TEAM, "Team/Detail"))
                                     {
                                         return false;
                                     }
