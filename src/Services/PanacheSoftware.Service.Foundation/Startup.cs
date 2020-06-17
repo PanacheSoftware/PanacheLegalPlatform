@@ -101,9 +101,9 @@ namespace PanacheSoftware.Service.Foundation
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Panache Software Foundation API", Version = "v1" });
-                var filePath = Path.Combine(System.AppContext.BaseDirectory, "PanacheSoftware.Service.Foundation.xml");
-                c.IncludeXmlComments(filePath);
+                //c.SwaggerDoc("v1", new OpenApiInfo { Title = "Panache Software Foundation API", Version = "v1" });
+                //var filePath = Path.Combine(System.AppContext.BaseDirectory, "PanacheSoftware.Service.Foundation.xml");
+                //c.IncludeXmlComments(filePath);
 
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {

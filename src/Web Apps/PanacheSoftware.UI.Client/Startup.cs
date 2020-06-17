@@ -52,8 +52,6 @@ namespace PanacheSoftware.UI.Client
                     //options.SuppressUseValidationProblemDetailsForInvalidModelStateResponses = true;
                 });
 
-            services.AddPanaceSoftwareResources();
-
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
             var panacheSoftwareConfiguration = new PanacheSoftwareConfiguration();

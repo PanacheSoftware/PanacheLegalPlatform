@@ -3,7 +3,6 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
-    <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,16 +12,6 @@
   
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="resources\**\*" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="resources\css\panache\pl-breadcrumb.css" />
-    <None Remove="resources\css\panache\pl-login.css" />
-    <None Remove="resources\js\panache\pl-datatable.js" />
   </ItemGroup>
 
   <!--<ItemGroup>
@@ -66,11 +55,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="resources\css\chart\" />
-    <Folder Include="resources\css\dhtmlx-gantt\" />
-    <Folder Include="resources\js\d3\" />
-    <Folder Include="resources\js\chart\" />
-    <Folder Include="resources\js\dhtmlx-gantt\" />
+    <Folder Include="wwwroot\" />
   </ItemGroup>
 
 </Project>

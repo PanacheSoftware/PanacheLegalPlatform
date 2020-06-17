@@ -44,9 +44,6 @@ namespace PanacheSoftware.Identity
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-            //This adds the resources (css, js etc.) from the PanacheSoftware.UI.Core Razor Class Library
-            services.AddPanaceSoftwareResources();
-
             services.AddMvc(options =>
                 {
                     options.EnableEndpointRouting = false;

@@ -100,9 +100,9 @@ namespace PanacheSoftware.Service.Team
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Panache Software Team API", Version = "v1" });
-                var filePath = Path.Combine(System.AppContext.BaseDirectory, "PanacheSoftware.Service.Team.xml");
-                c.IncludeXmlComments(filePath);
+                //c.SwaggerDoc("v1", new OpenApiInfo { Title = "Panache Software Team API", Version = "v1" });
+                //var filePath = Path.Combine(System.AppContext.BaseDirectory, "PanacheSoftware.Service.Team.xml");
+                //c.IncludeXmlComments(filePath);
 
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {

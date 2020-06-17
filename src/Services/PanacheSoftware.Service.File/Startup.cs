@@ -97,9 +97,9 @@ namespace PanacheSoftware.Service.File
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Panache Software File API", Version = "v1" });
-                var filePath = Path.Combine(System.AppContext.BaseDirectory, "PanacheSoftware.Service.File.xml");
-                c.IncludeXmlComments(filePath);
+                //c.SwaggerDoc("v1", new OpenApiInfo { Title = "Panache Software File API", Version = "v1" });
+                //var filePath = Path.Combine(System.AppContext.BaseDirectory, "PanacheSoftware.Service.File.xml");
+                //c.IncludeXmlComments(filePath);
 
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
