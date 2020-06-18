@@ -69,7 +69,10 @@ namespace PanacheSoftware.Identity.Manager
 
         public async Task<IdentityResult> CheckSeed()
         {
-            var admin = _userManager.FindByNameAsync("admin@panachesoftware.com").Result;
+            var panacheSoftwareConfiguration = new PanacheSoftwareConfiguration();
+            _configuration.Bind("PanacheSoftware", panacheSoftwareConfiguration);
+
+            var admin = _userManager.FindByNameAsync($"admin@{panacheSoftwareConfiguration.StartDomain}").Result;
 
             if (admin == null)
             {
@@ -79,8 +82,7 @@ namespace PanacheSoftware.Identity.Manager
                     FirstName = "Admin",
                     Surname = "User",
                     FullName = "Admin User",
-                    //UserName = "admin",
-                    Email = "admin@panachesoftware.com",
+                    Email = $"admin@{panacheSoftwareConfiguration.StartDomain}",
                     Status = StatusTypes.Open,
                     DateFrom = DateTime.Now,
                     DateTo = DateTime.Now.AddYears(99),
@@ -90,9 +92,9 @@ namespace PanacheSoftware.Identity.Manager
 
                 var identityTenant = new IdentityTenant()
                 {
-                    Domain = "panachesoftware.com",
-                    CreatedByEmail = "admin@panachesoftware.com",
-                    Description = "Default Panache Software tenant"
+                    Domain = panacheSoftwareConfiguration.StartDomain,
+                    CreatedByEmail = $"admin@{panacheSoftwareConfiguration.StartDomain}",
+                    Description = "Default tenant"
                 };
 
                 if(CreateTenant(identityTenant) != null)
@@ -101,7 +103,7 @@ namespace PanacheSoftware.Identity.Manager
                 }
 
                 IdentityErrorDescriber identityError = new IdentityErrorDescriber();
-                return IdentityResult.Failed(identityError.InvalidUserName("admin@panachesoftware.com"));
+                return IdentityResult.Failed(identityError.InvalidUserName($"admin@{panacheSoftwareConfiguration.StartDomain}"));
             }
 
             return IdentityResult.Success;
@@ -153,8 +155,6 @@ namespace PanacheSoftware.Identity.Manager
                                     new Claim(JwtClaimTypes.Email, newUser.Email),
                                     new Claim(JwtClaimTypes.WebSite, $"{UIClientURL}/User/{newUser.Id}"),
                                     new Claim(JwtClaimTypes.Picture, $"{UIClientURL}/User/{newUser.Id}/ProfileImage"),
-                                    //new Claim(JwtClaimTypes.WebSite, $"https://localhost:44380/User/{newUser.Id}"),
-                                    //new Claim(JwtClaimTypes.Picture, $"https://localhost:44380/User/{newUser.Id}/ProfileImage"),
                                     new Claim(PanacheSoftwareClaims.TenantId, identityTenant.Id.ToString())
                                 }).Result;
 

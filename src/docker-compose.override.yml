@@ -19,6 +19,7 @@ services:
       - PanacheSoftware__CallMethod__APICallsSecure=False
       - PanacheSoftware__CallMethod__UICallsSecure=False
       - PanacheSoftware__CallMethod__UseAPIGateway=False
+      - PanacheSoftware__StartDomain=${START_DOMAIN}
       - PanacheSoftware__Url__IdentityServerURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55002
       - PanacheSoftware__Url__IdentityServerURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44302
       - PanacheSoftware__Url__APIGatewayURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55003
@@ -56,6 +57,7 @@ services:
       - PanacheSoftware__CallMethod__APICallsSecure=False
       - PanacheSoftware__CallMethod__UICallsSecure=False
       - PanacheSoftware__CallMethod__UseAPIGateway=False
+      - PanacheSoftware__StartDomain=${START_DOMAIN}
       - PanacheSoftware__Url__IdentityServerURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55002
       - PanacheSoftware__Url__IdentityServerURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44302
       - PanacheSoftware__Url__APIGatewayURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55003
@@ -93,6 +95,7 @@ services:
       - PanacheSoftware__CallMethod__APICallsSecure=False
       - PanacheSoftware__CallMethod__UICallsSecure=False
       - PanacheSoftware__CallMethod__UseAPIGateway=False
+      - PanacheSoftware__StartDomain=${START_DOMAIN}
       - PanacheSoftware__Url__IdentityServerURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55002
       - PanacheSoftware__Url__IdentityServerURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44302
       - PanacheSoftware__Url__APIGatewayURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55003
@@ -130,6 +133,7 @@ services:
       - PanacheSoftware__CallMethod__APICallsSecure=False
       - PanacheSoftware__CallMethod__UICallsSecure=False
       - PanacheSoftware__CallMethod__UseAPIGateway=False
+      - PanacheSoftware__StartDomain=${START_DOMAIN}
       - PanacheSoftware__Url__IdentityServerURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55002
       - PanacheSoftware__Url__IdentityServerURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44302
       - PanacheSoftware__Url__APIGatewayURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55003
@@ -167,6 +171,7 @@ services:
       - PanacheSoftware__CallMethod__APICallsSecure=False
       - PanacheSoftware__CallMethod__UICallsSecure=False
       - PanacheSoftware__CallMethod__UseAPIGateway=False
+      - PanacheSoftware__StartDomain=${START_DOMAIN}
       - PanacheSoftware__Url__IdentityServerURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55002
       - PanacheSoftware__Url__IdentityServerURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44302
       - PanacheSoftware__Url__APIGatewayURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55003
@@ -204,6 +209,7 @@ services:
       - PanacheSoftware__CallMethod__APICallsSecure=False
       - PanacheSoftware__CallMethod__UICallsSecure=False
       - PanacheSoftware__CallMethod__UseAPIGateway=False
+      - PanacheSoftware__StartDomain=${START_DOMAIN}
       - PanacheSoftware__Url__IdentityServerURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55002
       - PanacheSoftware__Url__IdentityServerURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44302
       - PanacheSoftware__Url__APIGatewayURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55003
@@ -240,6 +246,7 @@ services:
       - PanacheSoftware__CallMethod__APICallsSecure=False
       - PanacheSoftware__CallMethod__UICallsSecure=False
       - PanacheSoftware__CallMethod__UseAPIGateway=False
+      - PanacheSoftware__StartDomain=${START_DOMAIN}
       - PanacheSoftware__Url__IdentityServerURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55002
       - PanacheSoftware__Url__IdentityServerURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44302
       - PanacheSoftware__Url__APIGatewayURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55003

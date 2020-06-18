@@ -9,6 +9,7 @@ namespace PanacheSoftware.Core.Domain.Configuration
         public URLCallMethod CallMethod { get; set; } = new URLCallMethod();
         public URLConfiguration Url { get; set; } = new URLConfiguration();
         public SecretConfiguration Secret { get; set; } = new SecretConfiguration();
+        public string StartDomain { get; set; }
     }
 
     public class URLCallMethod
