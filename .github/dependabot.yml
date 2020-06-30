@@ -4,49 +4,69 @@
 # https://help.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
 
 version: 1
-update_configs:
+updates:
   #Web
-  - package_manager: "dotnet:nuget"
+  - package-ecosystem: "nuget"
     directory: "/src/Web/PanacheSoftware.UI.Core"
-    update_schedule: "weekly"
+    schedule: "weekly"
   #Web Apps
-  - package_manager: "dotnet:nuget"
+  - package-ecosystem: "nuget"
     directory: "/src/Web Apps/PanacheSoftware.Identity"
-    update_schedule: "weekly"
-  - package_manager: "dotnet:nuget"
+    schedule: "weekly"
+  - package-ecosystem: "nuget"
     directory: "/src/Web Apps/PanacheSoftware.UI.Client"
-    update_schedule: "weekly"
+    schedule: "weekly"
   #Services
-  - package_manager: "dotnet:nuget"
+  - package-ecosystem: "nuget"
     directory: "/src/Services/PanacheSoftware.Service.Client"
-    update_schedule: "weekly"
-  - package_manager: "dotnet:nuget"
+    schedule: "weekly"
+    reviewers:
+      - "PanacheSoftwareDev"
+  - package-ecosystem: "nuget"
     directory: "/src/Services/PanacheSoftware.Service.File"
-    update_schedule: "weekly"
-  - package_manager: "dotnet:nuget"
+    schedule: "weekly"
+    reviewers:
+      - "PanacheSoftwareDev"
+  - package-ecosystem: "nuget"
     directory: "/src/Services/PanacheSoftware.Service.Folder"
-    update_schedule: "weekly"
-  - package_manager: "dotnet:nuget"
+    schedule: "weekly"
+    reviewers:
+      - "PanacheSoftwareDev"
+  - package-ecosystem: "nuget"
     directory: "/src/Services/PanacheSoftware.Service.Foundation"
-    update_schedule: "weekly"
-  - package_manager: "dotnet:nuget"
+    schedule: "weekly"
+    reviewers:
+      - "PanacheSoftwareDev"
+  - package-ecosystem: "nuget"
     directory: "/src/Services/PanacheSoftware.Service.Task"
-    update_schedule: "weekly"
-  - package_manager: "dotnet:nuget"
+    schedule: "weekly"
+    reviewers:
+      - "PanacheSoftwareDev"
+  - package-ecosystem: "nuget"
     directory: "/src/Services/PanacheSoftware.Service.Team"
-    update_schedule: "weekly"
+    schedule: "weekly"
+    reviewers:
+      - "PanacheSoftwareDev"
   #Core
-  - package_manager: "dotnet:nuget"
+  - package-ecosystem: "nuget"
     directory: "/src/Core/PanacheSoftware.Core"
-    update_schedule: "weekly"
-  - package_manager: "dotnet:nuget"
+    schedule: "weekly"
+    reviewers:
+      - "PanacheSoftwareDev"
+  - package-ecosystem: "nuget"
     directory: "/src/Core/PanacheSoftware.Database"
-    update_schedule: "weekly"
-  - package_manager: "dotnet:nuget"
+    schedule: "weekly"
+    reviewers:
+      - "PanacheSoftwareDev"
+  - package-ecosystem: "nuget"
     directory: "/src/Core/PanacheSoftware.Http"
-    update_schedule: "weekly"
+    schedule: "weekly"
+    reviewers:
+      - "PanacheSoftwareDev"
   #API Gateway
-  - package_manager: "dotnet:nuget"
+  - package-ecosystem: "nuget"
     directory: "/src/API Gateway/PanacheSoftware.API.Gateway"
-    update_schedule: "weekly"
+    schedule: "weekly"
+    reviewers:
+      - "PanacheSoftwareDev"
 
