@@ -1,0 +1,52 @@
+# To get started with Dependabot version updates, you'll need to specify which
+# package ecosystems to update and where the package manifests are located.
+# Please see the documentation for all configuration options:
+# https://help.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
+
+version: 1
+update_configs:
+  #Web
+  - package_manager: "dotnet:nuget"
+    directory: "/src/Web/PanacheSoftware.UI.Core"
+    update_schedule: "weekly"
+  #Web Apps
+  - package_manager: "dotnet:nuget"
+    directory: "/src/Web Apps/PanacheSoftware.Identity"
+    update_schedule: "weekly"
+  - package_manager: "dotnet:nuget"
+    directory: "/src/Web Apps/PanacheSoftware.UI.Client"
+    update_schedule: "weekly"
+  #Services
+  - package_manager: "dotnet:nuget"
+    directory: "/src/Services/PanacheSoftware.Service.Client"
+    update_schedule: "weekly"
+  - package_manager: "dotnet:nuget"
+    directory: "/src/Services/PanacheSoftware.Service.File"
+    update_schedule: "weekly"
+  - package_manager: "dotnet:nuget"
+    directory: "/src/Services/PanacheSoftware.Service.Folder"
+    update_schedule: "weekly"
+  - package_manager: "dotnet:nuget"
+    directory: "/src/Services/PanacheSoftware.Service.Foundation"
+    update_schedule: "weekly"
+  - package_manager: "dotnet:nuget"
+    directory: "/src/Services/PanacheSoftware.Service.Task"
+    update_schedule: "weekly"
+  - package_manager: "dotnet:nuget"
+    directory: "/src/Services/PanacheSoftware.Service.Team"
+    update_schedule: "weekly"
+  #Core
+  - package_manager: "dotnet:nuget"
+    directory: "/src/Core/PanacheSoftware.Core"
+    update_schedule: "weekly"
+  - package_manager: "dotnet:nuget"
+    directory: "/src/Core/PanacheSoftware.Database"
+    update_schedule: "weekly"
+  - package_manager: "dotnet:nuget"
+    directory: "/src/Core/PanacheSoftware.Http"
+    update_schedule: "weekly"
+  #API Gateway
+  - package_manager: "dotnet:nuget"
+    directory: "/src/API Gateway/PanacheSoftware.API.Gateway"
+    update_schedule: "weekly"
+
