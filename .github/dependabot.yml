@@ -39,12 +39,6 @@ updates:
     reviewers:
       - "PanacheSoftwareDev"
   - package-ecosystem: "nuget"
-    directory: "/src/Services/PanacheSoftware.Service.Folder"
-    schedule:
-      interval: "weekly"
-    reviewers:
-      - "PanacheSoftwareDev"
-  - package-ecosystem: "nuget"
     directory: "/src/Services/PanacheSoftware.Service.Foundation"
     schedule:
       interval: "weekly"
