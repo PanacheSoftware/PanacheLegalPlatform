@@ -8,65 +8,84 @@ updates:
   #Web
   - package-ecosystem: "nuget"
     directory: "/src/Web/PanacheSoftware.UI.Core"
-    schedule: "weekly"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "PanacheSoftwareDev"
   #Web Apps
   - package-ecosystem: "nuget"
     directory: "/src/Web Apps/PanacheSoftware.Identity"
-    schedule: "weekly"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "PanacheSoftwareDev"
   - package-ecosystem: "nuget"
     directory: "/src/Web Apps/PanacheSoftware.UI.Client"
-    schedule: "weekly"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "PanacheSoftwareDev"
   #Services
   - package-ecosystem: "nuget"
     directory: "/src/Services/PanacheSoftware.Service.Client"
-    schedule: "weekly"
+    schedule:
+      interval: "weekly"
     reviewers:
       - "PanacheSoftwareDev"
   - package-ecosystem: "nuget"
     directory: "/src/Services/PanacheSoftware.Service.File"
-    schedule: "weekly"
+    schedule:
+      interval: "weekly"
     reviewers:
       - "PanacheSoftwareDev"
   - package-ecosystem: "nuget"
     directory: "/src/Services/PanacheSoftware.Service.Folder"
-    schedule: "weekly"
+    schedule:
+      interval: "weekly"
     reviewers:
       - "PanacheSoftwareDev"
   - package-ecosystem: "nuget"
     directory: "/src/Services/PanacheSoftware.Service.Foundation"
-    schedule: "weekly"
+    schedule:
+      interval: "weekly"
     reviewers:
       - "PanacheSoftwareDev"
   - package-ecosystem: "nuget"
     directory: "/src/Services/PanacheSoftware.Service.Task"
-    schedule: "weekly"
+    schedule:
+      interval: "weekly"
     reviewers:
       - "PanacheSoftwareDev"
   - package-ecosystem: "nuget"
     directory: "/src/Services/PanacheSoftware.Service.Team"
-    schedule: "weekly"
+    schedule:
+      interval: "weekly"
     reviewers:
       - "PanacheSoftwareDev"
   #Core
   - package-ecosystem: "nuget"
     directory: "/src/Core/PanacheSoftware.Core"
-    schedule: "weekly"
+    schedule:
+      interval: "weekly"
     reviewers:
       - "PanacheSoftwareDev"
   - package-ecosystem: "nuget"
     directory: "/src/Core/PanacheSoftware.Database"
-    schedule: "weekly"
+    schedule:
+      interval: "weekly"
     reviewers:
       - "PanacheSoftwareDev"
   - package-ecosystem: "nuget"
     directory: "/src/Core/PanacheSoftware.Http"
-    schedule: "weekly"
+    schedule:
+      interval: "weekly"
     reviewers:
       - "PanacheSoftwareDev"
   #API Gateway
   - package-ecosystem: "nuget"
     directory: "/src/API Gateway/PanacheSoftware.API.Gateway"
-    schedule: "weekly"
+    schedule:
+      interval: "weekly"
     reviewers:
       - "PanacheSoftwareDev"
 
