@@ -67,7 +67,7 @@ namespace PanacheSoftware.Service.Team
                     options.ApiName = PanacheSoftwareScopeNames.TeamService;
                     options.ApiSecret = panacheSoftwareConfiguration.Secret.TeamServiceSecret;
                     options.RequireHttpsMetadata = false;
-                    options.EnableCaching = true;
+                    //options.EnableCaching = true;
                 });
 
             //services.AddAuthentication("Bearer")

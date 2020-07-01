@@ -72,6 +72,7 @@ namespace PanacheSoftware.Identity
                 options.Events.RaiseSuccessEvents = true;
             })
                 .AddInMemoryIdentityResources(identityServerConfig.GetIdentityResources())
+                .AddInMemoryApiScopes(identityServerConfig.GetApiScopes())
                 .AddInMemoryApiResources(identityServerConfig.GetApis())
                 .AddInMemoryClients(identityServerConfig.GetClients())
                 .AddAspNetIdentity<ApplicationUser>()

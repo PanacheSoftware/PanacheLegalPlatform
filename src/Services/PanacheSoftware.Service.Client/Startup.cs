@@ -62,7 +62,7 @@ namespace PanacheSoftware.Service.Client
                     options.ApiName = PanacheSoftwareScopeNames.ClientService;
                     options.ApiSecret = panacheSoftwareConfiguration.Secret.ClientServiceSecret;
                     options.RequireHttpsMetadata = false;
-                    options.EnableCaching = true;
+                    //options.EnableCaching = true;
                 });
 
             //services.AddAuthentication("Bearer")

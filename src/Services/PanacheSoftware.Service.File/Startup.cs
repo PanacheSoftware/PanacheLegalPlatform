@@ -64,7 +64,7 @@ namespace PanacheSoftware.Service.File
                     options.ApiName = PanacheSoftwareScopeNames.FileService;
                     options.ApiSecret = panacheSoftwareConfiguration.Secret.FileServiceSecret;
                     options.RequireHttpsMetadata = false;
-                    options.EnableCaching = true;
+                    //options.EnableCaching = true;
                 });
 
             //services.AddAuthentication("Bearer")

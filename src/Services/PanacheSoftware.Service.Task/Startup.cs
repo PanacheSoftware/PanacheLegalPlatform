@@ -57,7 +57,7 @@ namespace PanacheSoftware.Service.Task
                     options.ApiName = PanacheSoftwareScopeNames.TaskService;
                     options.ApiSecret = panacheSoftwareConfiguration.Secret.TaskServiceSecret;
                     options.RequireHttpsMetadata = false;
-                    options.EnableCaching = true;
+                    //options.EnableCaching = true;
                 });
 
             //services.AddAuthentication("Bearer")

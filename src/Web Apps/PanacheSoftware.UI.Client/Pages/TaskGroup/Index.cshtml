@@ -8,7 +8,7 @@
 @section Styles {
     @await Html.PartialAsync("_PLFormCSS")
     @await Html.PartialAsync("_PLDataTableCSS")
-    <link rel="stylesheet" href="~/_content/PanacheSoftware.UI.Core/css/dhtmlx-gantt/dhtmlxgantt.css">
+    <link rel="stylesheet" href="~/ui-core/css/dhtmlx-gantt/dhtmlxgantt.css">
 }
 
 <div id="overlay" class="overlay"></div>
@@ -195,7 +195,7 @@
     @await Html.PartialAsync("_PLFormJS")
     @await Html.PartialAsync("_PLDataTableJS")
     @await Html.PartialAsync("_ValidationScriptsPartial")
-    <script src="~/_content/PanacheSoftware.UI.Core/js/dhtmlx-gantt/dhtmlxgantt.js"></script>
+    <script src="~/ui-core/js/dhtmlx-gantt/dhtmlxgantt.js"></script>
     <script>
 		gantt.config.date_format = "%Y-%m-%d %H:%i";
 		gantt.config.readonly = true;

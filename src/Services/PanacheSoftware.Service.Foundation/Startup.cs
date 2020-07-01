@@ -64,7 +64,7 @@ namespace PanacheSoftware.Service.Foundation
                     options.ApiName = PanacheSoftwareScopeNames.FoundationService;
                     options.ApiSecret = panacheSoftwareConfiguration.Secret.FoundationServiceSecret;
                     options.RequireHttpsMetadata = false;
-                    options.EnableCaching = true;
+                    //options.EnableCaching = true;
                 });
 
 

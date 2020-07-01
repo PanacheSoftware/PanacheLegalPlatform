@@ -71,7 +71,9 @@ namespace PanacheSoftware.UI.Client
 
                     options.ClientId = PanacheSoftwareScopeNames.ClientUI;
                     options.ClientSecret = panacheSoftwareConfiguration.Secret.UIClientSecret;
-                    options.ResponseType = "code id_token";
+                    //options.ResponseType = "code id_token";
+                    options.ResponseType = "code";
+                    options.UsePkce = true;
 
                     options.SaveTokens = true;
                     options.GetClaimsFromUserInfoEndpoint = true;
