@@ -1,11 +1,24 @@
 version: "3.4"
 services:
+    
+  sqldata:
+    image: mcr.microsoft.com/mssql/server:2017-latest
+    environment:
+      - SA_PASSWORD=Passw0rd123!
+      - ACCEPT_EULA=Y
+    ports:
+      - "5433:1433"
+    volumes:
+      - panachesoftware-sqldata:/var/opt/mssql
+    
   panachesoftware.identity:
     image: panachesoftware/panachesoftwareidentity:latest
+    depends_on:
+      - sqldata
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings__DefaultConnection=Data Source=192.168.86.31;Database=PanacheSoftware.Identity.Docker;User Id=sa;Password=Passw0rd123!
+      - ConnectionStrings__DefaultConnection=Server=sqldata;Database=PanacheSoftware.Identity.Docker;User Id=sa;Password=Passw0rd123!
       - PanacheSoftware__CallMethod__APICallsSecure=False
       - PanacheSoftware__CallMethod__UICallsSecure=False
       - PanacheSoftware__CallMethod__UseAPIGateway=False
@@ -25,11 +38,12 @@ services:
   panachesoftware.service.team:
     image: panachesoftware/panachesoftwareserviceteam:latest
     depends_on:
+      - sqldata
       - panachesoftware.identity
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings__DefaultConnection=Data Source=192.168.86.31;Database=PanacheSoftware.Service.Team.Docker;User Id=sa;Password=Passw0rd123!
+      - ConnectionStrings__DefaultConnection=Server=sqldata;Database=PanacheSoftware.Service.Team.Docker;User Id=sa;Password=Passw0rd123!
       - PanacheSoftware__CallMethod__APICallsSecure=False
       - PanacheSoftware__CallMethod__UICallsSecure=False
       - PanacheSoftware__CallMethod__UseAPIGateway=False
@@ -43,12 +57,13 @@ services:
   panachesoftware.service.task:
     image: panachesoftware/panachesoftwareservicetask:latest
     depends_on:
+      - sqldata
       - panachesoftware.identity
       - panachesoftware.service.team
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings__DefaultConnection=Data Source=192.168.86.31;Database=PanacheSoftware.Service.Task.Docker;User Id=sa;Password=Passw0rd123!
+      - ConnectionStrings__DefaultConnection=Server=sqldata;Database=PanacheSoftware.Service.Task.Docker;User Id=sa;Password=Passw0rd123!
       - PanacheSoftware__CallMethod__APICallsSecure=False
       - PanacheSoftware__CallMethod__UICallsSecure=False
       - PanacheSoftware__CallMethod__UseAPIGateway=False
@@ -64,11 +79,12 @@ services:
   panachesoftware.service.foundation:
     image: panachesoftware/panachesoftwareservicefoundation:latest
     depends_on:
+      - sqldata
       - panachesoftware.identity
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings__DefaultConnection=Data Source=192.168.86.31;Database=PanacheSoftware.Service.Foundation.Docker;User Id=sa;Password=Passw0rd123!
+      - ConnectionStrings__DefaultConnection=Server=sqldata;Database=PanacheSoftware.Service.Foundation.Docker;User Id=sa;Password=Passw0rd123!
       - PanacheSoftware__CallMethod__APICallsSecure=False
       - PanacheSoftware__CallMethod__UICallsSecure=False
       - PanacheSoftware__CallMethod__UseAPIGateway=False
@@ -82,11 +98,12 @@ services:
   panachesoftware.service.file:
     image: panachesoftware/panachesoftwareservicefile:latest
     depends_on:
+      - sqldata
       - panachesoftware.identity
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings__DefaultConnection=Data Source=192.168.86.31;Database=PanacheSoftware.Service.File.Docker;User Id=sa;Password=Passw0rd123!
+      - ConnectionStrings__DefaultConnection=Server=sqldata;Database=PanacheSoftware.Service.File.Docker;User Id=sa;Password=Passw0rd123!
       - PanacheSoftware__CallMethod__APICallsSecure=False
       - PanacheSoftware__CallMethod__UICallsSecure=False
       - PanacheSoftware__CallMethod__UseAPIGateway=False
@@ -100,11 +117,12 @@ services:
   panachesoftware.service.client:
     image: panachesoftware/panachesoftwareserviceclient:latest
     depends_on:
+      - sqldata
       - panachesoftware.identity
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings__DefaultConnection=Data Source=192.168.86.31;Database=PanacheSoftware.Service.Client.Docker;User Id=sa;Password=Passw0rd123!
+      - ConnectionStrings__DefaultConnection=Server=sqldata;Database=PanacheSoftware.Service.Client.Docker;User Id=sa;Password=Passw0rd123!
       - PanacheSoftware__CallMethod__APICallsSecure=False
       - PanacheSoftware__CallMethod__UICallsSecure=False
       - PanacheSoftware__CallMethod__UseAPIGateway=False
