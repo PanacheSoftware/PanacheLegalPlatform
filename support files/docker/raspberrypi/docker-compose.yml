@@ -1,0 +1,152 @@
+version: "3.4"
+services:
+  panachesoftware.identity:
+    image: panachesoftware/panachesoftwareidentity-arm32:latest
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80      
+      - ConnectionStrings__DefaultConnection=Server={IP address and port for example 12.345.678.90,1433};Database=PanacheSoftware.Identity.ARM;User ID=sa;Password=Passw0rd123!;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False
+      - PanacheSoftware__CallMethod__APICallsSecure=False
+      - PanacheSoftware__CallMethod__UICallsSecure=False
+      - PanacheSoftware__CallMethod__UseAPIGateway=False
+      - PanacheSoftware__StartDomain=panachesoftware.com
+      - PanacheSoftware__Url__UIClientURL=http://172.17.0.1:55001
+      - PanacheSoftware__Url__UIClientURLSecure=https://172.17.0.1:44301
+      - PanacheSoftware__Secret__UIClientSecret=49C1A7E1-0C79-4A89-A3D6-A37998FB86B0
+      - PanacheSoftware__Secret__APIGatewaySecret=DDDCB193-213C-43FB-967A-5A911D2EFC04
+      - PanacheSoftware__Secret__ClientServiceSecret=1314EF18-40FA-4B16-83DF-B276FF0D92A9
+      - PanacheSoftware__Secret__FileServiceSecret=839C649E-4FE3-410C-B43F-69C017A52676
+      - PanacheSoftware__Secret__FoundationServiceSecret=70CD8BB9-5256-42CF-8B95-DD61C1051AD0
+      - PanacheSoftware__Secret__TaskServiceSecret=AC654B02-E46B-4359-B908-87479CBE1CEB
+      - PanacheSoftware__Secret__TeamServiceSecret=5C9BF545-3C20-4448-9EEC-6B3E745B671E
+    ports:
+      - "55002:80"
+
+  panachesoftware.service.team:
+    image: panachesoftware/panachesoftwareserviceteam-arm32:latest
+    depends_on:
+      - panachesoftware.identity
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Server={IP address and port for example 12.345.678.90,1433};Database=PanacheSoftware.Team.ARM;User ID=sa;Password=Passw0rd123!;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False
+      - PanacheSoftware__CallMethod__APICallsSecure=False
+      - PanacheSoftware__CallMethod__UICallsSecure=False
+      - PanacheSoftware__CallMethod__UseAPIGateway=False
+      - PanacheSoftware__StartDomain=panachesoftware.com
+      - PanacheSoftware__Url__IdentityServerURL=http://172.17.0.1:55002
+      - PanacheSoftware__Url__IdentityServerURLSecure=https://172.17.0.1:44302
+      - PanacheSoftware__Secret__TeamServiceSecret=5C9BF545-3C20-4448-9EEC-6B3E745B671E
+    ports:
+      - "55006:80"
+
+  panachesoftware.service.task:
+    image: panachesoftware/panachesoftwareservicetask-arm32:latest
+    depends_on:
+      - panachesoftware.identity
+      - panachesoftware.service.team
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Server={IP address and port for example 12.345.678.90,1433};Database=PanacheSoftware.Task.ARM;User ID=sa;Password=Passw0rd123!;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False
+      - PanacheSoftware__CallMethod__APICallsSecure=False
+      - PanacheSoftware__CallMethod__UICallsSecure=False
+      - PanacheSoftware__CallMethod__UseAPIGateway=False
+      - PanacheSoftware__StartDomain=panachesoftware.com
+      - PanacheSoftware__Url__IdentityServerURL=http://172.17.0.1:55002
+      - PanacheSoftware__Url__IdentityServerURLSecure=https://172.17.0.1:44302
+      - PanacheSoftware__Url__TeamServiceURL=http://172.17.0.1:55006
+      - PanacheSoftware__Url__TeamServiceURLSecure=https://172.17.0.1:44306
+      - PanacheSoftware__Secret__TaskServiceSecret=AC654B02-E46B-4359-B908-87479CBE1CEB
+    ports:
+      - "55007:80"
+
+  panachesoftware.service.foundation:
+    image: panachesoftware/panachesoftwareservicefoundation-arm32:latest
+    depends_on:
+      - panachesoftware.identity
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Server={IP address and port for example 12.345.678.90,1433};Database=PanacheSoftware.Foundation.ARM;User ID=sa;Password=Passw0rd123!;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False
+      - PanacheSoftware__CallMethod__APICallsSecure=False
+      - PanacheSoftware__CallMethod__UICallsSecure=False
+      - PanacheSoftware__CallMethod__UseAPIGateway=False
+      - PanacheSoftware__StartDomain=panachesoftware.com
+      - PanacheSoftware__Url__IdentityServerURL=http://172.17.0.1:55002
+      - PanacheSoftware__Url__IdentityServerURLSecure=https://172.17.0.1:44302
+      - PanacheSoftware__Secret__FoundationServiceSecret=70CD8BB9-5256-42CF-8B95-DD61C1051AD0
+    ports:
+      - "55004:80"
+
+  panachesoftware.service.file:
+    image: panachesoftware/panachesoftwareservicefile-arm32:latest
+    depends_on:
+      - panachesoftware.identity
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Server={IP address and port for example 12.345.678.90,1433};Database=PanacheSoftware.File.ARM;User ID=sa;Password=Passw0rd123!;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False
+      - PanacheSoftware__CallMethod__APICallsSecure=False
+      - PanacheSoftware__CallMethod__UICallsSecure=False
+      - PanacheSoftware__CallMethod__UseAPIGateway=False
+      - PanacheSoftware__StartDomain=panachesoftware.com
+      - PanacheSoftware__Url__IdentityServerURL=http://172.17.0.1:55002
+      - PanacheSoftware__Url__IdentityServerURLSecure=https://172.17.0.1:44302
+      - PanacheSoftware__Secret__FileServiceSecret=839C649E-4FE3-410C-B43F-69C017A52676
+    ports:
+      - "55008:80"
+
+  panachesoftware.service.client:
+    image: panachesoftware/panachesoftwareserviceclient-arm32:latest
+    depends_on:
+      - panachesoftware.identity
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Server={IP address and port for example 12.345.678.90,1433};Database=PanacheSoftware.Client.ARM;User ID=sa;Password=Passw0rd123!;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False
+      - PanacheSoftware__CallMethod__APICallsSecure=False
+      - PanacheSoftware__CallMethod__UICallsSecure=False
+      - PanacheSoftware__CallMethod__UseAPIGateway=False
+      - PanacheSoftware__StartDomain=panachesoftware.com
+      - PanacheSoftware__Url__IdentityServerURL=http://172.17.0.1:55002
+      - PanacheSoftware__Url__IdentityServerURLSecure=https://172.17.0.1:44302
+      - PanacheSoftware__Secret__ClientServiceSecret=1314EF18-40FA-4B16-83DF-B276FF0D92A9
+    ports:
+      - "55005:80"
+
+  panachesoftware.ui.client:
+    image: panachesoftware/panachesoftwareuiclient-arm32:latest
+    depends_on:
+      - panachesoftware.identity
+      - panachesoftware.service.team
+      - panachesoftware.service.task
+      - panachesoftware.service.foundation
+      - panachesoftware.service.file
+      - panachesoftware.service.client
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - PanacheSoftware__CallMethod__APICallsSecure=False
+      - PanacheSoftware__CallMethod__UICallsSecure=False
+      - PanacheSoftware__CallMethod__UseAPIGateway=False
+      - PanacheSoftware__StartDomain=panachesoftware.com
+      - PanacheSoftware__Url__IdentityServerURL=http://172.17.0.1:55002
+      - PanacheSoftware__Url__IdentityServerURLSecure=https://172.17.0.1:44302
+      - PanacheSoftware__Url__APIGatewayURL=http://172.17.0.1:55003
+      - PanacheSoftware__Url__APIGatewayURLSecure=https://172.17.0.1:44303
+      - PanacheSoftware__Url__UIClientURL=http://172.17.0.1:55001
+      - PanacheSoftware__Url__UIClientURLSecure=https://172.17.0.1:44301
+      - PanacheSoftware__Url__ClientServiceURL=http://172.17.0.1:55005
+      - PanacheSoftware__Url__ClientServiceURLSecure=https://172.17.0.1:44305
+      - PanacheSoftware__Url__FileServiceURL=http://172.17.0.1:55008
+      - PanacheSoftware__Url__FileServiceURLSecure=https://172.17.0.1:44308
+      - PanacheSoftware__Url__FoundationServiceURL=http://172.17.0.1:55004
+      - PanacheSoftware__Url__FoundationServiceURLSecure=https://172.17.0.1:44304
+      - PanacheSoftware__Url__TaskServiceURL=http://172.17.0.1:55007
+      - PanacheSoftware__Url__TaskServiceURLSecure=https://172.17.0.1:44307
+      - PanacheSoftware__Url__TeamServiceURL=http://172.17.0.1:55006
+      - PanacheSoftware__Url__TeamServiceURLSecure=https://172.17.0.1:44306
+      - PanacheSoftware__Secret__UIClientSecret=49C1A7E1-0C79-4A89-A3D6-A37998FB86B0
+    ports:
+      - "55001:80"
