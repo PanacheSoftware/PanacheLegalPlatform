@@ -7,6 +7,10 @@
     <UserSecretsId>f2fc2b76-7424-4729-b129-1c8595bd3b9a</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..</DockerfileContext>
+    <Deterministic>False</Deterministic>
+    <AssemblyVersion>0.1.*</AssemblyVersion>
+    <FileVersion>0.1.0.0</FileVersion>
+    <Version>0.1.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
