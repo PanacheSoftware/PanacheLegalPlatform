@@ -203,4 +203,10 @@ namespace PanacheSoftware.Core.Types
             return SettingTypesDictionary;
         }
     }
+
+    public struct DBProvider
+    {
+        public const string MSSQL = "MSSQL";
+        public const string MySQL = "MySQL";
+    }
 }
