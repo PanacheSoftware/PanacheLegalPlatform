@@ -17,47 +17,40 @@ namespace PanacheSoftware.Service.Foundation.Persistance.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.4")
+                .HasAnnotation("ProductVersion", "0.1.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn)
+                .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("PanacheSoftware.Core.Domain.Language.LanguageCode", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .ValueGeneratedOnAdd();
 
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("CreatedBy");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("CreatedDate");
 
-                    b.Property<DateTime>("DateFrom")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("DateFrom");
 
-                    b.Property<DateTime>("DateTo")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("DateTo");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(4000)");
 
                     b.Property<string>("LanguageCodeId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(1000)");
 
-                    b.Property<Guid>("LastUpdateBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("LastUpdateBy");
 
-                    b.Property<DateTime>("LastUpdateDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("LastUpdateDate");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(25)");
 
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("TenantId");
 
                     b.HasKey("Id");
 
@@ -67,40 +60,32 @@ namespace PanacheSoftware.Service.Foundation.Persistance.Data.Migrations
             modelBuilder.Entity("PanacheSoftware.Core.Domain.Language.LanguageHeader", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .ValueGeneratedOnAdd();
 
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("CreatedBy");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("CreatedDate");
 
-                    b.Property<DateTime>("DateFrom")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("DateFrom");
 
-                    b.Property<DateTime>("DateTo")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("DateTo");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(4000)");
 
-                    b.Property<Guid>("LastUpdateBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("LastUpdateBy");
 
-                    b.Property<DateTime>("LastUpdateDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("LastUpdateDate");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(25)");
 
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("TenantId");
 
                     b.Property<string>("Text")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<long>("TextCode")
                         .HasColumnType("bigint");
@@ -113,44 +98,35 @@ namespace PanacheSoftware.Service.Foundation.Persistance.Data.Migrations
             modelBuilder.Entity("PanacheSoftware.Core.Domain.Language.LanguageItem", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .ValueGeneratedOnAdd();
 
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("CreatedBy");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("CreatedDate");
 
-                    b.Property<DateTime>("DateFrom")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("DateFrom");
 
-                    b.Property<DateTime>("DateTo")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("DateTo");
 
                     b.Property<string>("LanguageCodeId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(1000)");
 
-                    b.Property<Guid>("LanguageHeaderId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("LanguageHeaderId");
 
-                    b.Property<Guid>("LastUpdateBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("LastUpdateBy");
 
-                    b.Property<DateTime>("LastUpdateDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("LastUpdateDate");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(25)");
 
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("TenantId");
 
                     b.Property<string>("Text")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(1000)");
 
                     b.HasKey("Id");
 
@@ -162,44 +138,38 @@ namespace PanacheSoftware.Service.Foundation.Persistance.Data.Migrations
             modelBuilder.Entity("PanacheSoftware.Core.Domain.Settings.SettingHeader", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .ValueGeneratedOnAdd();
 
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("CreatedBy");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("CreatedDate");
 
                     b.Property<string>("DefaultValue")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(4000)");
 
-                    b.Property<Guid>("LastUpdateBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("LastUpdateBy");
 
-                    b.Property<DateTime>("LastUpdateDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("LastUpdateDate");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("SettingType")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(25)");
 
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("TenantId");
 
                     b.Property<string>("Value")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(1000)");
 
                     b.HasKey("Id");
 
@@ -209,37 +179,29 @@ namespace PanacheSoftware.Service.Foundation.Persistance.Data.Migrations
             modelBuilder.Entity("PanacheSoftware.Core.Domain.Settings.UserSetting", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .ValueGeneratedOnAdd();
 
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("CreatedBy");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("CreatedDate");
 
-                    b.Property<Guid>("LastUpdateBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("LastUpdateBy");
 
-                    b.Property<DateTime>("LastUpdateDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("LastUpdateDate");
 
-                    b.Property<Guid>("SettingHeaderId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("SettingHeaderId");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(25)");
 
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("TenantId");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("UserId");
 
                     b.Property<string>("Value")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(1000)");
 
                     b.HasKey("Id");
 

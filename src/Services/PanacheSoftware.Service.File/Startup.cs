@@ -39,9 +39,24 @@ namespace PanacheSoftware.Service.File
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            string connectionString = Configuration.GetConnectionString("DefaultConnection");
+            var panacheSoftwareConfiguration = new PanacheSoftwareConfiguration();
+            Configuration.Bind("PanacheSoftware", panacheSoftwareConfiguration);
 
-            services.AddDbContext<PanacheSoftwareServiceFileContext>(options => options.UseSqlServer(connectionString));
+            switch (panacheSoftwareConfiguration.DBProvider)
+            {
+                case DBProvider.MySQL:
+                    services.AddDbContext<PanacheSoftwareServiceFileContext>(options =>
+                        options.UseMySql(Configuration.GetConnectionString("MySQL")));
+                    break;
+                case DBProvider.MSSQL:
+                    services.AddDbContext<PanacheSoftwareServiceFileContext>(options =>
+                        options.UseSqlServer(Configuration.GetConnectionString("MSSQL")));
+                    break;
+            }
+
+            //string connectionString = Configuration.GetConnectionString("DefaultConnection");
+
+            //services.AddDbContext<PanacheSoftwareServiceFileContext>(options => options.UseSqlServer(connectionString));
 
             services.AddMvc(options =>
             {
@@ -51,8 +66,8 @@ namespace PanacheSoftware.Service.File
 
             services.AddAuthorization();
 
-            var panacheSoftwareConfiguration = new PanacheSoftwareConfiguration();
-            Configuration.Bind("PanacheSoftware", panacheSoftwareConfiguration);
+            //var panacheSoftwareConfiguration = new PanacheSoftwareConfiguration();
+            //Configuration.Bind("PanacheSoftware", panacheSoftwareConfiguration);
 
             services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
                 .AddIdentityServerAuthentication(options =>

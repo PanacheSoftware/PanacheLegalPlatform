@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using PanacheSoftware.Core.Types;
 using PanacheSoftware.Identity.Data;
 
 namespace PanacheSoftware.Identity.Data.Migrations
@@ -17,25 +18,45 @@ namespace PanacheSoftware.Identity.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.4")
+                .HasAnnotation("ProductVersion", "0.1.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn)
+                .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    switch (ActiveProvider)
+                    {
+                        case DatabaseProviderNameSpace.MSSQL:
+                            b.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int")
+                                .HasAnnotation("SqlServer:ValueGenerationStrategy",
+                                    SqlServerValueGenerationStrategy.IdentityColumn);
+                            break;
+                        case DatabaseProviderNameSpace.MySQL:
+                            b.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int auto_increment");
+                            break;
+                    }
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(1000)");
 
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
+                    switch (ActiveProvider)
+                    {
+                        case DatabaseProviderNameSpace.MSSQL:
+                            b.Property<string>("ClaimValue")
+                                .HasColumnType("nvarchar(max)");
+                            break;
+                        case DatabaseProviderNameSpace.MySQL:
+                            b.Property<string>("ClaimValue")
+                                .HasColumnType("LONGTEXT");
+                            break;
+                    }
 
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("RoleId");
 
                     b.HasKey("Id");
 
@@ -46,19 +67,38 @@ namespace PanacheSoftware.Identity.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    switch (ActiveProvider)
+                    {
+                        case DatabaseProviderNameSpace.MSSQL:
+                            b.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int")
+                                .HasAnnotation("SqlServer:ValueGenerationStrategy",
+                                    SqlServerValueGenerationStrategy.IdentityColumn);
+                            break;
+                        case DatabaseProviderNameSpace.MySQL:
+                            b.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int auto_increment");
+                            break;
+                    }
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(1000)");
 
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
+                    switch (ActiveProvider)
+                    {
+                        case DatabaseProviderNameSpace.MSSQL:
+                            b.Property<string>("ClaimValue")
+                                .HasColumnType("nvarchar(max)");
+                            break;
+                        case DatabaseProviderNameSpace.MySQL:
+                            b.Property<string>("ClaimValue")
+                                .HasColumnType("LONGTEXT");
+                            break;
+                    }
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("UserId");
 
                     b.HasKey("Id");
 
@@ -76,10 +116,9 @@ namespace PanacheSoftware.Identity.Data.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(1000)");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("UserId");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -90,11 +129,9 @@ namespace PanacheSoftware.Identity.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
                 {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("UserId");
 
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("RoleId");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -105,8 +142,7 @@ namespace PanacheSoftware.Identity.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("UserId");
 
                     b.Property<string>("LoginProvider")
                         .HasColumnType("nvarchar(450)");
@@ -114,8 +150,17 @@ namespace PanacheSoftware.Identity.Data.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)");
+                    switch (ActiveProvider)
+                    {
+                        case DatabaseProviderNameSpace.MSSQL:
+                            b.Property<string>("Value")
+                                .HasColumnType("nvarchar(max)");
+                            break;
+                        case DatabaseProviderNameSpace.MySQL:
+                            b.Property<string>("Value")
+                                .HasColumnType("LONGTEXT");
+                            break;
+                    }
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
@@ -125,12 +170,21 @@ namespace PanacheSoftware.Identity.Data.Migrations
             modelBuilder.Entity("PanacheSoftware.Core.Domain.Identity.ApplicationRole", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .ValueGeneratedOnAdd();
 
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
+                    switch (ActiveProvider)
+                    {
+                        case DatabaseProviderNameSpace.MSSQL:
+                            b.Property<string>("ConcurrencyStamp")
+                                .IsConcurrencyToken()
+                                .HasColumnType("nvarchar(max)");
+                            break;
+                        case DatabaseProviderNameSpace.MySQL:
+                            b.Property<string>("ConcurrencyStamp")
+                                .IsConcurrencyToken()
+                                .HasColumnType("LONGTEXT");
+                            break;
+                    }
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(256)")
@@ -153,33 +207,56 @@ namespace PanacheSoftware.Identity.Data.Migrations
             modelBuilder.Entity("PanacheSoftware.Core.Domain.Identity.ApplicationUser", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .ValueGeneratedOnAdd();
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
-                    b.Property<string>("Base64ProfileImage")
-                        .HasColumnType("nvarchar(max)");
+                    switch (ActiveProvider)
+                    {
+                        case DatabaseProviderNameSpace.MSSQL:
+                            b.Property<string>("Base64ProfileImage")
+                                .HasColumnType("nvarchar(max)");
+                            break;
+                        case DatabaseProviderNameSpace.MySQL:
+                            b.Property<string>("Base64ProfileImage")
+                                .HasColumnType("LONGTEXT");
+                            break;
+                    }
 
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
+                    switch (ActiveProvider)
+                    {
+                        case DatabaseProviderNameSpace.MSSQL:
+                            b.Property<string>("ConcurrencyStamp")
+                                .IsConcurrencyToken()
+                                .HasColumnType("nvarchar(max)");
+                            break;
+                        case DatabaseProviderNameSpace.MySQL:
+                            b.Property<string>("ConcurrencyStamp")
+                                .IsConcurrencyToken()
+                                .HasColumnType("LONGTEXT");
+                            break;
+                    }
 
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("CreatedBy");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("CreatedDate");
 
-                    b.Property<DateTime>("DateFrom")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("DateFrom");
 
-                    b.Property<DateTime>("DateTo")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("DateTo");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                    switch (ActiveProvider)
+                    {
+                        case DatabaseProviderNameSpace.MSSQL:
+                            b.Property<string>("Description")
+                                .HasColumnType("nvarchar(max)");
+                            break;
+                        case DatabaseProviderNameSpace.MySQL:
+                            b.Property<string>("Description")
+                                .HasColumnType("LONGTEXT");
+                            break;
+                    }
 
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(256)")
@@ -188,23 +265,38 @@ namespace PanacheSoftware.Identity.Data.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<string>("FirstName")
-                        .HasColumnType("nvarchar(max)");
+                    switch (ActiveProvider)
+                    {
+                        case DatabaseProviderNameSpace.MSSQL:
+                            b.Property<string>("FirstName")
+                                .HasColumnType("nvarchar(max)");
+                            break;
+                        case DatabaseProviderNameSpace.MySQL:
+                            b.Property<string>("FirstName")
+                                .HasColumnType("LONGTEXT");
+                            break;
+                    }
 
-                    b.Property<string>("FullName")
-                        .HasColumnType("nvarchar(max)");
+                    switch (ActiveProvider)
+                    {
+                        case DatabaseProviderNameSpace.MSSQL:
+                            b.Property<string>("FullName")
+                                .HasColumnType("nvarchar(max)");
+                            break;
+                        case DatabaseProviderNameSpace.MySQL:
+                            b.Property<string>("FullName")
+                                .HasColumnType("LONGTEXT");
+                            break;
+                    }
 
-                    b.Property<Guid>("LastUpdateBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("LastUpdateBy");
 
-                    b.Property<DateTime>("LastUpdateDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("LastUpdateDate");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTimeOffset?>("LockoutEnd");
 
                     b.Property<string>("NormalizedEmail")
                         .HasColumnType("nvarchar(256)")
@@ -214,23 +306,68 @@ namespace PanacheSoftware.Identity.Data.Migrations
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
+                    switch (ActiveProvider)
+                    {
+                        case DatabaseProviderNameSpace.MSSQL:
+                            b.Property<string>("PasswordHash")
+                                .HasColumnType("nvarchar(max)");
+                            break;
+                        case DatabaseProviderNameSpace.MySQL:
+                            b.Property<string>("PasswordHash")
+                                .HasColumnType("LONGTEXT");
+                            break;
+                    }
 
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                    switch (ActiveProvider)
+                    {
+                        case DatabaseProviderNameSpace.MSSQL:
+                            b.Property<string>("PhoneNumber")
+                                .HasColumnType("nvarchar(max)");
+                            break;
+                        case DatabaseProviderNameSpace.MySQL:
+                            b.Property<string>("PhoneNumber")
+                                .HasColumnType("LONGTEXT");
+                            break;
+                    }
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
+                    switch (ActiveProvider)
+                    {
+                        case DatabaseProviderNameSpace.MSSQL:
+                            b.Property<string>("SecurityStamp")
+                                .HasColumnType("nvarchar(max)");
+                            break;
+                        case DatabaseProviderNameSpace.MySQL:
+                            b.Property<string>("SecurityStamp")
+                                .HasColumnType("LONGTEXT");
+                            break;
+                    }
 
-                    b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
+                    switch (ActiveProvider)
+                    {
+                        case DatabaseProviderNameSpace.MSSQL:
+                            b.Property<string>("Status")
+                                .HasColumnType("nvarchar(max)");
+                            break;
+                        case DatabaseProviderNameSpace.MySQL:
+                            b.Property<string>("Status")
+                                .HasColumnType("LONGTEXT");
+                            break;
+                    }
 
-                    b.Property<string>("Surname")
-                        .HasColumnType("nvarchar(max)");
+                    switch (ActiveProvider)
+                    {
+                        case DatabaseProviderNameSpace.MSSQL:
+                            b.Property<string>("Surname")
+                                .HasColumnType("nvarchar(max)");
+                            break;
+                        case DatabaseProviderNameSpace.MySQL:
+                            b.Property<string>("Surname")
+                                .HasColumnType("LONGTEXT");
+                            break;
+                    }
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
@@ -255,35 +392,69 @@ namespace PanacheSoftware.Identity.Data.Migrations
             modelBuilder.Entity("PanacheSoftware.Core.Domain.Identity.IdentityTenant", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .ValueGeneratedOnAdd();
 
-                    b.Property<string>("CreatedByEmail")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    switch (ActiveProvider)
+                    {
+                        case DatabaseProviderNameSpace.MSSQL:
+                            b.Property<string>("CreatedByEmail")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+                            break;
+                        case DatabaseProviderNameSpace.MySQL:
+                            b.Property<string>("CreatedByEmail")
+                                .IsRequired()
+                                .HasColumnType("LONGTEXT");
+                            break;
+                    }
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("CreatedDate");
 
-                    b.Property<DateTime>("DateFrom")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("DateFrom");
 
-                    b.Property<DateTime>("DateTo")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("DateTo");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                    switch (ActiveProvider)
+                    {
+                        case DatabaseProviderNameSpace.MSSQL:
+                            b.Property<string>("Description")
+                                .HasColumnType("nvarchar(max)");
+                            break;
+                        case DatabaseProviderNameSpace.MySQL:
+                            b.Property<string>("Description")
+                                .HasColumnType("LONGTEXT");
+                            break;
+                    }
 
-                    b.Property<string>("Domain")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    switch (ActiveProvider)
+                    {
+                        case DatabaseProviderNameSpace.MSSQL:
+                            b.Property<string>("Domain")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+                            break;
+                        case DatabaseProviderNameSpace.MySQL:
+                            b.Property<string>("Domain")
+                                .IsRequired()
+                                .HasColumnType("LONGTEXT");
+                            break;
+                    }
 
-                    b.Property<DateTime>("LastUpdateDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("LastUpdateDate");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    switch (ActiveProvider)
+                    {
+                        case DatabaseProviderNameSpace.MSSQL:
+                            b.Property<string>("Status")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+                            break;
+                        case DatabaseProviderNameSpace.MySQL:
+                            b.Property<string>("Status")
+                                .IsRequired()
+                                .HasColumnType("LONGTEXT");
+                            break;
+                    }
 
                     b.HasKey("Id");
 

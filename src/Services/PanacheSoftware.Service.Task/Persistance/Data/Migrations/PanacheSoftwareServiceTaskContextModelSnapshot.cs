@@ -15,37 +15,31 @@ namespace PanacheSoftware.Service.Task.Persistance.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.4")
+                .HasAnnotation("ProductVersion", "0.1.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn)
+                .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.TaskDetail", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .ValueGeneratedOnAdd();
 
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("CreatedBy");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("CreatedDate");
 
-                    b.Property<Guid>("LastUpdateBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("LastUpdateBy");
 
-                    b.Property<DateTime>("LastUpdateDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("LastUpdateDate");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(25)");
 
-                    b.Property<Guid>("TaskHeaderId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("TaskHeaderId");
 
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("TenantId");
 
                     b.HasKey("Id");
 
@@ -58,30 +52,23 @@ namespace PanacheSoftware.Service.Task.Persistance.Data.Migrations
             modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.TaskGroupDetail", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .ValueGeneratedOnAdd();
 
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("CreatedBy");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("CreatedDate");
 
-                    b.Property<Guid>("LastUpdateBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("LastUpdateBy");
 
-                    b.Property<DateTime>("LastUpdateDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("LastUpdateDate");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(25)");
 
-                    b.Property<Guid>("TaskGroupHeaderId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("TaskGroupHeaderId");
 
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("TenantId");
 
                     b.HasKey("Id");
 
@@ -94,70 +81,55 @@ namespace PanacheSoftware.Service.Task.Persistance.Data.Migrations
             modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.TaskGroupHeader", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .ValueGeneratedOnAdd();
 
-                    b.Property<Guid>("ClientHeaderId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("ClientHeaderId");
 
                     b.Property<bool>("Completed")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("CompletedOnDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("CompletedOnDate");
 
-                    b.Property<DateTime>("CompletionDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("CompletionDate");
 
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("CreatedBy");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("CreatedDate");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(4000)");
 
-                    b.Property<Guid>("LastUpdateBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("LastUpdateBy");
 
-                    b.Property<DateTime>("LastUpdateDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("LastUpdateDate");
 
                     b.Property<string>("LongName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(1000)");
 
-                    b.Property<Guid>("MainUserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("MainUserId");
 
-                    b.Property<DateTime>("OriginalCompletionDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("OriginalCompletionDate");
 
-                    b.Property<DateTime>("OriginalStartDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("OriginalStartDate");
 
-                    b.Property<Guid?>("ParentTaskGroupId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid?>("ParentTaskGroupId");
 
                     b.Property<int>("SequenceNumber")
                         .HasColumnType("int");
 
                     b.Property<string>("ShortName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(1000)");
 
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("StartDate");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(25)");
 
-                    b.Property<Guid>("TeamHeaderId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("TeamHeaderId");
 
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("TenantId");
 
                     b.HasKey("Id");
 
@@ -169,63 +141,50 @@ namespace PanacheSoftware.Service.Task.Persistance.Data.Migrations
             modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.TaskHeader", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .ValueGeneratedOnAdd();
 
                     b.Property<bool>("Completed")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("CompletedOnDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("CompletedOnDate");
 
-                    b.Property<DateTime>("CompletionDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("CompletionDate");
 
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("CreatedBy");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("CreatedDate");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(4000)");
 
-                    b.Property<Guid>("LastUpdateBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("LastUpdateBy");
 
-                    b.Property<DateTime>("LastUpdateDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("LastUpdateDate");
 
-                    b.Property<Guid>("MainUserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("MainUserId");
 
-                    b.Property<DateTime>("OriginalCompletionDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("OriginalCompletionDate");
 
-                    b.Property<DateTime>("OriginalStartDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("OriginalStartDate");
 
                     b.Property<int>("SequenceNumber")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("StartDate");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(25)");
 
-                    b.Property<Guid>("TaskGroupHeaderId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("TaskGroupHeaderId");
 
                     b.Property<string>("TaskType")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(1000)");
 
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("TenantId");
 
                     b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(1000)");
 
                     b.HasKey("Id");
 

@@ -13,6 +13,7 @@ using Microsoft.Extensions.Hosting;
 using PanacheSoftware.Core.Domain.Configuration;
 using PanacheSoftware.Core.Domain.Identity;
 using PanacheSoftware.Core.Extensions;
+using PanacheSoftware.Core.Types;
 using PanacheSoftware.Http;
 using PanacheSoftware.Identity.Data;
 using PanacheSoftware.Identity.Manager;
@@ -35,10 +36,25 @@ namespace PanacheSoftware.Identity
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var panacheSoftwareConfiguration = new PanacheSoftwareConfiguration();
+            Configuration.Bind("PanacheSoftware", panacheSoftwareConfiguration);
+
+            switch (panacheSoftwareConfiguration.DBProvider)
+            {
+                case DBProvider.MySQL:
+                    services.AddDbContext<ApplicationDbContext>(options =>
+                        options.UseMySql(Configuration.GetConnectionString("MySQL")));
+                    break;
+                case DBProvider.MSSQL:
+                    services.AddDbContext<ApplicationDbContext>(options =>
+                        options.UseSqlServer(Configuration.GetConnectionString("MSSQL")));
+                    break;
+            }
+
             //Connect to the Database
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
-            );
+            //services.AddDbContext<ApplicationDbContext>(options =>
+            //    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
+            //);
 
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -59,8 +75,8 @@ namespace PanacheSoftware.Identity
                     //options.SuppressUseValidationProblemDetailsForInvalidModelStateResponses = true;
                 });
 
-            var panacheSoftwareConfiguration = new PanacheSoftwareConfiguration();
-            Configuration.Bind("PanacheSoftware", panacheSoftwareConfiguration);
+            //var panacheSoftwareConfiguration = new PanacheSoftwareConfiguration();
+            //Configuration.Bind("PanacheSoftware", panacheSoftwareConfiguration);
 
             var identityServerConfig = new Config(panacheSoftwareConfiguration);
 

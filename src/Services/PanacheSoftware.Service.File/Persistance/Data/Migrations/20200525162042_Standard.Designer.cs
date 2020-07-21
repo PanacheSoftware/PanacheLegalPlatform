@@ -17,49 +17,43 @@ namespace PanacheSoftware.Service.File.Persistance.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.4")
+                .HasAnnotation("ProductVersion", "0.1.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn)
+                .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("PanacheSoftware.Core.Domain.File.FileDetail", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .ValueGeneratedOnAdd();
 
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("CreatedBy");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("CreatedDate");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(4000)");
 
                     b.Property<string>("FileExtension")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(1000)");
 
-                    b.Property<Guid>("FileHeaderId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("FileHeaderId");
 
                     b.Property<string>("FileTitle")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("FileType")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(1000)");
 
-                    b.Property<Guid>("LastUpdateBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("LastUpdateBy");
 
-                    b.Property<DateTime>("LastUpdateDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("LastUpdateDate");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(25)");
 
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("TenantId");
 
                     b.HasKey("Id");
 
@@ -72,27 +66,21 @@ namespace PanacheSoftware.Service.File.Persistance.Data.Migrations
             modelBuilder.Entity("PanacheSoftware.Core.Domain.File.FileHeader", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .ValueGeneratedOnAdd();
 
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("CreatedBy");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("CreatedDate");
 
-                    b.Property<Guid>("LastUpdateBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("LastUpdateBy");
 
-                    b.Property<DateTime>("LastUpdateDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("LastUpdateDate");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(25)");
 
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("TenantId");
 
                     b.HasKey("Id");
 
@@ -102,37 +90,29 @@ namespace PanacheSoftware.Service.File.Persistance.Data.Migrations
             modelBuilder.Entity("PanacheSoftware.Core.Domain.File.FileLink", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .ValueGeneratedOnAdd();
 
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("CreatedBy");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("CreatedDate");
 
-                    b.Property<Guid>("FileHeaderId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("FileHeaderId");
 
-                    b.Property<Guid>("LastUpdateBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("LastUpdateBy");
 
-                    b.Property<DateTime>("LastUpdateDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("LastUpdateDate");
 
-                    b.Property<Guid>("LinkId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("LinkId");
 
                     b.Property<string>("LinkType")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(25)");
 
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("TenantId");
 
                     b.HasKey("Id");
 
@@ -144,48 +124,39 @@ namespace PanacheSoftware.Service.File.Persistance.Data.Migrations
             modelBuilder.Entity("PanacheSoftware.Core.Domain.File.FileVersion", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .ValueGeneratedOnAdd();
 
-                    b.Property<byte[]>("Content")
-                        .HasColumnType("varbinary(max)");
+                    b.Property<byte[]>("Content");
 
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("CreatedBy");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("CreatedDate");
 
-                    b.Property<Guid>("FileHeaderId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("FileHeaderId");
 
-                    b.Property<Guid>("LastUpdateBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("LastUpdateBy");
 
-                    b.Property<DateTime>("LastUpdateDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("LastUpdateDate");
 
                     b.Property<long>("Size")
                         .HasColumnType("bigint");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(25)");
 
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("TenantId");
 
                     b.Property<string>("TrustedName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("URI")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("UntrustedName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(1000)");
 
-                    b.Property<DateTime>("UploadDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("UploadDate");
 
                     b.Property<int>("VersionNumber")
                         .HasColumnType("int");
