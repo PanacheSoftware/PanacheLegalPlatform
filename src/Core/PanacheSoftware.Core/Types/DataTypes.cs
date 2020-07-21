@@ -203,4 +203,16 @@ namespace PanacheSoftware.Core.Types
             return SettingTypesDictionary;
         }
     }
+
+    public struct DBProvider
+    {
+        public const string MSSQL = "MSSQL";
+        public const string MySQL = "MySQL";
+    }
+
+    public struct DatabaseProviderNameSpace
+    {
+        public const string MSSQL = "Microsoft.EntityFrameworkCore.SqlServer";
+        public const string MySQL = "Pomelo.EntityFrameworkCore.MySql";
+    }
 }
