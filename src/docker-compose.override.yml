@@ -3,11 +3,9 @@ version: '3.4'
 services:
 
   sqldata:
+    image: mysql:latest
     environment:
-      - SA_PASSWORD=Passw0rd123!
-      - ACCEPT_EULA=Y
-    ports:
-      - "5433:1433"
+      - MYSQL_ROOT_PASSWORD=Passw0rd123!
     volumes:
       - panachesoftware-sqldata:/var/opt/mssql
 
@@ -15,27 +13,14 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
-      - ConnectionStrings__DefaultConnection=Server=sqldata;Database=PanacheSoftware.Identity;User Id=sa;Password=Passw0rd123!
+      - ConnectionStrings__MySQL=server=sqldata;port=3306;database=PanacheSoftware.Identity;user=root;password=Passw0rd123!;GuidFormat=Char36
       - PanacheSoftware__CallMethod__APICallsSecure=False
       - PanacheSoftware__CallMethod__UICallsSecure=False
       - PanacheSoftware__CallMethod__UseAPIGateway=False
       - PanacheSoftware__StartDomain=${START_DOMAIN}
-      - PanacheSoftware__Url__IdentityServerURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55002
-      - PanacheSoftware__Url__IdentityServerURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44302
-      - PanacheSoftware__Url__APIGatewayURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55003
-      - PanacheSoftware__Url__APIGatewayURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44303
+      - PanacheSoftware__DBProvider=MySQL
       - PanacheSoftware__Url__UIClientURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55001
       - PanacheSoftware__Url__UIClientURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44301
-      - PanacheSoftware__Url__ClientServiceURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55005
-      - PanacheSoftware__Url__ClientServiceURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44305
-      - PanacheSoftware__Url__FileServiceURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55008
-      - PanacheSoftware__Url__FileServiceURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44308
-      - PanacheSoftware__Url__FoundationServiceURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55004
-      - PanacheSoftware__Url__FoundationServiceURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44304
-      - PanacheSoftware__Url__TaskServiceURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55007
-      - PanacheSoftware__Url__TaskServiceURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44307
-      - PanacheSoftware__Url__TeamServiceURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55006
-      - PanacheSoftware__Url__TeamServiceURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44306
       - PanacheSoftware__Secret__UIClientSecret=49C1A7E1-0C79-4A89-A3D6-A37998FB86B0
       - PanacheSoftware__Secret__APIGatewaySecret=DDDCB193-213C-43FB-967A-5A911D2EFC04
       - PanacheSoftware__Secret__ClientServiceSecret=1314EF18-40FA-4B16-83DF-B276FF0D92A9
@@ -53,33 +38,14 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
-      - ConnectionStrings__DefaultConnection=Server=sqldata;Database=PanacheSoftware.Service.Team;User Id=sa;Password=Passw0rd123!
+      - ConnectionStrings__MySQL=server=sqldata;port=3306;database=PanacheSoftware.Identity;user=root;password=Passw0rd123!;GuidFormat=Char36
       - PanacheSoftware__CallMethod__APICallsSecure=False
       - PanacheSoftware__CallMethod__UICallsSecure=False
       - PanacheSoftware__CallMethod__UseAPIGateway=False
       - PanacheSoftware__StartDomain=${START_DOMAIN}
+      - PanacheSoftware__DBProvider=MySQL
       - PanacheSoftware__Url__IdentityServerURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55002
       - PanacheSoftware__Url__IdentityServerURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44302
-      - PanacheSoftware__Url__APIGatewayURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55003
-      - PanacheSoftware__Url__APIGatewayURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44303
-      - PanacheSoftware__Url__UIClientURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55001
-      - PanacheSoftware__Url__UIClientURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44301
-      - PanacheSoftware__Url__ClientServiceURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55005
-      - PanacheSoftware__Url__ClientServiceURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44305
-      - PanacheSoftware__Url__FileServiceURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55008
-      - PanacheSoftware__Url__FileServiceURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44308
-      - PanacheSoftware__Url__FoundationServiceURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55004
-      - PanacheSoftware__Url__FoundationServiceURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44304
-      - PanacheSoftware__Url__TaskServiceURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55007
-      - PanacheSoftware__Url__TaskServiceURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44307
-      - PanacheSoftware__Url__TeamServiceURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55006
-      - PanacheSoftware__Url__TeamServiceURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44306
-      - PanacheSoftware__Secret__UIClientSecret=49C1A7E1-0C79-4A89-A3D6-A37998FB86B0
-      - PanacheSoftware__Secret__APIGatewaySecret=DDDCB193-213C-43FB-967A-5A911D2EFC04
-      - PanacheSoftware__Secret__ClientServiceSecret=1314EF18-40FA-4B16-83DF-B276FF0D92A9
-      - PanacheSoftware__Secret__FileServiceSecret=839C649E-4FE3-410C-B43F-69C017A52676
-      - PanacheSoftware__Secret__FoundationServiceSecret=70CD8BB9-5256-42CF-8B95-DD61C1051AD0
-      - PanacheSoftware__Secret__TaskServiceSecret=AC654B02-E46B-4359-B908-87479CBE1CEB
       - PanacheSoftware__Secret__TeamServiceSecret=5C9BF545-3C20-4448-9EEC-6B3E745B671E
     ports:
       - "55006:80"
@@ -91,34 +57,17 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
-      - ConnectionStrings__DefaultConnection=Server=sqldata;Database=PanacheSoftware.Service.Task;User Id=sa;Password=Passw0rd123!
+      - ConnectionStrings__MySQL=server=sqldata;port=3306;database=PanacheSoftware.Identity;user=root;password=Passw0rd123!;GuidFormat=Char36
       - PanacheSoftware__CallMethod__APICallsSecure=False
       - PanacheSoftware__CallMethod__UICallsSecure=False
       - PanacheSoftware__CallMethod__UseAPIGateway=False
       - PanacheSoftware__StartDomain=${START_DOMAIN}
+      - PanacheSoftware__DBProvider=MySQL
       - PanacheSoftware__Url__IdentityServerURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55002
       - PanacheSoftware__Url__IdentityServerURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44302
-      - PanacheSoftware__Url__APIGatewayURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55003
-      - PanacheSoftware__Url__APIGatewayURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44303
-      - PanacheSoftware__Url__UIClientURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55001
-      - PanacheSoftware__Url__UIClientURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44301
-      - PanacheSoftware__Url__ClientServiceURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55005
-      - PanacheSoftware__Url__ClientServiceURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44305
-      - PanacheSoftware__Url__FileServiceURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55008
-      - PanacheSoftware__Url__FileServiceURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44308
-      - PanacheSoftware__Url__FoundationServiceURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55004
-      - PanacheSoftware__Url__FoundationServiceURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44304
-      - PanacheSoftware__Url__TaskServiceURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55007
-      - PanacheSoftware__Url__TaskServiceURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44307
       - PanacheSoftware__Url__TeamServiceURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55006
       - PanacheSoftware__Url__TeamServiceURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44306
-      - PanacheSoftware__Secret__UIClientSecret=49C1A7E1-0C79-4A89-A3D6-A37998FB86B0
-      - PanacheSoftware__Secret__APIGatewaySecret=DDDCB193-213C-43FB-967A-5A911D2EFC04
-      - PanacheSoftware__Secret__ClientServiceSecret=1314EF18-40FA-4B16-83DF-B276FF0D92A9
-      - PanacheSoftware__Secret__FileServiceSecret=839C649E-4FE3-410C-B43F-69C017A52676
-      - PanacheSoftware__Secret__FoundationServiceSecret=70CD8BB9-5256-42CF-8B95-DD61C1051AD0
       - PanacheSoftware__Secret__TaskServiceSecret=AC654B02-E46B-4359-B908-87479CBE1CEB
-      - PanacheSoftware__Secret__TeamServiceSecret=5C9BF545-3C20-4448-9EEC-6B3E745B671E
     ports:
       - "55007:80"
       - "44307:443"
@@ -129,34 +78,15 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
-      - ConnectionStrings__DefaultConnection=Server=sqldata;Database=PanacheSoftware.Service.Foundation;User Id=sa;Password=Passw0rd123!
+      - ConnectionStrings__MySQL=server=sqldata;port=3306;database=PanacheSoftware.Identity;user=root;password=Passw0rd123!;GuidFormat=Char36
       - PanacheSoftware__CallMethod__APICallsSecure=False
       - PanacheSoftware__CallMethod__UICallsSecure=False
       - PanacheSoftware__CallMethod__UseAPIGateway=False
       - PanacheSoftware__StartDomain=${START_DOMAIN}
+      - PanacheSoftware__DBProvider=MySQL
       - PanacheSoftware__Url__IdentityServerURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55002
       - PanacheSoftware__Url__IdentityServerURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44302
-      - PanacheSoftware__Url__APIGatewayURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55003
-      - PanacheSoftware__Url__APIGatewayURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44303
-      - PanacheSoftware__Url__UIClientURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55001
-      - PanacheSoftware__Url__UIClientURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44301
-      - PanacheSoftware__Url__ClientServiceURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55005
-      - PanacheSoftware__Url__ClientServiceURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44305
-      - PanacheSoftware__Url__FileServiceURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55008
-      - PanacheSoftware__Url__FileServiceURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44308
-      - PanacheSoftware__Url__FoundationServiceURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55004
-      - PanacheSoftware__Url__FoundationServiceURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44304
-      - PanacheSoftware__Url__TaskServiceURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55007
-      - PanacheSoftware__Url__TaskServiceURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44307
-      - PanacheSoftware__Url__TeamServiceURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55006
-      - PanacheSoftware__Url__TeamServiceURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44306
-      - PanacheSoftware__Secret__UIClientSecret=49C1A7E1-0C79-4A89-A3D6-A37998FB86B0
-      - PanacheSoftware__Secret__APIGatewaySecret=DDDCB193-213C-43FB-967A-5A911D2EFC04
-      - PanacheSoftware__Secret__ClientServiceSecret=1314EF18-40FA-4B16-83DF-B276FF0D92A9
-      - PanacheSoftware__Secret__FileServiceSecret=839C649E-4FE3-410C-B43F-69C017A52676
       - PanacheSoftware__Secret__FoundationServiceSecret=70CD8BB9-5256-42CF-8B95-DD61C1051AD0
-      - PanacheSoftware__Secret__TaskServiceSecret=AC654B02-E46B-4359-B908-87479CBE1CEB
-      - PanacheSoftware__Secret__TeamServiceSecret=5C9BF545-3C20-4448-9EEC-6B3E745B671E
     ports:
       - "55004:80"
       - "44304:443"
@@ -167,34 +97,15 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
-      - ConnectionStrings__DefaultConnection=Server=sqldata;Database=PanacheSoftware.Service.File;User Id=sa;Password=Passw0rd123!
+      - ConnectionStrings__MySQL=server=sqldata;port=3306;database=PanacheSoftware.Identity;user=root;password=Passw0rd123!;GuidFormat=Char36
       - PanacheSoftware__CallMethod__APICallsSecure=False
       - PanacheSoftware__CallMethod__UICallsSecure=False
       - PanacheSoftware__CallMethod__UseAPIGateway=False
       - PanacheSoftware__StartDomain=${START_DOMAIN}
+      - PanacheSoftware__DBProvider=MySQL
       - PanacheSoftware__Url__IdentityServerURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55002
       - PanacheSoftware__Url__IdentityServerURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44302
-      - PanacheSoftware__Url__APIGatewayURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55003
-      - PanacheSoftware__Url__APIGatewayURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44303
-      - PanacheSoftware__Url__UIClientURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55001
-      - PanacheSoftware__Url__UIClientURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44301
-      - PanacheSoftware__Url__ClientServiceURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55005
-      - PanacheSoftware__Url__ClientServiceURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44305
-      - PanacheSoftware__Url__FileServiceURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55008
-      - PanacheSoftware__Url__FileServiceURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44308
-      - PanacheSoftware__Url__FoundationServiceURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55004
-      - PanacheSoftware__Url__FoundationServiceURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44304
-      - PanacheSoftware__Url__TaskServiceURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55007
-      - PanacheSoftware__Url__TaskServiceURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44307
-      - PanacheSoftware__Url__TeamServiceURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55006
-      - PanacheSoftware__Url__TeamServiceURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44306
-      - PanacheSoftware__Secret__UIClientSecret=49C1A7E1-0C79-4A89-A3D6-A37998FB86B0
-      - PanacheSoftware__Secret__APIGatewaySecret=DDDCB193-213C-43FB-967A-5A911D2EFC04
-      - PanacheSoftware__Secret__ClientServiceSecret=1314EF18-40FA-4B16-83DF-B276FF0D92A9
       - PanacheSoftware__Secret__FileServiceSecret=839C649E-4FE3-410C-B43F-69C017A52676
-      - PanacheSoftware__Secret__FoundationServiceSecret=70CD8BB9-5256-42CF-8B95-DD61C1051AD0
-      - PanacheSoftware__Secret__TaskServiceSecret=AC654B02-E46B-4359-B908-87479CBE1CEB
-      - PanacheSoftware__Secret__TeamServiceSecret=5C9BF545-3C20-4448-9EEC-6B3E745B671E
     ports:
       - "55008:80"
       - "44308:443"
@@ -205,34 +116,15 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
-      - ConnectionStrings__DefaultConnection=Server=sqldata;Database=PanacheSoftware.Service.Client;User Id=sa;Password=Passw0rd123!
+      - ConnectionStrings__MySQL=server=sqldata;port=3306;database=PanacheSoftware.Identity;user=root;password=Passw0rd123!;GuidFormat=Char36
       - PanacheSoftware__CallMethod__APICallsSecure=False
       - PanacheSoftware__CallMethod__UICallsSecure=False
       - PanacheSoftware__CallMethod__UseAPIGateway=False
       - PanacheSoftware__StartDomain=${START_DOMAIN}
+      - PanacheSoftware__DBProvider=MySQL
       - PanacheSoftware__Url__IdentityServerURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55002
       - PanacheSoftware__Url__IdentityServerURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44302
-      - PanacheSoftware__Url__APIGatewayURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55003
-      - PanacheSoftware__Url__APIGatewayURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44303
-      - PanacheSoftware__Url__UIClientURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55001
-      - PanacheSoftware__Url__UIClientURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44301
-      - PanacheSoftware__Url__ClientServiceURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55005
-      - PanacheSoftware__Url__ClientServiceURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44305
-      - PanacheSoftware__Url__FileServiceURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55008
-      - PanacheSoftware__Url__FileServiceURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44308
-      - PanacheSoftware__Url__FoundationServiceURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55004
-      - PanacheSoftware__Url__FoundationServiceURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44304
-      - PanacheSoftware__Url__TaskServiceURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55007
-      - PanacheSoftware__Url__TaskServiceURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44307
-      - PanacheSoftware__Url__TeamServiceURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55006
-      - PanacheSoftware__Url__TeamServiceURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44306
-      - PanacheSoftware__Secret__UIClientSecret=49C1A7E1-0C79-4A89-A3D6-A37998FB86B0
-      - PanacheSoftware__Secret__APIGatewaySecret=DDDCB193-213C-43FB-967A-5A911D2EFC04
       - PanacheSoftware__Secret__ClientServiceSecret=1314EF18-40FA-4B16-83DF-B276FF0D92A9
-      - PanacheSoftware__Secret__FileServiceSecret=839C649E-4FE3-410C-B43F-69C017A52676
-      - PanacheSoftware__Secret__FoundationServiceSecret=70CD8BB9-5256-42CF-8B95-DD61C1051AD0
-      - PanacheSoftware__Secret__TaskServiceSecret=AC654B02-E46B-4359-B908-87479CBE1CEB
-      - PanacheSoftware__Secret__TeamServiceSecret=5C9BF545-3C20-4448-9EEC-6B3E745B671E
     ports:
       - "55005:80"
       - "44305:443"
@@ -264,12 +156,6 @@ services:
       - PanacheSoftware__Url__TeamServiceURL=http://${EXTERNAL_DNS_NAME_OR_IP}:55006
       - PanacheSoftware__Url__TeamServiceURLSecure=https://${EXTERNAL_DNS_NAME_OR_IP}:44306
       - PanacheSoftware__Secret__UIClientSecret=49C1A7E1-0C79-4A89-A3D6-A37998FB86B0
-      - PanacheSoftware__Secret__APIGatewaySecret=DDDCB193-213C-43FB-967A-5A911D2EFC04
-      - PanacheSoftware__Secret__ClientServiceSecret=1314EF18-40FA-4B16-83DF-B276FF0D92A9
-      - PanacheSoftware__Secret__FileServiceSecret=839C649E-4FE3-410C-B43F-69C017A52676
-      - PanacheSoftware__Secret__FoundationServiceSecret=70CD8BB9-5256-42CF-8B95-DD61C1051AD0
-      - PanacheSoftware__Secret__TaskServiceSecret=AC654B02-E46B-4359-B908-87479CBE1CEB
-      - PanacheSoftware__Secret__TeamServiceSecret=5C9BF545-3C20-4448-9EEC-6B3E745B671E
     ports:
       - "55001:80"
       - "44301:443"

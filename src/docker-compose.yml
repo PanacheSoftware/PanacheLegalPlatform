@@ -3,7 +3,7 @@ version: '3.4'
 services:
 
   sqldata:
-    image: mcr.microsoft.com/mssql/server:2017-latest
+    image: mysql:latest
 
   panachesoftware.identity:
     image: ${DOCKER_REGISTRY-}panachesoftwareidentity

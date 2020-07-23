@@ -2,12 +2,9 @@ version: "3.4"
 services:
     
   sqldata:
-    image: mcr.microsoft.com/mssql/server:2017-latest
+    image: mysql:latest
     environment:
-      - SA_PASSWORD=Passw0rd123!
-      - ACCEPT_EULA=Y
-    ports:
-      - "5433:1433"
+      - MYSQL_ROOT_PASSWORD=Passw0rd123!
     volumes:
       - panachesoftware-sqldata:/var/opt/mssql
     
@@ -18,11 +15,12 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings__DefaultConnection=Server=sqldata;Database=PanacheSoftware.Identity.Docker;User Id=sa;Password=Passw0rd123!
+      - ConnectionStrings__MySQL=server=sqldata;port=3306;database=PanacheSoftware.Identity;user=root;password=Passw0rd123!;GuidFormat=Char36
       - PanacheSoftware__CallMethod__APICallsSecure=False
       - PanacheSoftware__CallMethod__UICallsSecure=False
       - PanacheSoftware__CallMethod__UseAPIGateway=False
       - PanacheSoftware__StartDomain=panachesoftware.com
+      - PanacheSoftware__DBProvider=MySQL
       - PanacheSoftware__Url__UIClientURL=http://host.docker.internal:55001
       - PanacheSoftware__Url__UIClientURLSecure=https://host.docker.internal:44301
       - PanacheSoftware__Secret__UIClientSecret=49C1A7E1-0C79-4A89-A3D6-A37998FB86B0
@@ -34,6 +32,7 @@ services:
       - PanacheSoftware__Secret__TeamServiceSecret=5C9BF545-3C20-4448-9EEC-6B3E745B671E
     ports:
       - "55002:80"
+    restart: always
 
   panachesoftware.service.team:
     image: panachesoftware/panachesoftwareserviceteam:latest
@@ -43,16 +42,18 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings__DefaultConnection=Server=sqldata;Database=PanacheSoftware.Service.Team.Docker;User Id=sa;Password=Passw0rd123!
+      - ConnectionStrings__MySQL=server=sqldata;port=3306;database=PanacheSoftware.Team;user=root;password=Passw0rd123!;GuidFormat=Char36
       - PanacheSoftware__CallMethod__APICallsSecure=False
       - PanacheSoftware__CallMethod__UICallsSecure=False
       - PanacheSoftware__CallMethod__UseAPIGateway=False
       - PanacheSoftware__StartDomain=panachesoftware.com
+      - PanacheSoftware__DBProvider=MySQL
       - PanacheSoftware__Url__IdentityServerURL=http://host.docker.internal:55002
       - PanacheSoftware__Url__IdentityServerURLSecure=https://host.docker.internal:44302
       - PanacheSoftware__Secret__TeamServiceSecret=5C9BF545-3C20-4448-9EEC-6B3E745B671E
     ports:
       - "55006:80"
+    restart: always
 
   panachesoftware.service.task:
     image: panachesoftware/panachesoftwareservicetask:latest
@@ -63,11 +64,12 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings__DefaultConnection=Server=sqldata;Database=PanacheSoftware.Service.Task.Docker;User Id=sa;Password=Passw0rd123!
+      - ConnectionStrings__MySQL=server=sqldata;port=3306;database=PanacheSoftware.Task;user=root;password=Passw0rd123!;GuidFormat=Char36
       - PanacheSoftware__CallMethod__APICallsSecure=False
       - PanacheSoftware__CallMethod__UICallsSecure=False
       - PanacheSoftware__CallMethod__UseAPIGateway=False
       - PanacheSoftware__StartDomain=panachesoftware.com
+      - PanacheSoftware__DBProvider=MySQL
       - PanacheSoftware__Url__IdentityServerURL=http://host.docker.internal:55002
       - PanacheSoftware__Url__IdentityServerURLSecure=https://host.docker.internal:44302
       - PanacheSoftware__Url__TeamServiceURL=http://host.docker.internal:55006
@@ -75,6 +77,7 @@ services:
       - PanacheSoftware__Secret__TaskServiceSecret=AC654B02-E46B-4359-B908-87479CBE1CEB
     ports:
       - "55007:80"
+    restart: always
 
   panachesoftware.service.foundation:
     image: panachesoftware/panachesoftwareservicefoundation:latest
@@ -84,16 +87,18 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings__DefaultConnection=Server=sqldata;Database=PanacheSoftware.Service.Foundation.Docker;User Id=sa;Password=Passw0rd123!
+      - ConnectionStrings__MySQL=server=sqldata;port=3306;database=PanacheSoftware.Foundation;user=root;password=Passw0rd123!;GuidFormat=Char36
       - PanacheSoftware__CallMethod__APICallsSecure=False
       - PanacheSoftware__CallMethod__UICallsSecure=False
       - PanacheSoftware__CallMethod__UseAPIGateway=False
       - PanacheSoftware__StartDomain=panachesoftware.com
+      - PanacheSoftware__DBProvider=MySQL
       - PanacheSoftware__Url__IdentityServerURL=http://host.docker.internal:55002
       - PanacheSoftware__Url__IdentityServerURLSecure=https://host.docker.internal:44302
       - PanacheSoftware__Secret__FoundationServiceSecret=70CD8BB9-5256-42CF-8B95-DD61C1051AD0
     ports:
       - "55004:80"
+    restart: always
 
   panachesoftware.service.file:
     image: panachesoftware/panachesoftwareservicefile:latest
@@ -103,16 +108,18 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings__DefaultConnection=Server=sqldata;Database=PanacheSoftware.Service.File.Docker;User Id=sa;Password=Passw0rd123!
+      - ConnectionStrings__MySQL=server=sqldata;port=3306;database=PanacheSoftware.File;user=root;password=Passw0rd123!;GuidFormat=Char36
       - PanacheSoftware__CallMethod__APICallsSecure=False
       - PanacheSoftware__CallMethod__UICallsSecure=False
       - PanacheSoftware__CallMethod__UseAPIGateway=False
       - PanacheSoftware__StartDomain=panachesoftware.com
+      - PanacheSoftware__DBProvider=MySQL
       - PanacheSoftware__Url__IdentityServerURL=http://host.docker.internal:55002
       - PanacheSoftware__Url__IdentityServerURLSecure=https://host.docker.internal:44302
       - PanacheSoftware__Secret__FileServiceSecret=839C649E-4FE3-410C-B43F-69C017A52676
     ports:
       - "55008:80"
+    restart: always
 
   panachesoftware.service.client:
     image: panachesoftware/panachesoftwareserviceclient:latest
@@ -122,16 +129,18 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings__DefaultConnection=Server=sqldata;Database=PanacheSoftware.Service.Client.Docker;User Id=sa;Password=Passw0rd123!
+      - ConnectionStrings__MySQL=server=sqldata;port=3306;database=PanacheSoftware.Client;user=root;password=Passw0rd123!;GuidFormat=Char36
       - PanacheSoftware__CallMethod__APICallsSecure=False
       - PanacheSoftware__CallMethod__UICallsSecure=False
       - PanacheSoftware__CallMethod__UseAPIGateway=False
       - PanacheSoftware__StartDomain=panachesoftware.com
+      - PanacheSoftware__DBProvider=MySQL
       - PanacheSoftware__Url__IdentityServerURL=http://host.docker.internal:55002
       - PanacheSoftware__Url__IdentityServerURLSecure=https://host.docker.internal:44302
       - PanacheSoftware__Secret__ClientServiceSecret=1314EF18-40FA-4B16-83DF-B276FF0D92A9
     ports:
       - "55005:80"
+    restart: always
 
   panachesoftware.ui.client:
     image: panachesoftware/panachesoftwareuiclient:latest
@@ -168,6 +177,7 @@ services:
       - PanacheSoftware__Secret__UIClientSecret=49C1A7E1-0C79-4A89-A3D6-A37998FB86B0
     ports:
       - "55001:80"
+    restart: always
 
 volumes:
   panachesoftware-sqldata:
