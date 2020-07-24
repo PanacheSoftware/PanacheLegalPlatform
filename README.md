@@ -4,34 +4,27 @@
 
 ## Project build status
 
----
-
 ![Platform Build](https://github.com/PanacheSoftware/PanacheLegalPlatform/workflows/Platform%20Build/badge.svg)
 
 ## Panache Legal Platform
----
 
 Panache Legal is a complete open source LegalTech platform available to use with unlimited users for no licence fee.
 
 ## Pre-Alpha
----
 
 Panache Legal is currently in early alpha and is not suitable for production environments, it should only be used for early testing.
 
 You should expect missing or incomplete features/functionality with the potential for data loss during upgrades.
 
 ## Documentation
----
 
 For project documentation please visit [ReadTheDocs](https://panachelegal.readthedocs.io/)
 
 ## Docker
----
 
 All services and the standard user interface are distributed via Docker Images for easy installation and setup.  See the Panache Software [Docker Hub](https://hub.docker.com/u/panachesoftware) site and the examples on [ReadTheDocs](https://panachelegal.readthedocs.io/en/latest/gettingstarted/0_docker.html) for setup information.
 
 ## How to build
----
 
 'src/PanacheLegalPlatform.sln' provides a VS solution for the whole platform.
 
@@ -44,7 +37,6 @@ dotnet build .\PanacheLegalPlatform.sln
 ```
 
 ## Sponsorship
----
 
 If you are interested in getting involved with the project, are using Panache Legal in your organisation, or want to support the creation of a new LegalTech platform for the whole legal community we hope you might want to consider sponsoring the project.
 
@@ -53,6 +45,5 @@ This will help us devote more time to building new features and functionality, a
 If you are interested please head to our [Patreon](https://www.patreon.com/panachesoftware) page which has further details.
 
 ## Panachecast
----
 
 We publish a regular podcast discussing the latest news in LegalTech along with interviewing key people in the industry.  check out the video version on our [YouTube](https://www.youtube.com/panachesoftware) page.  Audio version available on Apple Podcast app, spotify, tunein, stitcher and other podcast providers.
