@@ -16,6 +16,10 @@ Panache Legal is currently in early alpha and is not suitable for production env
 
 You should expect missing or incomplete features/functionality with the potential for data loss during upgrades.
 
+## Issues
+
+With the project currently being in an early pre-alpha stage many components are in active development and functionality may change reguarly.  If you find aspects that do not work as expected, or bugs and missing functionality, please check the [Issues](https://github.com/PanacheSoftware/PanacheLegalPlatform/issues) and [Projects](https://github.com/PanacheSoftware/PanacheLegalPlatform/projects) pages to check if those items are already logged and being worked on before creating a new issue.
+
 ## Documentation
 
 For project documentation please visit [ReadTheDocs](https://panachelegal.readthedocs.io/)
