@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using PanacheSoftware.Core.Domain.API.Error;
 using PanacheSoftware.Core.Domain.API.File;
 using PanacheSoftware.Core.Domain.File;
 using PanacheSoftware.Service.File.Core.Repositories;
@@ -45,38 +46,48 @@ namespace PanacheSoftware.Service.File.Controllers
 
                     if (fileLink != null)
                         return Ok(_mapper.Map<FileLnk>(fileLink));
+
+                    return NotFound();
                 }
+
+                return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"id: '{id}' is not a valid guid."));
             }
             catch (Exception e)
             {
-                string message = e.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
             }
-
-            return NotFound();
         }
 
         [HttpPost]
         public IActionResult Post([FromBody]FileLnk fileLnk)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (fileLnk.Id == Guid.Empty)
+                try
                 {
-                    var fileLink = _mapper.Map<FileLink>(fileLnk);
+                    if (fileLnk.Id == Guid.Empty)
+                    {
+                        var fileLink = _mapper.Map<FileLink>(fileLnk);
 
-                    _unitOfWork.FileLinks.Add(fileLink);
+                        _unitOfWork.FileLinks.Add(fileLink);
 
-                    _unitOfWork.Complete();
+                        _unitOfWork.Complete();
 
-                    return Created(new Uri($"{Request.Path}/{fileLink.Id}", UriKind.Relative), _mapper.Map<FileLnk>(fileLink));
+                        return Created(new Uri($"{Request.Path}/{fileLink.Id}", UriKind.Relative),
+                            _mapper.Map<FileLnk>(fileLink));
+                    }
+
+                    return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"FileLnk.Id: '{fileLnk.Id}' is not an empty guid."));
+                }
+                catch (Exception e)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError,
+                        new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
                 }
             }
-            catch (Exception e)
-            {
-                string message = e.Message;
-            }
 
-            return BadRequest();
+            return BadRequest(new APIErrorMessage(StatusCodes.Status400BadRequest, "One or more validation errors occurred.", ModelState));
         }
 
         [HttpPatch("{id}")]
@@ -86,29 +97,41 @@ namespace PanacheSoftware.Service.File.Controllers
         [ProducesResponseType(401)]
         public IActionResult Patch(string id, [FromBody]JsonPatchDocument<FileLnk> fileLinkPatch)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (Guid.TryParse(id, out Guid parsedId))
+                try
                 {
-                    var fileLink = _unitOfWork.FileLinks.Get(parsedId);
+                    if (Guid.TryParse(id, out Guid parsedId))
+                    {
+                        var fileLink = _unitOfWork.FileLinks.Get(parsedId);
 
-                    var fileLnk = _mapper.Map<FileLnk>(fileLink);
+                        if (fileLink != null)
+                        {
+                            var fileLnk = _mapper.Map<FileLnk>(fileLink);
 
-                    fileLinkPatch.ApplyTo(fileLnk);
+                            fileLinkPatch.ApplyTo(fileLnk);
 
-                    _mapper.Map(fileLnk, fileLink);
+                            _mapper.Map(fileLnk, fileLink);
 
-                    _unitOfWork.Complete();
+                            _unitOfWork.Complete();
 
-                    return CreatedAtRoute("Get", new { id = _mapper.Map<FileLnk>(fileLink).Id }, _mapper.Map<FileLnk>(fileLink));
+                            return CreatedAtRoute("Get", new {id = _mapper.Map<FileLnk>(fileLink).Id},
+                                _mapper.Map<FileLnk>(fileLink));
+                        }
+
+                        return NotFound();
+                    }
+
+                    return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"id: '{id}' is not a valid guid."));
+                }
+                catch (Exception e)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError,
+                        new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
                 }
             }
-            catch (Exception e)
-            {
-                string message = e.Message;
-            }
 
-            return BadRequest();
+            return BadRequest(new APIErrorMessage(StatusCodes.Status400BadRequest, "One or more validation errors occurred.", ModelState));
         }
 
         [Route("[action]/{linkType}/{linkId}")]
@@ -119,26 +142,18 @@ namespace PanacheSoftware.Service.File.Controllers
             {
                 if (Guid.TryParse(linkId, out Guid parsedId))
                 {
-                    //FileLnkList fileLinks = new FileLnkList();
-
-                    //var links = await _unitOfWork.FileLinks.GetFileLinksWithRelationsForLinkAsync(parsedId, linkType, true);
-
-                    //if (links.Any())
-                    //    _mapper.Map(links, fileLinks.FileLinks);
-
-                    //return Ok(fileLinks);
-
                     var fileList = await _fileManager.GetFileListForLinkAsync(parsedId, linkType);
 
                     return Ok(fileList);
                 }
+
+                return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"linkId: '{linkId}' is not a valid guid."));
             }
             catch (Exception e)
             {
-                string message = e.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
             }
-
-            return NotFound();
         }
     }
 }

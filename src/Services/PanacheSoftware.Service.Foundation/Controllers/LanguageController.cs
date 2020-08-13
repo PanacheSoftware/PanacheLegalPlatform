@@ -2,8 +2,11 @@
 using System.Linq;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using PanacheSoftware.Core.Domain.API.Error;
 using PanacheSoftware.Core.Domain.API.Language;
 using PanacheSoftware.Core.Domain.Language;
 using PanacheSoftware.Service.Foundation.Core;
@@ -42,13 +45,13 @@ namespace PanacheSoftware.Service.Foundation.Controllers
 
                 if (langList.LanguageHeaders.Count > 0)
                     return Ok(langList);
+
+                return NotFound();
             }
             catch (Exception e)
             {
-                string message = e.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
             }
-
-            return NotFound();
         }
 
         [HttpGet("{id}")]
@@ -82,47 +85,63 @@ namespace PanacheSoftware.Service.Foundation.Controllers
                 {
                     return Ok(_mapper.Map<LangHead>(languageHeader));
                 }
+
+                return NotFound();
             }
             catch (Exception e)
             {
-                string message = e.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
             }
-
-            return NotFound();
         }
 
         [HttpPost]
         public IActionResult Post([FromBody]LangHead langHead)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (langHead.Id == Guid.Empty)
+                try
                 {
-                    if (langHead.TextCode < 10000 || langHead.TextCode > 19999)
+                    if (langHead.Id == Guid.Empty)
                     {
-                        var foundExisting = _unitOfWork.LanguageHeaders.GetLanguageHeaderWithRelations(langHead.TextCode);
-
-                        if (foundExisting == null)
+                        if (langHead.TextCode < 10000 || langHead.TextCode > 19999)
                         {
-                            //var userId = User.FindFirstValue("sub");
+                            var foundExisting =
+                                _unitOfWork.LanguageHeaders.GetLanguageHeaderWithRelations(langHead.TextCode);
 
-                            var languageHeader = _mapper.Map<LanguageHeader>(langHead);
+                            if (foundExisting == null)
+                            {
+                                var languageHeader = _mapper.Map<LanguageHeader>(langHead);
 
-                            _unitOfWork.LanguageHeaders.Add(languageHeader);
+                                _unitOfWork.LanguageHeaders.Add(languageHeader);
 
-                            _unitOfWork.Complete();
+                                _unitOfWork.Complete();
 
-                            return Created(new Uri($"{Request.Path}/{languageHeader.Id}", UriKind.Relative), _mapper.Map<LangHead>(languageHeader));
+                                return Created(new Uri($"{Request.Path}/{languageHeader.Id}", UriKind.Relative),
+                                    _mapper.Map<LangHead>(languageHeader));
+                            }
+
+                            return StatusCode(StatusCodes.Status400BadRequest,
+                                new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                    $"LangHead.TextCode: '{langHead.TextCode}' already exists."));
                         }
+
+                        return StatusCode(StatusCodes.Status400BadRequest,
+                            new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                $"LangHead.TextCode: '{langHead.TextCode}' is not valid, values 10000-29999 are reserved for system codes."));
                     }
+
+                    return StatusCode(StatusCodes.Status400BadRequest,
+                        new APIErrorMessage(StatusCodes.Status400BadRequest,
+                            $"LangHead.Id: '{langHead.Id}' is not an empty guid."));
+                }
+                catch (Exception e)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError,
+                        new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
                 }
             }
-            catch (Exception e)
-            {
-                string message = e.Message;
-            }
 
-            return BadRequest();
+            return BadRequest(new APIErrorMessage(StatusCodes.Status400BadRequest, "One or more validation errors occurred.", ModelState));
         }
 
         [HttpPatch("{id}")]
@@ -132,31 +151,42 @@ namespace PanacheSoftware.Service.Foundation.Controllers
         [ProducesResponseType(401)]
         public IActionResult Patch(string id, [FromBody]JsonPatchDocument<LangHead> langHeadPatch)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (Guid.TryParse(id, out Guid parsedId))
+                try
                 {
-                    //var userId = User.FindFirstValue("sub");
+                    if (Guid.TryParse(id, out Guid parsedId))
+                    {
+                        LanguageHeader languageHeader = _unitOfWork.LanguageHeaders.Get(parsedId);
 
-                    LanguageHeader languageHeader = _unitOfWork.LanguageHeaders.Get(parsedId);
+                        if (languageHeader != null)
+                        {
 
-                    LangHead langHead = _mapper.Map<LangHead>(languageHeader);
+                            LangHead langHead = _mapper.Map<LangHead>(languageHeader);
 
-                    langHeadPatch.ApplyTo(langHead);
+                            langHeadPatch.ApplyTo(langHead);
 
-                    _mapper.Map(langHead, languageHeader);
+                            _mapper.Map(langHead, languageHeader);
 
-                    _unitOfWork.Complete();
+                            _unitOfWork.Complete();
 
-                    return CreatedAtRoute("Get", new { id = _mapper.Map<LangHead>(languageHeader).Id }, _mapper.Map<LangHead>(languageHeader));
+                            return CreatedAtRoute("Get", new {id = _mapper.Map<LangHead>(languageHeader).Id},
+                                _mapper.Map<LangHead>(languageHeader));
+                        }
+
+                        return NotFound();
+                    }
+
+                    return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"id: '{id}' is not a valid guid."));
+                }
+                catch (Exception e)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError,
+                        new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
                 }
             }
-            catch (Exception e)
-            {
-                string message = e.Message;
-            }
 
-            return BadRequest();
+            return BadRequest(new APIErrorMessage(StatusCodes.Status400BadRequest, "One or more validation errors occurred.", ModelState));
         }
 
         [Route("[action]/{id}")]
@@ -165,86 +195,102 @@ namespace PanacheSoftware.Service.Foundation.Controllers
         {
             try
             {
-                LanguageItem languageItem;
-
                 if (Guid.TryParse(id, out Guid foundId))
                 {
-                    languageItem = _unitOfWork.LanguageItems.Get(foundId);
-                }
-                else
-                {
-                    languageItem = null;
+                    var languageItem = _unitOfWork.LanguageItems.Get(foundId);
+
+                    if (languageItem != null)
+                    {
+                        return Ok(_mapper.Map<LangItem>(languageItem));
+                    }
+
+                    return NotFound();
                 }
 
-                if (languageItem != null)
-                {
-                    return Ok(_mapper.Map<LangItem>(languageItem));
-                }
+                return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"id: '{id}' is not a valid guid."));
+
             }
             catch (Exception e)
             {
-                string message = e.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
             }
-
-            return NotFound();
         }
 
         [Route("[action]")]
         [HttpPost]
         public IActionResult Item([FromBody]LangItem langItem)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (langItem.Id == Guid.Empty)
+                try
                 {
-                    //var userId = User.FindFirstValue("sub");
+                    if (langItem.Id == Guid.Empty)
+                    {
+                        var languageItem = _mapper.Map<LanguageItem>(langItem);
 
-                    var languageItem = _mapper.Map<LanguageItem>(langItem);
+                        _unitOfWork.LanguageItems.Add(languageItem);
 
-                    _unitOfWork.LanguageItems.Add(languageItem);
+                        _unitOfWork.Complete();
 
-                    _unitOfWork.Complete();
+                        return Created(new Uri($"{Request.Path}/Item/{languageItem.Id}", UriKind.Relative),
+                            _mapper.Map<LangItem>(languageItem));
+                    }
 
-                    return Created(new Uri($"{Request.Path}/Item/{languageItem.Id}", UriKind.Relative), _mapper.Map<LangItem>(languageItem));
+                    return StatusCode(StatusCodes.Status400BadRequest,
+                        new APIErrorMessage(StatusCodes.Status400BadRequest,
+                            $"LangItem.Id: '{langItem.Id}' is not an empty guid."));
+                }
+                catch (Exception e)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError,
+                        new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
                 }
             }
-            catch (Exception e)
-            {
-                string message = e.Message;
-            }
 
-            return BadRequest();
+            return BadRequest(new APIErrorMessage(StatusCodes.Status400BadRequest, "One or more validation errors occurred.", ModelState));
         }
 
         [Route("[action]/{id}")]
         [HttpPatch]
         public IActionResult Item(string id, [FromBody]JsonPatchDocument<LangItem> langItemPatch)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (Guid.TryParse(id, out Guid parsedId))
+                try
                 {
-                    //var userId = User.FindFirstValue("sub");
+                    if (Guid.TryParse(id, out Guid parsedId))
+                    {
+                        LanguageItem languageItem = _unitOfWork.LanguageItems.Get(parsedId);
 
-                    LanguageItem languageItem = _unitOfWork.LanguageItems.Get(parsedId);
+                        if (languageItem != null)
+                        {
 
-                    LangItem langItem = _mapper.Map<LangItem>(languageItem);
+                            LangItem langItem = _mapper.Map<LangItem>(languageItem);
 
-                    langItemPatch.ApplyTo(langItem);
+                            langItemPatch.ApplyTo(langItem);
 
-                    _mapper.Map(langItem, languageItem);
+                            _mapper.Map(langItem, languageItem);
 
-                    _unitOfWork.Complete();
+                            _unitOfWork.Complete();
 
-                    return CreatedAtRoute("Item", new { id = _mapper.Map<LangItem>(languageItem).Id }, _mapper.Map<LangItem>(languageItem));
+                            return CreatedAtRoute("Item", new {id = _mapper.Map<LangItem>(languageItem).Id},
+                                _mapper.Map<LangItem>(languageItem));
+                        }
+
+                        return NotFound();
+
+                    }
+
+                    return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"id: '{id}' is not a valid guid."));
+                }
+                catch (Exception e)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError,
+                        new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
                 }
             }
-            catch (Exception e)
-            {
-                string message = e.Message;
-            }
 
-            return BadRequest();
+            return BadRequest(new APIErrorMessage(StatusCodes.Status400BadRequest, "One or more validation errors occurred.", ModelState));
         }
 
         [Route("[action]/{id}")]
@@ -259,13 +305,13 @@ namespace PanacheSoftware.Service.Foundation.Controllers
                 {
                     return Ok(_mapper.Map<LangCode>(languageCode));
                 }
+
+                return NotFound();
             }
             catch (Exception e)
             {
-                string message = e.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
             }
-
-            return NotFound();
         }
 
         [Route("[action]")]
@@ -283,106 +329,133 @@ namespace PanacheSoftware.Service.Foundation.Controllers
 
                 if (langCodeList.LanguageCodes.Count > 0)
                     return Ok(langCodeList);
+
+                return NotFound();
             }
             catch (Exception e)
             {
-                string message = e.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
             }
-
-            return NotFound();
         }
 
         [Route("[action]")]
         [HttpPost]
         public IActionResult Code([FromBody]LangCode langCode)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (langCode.Id == Guid.Empty)
+                try
                 {
-                    var foundLangCode = _unitOfWork.LanguageCodes.GetLanguageCode(langCode.LanguageCodeId);
-
-                    if(foundLangCode == null)
+                    if (langCode.Id == Guid.Empty)
                     {
-                        var languageCode = _mapper.Map<LanguageCode>(langCode);
+                        var foundLangCode = _unitOfWork.LanguageCodes.GetLanguageCode(langCode.LanguageCodeId);
 
-                        _unitOfWork.LanguageCodes.Add(languageCode);
+                        if (foundLangCode == null)
+                        {
+                            var languageCode = _mapper.Map<LanguageCode>(langCode);
 
-                        _unitOfWork.Complete();
+                            _unitOfWork.LanguageCodes.Add(languageCode);
 
-                        return Created(new Uri($"{Request.Path}/Code/{languageCode.Id}", UriKind.Relative), _mapper.Map<LangItem>(languageCode));
+                            _unitOfWork.Complete();
+
+                            return Created(new Uri($"{Request.Path}/Code/{languageCode.Id}", UriKind.Relative),
+                                _mapper.Map<LangItem>(languageCode));
+                        }
+
+                        return NotFound();
                     }
+
+                    return StatusCode(StatusCodes.Status400BadRequest,
+                        new APIErrorMessage(StatusCodes.Status400BadRequest,
+                            $"LangCode.Id: '{langCode.Id}' is not an empty guid."));
+                }
+                catch (Exception e)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError,
+                        new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
                 }
             }
-            catch (Exception e)
-            {
-                string message = e.Message;
-            }
 
-            return BadRequest();
+            return BadRequest(new APIErrorMessage(StatusCodes.Status400BadRequest, "One or more validation errors occurred.", ModelState));
         }
 
         [Route("[action]/{id}")]
         [HttpPatch]
         public IActionResult Code(string id, [FromBody]JsonPatchDocument<LangCode> langCodePatch)
         {
-            try
+            if (ModelState.IsValid)
             {
-                LanguageCode languageCode = _unitOfWork.LanguageCodes.GetLanguageCode(id, false);
-
-                if (languageCode != null)
+                try
                 {
-                    LangCode langCode = _mapper.Map<LangCode>(languageCode);
+                    LanguageCode languageCode = _unitOfWork.LanguageCodes.GetLanguageCode(id, false);
 
-                    langCodePatch.ApplyTo(langCode);
+                    if (languageCode != null)
+                    {
+                        LangCode langCode = _mapper.Map<LangCode>(languageCode);
 
-                    _mapper.Map(langCode, languageCode);
+                        langCodePatch.ApplyTo(langCode);
 
-                    _unitOfWork.Complete();
+                        _mapper.Map(langCode, languageCode);
 
-                    return CreatedAtRoute("Code", new { id = _mapper.Map<LangCode>(languageCode).Id }, _mapper.Map<LangCode>(languageCode));
+                        _unitOfWork.Complete();
+
+                        return CreatedAtRoute("Code", new {id = _mapper.Map<LangCode>(languageCode).Id},
+                            _mapper.Map<LangCode>(languageCode));
+                    }
+
+                    return NotFound();
+                }
+                catch (Exception e)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError,
+                        new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
                 }
             }
-            catch (Exception e)
-            {
-                string message = e.Message;
-            }
 
-            return BadRequest();
+            return BadRequest(new APIErrorMessage(StatusCodes.Status400BadRequest, "One or more validation errors occurred.", ModelState));
         }
 
         [Route("[action]")]
         [HttpGet]
         public IActionResult LanguageQuery([FromBody]LangQueryList langQuerylist)
         {
-            try
+            if (ModelState.IsValid)
             {
-                foreach (var langQuery in langQuerylist.LangQuerys)
+                try
                 {
-                    LanguageHeader foundHeader = _unitOfWork.LanguageHeaders.GetLanguageHeaderWithRelations(langQuery.TextCode);
-
-                    if(foundHeader != null)
+                    foreach (var langQuery in langQuerylist.LangQuerys)
                     {
-                        langQuery.Text = foundHeader.Text;
+                        LanguageHeader foundHeader =
+                            _unitOfWork.LanguageHeaders.GetLanguageHeaderWithRelations(langQuery.TextCode);
 
-                        var languageItem = foundHeader.LanguageItems.Where(l => l.LanguageCodeId == langQuery.LanguageCode).FirstOrDefault();
-
-                        if(languageItem != null)
+                        if (foundHeader != null)
                         {
-                            langQuery.Text = languageItem.Text;
+                            langQuery.Text = foundHeader.Text;
+
+                            var languageItem =
+                                foundHeader.LanguageItems.FirstOrDefault(
+                                    l => l.LanguageCodeId == langQuery.LanguageCode);
+
+                            if (languageItem != null)
+                            {
+                                langQuery.Text = languageItem.Text;
+                            }
                         }
                     }
+
+                    if (langQuerylist.LangQuerys.Count > 0)
+                        return Ok(langQuerylist);
+
+                    return NotFound();
                 }
-
-                if (langQuerylist.LangQuerys.Count > 0)
-                    return Ok(langQuerylist);
-            }
-            catch (Exception e)
-            {
-                string message = e.Message;
+                catch (Exception e)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError,
+                        new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
+                }
             }
 
-            return NotFound();
+            return BadRequest(new APIErrorMessage(StatusCodes.Status400BadRequest, "One or more validation errors occurred.", ModelState));
         }
     }
 }

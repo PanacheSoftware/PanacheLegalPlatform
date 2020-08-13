@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using PanacheSoftware.Core.Domain.API.Error;
 using PanacheSoftware.Core.Domain.API.Task;
 using PanacheSoftware.Core.Domain.Task;
 using PanacheSoftware.Service.Task.Core;
@@ -54,54 +55,84 @@ namespace PanacheSoftware.Service.Task.Controllers
                         {
                             return Ok(_mapper.Map<TaskGroupDet>(taskGroupDetail));
                         }
+
+                        return StatusCode(StatusCodes.Status400BadRequest,
+                            new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                $"TaskGroupDetail.TaskGroupHeaderId: Can't access '{taskGroupDetail.TaskGroupHeaderId}'."));
                     }
+
+                    return NotFound();
                 }
+
+                return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"id: '{id}' is not a valid guid."));
             }
             catch (Exception e)
             {
-                string message = e.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
             }
-
-            return NotFound();
         }
 
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]TaskGroupDet taskGroupDet)
         {
-            try
+            if (ModelState.IsValid)
             {
-                var accessToken = await HttpContext.GetTokenAsync("access_token");
-
-                if (taskGroupDet.Id == Guid.Empty)
+                try
                 {
-                    var taskGroupHeader = _unitOfWork.TaskGroupHeaders.SingleOrDefault(c => c.Id == taskGroupDet.TaskGroupHeaderId, true);
+                    var accessToken = await HttpContext.GetTokenAsync("access_token");
 
-                    if (taskGroupHeader != null)
+                    if (taskGroupDet.Id == Guid.Empty)
                     {
-                        if (taskGroupHeader.Id != Guid.Empty)
+                        var taskGroupHeader =
+                            _unitOfWork.TaskGroupHeaders.SingleOrDefault(c => c.Id == taskGroupDet.TaskGroupHeaderId,
+                                true);
+
+                        if (taskGroupHeader != null)
                         {
-                            if (await _taskManager.CanAccessTaskGroupHeaderAsync(taskGroupHeader.Id, accessToken))
+                            if (taskGroupHeader.Id != Guid.Empty)
                             {
-                                //var userId = User.FindFirstValue("sub");
+                                if (await _taskManager.CanAccessTaskGroupHeaderAsync(taskGroupHeader.Id, accessToken))
+                                {
+                                    //var userId = User.FindFirstValue("sub");
 
-                                var taskGroupDetail = _mapper.Map<TaskGroupDetail>(taskGroupDet);
+                                    var taskGroupDetail = _mapper.Map<TaskGroupDetail>(taskGroupDet);
 
-                                _unitOfWork.TaskGroupDetails.Add(taskGroupDetail);
+                                    _unitOfWork.TaskGroupDetails.Add(taskGroupDetail);
 
-                                _unitOfWork.Complete();
+                                    _unitOfWork.Complete();
 
-                                return Created(new Uri($"{Request.Path}/{taskGroupDetail.Id}", UriKind.Relative), _mapper.Map<TaskGroupDet>(taskGroupDetail));
+                                    return Created(new Uri($"{Request.Path}/{taskGroupDetail.Id}", UriKind.Relative),
+                                        _mapper.Map<TaskGroupDet>(taskGroupDetail));
+                                }
+
+                                return StatusCode(StatusCodes.Status400BadRequest,
+                                    new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                        $"TaskGroupDet.TaskGroupHeader.Id: Can't access TaskGroupDet.TaskGroupHeader."));
                             }
+
+                            return StatusCode(StatusCodes.Status400BadRequest,
+                                new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                    $"TaskGroupDet.TaskGroupHeaderId: '{taskGroupDet.TaskGroupHeaderId}' not found."));
                         }
+
+                        return StatusCode(StatusCodes.Status400BadRequest,
+                            new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                $"TaskGroupDet.TaskGroupHeaderId: '{taskGroupDet.TaskGroupHeaderId}' not found."));
                     }
+
+                    return StatusCode(StatusCodes.Status400BadRequest,
+                        new APIErrorMessage(StatusCodes.Status400BadRequest,
+                            $"TaskGroupDet.Id: '{taskGroupDet.Id}' is not an empty guid."));
+                }
+                catch (Exception e)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError,
+                        new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
                 }
             }
-            catch (Exception e)
-            {
-                string message = e.Message;
-            }
 
-            return BadRequest();
+            return BadRequest(new APIErrorMessage(StatusCodes.Status400BadRequest, "One or more validation errors occurred.", ModelState));
         }
 
         [HttpPatch("{id}")]
@@ -111,39 +142,51 @@ namespace PanacheSoftware.Service.Task.Controllers
         [ProducesResponseType(401)]
         public async Task<IActionResult> Patch(string id, [FromBody]JsonPatchDocument<TaskGroupDet> taskGroupDetPatch)
         {
-            try
+            if (ModelState.IsValid)
             {
-                var accessToken = await HttpContext.GetTokenAsync("access_token");
-
-                if (Guid.TryParse(id, out Guid parsedId))
+                try
                 {
-                    //var userId = User.FindFirstValue("sub");
+                    var accessToken = await HttpContext.GetTokenAsync("access_token");
 
-                    var taskGroupDetail = _unitOfWork.TaskGroupDetails.Get(parsedId);
-
-                    if (taskGroupDetail != null)
+                    if (Guid.TryParse(id, out Guid parsedId))
                     {
-                        if (await _taskManager.CanAccessTaskGroupHeaderAsync(taskGroupDetail.TaskGroupHeaderId, accessToken))
+                        var taskGroupDetail = _unitOfWork.TaskGroupDetails.Get(parsedId);
+
+                        if (taskGroupDetail != null)
                         {
-                            var taskGroupDet = _mapper.Map<TaskGroupDet>(taskGroupDetail);
+                            if (await _taskManager.CanAccessTaskGroupHeaderAsync(taskGroupDetail.TaskGroupHeaderId,
+                                accessToken))
+                            {
+                                var taskGroupDet = _mapper.Map<TaskGroupDet>(taskGroupDetail);
 
-                            taskGroupDetPatch.ApplyTo(taskGroupDet);
+                                taskGroupDetPatch.ApplyTo(taskGroupDet);
 
-                            _mapper.Map(taskGroupDet, taskGroupDetail);
+                                _mapper.Map(taskGroupDet, taskGroupDetail);
 
-                            _unitOfWork.Complete();
+                                _unitOfWork.Complete();
 
-                            return CreatedAtRoute("Get", new { id = _mapper.Map<TaskGroupDet>(taskGroupDetail).Id }, _mapper.Map<TaskGroupDet>(taskGroupDetail));
+                                return CreatedAtRoute("Get", new {id = _mapper.Map<TaskGroupDet>(taskGroupDetail).Id},
+                                    _mapper.Map<TaskGroupDet>(taskGroupDetail));
+                            }
+
+                            return StatusCode(StatusCodes.Status400BadRequest,
+                                new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                    $"TaskGroupDetail.TaskGroupHeaderId: Can't access TaskGroupDet.TaskGroupHeader."));
                         }
+
+                        return NotFound();
                     }
+
+                    return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"id: '{id}' is not a valid guid."));
+                }
+                catch (Exception e)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError,
+                        new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
                 }
             }
-            catch (Exception e)
-            {
-                string message = e.Message;
-            }
 
-            return BadRequest();
+            return BadRequest(new APIErrorMessage(StatusCodes.Status400BadRequest, "One or more validation errors occurred.", ModelState));
         }
     }
 }

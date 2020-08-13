@@ -7,6 +7,9 @@ using PanacheSoftware.Core.Domain.Client;
 using PanacheSoftware.Core.Domain.API.Client;
 using PanacheSoftware.Service.Client.Core;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using PanacheSoftware.Core.Domain.API.Error;
 
 namespace PanacheSoftware.Service.Client.Controllers
 {
@@ -38,46 +41,58 @@ namespace PanacheSoftware.Service.Client.Controllers
                 {
                     ClientAddress clientAddress = _unitOfWork.ClientAddresses.GetAddress(parsedId, true);
 
-                    return Ok(_mapper.Map<ClientAddr>(clientAddress));
+                    if(clientAddress != null)
+                        return Ok(_mapper.Map<ClientAddr>(clientAddress));
+
+                    return NotFound();
                 }
+
+                return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"id: '{id}' is not a valid guid."));
             }
             catch (Exception e)
             {
-                string message = e.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
             }
-
-            return NotFound();
         }
 
         [HttpPost]
         public IActionResult Post([FromBody]ClientAddr clientAddr)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (clientAddr.Id == Guid.Empty)
+                try
                 {
-                    ClientContact clientContact = _unitOfWork.ClientContacts.SingleOrDefault(c => c.Id == clientAddr.ClientContactId, true);
-
-                    if (clientContact.Id != Guid.Empty)
+                    if (clientAddr.Id == Guid.Empty)
                     {
-                        //var userId = User.FindFirstValue("sub");
+                        ClientContact clientContact =
+                            _unitOfWork.ClientContacts.SingleOrDefault(c => c.Id == clientAddr.ClientContactId, true);
 
-                        var clientAddress = _mapper.Map<ClientAddress>(clientAddr);
+                        if (clientContact.Id != Guid.Empty)
+                        {
+                            //var userId = User.FindFirstValue("sub");
 
-                        _unitOfWork.ClientAddresses.Add(clientAddress);
+                            var clientAddress = _mapper.Map<ClientAddress>(clientAddr);
 
-                        _unitOfWork.Complete();
+                            _unitOfWork.ClientAddresses.Add(clientAddress);
 
-                        return Created(new Uri($"{Request.Path}/{clientAddress.Id}", UriKind.Relative), _mapper.Map<ClientAddr>(clientAddress));
+                            _unitOfWork.Complete();
+
+                            return Created(new Uri($"{Request.Path}/{clientAddress.Id}", UriKind.Relative),
+                                _mapper.Map<ClientAddr>(clientAddress));
+                        }
+
+                        return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"ClientAddr.ClientContactId: '{clientAddr.ClientContactId}' does not exist."));
                     }
+
+                    return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"ClientAddr.Id: '{clientAddr.Id}' is not an empty guid."));
+                }
+                catch (Exception e)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
                 }
             }
-            catch (Exception e)
-            {
-                string message = e.Message;
-            }
 
-            return BadRequest();
+            return BadRequest(new APIErrorMessage(StatusCodes.Status400BadRequest, "One or more validation errors occurred.", ModelState));
         }
 
         [HttpPatch("{id}")]
@@ -87,31 +102,40 @@ namespace PanacheSoftware.Service.Client.Controllers
         [ProducesResponseType(401)]
         public IActionResult Patch(string id, [FromBody]JsonPatchDocument<ClientAddr> clientAddrPatch)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (Guid.TryParse(id, out Guid parsedId))
+                try
                 {
-                    //var userId = User.FindFirstValue("sub");
+                    if (Guid.TryParse(id, out Guid parsedId))
+                    {
+                        ClientAddress clientAddress = _unitOfWork.ClientAddresses.Get(parsedId);
 
-                    ClientAddress clientAddress = _unitOfWork.ClientAddresses.Get(parsedId);
+                        if (clientAddress != null)
+                        {
+                            ClientAddr clientAddr = _mapper.Map<ClientAddr>(clientAddress);
 
-                    ClientAddr clientAddr = _mapper.Map<ClientAddr>(clientAddress);
+                            clientAddrPatch.ApplyTo(clientAddr);
 
-                    clientAddrPatch.ApplyTo(clientAddr);
+                            _mapper.Map(clientAddr, clientAddress);
 
-                    _mapper.Map(clientAddr, clientAddress);
+                            _unitOfWork.Complete();
 
-                    _unitOfWork.Complete();
+                            return CreatedAtRoute("Get", new {id = _mapper.Map<ClientAddr>(clientAddress).Id},
+                                _mapper.Map<ClientAddr>(clientAddress));
+                        }
 
-                    return CreatedAtRoute("Get", new { id = _mapper.Map<ClientAddr>(clientAddress).Id }, _mapper.Map<ClientAddr>(clientAddress));
+                        return NotFound();
+                    }
+
+                    return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"id: '{id}' is not a valid guid."));
+                }
+                catch (Exception e)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
                 }
             }
-            catch (Exception e)
-            {
-                string message = e.Message;
-            }
 
-            return BadRequest();
+            return BadRequest(new APIErrorMessage(StatusCodes.Status400BadRequest, "One or more validation errors occurred.", ModelState));
         }
     }
 }

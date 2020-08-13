@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using PanacheSoftware.Core.Domain.API.Error;
 using PanacheSoftware.Core.Domain.API.File;
 using PanacheSoftware.Core.Domain.File;
 using PanacheSoftware.Service.File.Core.Repositories;
@@ -45,14 +46,16 @@ namespace PanacheSoftware.Service.File.Controllers
 
                     if(fileHeader != null)
                         return Ok(_mapper.Map<FileHead>(fileHeader));
+
+                    return NotFound();
                 }
+
+                return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"id: '{id}' is not a valid guid."));
             }
             catch (Exception e)
             {
-                string message = e.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
             }
-
-            return NotFound();
         }
 
         [HttpGet]
@@ -74,39 +77,50 @@ namespace PanacheSoftware.Service.File.Controllers
                     {
                         fileList.FileHeaders.Add(_mapper.Map<FileHead>(fileHeader));
                     }
+
+                    return Ok(fileList);
                 }    
             }
             catch (Exception e)
             {
-                string message = e.Message;
-                return NotFound();
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
             }
 
-            return Ok(fileList);
+            return NotFound();
         }
 
         [HttpPost]
         public IActionResult Post([FromBody]FileHead fileHead)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (fileHead.Id == Guid.Empty)
+                try
                 {
-                    var fileHeader = _mapper.Map<FileHeader>(fileHead);
+                    if (fileHead.Id == Guid.Empty)
+                    {
+                        var fileHeader = _mapper.Map<FileHeader>(fileHead);
 
-                    _unitOfWork.FileHeaders.Add(fileHeader);
+                        _unitOfWork.FileHeaders.Add(fileHeader);
 
-                    _unitOfWork.Complete();
+                        _unitOfWork.Complete();
 
-                    return Created(new Uri($"{Request.Path}/{fileHeader.Id}", UriKind.Relative), _mapper.Map<FileHead>(fileHeader));
+                        return Created(new Uri($"{Request.Path}/{fileHeader.Id}", UriKind.Relative),
+                            _mapper.Map<FileHead>(fileHeader));
+                    }
+
+                    return StatusCode(StatusCodes.Status400BadRequest,
+                        new APIErrorMessage(StatusCodes.Status400BadRequest,
+                            $"FileHead.Id: '{fileHead.Id}' is not an empty guid."));
+                }
+                catch (Exception e)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError,
+                        new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
                 }
             }
-            catch (Exception e)
-            {
-                string message = e.Message;
-            }
 
-            return BadRequest();
+            return BadRequest(new APIErrorMessage(StatusCodes.Status400BadRequest, "One or more validation errors occurred.", ModelState));
         }
 
         [HttpPatch("{id}")]
@@ -116,29 +130,42 @@ namespace PanacheSoftware.Service.File.Controllers
         [ProducesResponseType(401)]
         public IActionResult Patch(string id, [FromBody]JsonPatchDocument<FileHead> fileHeadPatch)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (Guid.TryParse(id, out Guid parsedId))
+                try
                 {
-                    var fileHeader = _unitOfWork.FileHeaders.Get(parsedId);
+                    if (Guid.TryParse(id, out Guid parsedId))
+                    {
+                        var fileHeader = _unitOfWork.FileHeaders.Get(parsedId);
 
-                    var fileHead = _mapper.Map<FileHead>(fileHeader);
+                        if (fileHeader != null)
+                        {
 
-                    fileHeadPatch.ApplyTo(fileHead);
+                            var fileHead = _mapper.Map<FileHead>(fileHeader);
 
-                    _mapper.Map(fileHead, fileHeader);
+                            fileHeadPatch.ApplyTo(fileHead);
 
-                    _unitOfWork.Complete();
+                            _mapper.Map(fileHead, fileHeader);
 
-                    return CreatedAtRoute("Get", new { id = _mapper.Map<FileHead>(fileHeader).Id }, _mapper.Map<FileHead>(fileHeader));
+                            _unitOfWork.Complete();
+
+                            return CreatedAtRoute("Get", new {id = _mapper.Map<FileHead>(fileHeader).Id},
+                                _mapper.Map<FileHead>(fileHeader));
+                        }
+
+                        return NotFound();
+                    }
+
+                    return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"id: '{id}' is not a valid guid."));
+                }
+                catch (Exception e)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError,
+                        new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
                 }
             }
-            catch (Exception e)
-            {
-                string message = e.Message;
-            }
 
-            return BadRequest();
+            return BadRequest(new APIErrorMessage(StatusCodes.Status400BadRequest, "One or more validation errors occurred.", ModelState));
         }
     }
 }

@@ -2,8 +2,10 @@
 using System.Security.Claims;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using PanacheSoftware.Core.Domain.API.Error;
 using PanacheSoftware.Core.Domain.API.Settings;
 using PanacheSoftware.Core.Domain.Settings;
 using PanacheSoftware.Core.Types;
@@ -41,22 +43,15 @@ namespace PanacheSoftware.Service.Foundation.Controllers
                     tenantSettingList.TenantSettings.Add(_mapper.Map<TenSetting>(currentTenantSetting));
                 }
 
-                //SettingList settingList = new SettingList();
-
-                //foreach (var currentSetting in _unitOfWork.SettingHeaders.GetSettingHeaders(includeUser: false))
-                //{
-                //    settingList.SettingHeaders.Add(_mapper.Map<SettingHead>(currentSetting));
-                //}
-
                 if (tenantSettingList.TenantSettings.Count > 0)
                     return Ok(tenantSettingList);
+
+                return NotFound();
             }
             catch (Exception e)
             {
-                string message = e.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
             }
-
-            return NotFound();
         }
 
         [HttpGet("{id}")]
@@ -69,19 +64,16 @@ namespace PanacheSoftware.Service.Foundation.Controllers
             try
             {
                 TenantSetting tenantSetting;
-                //SettingHeader settingHeader;
 
                 if (Guid.TryParse(id, out Guid foundId))
                 {
                     tenantSetting = _unitOfWork.TenantSettings.GetTenantSetting(foundId);
-                    //settingHeader = _unitOfWork.SettingHeaders.GetSettingHeader(settingHeaderId: foundId, includeUser: false);
                 }
                 else
                 {
                     if (!string.IsNullOrWhiteSpace(id))
                     {
                         tenantSetting = _unitOfWork.TenantSettings.GetTenantSetting(id);
-                        //settingHeader = _unitOfWork.SettingHeaders.GetSettingHeader(settingHeaderName: id, includeUser: false);
                     }
                     else
                     {
@@ -93,45 +85,57 @@ namespace PanacheSoftware.Service.Foundation.Controllers
                 {
                     return Ok(_mapper.Map<TenSetting>(tenantSetting));
                 }
+
+                return NotFound();
             }
             catch (Exception e)
             {
-                string message = e.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
             }
-
-            return NotFound();
         }
 
         [HttpPost]
         public IActionResult Post([FromBody] TenSetting tenSetting)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (tenSetting.Id == Guid.Empty)
+                try
                 {
-                    var foundExisting = _unitOfWork.TenantSettings.GetTenantSetting(tenSetting.Id);
-
-                    if (foundExisting == null)
+                    if (tenSetting.Id == Guid.Empty)
                     {
-                        //var userId = User.FindFirstValue("sub");
+                        var foundExisting = _unitOfWork.TenantSettings.GetTenantSetting(tenSetting.Id);
 
-                        var tenantSetting = _mapper.Map<TenantSetting>(tenSetting);
-                        tenantSetting.Status = StatusTypes.Open;
+                        if (foundExisting == null)
+                        {
+                            var tenantSetting = _mapper.Map<TenantSetting>(tenSetting);
+                            tenantSetting.Status = StatusTypes.Open;
 
-                        _unitOfWork.TenantSettings.Add(tenantSetting);
+                            _unitOfWork.TenantSettings.Add(tenantSetting);
 
-                        _unitOfWork.Complete();
+                            _unitOfWork.Complete();
 
-                        return Created(new Uri($"{Request.Path}/{tenantSetting.Id}", UriKind.Relative), _mapper.Map<TenSetting>(tenantSetting));
+                            return Created(new Uri($"{Request.Path}/{tenantSetting.Id}", UriKind.Relative),
+                                _mapper.Map<TenSetting>(tenantSetting));
+                        }
+
+                        return StatusCode(StatusCodes.Status400BadRequest,
+                            new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                $"TenSetting.Id: '{tenSetting.Id}' already exists."));
+
                     }
+
+                    return StatusCode(StatusCodes.Status400BadRequest,
+                        new APIErrorMessage(StatusCodes.Status400BadRequest,
+                            $"TenSetting.Id: '{tenSetting.Id}' is not an empty guid."));
+                }
+                catch (Exception e)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError,
+                        new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
                 }
             }
-            catch (Exception e)
-            {
-                string message = e.Message;
-            }
 
-            return BadRequest();
+            return BadRequest(new APIErrorMessage(StatusCodes.Status400BadRequest, "One or more validation errors occurred.", ModelState));
         }
 
         [HttpPatch("{id}")]
@@ -141,31 +145,41 @@ namespace PanacheSoftware.Service.Foundation.Controllers
         [ProducesResponseType(401)]
         public IActionResult Patch(string id, [FromBody]JsonPatchDocument<TenSetting> tenantSettingPatch)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (Guid.TryParse(id, out Guid parsedId))
+                try
                 {
-                    //var userId = User.FindFirstValue("sub");
+                    if (Guid.TryParse(id, out Guid parsedId))
+                    {
+                        TenantSetting tenantSetting = _unitOfWork.TenantSettings.Get(parsedId);
 
-                    TenantSetting tenantSetting = _unitOfWork.TenantSettings.Get(parsedId);
+                        if (tenantSetting != null)
+                        {
+                            TenSetting tenSetting = _mapper.Map<TenSetting>(tenantSetting);
 
-                    TenSetting tenSetting = _mapper.Map<TenSetting>(tenantSetting);
+                            tenantSettingPatch.ApplyTo(tenSetting);
 
-                    tenantSettingPatch.ApplyTo(tenSetting);
+                            _mapper.Map(tenSetting, tenantSetting);
 
-                    _mapper.Map(tenSetting, tenantSetting);
+                            _unitOfWork.Complete();
 
-                    _unitOfWork.Complete();
+                            return CreatedAtRoute("Get", new {id = _mapper.Map<TenSetting>(tenantSetting).Id},
+                                _mapper.Map<TenSetting>(tenantSetting));
+                        }
 
-                    return CreatedAtRoute("Get", new { id = _mapper.Map<TenSetting>(tenantSetting).Id }, _mapper.Map<TenSetting>(tenantSetting));
+                        return NotFound();
+                    }
+
+                    return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"id: '{id}' is not a valid guid."));
+                }
+                catch (Exception e)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError,
+                        new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
                 }
             }
-            catch (Exception e)
-            {
-                string message = e.Message;
-            }
 
-            return BadRequest();
+            return BadRequest(new APIErrorMessage(StatusCodes.Status400BadRequest, "One or more validation errors occurred.", ModelState));
         }
 
         [Route("[action]")]
@@ -178,7 +192,6 @@ namespace PanacheSoftware.Service.Foundation.Controllers
 
                 var userId = User.FindFirstValue("sub");
 
-
                 foreach (var currentUserSetting in _unitOfWork.UserSettings.GetUserSettings(Guid.Parse(userId)))
                 {
                     usrSettingList.UserSettings.Add(_mapper.Map<UsrSetting>(currentUserSetting));
@@ -186,13 +199,13 @@ namespace PanacheSoftware.Service.Foundation.Controllers
 
                 if (usrSettingList.UserSettings.Count > 0)
                     return Ok(usrSettingList);
+
+                return NotFound();
             }
             catch (Exception e)
             {
-                string message = e.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
             }
-
-            return NotFound();
         }
 
         [Route("[action]/{id}")]
@@ -217,82 +230,109 @@ namespace PanacheSoftware.Service.Foundation.Controllers
                 {
                     return Ok(_mapper.Map<UsrSetting>(userSetting));
                 }
+
+                return NotFound();
             }
             catch (Exception e)
             {
-                string message = e.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
             }
-
-            return NotFound();
         }
 
         [Route("[action]")]
         [HttpPost]
         public IActionResult UserSetting([FromBody]UsrSetting usrSetting)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (usrSetting.Id == Guid.Empty && usrSetting.SettingHeaderId != Guid.Empty)
+                try
                 {
-                    var userId = User.FindFirstValue("sub");
-
-                    var foundSettingHeader = _unitOfWork.SettingHeaders.GetSettingHeader(usrSetting.SettingHeaderId, settingType: SettingTypes.USER, includeUser: false);
-
-                    var foundExisting = _unitOfWork.UserSettings.GetUserSetting(foundSettingHeader.Name, Guid.Parse(userId));
-
-                    if (foundExisting.Id == Guid.Empty)
+                    if (usrSetting.Id == Guid.Empty && usrSetting.SettingHeaderId != Guid.Empty)
                     {
-                        var userSetting = _mapper.Map<UserSetting>(usrSetting);
+                        var userId = User.FindFirstValue("sub");
 
-                        //Make sure you can only create user settings for current user, this should be fixed to allow for admin created values
-                        userSetting.UserId = Guid.Parse(userId);
-                        userSetting.Status = StatusTypes.Open; //Shouldn't do this here!
+                        var foundSettingHeader = _unitOfWork.SettingHeaders.GetSettingHeader(usrSetting.SettingHeaderId,
+                            settingType: SettingTypes.USER, includeUser: false);
 
-                        _unitOfWork.UserSettings.Add(userSetting);
+                        var foundExisting =
+                            _unitOfWork.UserSettings.GetUserSetting(foundSettingHeader.Name, Guid.Parse(userId));
 
-                        _unitOfWork.Complete();
+                        if (foundExisting.Id == Guid.Empty)
+                        {
+                            var userSetting = _mapper.Map<UserSetting>(usrSetting);
 
-                        return Created(new Uri($"{Request.Path}/{userSetting.Id}", UriKind.Relative), _mapper.Map<UsrSetting>(userSetting));
+                            //Make sure you can only create user settings for current user, this should be fixed to allow for admin created values
+                            userSetting.UserId = Guid.Parse(userId);
+                            userSetting.Status = StatusTypes.Open; //Shouldn't do this here!
+
+                            _unitOfWork.UserSettings.Add(userSetting);
+
+                            _unitOfWork.Complete();
+
+                            return Created(new Uri($"{Request.Path}/{userSetting.Id}", UriKind.Relative),
+                                _mapper.Map<UsrSetting>(userSetting));
+                        }
+
+                        return StatusCode(StatusCodes.Status400BadRequest,
+                            new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                $"User setting already exists."));
                     }
+
+                    return StatusCode(StatusCodes.Status400BadRequest,
+                        new APIErrorMessage(StatusCodes.Status400BadRequest,
+                            $"UsrSetting.Id: '{usrSetting.Id}' must be empty. UsrSetting.SettingHeaderId: must not be an empty guid."));
+                }
+                catch (Exception e)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError,
+                        new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
                 }
             }
-            catch (Exception e)
-            {
-                string message = e.Message;
-            }
 
-            return BadRequest();
+            return BadRequest(new APIErrorMessage(StatusCodes.Status400BadRequest, "One or more validation errors occurred.", ModelState));
         }
 
         [Route("[action]/{id}")]
         [HttpPatch]
         public IActionResult UserSetting(string id, [FromBody]JsonPatchDocument<UsrSetting> usrSettingPatch)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (Guid.TryParse(id, out Guid parsedId))
+                try
                 {
-                    var userId = User.FindFirstValue("sub");
+                    if (Guid.TryParse(id, out Guid parsedId))
+                    {
+                        var userId = User.FindFirstValue("sub");
 
-                    UserSetting userSetting = _unitOfWork.UserSettings.Get(parsedId);
+                        UserSetting userSetting = _unitOfWork.UserSettings.Get(parsedId);
 
-                    UsrSetting usrSetting = _mapper.Map<UsrSetting>(userSetting);
+                        if (userSetting != null)
+                        {
+                            UsrSetting usrSetting = _mapper.Map<UsrSetting>(userSetting);
 
-                    usrSettingPatch.ApplyTo(usrSetting);
+                            usrSettingPatch.ApplyTo(usrSetting);
 
-                    _mapper.Map(usrSetting, userSetting);
+                            _mapper.Map(usrSetting, userSetting);
 
-                    _unitOfWork.Complete();
+                            _unitOfWork.Complete();
 
-                    return CreatedAtRoute("Get", new { id = _mapper.Map<UsrSetting>(userSetting).Id }, _mapper.Map<UsrSetting>(userSetting));
+                            return CreatedAtRoute("Get", new {id = _mapper.Map<UsrSetting>(userSetting).Id},
+                                _mapper.Map<UsrSetting>(userSetting));
+                        }
+
+                        return NotFound();
+                    }
+
+                    return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"id: '{id}' is not a valid guid."));
+                }
+                catch (Exception e)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError,
+                        new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
                 }
             }
-            catch (Exception e)
-            {
-                string message = e.Message;
-            }
 
-            return BadRequest();
+            return BadRequest(new APIErrorMessage(StatusCodes.Status400BadRequest, "One or more validation errors occurred.", ModelState));
         }
     }
 }

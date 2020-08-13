@@ -4,8 +4,10 @@ using System.Linq;
 using System.Security.Claims;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using PanacheSoftware.Core.Domain.API.Error;
 using PanacheSoftware.Core.Domain.API.Join;
 using PanacheSoftware.Core.Domain.API.Team;
 using PanacheSoftware.Core.Domain.Join;
@@ -42,21 +44,16 @@ namespace PanacheSoftware.Service.Team.Controllers
                 UserTeamJoinList userTeamJoinList = new UserTeamJoinList();
 
                 userTeamJoinList.UserTeamJoins = _mapper.Map<List<UserTeam>, List<UserTeamJoin>>(_unitOfWork.UserTeams.GetAll(true).ToList());
-                
-                //foreach (var currentUserTeam in _unitOfWork.UserTeams.GetAll(true))
-                //{
-                //    userTeamJoinList.UserTeamJoins.Add(_mapper.Map<UserTeamJoin>(currentUserTeam));
-                //}
 
-                if (userTeamJoinList.UserTeamJoins.Count() > 0)
+                if (userTeamJoinList.UserTeamJoins.Any())
                     return Ok(userTeamJoinList);
+
+                return NotFound();
             }
             catch (Exception e)
             {
-                string message = e.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
             }
-
-            return NotFound();
         }
 
         [HttpGet("{id}")]
@@ -68,50 +65,57 @@ namespace PanacheSoftware.Service.Team.Controllers
         {
             try
             {
-                UserTeam userTeam = new UserTeam();
-
                 if (Guid.TryParse(id, out Guid parsedId))
                 {
-                    userTeam = _unitOfWork.UserTeams.GetUserTeamWithRelations(parsedId, true);
+                   var  userTeam = _unitOfWork.UserTeams.GetUserTeamWithRelations(parsedId, true);
+
+                   if (userTeam != null)
+                   {
+                       return Ok(_mapper.Map<UserTeamJoin>(userTeam));
+                   }
+
+                   return NotFound();
                 }
 
-                if (userTeam != null)
-                {
-                    return Ok(_mapper.Map<UserTeamJoin>(userTeam));
-                }
+                return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"id: '{id}' is not a valid guid."));
             }
             catch (Exception e)
             {
-                string message = e.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
             }
-
-            return NotFound();
         }
 
         [HttpPost]
         public IActionResult Post([FromBody]UserTeamJoin userTeamJoin)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (userTeamJoin.Id == Guid.Empty)
+                try
                 {
-                    //var userId = User.FindFirstValue("sub");
+                    if (userTeamJoin.Id == Guid.Empty)
+                    {
+                        var userTeam = _mapper.Map<UserTeam>(userTeamJoin);
 
-                    var userTeam = _mapper.Map<UserTeam>(userTeamJoin);
+                        _unitOfWork.UserTeams.Add(userTeam);
 
-                    _unitOfWork.UserTeams.Add(userTeam);
+                        _unitOfWork.Complete();
 
-                    _unitOfWork.Complete();
+                        return Created(new Uri($"{Request.Path}/{userTeam.Id}", UriKind.Relative),
+                            _mapper.Map<UserTeamJoin>(userTeam));
+                    }
 
-                    return Created(new Uri($"{Request.Path}/{userTeam.Id}", UriKind.Relative), _mapper.Map<UserTeamJoin>(userTeam));
+                    return StatusCode(StatusCodes.Status400BadRequest,
+                        new APIErrorMessage(StatusCodes.Status400BadRequest,
+                            $"UserTeamJoin.Id: '{userTeamJoin.Id}' is not an empty guid."));
+                }
+                catch (Exception e)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError,
+                        new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
                 }
             }
-            catch (Exception e)
-            {
-                string message = e.Message;
-            }
 
-            return BadRequest();
+            return BadRequest(new APIErrorMessage(StatusCodes.Status400BadRequest, "One or more validation errors occurred.", ModelState));
         }
 
         [HttpPatch("{id}")]
@@ -121,31 +125,41 @@ namespace PanacheSoftware.Service.Team.Controllers
         [ProducesResponseType(401)]
         public IActionResult Patch(string id, [FromBody]JsonPatchDocument<UserTeamJoin> userTeamPatch)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (Guid.TryParse(id, out Guid parsedId))
+                try
                 {
-                    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    if (Guid.TryParse(id, out Guid parsedId))
+                    {
+                        var userTeam = _unitOfWork.UserTeams.Get(parsedId);
 
-                    UserTeam userTeam = _unitOfWork.UserTeams.Get(parsedId);
+                        if (userTeam != null)
+                        {
+                            UserTeamJoin userTeamJoin = _mapper.Map<UserTeamJoin>(userTeam);
 
-                    UserTeamJoin userTeamJoin = _mapper.Map<UserTeamJoin>(userTeam);
+                            userTeamPatch.ApplyTo(userTeamJoin);
 
-                    userTeamPatch.ApplyTo(userTeamJoin);
+                            _mapper.Map(userTeamJoin, userTeam);
 
-                    _mapper.Map(userTeamJoin, userTeam);
+                            _unitOfWork.Complete();
 
-                    _unitOfWork.Complete();
+                            return CreatedAtRoute("Get", new {id = _mapper.Map<UserTeamJoin>(userTeam).Id},
+                                _mapper.Map<UserTeamJoin>(userTeam));
+                        }
 
-                    return CreatedAtRoute("Get", new { id = _mapper.Map<UserTeamJoin>(userTeam).Id }, _mapper.Map<UserTeamJoin>(userTeam));
+                        return NotFound();
+                    }
+
+                    return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"id: '{id}' is not a valid guid."));
+                }
+                catch (Exception e)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError,
+                        new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
                 }
             }
-            catch (Exception e)
-            {
-                string message = e.Message;
-            }
 
-            return BadRequest();
+            return BadRequest(new APIErrorMessage(StatusCodes.Status400BadRequest, "One or more validation errors occurred.", ModelState));
         }
 
         [Route("[action]/{id}")]
@@ -158,44 +172,19 @@ namespace PanacheSoftware.Service.Team.Controllers
                 {
                     TeamList teamList = _userTeamManager.GetTeamsForUser(parsedId);
 
-                    //UserTeamJoinList userTeamJoinList = new UserTeamJoinList();
-
-                    //userTeamJoinList.UserTeamJoins = _mapper.Map<List<UserTeam>, List<UserTeamJoin>>(_unitOfWork.UserTeams.GetUserTeamsForUser(parsedId, true));
-
-                    if (teamList.TeamHeaders.Count() > 0)
+                    if (teamList.TeamHeaders.Any())
                         return Ok(teamList);
 
                     return NotFound();
                 }
+
+                return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"id: '{id}' is not a valid guid."));
             }
             catch (Exception e)
             {
-                string message = e.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
             }
-
-            return BadRequest();
         }
-
-        //[Route("[action]/{id}")]
-        //[HttpGet]
-        //public IActionResult GetUsersForTeam(string id)
-        //{
-        //    //UserList userList = new UserList();
-
-        //    //if (Guid.TryParse(id, out Guid parsedId))
-        //    //{
-        //    //    userList = _userTeamManager.GetUsersForTeam(parsedId);
-        //    //}
-        //    //else
-        //    //{
-        //    //    userList = _userTeamManager.GetUsersForTeam(id);
-        //    //}
-
-        //    //if (userList.UserProfiles.Any())
-        //    //    return Ok(userList);
-
-        //    return NotFound();
-        //}
 
         [Route("[action]/{id}")]
         [HttpGet]
@@ -205,44 +194,51 @@ namespace PanacheSoftware.Service.Team.Controllers
             {
                 if (Guid.TryParse(id, out Guid parsedId))
                 {
-                    UserTeamJoinList userTeamJoinList = new UserTeamJoinList();
+                    var userTeamJoinList = new UserTeamJoinList();
 
                     userTeamJoinList.UserTeamJoins = _mapper.Map<List<UserTeam>, List<UserTeamJoin>>(_unitOfWork.UserTeams.GetUserTeamsForUser(parsedId, true));
 
-                    if (userTeamJoinList.UserTeamJoins.Count() > 0)
+                    if (userTeamJoinList.UserTeamJoins.Any())
                         return Ok(userTeamJoinList);
 
                     return NotFound();
                 }
+
+                return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"id: '{id}' is not a valid guid."));
             }
             catch (Exception e)
             {
-                string message = e.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
             }
-
-            return BadRequest();
         }
 
         [Route("[action]/{id}")]
         [HttpGet]
         public IActionResult GetUserTeamsForTeam(string id)
         {
-            UserTeamJoinList userTeamJoinList = new UserTeamJoinList();
-
-            if (Guid.TryParse(id, out Guid parsedId))
+            try
             {
-                userTeamJoinList = _userTeamManager.GetUserTeamListForTeam(parsedId);
+                var userTeamJoinList = new UserTeamJoinList();
+
+                if (Guid.TryParse(id, out Guid parsedId))
+                {
+                    userTeamJoinList = _userTeamManager.GetUserTeamListForTeam(parsedId);
+                }
+                else
+                {
+                    userTeamJoinList = _userTeamManager.GetUserTeamListForTeam(id);
+                }
+
+                if (userTeamJoinList.UserTeamJoins.Any())
+                    return Ok(userTeamJoinList);
+
+                return NotFound();
             }
-            else
+            catch (Exception e)
             {
-                userTeamJoinList = _userTeamManager.GetUserTeamListForTeam(id);
+                return StatusCode(StatusCodes.Status500InternalServerError, new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
             }
 
-            if (userTeamJoinList.UserTeamJoins.Any())
-                return Ok(userTeamJoinList);
-
-            return NotFound();
         }
-
     }
 }

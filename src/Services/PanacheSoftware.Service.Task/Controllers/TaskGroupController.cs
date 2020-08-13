@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using PanacheSoftware.Core.Domain.API.Error;
 using PanacheSoftware.Core.Domain.API.Join;
 using PanacheSoftware.Core.Domain.API.Task;
 using PanacheSoftware.Core.Domain.Task;
@@ -51,13 +53,14 @@ namespace PanacheSoftware.Service.Task.Controllers
 
                 if (taskGroupList.TaskGroupHeaders.Count > 0)
                     return Ok(taskGroupList);
+
+                return NotFound();
             }
             catch (Exception e)
             {
-                string message = e.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
             }
-
-            return NotFound();
         }
 
         [HttpGet("{id}")]
@@ -86,54 +89,68 @@ namespace PanacheSoftware.Service.Task.Controllers
                 {
                     return Ok(_mapper.Map<TaskGroupHead>(taskGroupHeader));
                 }
+
+                return NotFound();
             }
             catch (Exception e)
             {
-                string message = e.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
             }
-
-            return NotFound();
         }
 
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]TaskGroupHead taskGroupHead)
         {
-            try
+            if (ModelState.IsValid)
             {
-                var accessToken = await HttpContext.GetTokenAsync("access_token");
-
-                if (taskGroupHead.Id == Guid.Empty)
+                try
                 {
-                    //var userId = User.FindFirstValue("sub");
+                    var accessToken = await HttpContext.GetTokenAsync("access_token");
 
-                    var taskGroupHeader = _mapper.Map<TaskGroupHeader>(taskGroupHead);
+                    if (taskGroupHead.Id == Guid.Empty)
+                    {
+                        var taskGroupHeader = _mapper.Map<TaskGroupHeader>(taskGroupHead);
 
-                    if (!await _taskManager.TaskGroupTeamOkayAsync(taskGroupHeader, accessToken))
-                        return BadRequest();
+                        if (!await _taskManager.TaskGroupTeamOkayAsync(taskGroupHeader, accessToken))
+                            return StatusCode(StatusCodes.Status400BadRequest,
+                                new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                    $"TaskGroupHead.Id: Can't access '{taskGroupHead.Id}'."));
 
-                    if (!await _taskManager.TaskGroupParentOkayAsync(taskGroupHeader, accessToken))
-                        return BadRequest();
+                        if (!await _taskManager.TaskGroupParentOkayAsync(taskGroupHeader, accessToken))
+                            return StatusCode(StatusCodes.Status400BadRequest,
+                                new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                    $"TaskGroupHead.ParentTaskGroupId: '{taskGroupHead.ParentTaskGroupId}' is invalid."));
 
-                    if (!await _taskManager.SetNewTaskGroupSequenceNoAsync(taskGroupHeader, accessToken))
-                        return BadRequest();
+                        if (!await _taskManager.SetNewTaskGroupSequenceNoAsync(taskGroupHeader, accessToken))
+                            return StatusCode(StatusCodes.Status400BadRequest,
+                                new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                    $"Unable to set task sequence number."));
 
-                    taskGroupHeader.OriginalCompletionDate = taskGroupHeader.CompletionDate;
-                    taskGroupHeader.CompletedOnDate = DateTime.Parse("01/01/1900");
-                    taskGroupHeader.Completed = false;
+                        taskGroupHeader.OriginalCompletionDate = taskGroupHeader.CompletionDate;
+                        taskGroupHeader.CompletedOnDate = DateTime.Parse("01/01/1900");
+                        taskGroupHeader.Completed = false;
 
-                    _unitOfWork.TaskGroupHeaders.Add(taskGroupHeader);
+                        _unitOfWork.TaskGroupHeaders.Add(taskGroupHeader);
 
-                    _unitOfWork.Complete();
+                        _unitOfWork.Complete();
 
-                    return Created(new Uri($"{Request.Path}/{taskGroupHeader.Id}", UriKind.Relative), _mapper.Map<TaskGroupHead>(taskGroupHeader));
+                        return Created(new Uri($"{Request.Path}/{taskGroupHeader.Id}", UriKind.Relative),
+                            _mapper.Map<TaskGroupHead>(taskGroupHeader));
+                    }
+
+                    return StatusCode(StatusCodes.Status400BadRequest,
+                        new APIErrorMessage(StatusCodes.Status400BadRequest,
+                            $"TaskGroupHead.Id: '{taskGroupHead.Id}' is not an empty guid."));
+                }
+                catch (Exception e)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError,
+                        new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
                 }
             }
-            catch (Exception e)
-            {
-                string message = e.Message;
-            }
 
-            return BadRequest();
+            return BadRequest(new APIErrorMessage(StatusCodes.Status400BadRequest, "One or more validation errors occurred.", ModelState));
         }
 
         [HttpPatch("{id}")]
@@ -143,58 +160,79 @@ namespace PanacheSoftware.Service.Task.Controllers
         [ProducesResponseType(401)]
         public async Task<IActionResult> Patch(string id, [FromBody]JsonPatchDocument<TaskGroupHead> taskGroupHeadPatch)
         {
-            try
+            if (ModelState.IsValid)
             {
-                var accessToken = await HttpContext.GetTokenAsync("access_token");
-
-                if (Guid.TryParse(id, out Guid parsedId))
+                try
                 {
-                    //var userId = User.FindFirstValue("sub");
+                    var accessToken = await HttpContext.GetTokenAsync("access_token");
 
-                    var taskGroupHeader = _unitOfWork.TaskGroupHeaders.Get(parsedId);
-
-                    if (taskGroupHeader != null)
+                    if (Guid.TryParse(id, out Guid parsedId))
                     {
-                        if (await _taskManager.CanAccessTaskGroupHeaderAsync(taskGroupHeader.Id, accessToken))
+                        var taskGroupHeader = _unitOfWork.TaskGroupHeaders.Get(parsedId);
+
+                        if (taskGroupHeader != null)
                         {
-                            var taskGroupHead = _mapper.Map<TaskGroupHead>(taskGroupHeader);
-
-                            taskGroupHeadPatch.ApplyTo(taskGroupHead);
-
-                            //Make sure the Original dates do not get changed
-                            taskGroupHead.OriginalCompletionDate = taskGroupHeader.OriginalCompletionDate;
-                            taskGroupHead.OriginalStartDate = taskGroupHeader.OriginalStartDate;
-
-                            if (taskGroupHeader.ParentTaskGroupId != null)
+                            if (await _taskManager.CanAccessTaskGroupHeaderAsync(taskGroupHeader.Id, accessToken))
                             {
-                                TaskGroupHeader parentTaskGroupHeader = _unitOfWork.TaskGroupHeaders.SingleOrDefault(c => c.Id == taskGroupHeader.ParentTaskGroupId, true);
+                                var taskGroupHead = _mapper.Map<TaskGroupHead>(taskGroupHeader);
 
-                                if (parentTaskGroupHeader != null)
+                                taskGroupHeadPatch.ApplyTo(taskGroupHead);
+
+                                //Make sure the Original dates do not get changed
+                                taskGroupHead.OriginalCompletionDate = taskGroupHeader.OriginalCompletionDate;
+                                taskGroupHead.OriginalStartDate = taskGroupHeader.OriginalStartDate;
+
+                                if (taskGroupHeader.ParentTaskGroupId != null)
                                 {
-                                    //Make sure the start and completion dates don't fall outside of the group headers dates
-                                    taskGroupHead.StartDate = (taskGroupHead.StartDate < parentTaskGroupHeader.StartDate) ? parentTaskGroupHeader.StartDate : taskGroupHead.StartDate;
-                                    taskGroupHead.CompletionDate = (taskGroupHead.CompletionDate > parentTaskGroupHeader.CompletionDate) ? parentTaskGroupHeader.CompletionDate : taskGroupHead.CompletionDate;
+                                    TaskGroupHeader parentTaskGroupHeader =
+                                        _unitOfWork.TaskGroupHeaders.SingleOrDefault(
+                                            c => c.Id == taskGroupHeader.ParentTaskGroupId, true);
+
+                                    if (parentTaskGroupHeader != null)
+                                    {
+                                        //Make sure the start and completion dates don't fall outside of the group headers dates
+                                        taskGroupHead.StartDate =
+                                            (taskGroupHead.StartDate < parentTaskGroupHeader.StartDate)
+                                                ? parentTaskGroupHeader.StartDate
+                                                : taskGroupHead.StartDate;
+                                        taskGroupHead.CompletionDate =
+                                            (taskGroupHead.CompletionDate > parentTaskGroupHeader.CompletionDate)
+                                                ? parentTaskGroupHeader.CompletionDate
+                                                : taskGroupHead.CompletionDate;
+                                    }
                                 }
+
+                                _mapper.Map(taskGroupHead, taskGroupHeader);
+
+                                if (!await _taskManager.TaskGroupParentOkayAsync(taskGroupHeader, accessToken))
+                                    return StatusCode(StatusCodes.Status400BadRequest,
+                                        new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                            $"TaskGroupHeader.ParentTaskGroupId: '{taskGroupHeader.ParentTaskGroupId}' is invalid."));
+
+                                _unitOfWork.Complete();
+
+                                return CreatedAtRoute("Get", new {id = _mapper.Map<TaskGroupHead>(taskGroupHeader).Id},
+                                    _mapper.Map<TaskGroupHead>(taskGroupHeader));
                             }
 
-                            _mapper.Map(taskGroupHead, taskGroupHeader);
-
-                            if (!await _taskManager.TaskGroupParentOkayAsync(taskGroupHeader, accessToken))
-                                return BadRequest();
-
-                            _unitOfWork.Complete();
-
-                            return CreatedAtRoute("Get", new { id = _mapper.Map<TaskGroupHead>(taskGroupHeader).Id }, _mapper.Map<TaskGroupHead>(taskGroupHeader));
+                            return StatusCode(StatusCodes.Status400BadRequest,
+                                new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                    $"TaskGroupHeader.Id: Can't access '{taskGroupHeader.Id}'."));
                         }
+
+                        return NotFound();
                     }
+
+                    return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"id: '{id}' is not a valid guid."));
+                }
+                catch (Exception e)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError,
+                        new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
                 }
             }
-            catch (Exception e)
-            {
-                string message = e.Message;
-            }
 
-            return BadRequest();
+            return BadRequest(new APIErrorMessage(StatusCodes.Status400BadRequest, "One or more validation errors occurred.", ModelState));
         }
 
         [Route("[action]/{id}")]
@@ -211,41 +249,62 @@ namespace PanacheSoftware.Service.Task.Controllers
 
                     if(taskGroupHeaderReadOnly != null)
                     {
-                        if (!taskGroupHeaderReadOnly.Completed)
+                        if (await _taskManager.CanAccessTaskGroupHeaderAsync(taskGroupHeaderReadOnly.Id, accessToken))
                         {
-                            if (await _taskManager.CanCompleteTaskGroupAsync(taskGroupHeaderReadOnly.Id, accessToken))
+                            if (!taskGroupHeaderReadOnly.Completed)
                             {
-                                var taskGroupHeader = _unitOfWork.TaskGroupHeaders.Get(taskGroupHeaderReadOnly.Id);
-
-                                if (taskGroupHeader != null)
+                                if (await _taskManager.CanCompleteTaskGroupAsync(taskGroupHeaderReadOnly.Id,
+                                    accessToken))
                                 {
-                                    taskGroupHeader.Completed = true;
+                                    var taskGroupHeader = _unitOfWork.TaskGroupHeaders.Get(taskGroupHeaderReadOnly.Id);
 
-                                    if (DateTime.Today <= taskGroupHeader.StartDate)
+                                    if (taskGroupHeader != null)
                                     {
-                                        taskGroupHeader.CompletedOnDate = taskGroupHeader.CompletionDate;
-                                    }
-                                    else
-                                    {
-                                        taskGroupHeader.CompletedOnDate = DateTime.Today;
+                                        taskGroupHeader.Completed = true;
+
+                                        if (DateTime.Today <= taskGroupHeader.StartDate)
+                                        {
+                                            taskGroupHeader.CompletedOnDate = taskGroupHeader.CompletionDate;
+                                        }
+                                        else
+                                        {
+                                            taskGroupHeader.CompletedOnDate = DateTime.Today;
+                                        }
+
+                                        _unitOfWork.Complete();
+
+                                        return Ok(_mapper.Map<TaskGroupHead>(taskGroupHeader));
                                     }
 
-                                    _unitOfWork.Complete();
-
-                                    return Ok(_mapper.Map<TaskGroupHead>(taskGroupHeader));
+                                    return NotFound();
                                 }
+
+                                return StatusCode(StatusCodes.Status400BadRequest,
+                                    new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                        $"TaskGroupHeader.Id: Can't complete."));
                             }
+
+                            return StatusCode(StatusCodes.Status400BadRequest,
+                                new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                    $"TaskGroupHeader.Id: Already complete."));
                         }
+
+                        return StatusCode(StatusCodes.Status400BadRequest,
+                            new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                $"TaskGroupHeader.Id: Can't access '{taskGroupHeaderReadOnly.Id}'."));
                     }
 
+                    return NotFound();
+
                 }
+
+                return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"id: '{id}' is not a valid guid."));
             }
             catch (Exception e)
             {
-                string message = e.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
             }
-
-            return NotFound();
         }
 
         [Route("[action]")]
@@ -260,13 +319,14 @@ namespace PanacheSoftware.Service.Task.Controllers
 
                 if (taskGroupList.TaskGroupHeaders.Count > 0)
                     return Ok(taskGroupList);
+
+                return NotFound();
             }
             catch (Exception e)
             {
-                string message = e.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
             }
-
-            return NotFound();
         }
 
         [Route("[action]")]
@@ -281,13 +341,14 @@ namespace PanacheSoftware.Service.Task.Controllers
 
                 if (taskGroupList.TaskGroupSummarys.Count > 0)
                     return Ok(taskGroupList);
+
+                return NotFound();
             }
             catch (Exception e)
             {
-                string message = e.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
             }
-
-            return NotFound();
         }
 
         [Route("[action]/{id}")]
@@ -296,17 +357,25 @@ namespace PanacheSoftware.Service.Task.Controllers
         {
             var accessToken = await HttpContext.GetTokenAsync("access_token");
 
-            if (Guid.TryParse(id, out Guid parsedId))
+            try
             {
-                var taskGroupSummary = await _taskManager.GetTaskGroupSummaryAsync(parsedId, accessToken);
+                if (Guid.TryParse(id, out Guid parsedId))
+                {
+                    var taskGroupSummary = await _taskManager.GetTaskGroupSummaryAsync(parsedId, accessToken);
 
-                if (taskGroupSummary != null)
+                    if (taskGroupSummary != null)
                         return Ok(taskGroupSummary);
 
-                return NotFound();
-            }
+                    return NotFound();
+                }
 
-            return BadRequest();
+                return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"id: '{id}' is not a valid guid."));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
+            }
         }
 
         //[Route("[action]/{id}")]
