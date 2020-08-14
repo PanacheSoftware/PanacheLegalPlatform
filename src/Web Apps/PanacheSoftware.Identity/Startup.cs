@@ -124,8 +124,20 @@ namespace PanacheSoftware.Identity
                 //.AddInMemoryApiResources(identityServerConfig.GetApis())
                 //.AddInMemoryClients(identityServerConfig.GetClients())
                 .AddAspNetIdentity<ApplicationUser>();
-                //.AddInMemoryPersistedGrants()
-                //.AddInMemoryCaching();
+            //.AddInMemoryPersistedGrants()
+            //.AddInMemoryCaching();
+
+            switch (panacheSoftwareConfiguration.DBProvider)
+            {
+                case DBProvider.MySQL:
+                    services.AddDbContext<ApplicationDbContext>(options =>
+                        options.UseMySql(Configuration.GetConnectionString("MySQL")));
+                    break;
+                case DBProvider.MSSQL:
+                    services.AddDbContext<ApplicationDbContext>(options =>
+                        options.UseSqlServer(Configuration.GetConnectionString("MSSQL")));
+                    break;
+            }
 
             services.Configure<CookiePolicyOptions>(options =>
             {
