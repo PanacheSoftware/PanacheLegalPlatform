@@ -3,10 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
-    <DockerComposeProjectPath>..\..\docker-compose.dcproj</DockerComposeProjectPath>
     <UserSecretsId>341996cc-6ea9-42c2-9c00-e4b2fd7d6e51</UserSecretsId>
-    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <DockerfileContext>..\..</DockerfileContext>
     <Deterministic>False</Deterministic>
     <AssemblyVersion>0.1.*</AssemblyVersion>
     <FileVersion>0.1.0.0</FileVersion>

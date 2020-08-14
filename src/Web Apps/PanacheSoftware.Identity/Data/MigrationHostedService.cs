@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using IdentityServer4.EntityFramework.DbContexts;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PanacheSoftware.Identity.Data;
@@ -23,7 +24,15 @@ namespace PanacheSoftware.Identity
             {
                 var myDbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-                await myDbContext.Database.MigrateAsync();
+                await myDbContext.Database.MigrateAsync(cancellationToken: cancellationToken);
+
+                var is4ConfigurationDbContext = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
+
+                await is4ConfigurationDbContext.Database.MigrateAsync(cancellationToken: cancellationToken);
+
+                var is4PersistanceDbContext = scope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>();
+
+                await is4PersistanceDbContext.Database.MigrateAsync(cancellationToken: cancellationToken);
             }
         }
 
