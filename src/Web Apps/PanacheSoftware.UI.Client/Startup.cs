@@ -93,6 +93,8 @@ namespace PanacheSoftware.UI.Client
                     options.ClaimActions.MapUniqueJsonKey("tenantid", "tenantid");
                 });
 
+            services.ConfigureNonBreakingSameSiteCookies();
+
             services.AddSingleton<IAPIHelper, APIHelper>();
             services.AddTransient<IRazorPartialToStringRenderer, RazorPartialToStringRenderer>();
             services.AddTransient<IModelHelper, ModelHelper>();
@@ -110,12 +112,14 @@ namespace PanacheSoftware.UI.Client
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseAuthentication();
+            
 
             //app.UseHttpsRedirection();
 
             app.UseStaticFiles();
             app.UseCookiePolicy();
+
+            app.UseAuthentication();
 
             //app.UseMvc();
             app.UseMvcWithDefaultRoute();

@@ -51,11 +51,6 @@ namespace PanacheSoftware.Identity
                     break;
             }
 
-            //Connect to the Database
-            //services.AddDbContext<ApplicationDbContext>(options =>
-            //    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
-            //);
-
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
@@ -75,8 +70,6 @@ namespace PanacheSoftware.Identity
                     //options.SuppressUseValidationProblemDetailsForInvalidModelStateResponses = true;
                 });
 
-            //var panacheSoftwareConfiguration = new PanacheSoftwareConfiguration();
-            //Configuration.Bind("PanacheSoftware", panacheSoftwareConfiguration);
 
             var identityServerConfig = new Config(panacheSoftwareConfiguration);
 
@@ -117,34 +110,10 @@ namespace PanacheSoftware.Identity
 
                     options.EnableTokenCleanup = true;
                 })
-
-
-                //.AddInMemoryIdentityResources(identityServerConfig.GetIdentityResources())
-                //.AddInMemoryApiScopes(identityServerConfig.GetApiScopes())
-                //.AddInMemoryApiResources(identityServerConfig.GetApis())
-                //.AddInMemoryClients(identityServerConfig.GetClients())
                 .AddAspNetIdentity<ApplicationUser>();
-            //.AddInMemoryPersistedGrants()
-            //.AddInMemoryCaching();
 
-            switch (panacheSoftwareConfiguration.DBProvider)
-            {
-                case DBProvider.MySQL:
-                    services.AddDbContext<ApplicationDbContext>(options =>
-                        options.UseMySql(Configuration.GetConnectionString("MySQL")));
-                    break;
-                case DBProvider.MSSQL:
-                    services.AddDbContext<ApplicationDbContext>(options =>
-                        options.UseSqlServer(Configuration.GetConnectionString("MSSQL")));
-                    break;
-            }
 
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
-            });
+            services.ConfigureNonBreakingSameSiteCookies();
 
             services.AddAutoMapper(System.Reflection.Assembly.Load("PanacheSoftware.Core"));
 
@@ -190,7 +159,7 @@ namespace PanacheSoftware.Identity
 
             //app.UseHttpsRedirection();
             app.UseStaticFiles();
-            //app.UseCookiePolicy();
+            app.UseCookiePolicy();
             app.UseIdentityServer();
             //app.UseMvc(routes =>
             //{
