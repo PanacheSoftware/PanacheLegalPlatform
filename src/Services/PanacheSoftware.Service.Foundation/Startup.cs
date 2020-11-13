@@ -42,7 +42,7 @@ namespace PanacheSoftware.Service.Foundation
             {
                 case DBProvider.MySQL:
                     services.AddDbContext<PanacheSoftwareServiceFoundationContext>(options =>
-                        options.UseMySql(Configuration.GetConnectionString(DBProvider.MySQL)));
+                        options.UseMySql(Configuration.GetConnectionString(DBProvider.MySQL), ServerVersion.AutoDetect(Configuration.GetConnectionString(DBProvider.MySQL))));
                     break;
                 case DBProvider.MSSQL:
                     services.AddDbContext<PanacheSoftwareServiceFoundationContext>(options =>

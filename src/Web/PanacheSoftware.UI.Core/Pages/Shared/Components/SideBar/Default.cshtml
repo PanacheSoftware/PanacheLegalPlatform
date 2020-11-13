@@ -8,13 +8,13 @@
             <a href="#">@Html.GetTitle(Model, 10000)</a>
         </div>
         <!-- sidebar-header  -->
-        @await Component.InvokeAsync("SideBarUserProfile")
+        @await Component.InvokeAsync("SideBarUserProfile", Model)
         <!-- sidebar-search  -->
-        @await Component.InvokeAsync("SideBarSearch")
+        @await Component.InvokeAsync("SideBarSearch", Model)
         <!-- sidebar-menu  -->
-        @await Component.InvokeAsync("SideBarMenu")
+        @await Component.InvokeAsync("SideBarMenu", Model)
         <!-- sidebar-menu  -->
     </div>
     <!-- sidebar-footer  -->
-    @await Component.InvokeAsync("SideBarFooter")
+    @await Component.InvokeAsync("SideBarFooter", Model)
 </nav>

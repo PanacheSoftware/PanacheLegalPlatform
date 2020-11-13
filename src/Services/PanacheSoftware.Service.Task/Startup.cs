@@ -45,7 +45,7 @@ namespace PanacheSoftware.Service.Task
             {
                 case DBProvider.MySQL:
                     services.AddDbContext<PanacheSoftwareServiceTaskContext>(options =>
-                        options.UseMySql(Configuration.GetConnectionString(DBProvider.MySQL)));
+                        options.UseMySql(Configuration.GetConnectionString(DBProvider.MySQL), ServerVersion.AutoDetect(Configuration.GetConnectionString(DBProvider.MySQL))));
                     break;
                 case DBProvider.MSSQL:
                     services.AddDbContext<PanacheSoftwareServiceTaskContext>(options =>

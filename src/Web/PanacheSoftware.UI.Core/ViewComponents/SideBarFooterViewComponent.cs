@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PanacheSoftware.Core.Domain.API.Language;
 using PanacheSoftware.UI.Core.Headers;
 
 namespace PanacheSoftware.UI.Core.ViewComponents
@@ -9,9 +10,9 @@ namespace PanacheSoftware.UI.Core.ViewComponents
     [ValidateAntiForgeryToken]
     public class SideBarFooterViewComponent : ViewComponent
     {
-        public IViewComponentResult Invoke()
+        public IViewComponentResult Invoke(LangQueryList sideBarQueryList)
         {
-            return View();
+            return View(sideBarQueryList);
         }
     }
 }

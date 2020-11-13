@@ -43,11 +43,11 @@ namespace PanacheSoftware.Identity
             {
                 case DBProvider.MySQL:
                     services.AddDbContext<ApplicationDbContext>(options =>
-                        options.UseMySql(Configuration.GetConnectionString("MySQL")));
+                        options.UseMySql(Configuration.GetConnectionString(DBProvider.MySQL), ServerVersion.AutoDetect(Configuration.GetConnectionString(DBProvider.MySQL))));
                     break;
                 case DBProvider.MSSQL:
                     services.AddDbContext<ApplicationDbContext>(options =>
-                        options.UseSqlServer(Configuration.GetConnectionString("MSSQL")));
+                        options.UseSqlServer(Configuration.GetConnectionString(DBProvider.MSSQL)));
                     break;
             }
 
@@ -86,7 +86,7 @@ namespace PanacheSoftware.Identity
                     {
                         case DBProvider.MySQL:
                             options.ConfigureDbContext = builder =>
-                                builder.UseMySql(Configuration.GetConnectionString(DBProvider.MySQL), b => b.MigrationsAssembly(typeof(Startup).Assembly.FullName));
+                                builder.UseMySql(Configuration.GetConnectionString(DBProvider.MySQL), ServerVersion.AutoDetect(Configuration.GetConnectionString(DBProvider.MySQL)), b => b.MigrationsAssembly(typeof(Startup).Assembly.FullName));
                             break;
                         case DBProvider.MSSQL:
                             options.ConfigureDbContext = builder =>
@@ -100,7 +100,7 @@ namespace PanacheSoftware.Identity
                     {
                         case DBProvider.MySQL:
                             options.ConfigureDbContext = builder =>
-                                builder.UseMySql(Configuration.GetConnectionString(DBProvider.MySQL), b => b.MigrationsAssembly(typeof(Startup).Assembly.FullName));
+                                builder.UseMySql(Configuration.GetConnectionString(DBProvider.MySQL), ServerVersion.AutoDetect(Configuration.GetConnectionString(DBProvider.MySQL)), b => b.MigrationsAssembly(typeof(Startup).Assembly.FullName));
                             break;
                         case DBProvider.MSSQL:
                             options.ConfigureDbContext = builder =>
