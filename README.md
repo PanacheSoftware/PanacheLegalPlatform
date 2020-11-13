@@ -32,7 +32,7 @@ All services and the standard user interface are distributed via Docker Images f
 
 'src/PanacheLegalPlatform.sln' provides a VS solution for the whole platform.
 
-* [Install](https://www.microsoft.com/net/download/core#/current) the latest .NET Core 3.1 SDK
+* [Install](https://www.microsoft.com/net/download/core#/current) the latest .NET 5 SDK
 * Install Git
 * In 'src' folder run:
 
