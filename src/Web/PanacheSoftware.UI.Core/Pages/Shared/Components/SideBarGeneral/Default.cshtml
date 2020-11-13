@@ -4,7 +4,7 @@
 <li class="header-menu">
     <span>@Html.GetTitle(Model, 10103)</span>
 </li>
-@await Component.InvokeAsync("SideBarDashboard")
-@await Component.InvokeAsync("SideBarClient")
-@await Component.InvokeAsync("SideBarTeam")
-@await Component.InvokeAsync("SideBarTask")
+@await Component.InvokeAsync("SideBarDashboard", Model)
+@await Component.InvokeAsync("SideBarClient", Model)
+@await Component.InvokeAsync("SideBarTeam", Model)
+@await Component.InvokeAsync("SideBarTask", Model)

@@ -43,18 +43,13 @@ namespace PanacheSoftware.Identity
             {
                 case DBProvider.MySQL:
                     services.AddDbContext<ApplicationDbContext>(options =>
-                        options.UseMySql(Configuration.GetConnectionString("MySQL")));
+                        options.UseMySql(Configuration.GetConnectionString(DBProvider.MySQL), ServerVersion.AutoDetect(Configuration.GetConnectionString(DBProvider.MySQL))));
                     break;
                 case DBProvider.MSSQL:
                     services.AddDbContext<ApplicationDbContext>(options =>
-                        options.UseSqlServer(Configuration.GetConnectionString("MSSQL")));
+                        options.UseSqlServer(Configuration.GetConnectionString(DBProvider.MSSQL)));
                     break;
             }
-
-            //Connect to the Database
-            //services.AddDbContext<ApplicationDbContext>(options =>
-            //    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
-            //);
 
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -75,32 +70,50 @@ namespace PanacheSoftware.Identity
                     //options.SuppressUseValidationProblemDetailsForInvalidModelStateResponses = true;
                 });
 
-            //var panacheSoftwareConfiguration = new PanacheSoftwareConfiguration();
-            //Configuration.Bind("PanacheSoftware", panacheSoftwareConfiguration);
 
             var identityServerConfig = new Config(panacheSoftwareConfiguration);
 
             var builder = services.AddIdentityServer(options =>
-            {
-                options.Events.RaiseErrorEvents = true;
-                options.Events.RaiseInformationEvents = true;
-                options.Events.RaiseFailureEvents = true;
-                options.Events.RaiseSuccessEvents = true;
-            })
-                .AddInMemoryIdentityResources(identityServerConfig.GetIdentityResources())
-                .AddInMemoryApiScopes(identityServerConfig.GetApiScopes())
-                .AddInMemoryApiResources(identityServerConfig.GetApis())
-                .AddInMemoryClients(identityServerConfig.GetClients())
-                .AddAspNetIdentity<ApplicationUser>()
-                .AddInMemoryPersistedGrants()
-                .AddInMemoryCaching();
+                {
+                    options.Events.RaiseErrorEvents = true;
+                    options.Events.RaiseInformationEvents = true;
+                    options.Events.RaiseFailureEvents = true;
+                    options.Events.RaiseSuccessEvents = true;
+                })
+                .AddConfigurationStore(options =>
+                {
+                    switch (panacheSoftwareConfiguration.DBProvider)
+                    {
+                        case DBProvider.MySQL:
+                            options.ConfigureDbContext = builder =>
+                                builder.UseMySql(Configuration.GetConnectionString(DBProvider.MySQL), ServerVersion.AutoDetect(Configuration.GetConnectionString(DBProvider.MySQL)), b => b.MigrationsAssembly(typeof(Startup).Assembly.FullName));
+                            break;
+                        case DBProvider.MSSQL:
+                            options.ConfigureDbContext = builder =>
+                                builder.UseSqlServer(Configuration.GetConnectionString(DBProvider.MSSQL), b => b.MigrationsAssembly(typeof(Startup).Assembly.FullName));
+                            break;
+                    }
+                })
+                .AddOperationalStore(options =>
+                {
+                    switch (panacheSoftwareConfiguration.DBProvider)
+                    {
+                        case DBProvider.MySQL:
+                            options.ConfigureDbContext = builder =>
+                                builder.UseMySql(Configuration.GetConnectionString(DBProvider.MySQL), ServerVersion.AutoDetect(Configuration.GetConnectionString(DBProvider.MySQL)), b => b.MigrationsAssembly(typeof(Startup).Assembly.FullName));
+                            break;
+                        case DBProvider.MSSQL:
+                            options.ConfigureDbContext = builder =>
+                                builder.UseSqlServer(Configuration.GetConnectionString(DBProvider.MSSQL), b => b.MigrationsAssembly(typeof(Startup).Assembly.FullName));
+                            break;
+                    }
 
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
-            });
+                    options.EnableTokenCleanup = true;
+                })
+                .AddAspNetIdentity<ApplicationUser>();
+
+
+            services.ConfigureNonBreakingSameSiteCookies();
 
             services.AddAutoMapper(System.Reflection.Assembly.Load("PanacheSoftware.Core"));
 
@@ -146,7 +159,7 @@ namespace PanacheSoftware.Identity
 
             //app.UseHttpsRedirection();
             app.UseStaticFiles();
-            //app.UseCookiePolicy();
+            app.UseCookiePolicy();
             app.UseIdentityServer();
             //app.UseMvc(routes =>
             //{

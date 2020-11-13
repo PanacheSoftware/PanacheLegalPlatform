@@ -72,6 +72,8 @@ namespace PanacheSoftware.Identity.Manager
             var panacheSoftwareConfiguration = new PanacheSoftwareConfiguration();
             _configuration.Bind("PanacheSoftware", panacheSoftwareConfiguration);
 
+            //await SeedDatabaseFromConfigAsync(panacheSoftwareConfiguration);
+
             var admin = _userManager.FindByNameAsync($"admin@{panacheSoftwareConfiguration.StartDomain}").Result;
 
             if (admin == null)
@@ -108,6 +110,53 @@ namespace PanacheSoftware.Identity.Manager
 
             return IdentityResult.Success;
         }
+
+        //public async Task<bool> SeedDatabaseFromConfigAsync(PanacheSoftwareConfiguration panacheSoftwareConfiguration)
+        //{
+        //    var config = new Config(panacheSoftwareConfiguration);
+
+        //    if (!_configContext.Clients.Any())
+        //    {
+        //        foreach (var client in config.GetClients())
+        //        {
+        //            await _configContext.Clients.AddAsync(client.ToEntity());
+        //        }
+
+        //        await _configContext.SaveChangesAsync();
+        //    }
+
+        //    if (!_configContext.IdentityResources.Any())
+        //    {
+        //        foreach (var resource in config.GetIdentityResources())
+        //        {
+        //            await _configContext.IdentityResources.AddAsync(resource.ToEntity());
+        //        }
+
+        //        await _configContext.SaveChangesAsync();
+        //    }
+
+        //    if (!_configContext.ApiScopes.Any())
+        //    {
+        //        foreach (var scope in config.GetApiScopes())
+        //        {
+        //            await _configContext.ApiScopes.AddAsync(scope.ToEntity());
+        //        }
+
+        //        await _configContext.SaveChangesAsync();
+        //    }
+
+        //    if (!_configContext.ApiResources.Any())
+        //    {
+        //        foreach (var apiResource in config.GetApis())
+        //        {
+        //            await _configContext.ApiResources.AddAsync(apiResource.ToEntity());
+        //        }
+
+        //        await _configContext.SaveChangesAsync();
+        //    }
+
+        //    return true;
+        //}
 
         public async Task<IdentityResult> CreateUserAsync(UserModel userModel, ModelStateDictionary modelState, string password, string passwordConfirm, Guid tenantId)
         {

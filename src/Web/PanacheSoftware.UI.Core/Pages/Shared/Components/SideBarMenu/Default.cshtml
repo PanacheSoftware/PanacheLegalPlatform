@@ -1,7 +1,10 @@
-﻿<div class=" sidebar-item sidebar-menu">
+﻿@using PanacheSoftware.Core.Domain.API.Language
+@model LangQueryList
+
+<div class=" sidebar-item sidebar-menu">
     <ul>
-        @await Component.InvokeAsync("SideBarGeneral")
-        @await Component.InvokeAsync("SideBarAdmin")
+        @await Component.InvokeAsync("SideBarGeneral", Model)
+        @await Component.InvokeAsync("SideBarAdmin", Model)
         @*@await Component.InvokeAsync("SideBarOther")*@
     </ul>
 </div>

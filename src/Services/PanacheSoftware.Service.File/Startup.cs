@@ -46,11 +46,11 @@ namespace PanacheSoftware.Service.File
             {
                 case DBProvider.MySQL:
                     services.AddDbContext<PanacheSoftwareServiceFileContext>(options =>
-                        options.UseMySql(Configuration.GetConnectionString("MySQL")));
+                        options.UseMySql(Configuration.GetConnectionString(DBProvider.MySQL), ServerVersion.AutoDetect(Configuration.GetConnectionString(DBProvider.MySQL))));
                     break;
                 case DBProvider.MSSQL:
                     services.AddDbContext<PanacheSoftwareServiceFileContext>(options =>
-                        options.UseSqlServer(Configuration.GetConnectionString("MSSQL")));
+                        options.UseSqlServer(Configuration.GetConnectionString(DBProvider.MSSQL)));
                     break;
             }
 

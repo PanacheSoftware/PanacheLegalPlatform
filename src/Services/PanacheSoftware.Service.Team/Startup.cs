@@ -49,11 +49,11 @@ namespace PanacheSoftware.Service.Team
             {
                 case DBProvider.MySQL:
                     services.AddDbContext<PanacheSoftwareServiceTeamContext>(options =>
-                        options.UseMySql(Configuration.GetConnectionString("MySQL")));
+                        options.UseMySql(Configuration.GetConnectionString(DBProvider.MySQL), ServerVersion.AutoDetect(Configuration.GetConnectionString(DBProvider.MySQL))));
                     break;
                 case DBProvider.MSSQL:
                     services.AddDbContext<PanacheSoftwareServiceTeamContext>(options =>
-                        options.UseSqlServer(Configuration.GetConnectionString("MSSQL")));
+                        options.UseSqlServer(Configuration.GetConnectionString(DBProvider.MSSQL)));
                     break;
             }
 

@@ -25,7 +25,7 @@ namespace PanacheSoftware.UI.Core.ViewComponents
 
             var languageSetting = await _apiHelper.GetUserLanguage(accessToken);
 
-            var langQueryList = await _apiHelper.MakeLanguageQuery(accessToken, languageSetting.Value, new long[] { 10000 });
+            var langQueryList = await _apiHelper.MakeLanguageQuery(accessToken, languageSetting.Value, new long[] { 10000, 10102, 10103, 10104, 10105, 10106, 10107, 10108, 10109, 10100, 10110, 10111, 10112, 10113, 10114, 10115, 10116, 10117, 10118, 10119, 10122, 10123 });
 
             return View(langQueryList);
         }
