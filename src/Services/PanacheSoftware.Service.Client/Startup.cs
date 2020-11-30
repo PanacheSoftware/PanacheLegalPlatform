@@ -52,10 +52,6 @@ namespace PanacheSoftware.Service.Client
                     break;
             }
 
-            //string connectionString = Configuration.GetConnectionString("DefaultConnection");
-
-            //services.AddDbContext<PanacheSoftwareServiceClientContext>(options => options.UseSqlServer(connectionString));
-
             services.AddMvc(options =>
                 {
                     options.EnableEndpointRouting = false;
@@ -63,9 +59,6 @@ namespace PanacheSoftware.Service.Client
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
             services.AddAuthorization();
-
-            //var panacheSoftwareConfiguration = new PanacheSoftwareConfiguration();
-            //Configuration.Bind("PanacheSoftware", panacheSoftwareConfiguration);
 
             services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
                 .AddIdentityServerAuthentication(options =>
@@ -79,18 +72,6 @@ namespace PanacheSoftware.Service.Client
                     options.RequireHttpsMetadata = false;
                     //options.EnableCaching = true;
                 });
-
-            //services.AddAuthentication("Bearer")
-            //    .AddJwtBearer("Bearer", options =>
-            //    {
-            //        options.Authority = "https://localhost:44397/";
-            //        options.RequireHttpsMetadata = false;
-
-            //        options.Audience = PanacheSoftwareScopeNames.ClientService;
-            //    });
-
-            //services.AddDbContext<PanacheSoftwareServiceClientContext>(options =>
-            //    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddTransient<IClientHeaderRepository, ClientHeaderRepository>();
@@ -110,9 +91,7 @@ namespace PanacheSoftware.Service.Client
 
             services.AddSwaggerGen(c =>
             {
-                //c.SwaggerDoc("v1", new OpenApiInfo { Title = "Panache Software Client API", Version = "v1" });
-                //var filePath = Path.Combine(System.AppContext.BaseDirectory, "PanacheSoftware.Service.Client.xml");
-                //c.IncludeXmlComments(filePath);
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Panache Software Client API v1", Version = "v1" });
 
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
@@ -161,7 +140,7 @@ namespace PanacheSoftware.Service.Client
 
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Panache Software Client API");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Panache Software Client API v1");
             });
 
             app.UseAuthentication();

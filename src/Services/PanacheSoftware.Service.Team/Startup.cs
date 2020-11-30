@@ -111,6 +111,7 @@ namespace PanacheSoftware.Service.Team
 
             services.AddSwaggerGen(c =>
             {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Panache Software Team API v1", Version = "v1" });
                 //c.SwaggerDoc("v1", new OpenApiInfo { Title = "Panache Software Team API", Version = "v1" });
                 //var filePath = Path.Combine(System.AppContext.BaseDirectory, "PanacheSoftware.Service.Team.xml");
                 //c.IncludeXmlComments(filePath);
@@ -162,7 +163,7 @@ namespace PanacheSoftware.Service.Team
 
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Panache Software Team API");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Panache Software Team API v1");
             });
 
             app.UseAuthentication();

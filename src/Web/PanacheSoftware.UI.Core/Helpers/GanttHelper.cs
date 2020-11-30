@@ -30,7 +30,7 @@ namespace PanacheSoftware.UI.Core.Helpers
             ganttData.Add(new GanttData()
             {
                 Id = taskGroupSummary.Id.ToString(),
-                Text = taskGroupSummary.LongName,
+                Text = MakeStringJSONSafe(taskGroupSummary.LongName),
                 StartDate = (!taskGroupSummary.ChildTaskGroups.Any() && !taskGroupSummary.ChildTasks.Any()) ? taskGroupSummary.StartDate.ToString("yyyy-MM-dd HH:mm") : null,
                 Duration = (!taskGroupSummary.ChildTaskGroups.Any() && !taskGroupSummary.ChildTasks.Any()) ? Convert.ToInt64((taskGroupSummary.CompletionDate - taskGroupSummary.StartDate).TotalDays) : 0,
                 Parent = parentId != null ? parentId.ToString() : string.Empty,
@@ -43,7 +43,7 @@ namespace PanacheSoftware.UI.Core.Helpers
                 ganttData.Add(new GanttData()
                 {
                     Id = childTask.Id.ToString(),
-                    Text = childTask.Title,
+                    Text = MakeStringJSONSafe(childTask.Title),
                     StartDate = childTask.StartDate.ToString("yyyy-MM-dd HH:mm"),
                     Duration = childTask.Completed ? Convert.ToInt64((childTask.CompletedOnDate - childTask.StartDate).TotalDays)  : Convert.ToInt64((childTask.CompletionDate - childTask.StartDate).TotalDays),
                     Parent = childTask.TaskGroupHeaderId.ToString(),
@@ -55,6 +55,24 @@ namespace PanacheSoftware.UI.Core.Helpers
             {
                 AddToGanttDataList(ganttData, childTaskGroup, taskGroupSummary.Id);
             }
+        }
+
+        private static string MakeStringJSONSafe(string textString)
+        {
+            StringBuilder sb = new StringBuilder(textString);
+
+            sb.Replace("\'", " ");
+            sb.Replace("\"", " ");
+            sb.Replace("\\", " ");
+            sb.Replace("\n", " ");
+            sb.Replace("\r", " ");
+            sb.Replace("\t", " ");
+            sb.Replace("\b", " ");
+            sb.Replace("\f", " ");
+            sb.Replace("\v", " ");
+            sb.Replace("\0", " ");
+
+            return sb.ToString();
         }
     }
 }
