@@ -2,6 +2,7 @@
 using PanacheSoftware.Core.Domain.API.Join;
 using PanacheSoftware.Core.Domain.API.Team;
 using PanacheSoftware.Core.Domain.Task;
+using PanacheSoftware.Core.Types;
 using PanacheSoftware.Database.Repositories;
 using PanacheSoftware.Http;
 using PanacheSoftware.Service.Task.Core.Repositories;
@@ -68,18 +69,18 @@ namespace PanacheSoftware.Service.Task.Persistance.Repositories.Task
             if (readOnly)
                 taskGroupHeader = PanacheSoftwareServiceTaskContext.TaskGroupHeaders
                 .Include(t => t.TaskGroupDetail)
-                .Include(t => t.ChildTasks)
-                .Include(t => t.ChildTaskGroups)
-                .ThenInclude(ct => ct.ChildTasks)
+                .Include(t => t.ChildTasks.Where(ct => ct.Status != StatusTypes.Closed))
+                .Include(t => t.ChildTaskGroups.Where(ctg => ctg.Status != StatusTypes.Closed))
+                .ThenInclude(ct => ct.ChildTasks.Where(ct => ct.Status != StatusTypes.Closed))
                 .AsNoTracking()
-                .SingleOrDefault(t => t.Id == taskGroupHeaderId);
+                .SingleOrDefault(t => t.Id == taskGroupHeaderId && t.Status != StatusTypes.Closed);
 
             taskGroupHeader = PanacheSoftwareServiceTaskContext.TaskGroupHeaders
                 .Include(t => t.TaskGroupDetail)
-                .Include(t => t.ChildTasks)
-                .Include(t => t.ChildTaskGroups)
-                .ThenInclude(ct => ct.ChildTasks)
-                .SingleOrDefault(t => t.Id == taskGroupHeaderId);
+                .Include(t => t.ChildTasks.Where(ct => ct.Status != StatusTypes.Closed))
+                .Include(t => t.ChildTaskGroups.Where(ctg => ctg.Status != StatusTypes.Closed))
+                .ThenInclude(ct => ct.ChildTasks.Where(ct => ct.Status != StatusTypes.Closed))
+                .SingleOrDefault(t => t.Id == taskGroupHeaderId && t.Status != StatusTypes.Closed);
 
             if(taskGroupHeader != null)
             {

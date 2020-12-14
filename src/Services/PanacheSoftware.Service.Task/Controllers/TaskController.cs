@@ -157,7 +157,6 @@ namespace PanacheSoftware.Service.Task.Controllers
                         if (taskHeader != null)
                         {
 
-
                             var taskHead = _mapper.Map<TaskHead>(taskHeader);
 
                             TaskGroupHeader taskGroupHeader =
@@ -175,13 +174,13 @@ namespace PanacheSoftware.Service.Task.Controllers
                                     taskHead.OriginalStartDate = taskHeader.OriginalStartDate;
 
                                     //Make sure the start and completion dates don't fall outside of the group headers dates
-                                    taskHead.StartDate = (taskHeader.StartDate < taskGroupHeader.StartDate)
+                                    taskHead.StartDate = (taskHead.StartDate < taskGroupHeader.StartDate)
                                         ? taskGroupHeader.StartDate
-                                        : taskHeader.StartDate;
+                                        : taskHead.StartDate;
                                     taskHead.CompletionDate =
-                                        (taskHeader.CompletionDate > taskGroupHeader.CompletionDate)
+                                        (taskHead.CompletionDate > taskGroupHeader.CompletionDate)
                                             ? taskGroupHeader.CompletionDate
-                                            : taskHeader.CompletionDate;
+                                            : taskHead.CompletionDate;
 
                                     _mapper.Map(taskHead, taskHeader);
 

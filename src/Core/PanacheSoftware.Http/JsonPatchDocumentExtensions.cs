@@ -2,6 +2,9 @@
 using Microsoft.AspNetCore.JsonPatch;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using AutoMapper.Configuration.Conventions;
 
 namespace PanacheSoftware.Http
 {
@@ -18,7 +21,7 @@ namespace PanacheSoftware.Http
         {
             CompareLogic compareLogic = new CompareLogic();
             compareLogic.Config.MaxDifferences = 100;
-            compareLogic.Config.TypesToIgnore = new List<Type>() { typeof(DateTime) };
+            //compareLogic.Config.TypesToIgnore = new List<Type>() { typeof(DateTime) };
             compareLogic.Config.CompareChildren = false;
 
             ComparisonResult comparisonResult = compareLogic.Compare(originalObject, updatedObject);
@@ -27,7 +30,15 @@ namespace PanacheSoftware.Http
             {
                 foreach (var difference in comparisonResult.Differences)
                 {
-                    jsonPatchDocument.Add($"/{difference.PropertyName}", difference.Object2Value);
+                    if (difference.Object2TypeName == "DateTime")
+                    {
+                        var test = JsonSerializer.Serialize(DateTime.Parse(difference.Object2Value));
+                    }
+
+                    jsonPatchDocument.Add($"/{difference.PropertyName}",
+                        difference.Object2TypeName == "DateTime"
+                            ? JsonSerializer.Serialize(DateTime.Parse(difference.Object2Value)).Replace("\"", "")
+                            : difference.Object2Value);
                 }
                 return true;
             }
