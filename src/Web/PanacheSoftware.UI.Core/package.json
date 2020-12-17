@@ -20,7 +20,7 @@
     "bootswatch": "^4.4.1",
     "chart.js": "^2.9.3",
     "d3": "^5.15.0",
-    "datatables.net": "^1.10.20",
+    "datatables.net": "^1.10.22",
     "datatables.net-bs": "^1.10.20",
     "datatables.net-bs4": "^1.10.20",
     "datatables.net-responsive-bs4": "^2.2.3",
