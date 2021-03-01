@@ -36,6 +36,28 @@ namespace PanacheSoftware.Core.Types
         }
     }
 
+    public struct CustomFieldTypes
+    {
+        public const string StringField = "string";
+        public const string IntField = "int";
+        public const string DoubleField = "double";
+        public const string DateTimeField = "datetime";
+        public const string BoolField = "bool";
+
+        public IDictionary<string, string> GetCustomFieldTypesDictionary()
+        {
+            Dictionary<string, string> CustomFieldTypesDictionary = new Dictionary<string, string>();
+
+            CustomFieldTypesDictionary.Add(StringField, "String");
+            CustomFieldTypesDictionary.Add(IntField, "Int");
+            CustomFieldTypesDictionary.Add(DoubleField, "Double");
+            CustomFieldTypesDictionary.Add(DateTimeField, "DateTime");
+            CustomFieldTypesDictionary.Add(BoolField, "Bool");
+
+            return CustomFieldTypesDictionary;
+        }
+    }
+
     public struct IdentityErrorMessages
     {
         public const string PasswordsDoNotMatch = "Passwords do not match";
@@ -168,6 +190,7 @@ namespace PanacheSoftware.Core.Types
         public const string TeamService = "PanacheSoftware.Service.Team";
         public const string FoundationService = "PanacheSoftware.Service.Foundation";
         public const string TaskService = "PanacheSoftware.Service.Task";
+        public const string CustomFieldService = "PanacheSoftware.Service.CustomField";
         public const string FileService = "PanacheSoftware.Service.File";
         public const string APIGateway = "PanacheSoftware.API.Gateway";
     }
