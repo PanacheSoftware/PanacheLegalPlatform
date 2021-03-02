@@ -1,5 +1,6 @@
 ﻿using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
+using IdentityServer4.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -42,53 +43,53 @@ namespace PanacheSoftware.Identity
                 var panacheSoftwareConfiguration = new PanacheSoftwareConfiguration();
                 configuration.Bind("PanacheSoftware", panacheSoftwareConfiguration);
 
+                await ClearPersistedGrants(is4PersistanceDbContext);
                 await SeedDatabaseFromConfigAsync(panacheSoftwareConfiguration, is4ConfigurationDbContext);
             }
+        }
+
+        public async Task<bool> ClearPersistedGrants(PersistedGrantDbContext is4PersistanceDbContext)
+        {
+            is4PersistanceDbContext.RemoveRange(is4PersistanceDbContext.PersistedGrants);
+
+            await is4PersistanceDbContext.SaveChangesAsync();
+
+            return true;
         }
 
         public async Task<bool> SeedDatabaseFromConfigAsync(PanacheSoftwareConfiguration panacheSoftwareConfiguration, ConfigurationDbContext configContext)
         {
             var config = new Config(panacheSoftwareConfiguration);
 
-            if (!configContext.Clients.Any())
+            foreach (var client in config.GetClients())
             {
-                foreach (var client in config.GetClients())
-                {
-                    await configContext.Clients.AddAsync(client.ToEntity());
-                }
+                var existingClient = configContext.Clients.FirstOrDefault(c => c.ClientId == client.ClientId);
+                if (existingClient != default)
+                    configContext.Clients.Remove(existingClient);
 
-                await configContext.SaveChangesAsync();
+                await configContext.Clients.AddAsync(client.ToEntity());
             }
 
-            if (!configContext.IdentityResources.Any())
+            foreach (var resource in config.GetIdentityResources())
             {
-                foreach (var resource in config.GetIdentityResources())
-                {
+                if (configContext.IdentityResources.FirstOrDefault(i => i.Name == resource.Name) == default)
                     await configContext.IdentityResources.AddAsync(resource.ToEntity());
-                }
-
-                await configContext.SaveChangesAsync();
             }
 
-            if (!configContext.ApiScopes.Any())
+            foreach (var scope in config.GetApiScopes())
             {
-                foreach (var scope in config.GetApiScopes())
-                {
+                if (configContext.ApiScopes.FirstOrDefault(a => a.Name == scope.Name) == default)
                     await configContext.ApiScopes.AddAsync(scope.ToEntity());
-                }
-
-                await configContext.SaveChangesAsync();
             }
 
-            if (!configContext.ApiResources.Any())
+            foreach (var apiResource in config.GetApis())
             {
-                foreach (var apiResource in config.GetApis())
-                {
+                if (configContext.ApiScopes.FirstOrDefault(a => a.Name == apiResource.Name) == default)
                     await configContext.ApiResources.AddAsync(apiResource.ToEntity());
-                }
-
-                await configContext.SaveChangesAsync();
             }
+
+
+            await configContext.SaveChangesAsync();
 
             return true;
         }

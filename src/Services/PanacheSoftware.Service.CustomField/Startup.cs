@@ -64,7 +64,7 @@ namespace PanacheSoftware.Service.CustomField
 
                     // name of the API resource
                     options.ApiName = PanacheSoftwareScopeNames.CustomFieldService;
-                    options.ApiSecret = panacheSoftwareConfiguration.Secret.ClientServiceSecret;
+                    options.ApiSecret = panacheSoftwareConfiguration.Secret.CustomFieldServiceSecret;
                     options.RequireHttpsMetadata = false;
                     //options.EnableCaching = true;
                 });
@@ -144,20 +144,41 @@ namespace PanacheSoftware.Service.CustomField
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "PanacheSoftware.Service.CustomField v1"));
+            }
+            else
+            {
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            app.UseSwagger();
 
-            app.UseRouting();
-
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
+            app.UseSwaggerUI(c =>
             {
-                endpoints.MapControllers();
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Panache Software Custom Field API v1");
             });
+
+            app.UseAuthentication();
+            //app.UseHttpsRedirection();
+            app.UseMvc();
+
+            //if (env.IsDevelopment())
+            //{
+            //    app.UseDeveloperExceptionPage();
+            //    app.UseSwagger();
+            //    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "PanacheSoftware.Service.CustomField v1"));
+            //}
+
+            //app.UseHttpsRedirection();
+
+            //app.UseRouting();
+
+            //app.UseAuthorization();
+
+            //app.UseEndpoints(endpoints =>
+            //{
+            //    endpoints.MapControllers();
+            //});
         }
     }
 }

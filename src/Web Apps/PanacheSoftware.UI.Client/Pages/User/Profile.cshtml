@@ -1,9 +1,37 @@
 ﻿@page "{id}"
 @model ProfileModel
 @{
-    ViewData["Title"] = "Profile";
+    ViewData["Title"] = $"Panche Legal - (Profile)";
     Layout = "_PSMainLayout";
 }
 
-<h1>Profile</h1>
+@section Styles {
+
+}
+
+<div id="overlay" class="overlay"></div>
+<div class="container-fluid p-5">
+    <div class="row">
+        <div class="form-group col-md-12">
+            <div class="breadcrumb-container">
+                <a id="toggle-sidebar" class="btn btn-outline-secondary btn-sm breadcrumb-button" href="#"><i class="fa fa-bars"></i></a>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-page="/Dashboard/Index">@Html.GetTitle(Model.langQueryList, 10121)</a></li>
+                    <li class="breadcrumb-item active">Profile</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <div class="alert alert-dismissible alert-success">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong>@Model.AuthTokenModel.AuthToken</strong>
+    </div>
+</div>
+
+
+
+@section Scripts {
+
+}
 

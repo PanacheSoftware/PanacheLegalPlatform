@@ -44,7 +44,8 @@ namespace PanacheSoftware.Identity
                 new ApiResource(PanacheSoftwareScopeNames.FoundationService){ UserClaims = { "tenantid" }, ApiSecrets = { new Secret(_panacheSoftwareConfiguration.Secret.FoundationServiceSecret.Sha256()) }, Scopes = {PanacheSoftwareScopeNames.FoundationService} },
                 new ApiResource(PanacheSoftwareScopeNames.TaskService){ UserClaims = { "tenantid" }, ApiSecrets = { new Secret(_panacheSoftwareConfiguration.Secret.TaskServiceSecret.Sha256()) }, Scopes = {PanacheSoftwareScopeNames.TaskService} },
                 new ApiResource(PanacheSoftwareScopeNames.FileService){ UserClaims = { "tenantid" }, ApiSecrets = { new Secret(_panacheSoftwareConfiguration.Secret.FileServiceSecret.Sha256()) }, Scopes = {PanacheSoftwareScopeNames.FileService} },
-                new ApiResource(PanacheSoftwareScopeNames.APIGateway){ UserClaims = {"tenantid"}, ApiSecrets = { new Secret(_panacheSoftwareConfiguration.Secret.APIGatewaySecret.Sha256()) }, Scopes = {PanacheSoftwareScopeNames.APIGateway}}
+                new ApiResource(PanacheSoftwareScopeNames.APIGateway){ UserClaims = {"tenantid"}, ApiSecrets = { new Secret(_panacheSoftwareConfiguration.Secret.APIGatewaySecret.Sha256()) }, Scopes = {PanacheSoftwareScopeNames.APIGateway}},
+                new ApiResource(PanacheSoftwareScopeNames.CustomFieldService){ UserClaims = {"tenantid"}, ApiSecrets = { new Secret(_panacheSoftwareConfiguration.Secret.CustomFieldServiceSecret.Sha256()) }, Scopes = {PanacheSoftwareScopeNames.CustomFieldService}}
             };
         }
 
@@ -58,7 +59,8 @@ namespace PanacheSoftware.Identity
                 new ApiScope(name: PanacheSoftwareScopeNames.FoundationService, displayName:PanacheSoftwareScopeNames.FoundationService),
                 new ApiScope(name: PanacheSoftwareScopeNames.TaskService, displayName:PanacheSoftwareScopeNames.TaskService),
                 new ApiScope(name: PanacheSoftwareScopeNames.FileService, displayName:PanacheSoftwareScopeNames.FileService),
-                new ApiScope(name: PanacheSoftwareScopeNames.APIGateway, displayName:PanacheSoftwareScopeNames.APIGateway)
+                new ApiScope(name: PanacheSoftwareScopeNames.APIGateway, displayName:PanacheSoftwareScopeNames.APIGateway),
+                new ApiScope(name: PanacheSoftwareScopeNames.CustomFieldService, displayName:PanacheSoftwareScopeNames.CustomFieldService)
             };
         }
 
@@ -102,7 +104,8 @@ namespace PanacheSoftware.Identity
                         PanacheSoftwareScopeNames.FoundationService,
                         PanacheSoftwareScopeNames.TaskService,
                         PanacheSoftwareScopeNames.FileService,
-                        PanacheSoftwareScopeNames.APIGateway
+                        PanacheSoftwareScopeNames.APIGateway,
+                        PanacheSoftwareScopeNames.CustomFieldService
                     }
                 },
             };

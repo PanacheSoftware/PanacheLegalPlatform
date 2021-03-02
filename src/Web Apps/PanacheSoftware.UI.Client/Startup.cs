@@ -89,6 +89,7 @@ namespace PanacheSoftware.UI.Client
                     options.Scope.Add(PanacheSoftwareScopeNames.TaskService);
                     options.Scope.Add(PanacheSoftwareScopeNames.FileService);
                     options.Scope.Add(PanacheSoftwareScopeNames.APIGateway);
+                    options.Scope.Add(PanacheSoftwareScopeNames.CustomFieldService);
 
                     options.ClaimActions.MapUniqueJsonKey("tenantid", "tenantid");
                 });
