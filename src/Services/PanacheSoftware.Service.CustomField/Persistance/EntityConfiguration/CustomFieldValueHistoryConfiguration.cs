@@ -22,8 +22,6 @@ namespace PanacheSoftware.Service.CustomField.Persistance.EntityConfiguration
             builder.Property(c => c.Id).ValueGeneratedOnAdd();
             builder.Property(c => c.Status).IsRequired();
             builder.Property(c => c.FieldValue).IsRequired();
-            builder.Property(c => c.LinkType).IsRequired();
-            builder.Property(c => c.LinkId).IsRequired();
             builder.Property(c => c.OriginalCreationDate).IsRequired();
             builder.Property(c => c.SequenceNo).IsRequired();
 

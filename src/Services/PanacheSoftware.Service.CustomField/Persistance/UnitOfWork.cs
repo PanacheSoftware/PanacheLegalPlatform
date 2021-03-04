@@ -15,7 +15,6 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Repositories
     {
         public UnitOfWork(PanacheSoftwareServiceCustomFieldContext context, IUserProvider userProvider) : base(context, userProvider)
         {
-            CustomFieldDetails = new CustomFieldDetailRepository(context);
             CustomFieldHeaders = new CustomFieldHeaderRepository(context);
             CustomFieldGroupDetails = new CustomFieldGroupDetailRepository(context);
             CustomFieldGroupHeaders = new CustomFieldGroupHeaderRepository(context);
@@ -24,7 +23,6 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Repositories
             CustomFieldValueHistorys = new CustomFieldValueHistoryRepository(context);
         }
 
-        public ICustomFieldDetailRepository CustomFieldDetails { get; private set; }
         public ICustomFieldHeaderRepository CustomFieldHeaders { get; private set; }
         public ICustomFieldGroupDetailRepository CustomFieldGroupDetails { get; private set; }
         public ICustomFieldGroupHeaderRepository CustomFieldGroupHeaders { get; private set; }

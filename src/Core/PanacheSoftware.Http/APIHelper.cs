@@ -182,6 +182,10 @@ namespace PanacheSoftware.Http
                     return bool.Parse(panacheSoftwareConfiguration.CallMethod.APICallsSecure)
                         ? panacheSoftwareConfiguration.Url.UIClientURLSecure
                         : panacheSoftwareConfiguration.Url.UIClientURL;
+                case APITypes.CUSTOMFIELDGROUP:
+                    return bool.Parse(panacheSoftwareConfiguration.CallMethod.APICallsSecure)
+                        ? panacheSoftwareConfiguration.Url.CustomFieldServiceURLSecure
+                        : panacheSoftwareConfiguration.Url.CustomFieldServiceURL;
             }
 
             return string.Empty;

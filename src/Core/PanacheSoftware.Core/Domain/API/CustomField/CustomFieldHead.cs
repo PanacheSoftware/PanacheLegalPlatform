@@ -12,7 +12,6 @@ namespace PanacheSoftware.Core.Domain.API.CustomField
     {
         public CustomFieldHead()
         {
-            CustomFieldDetail = new CustomFieldDet();
             Status = StatusTypes.Open;
             Name = string.Empty;
             Description = string.Empty;
@@ -22,8 +21,7 @@ namespace PanacheSoftware.Core.Domain.API.CustomField
         }
 
         public Guid Id { get; set; }
-
-        public CustomFieldDet CustomFieldDetail { get; set; }
+        public Guid CustomFieldGroupHeadId { get; set; }
 
         public string Name { get; set; }
         public string Description { get; set; }
@@ -33,6 +31,8 @@ namespace PanacheSoftware.Core.Domain.API.CustomField
         public bool GDPR { get; set; }
 
         public bool History { get; set; }
+        public bool Mandatory { get; set; }
+        public int SequenceNo { get; set; }
 
 
         [Required]

@@ -1,0 +1,144 @@
+﻿@page "{id?}"
+@model IndexModel
+@{
+    ViewData["Title"] = $"Panache Legal - Custom Field Group ({Model.customFieldGroupModel.customFieldGroupHead.ShortName})";
+    Layout = "_PSMainLayout";
+}
+
+@section Styles {
+    @await Html.PartialAsync("_PLFormCSS")
+    @await Html.PartialAsync("_PLDataTableCSS")
+}
+
+<div id="overlay" class="overlay"></div>
+<div class="container-fluid p-5">
+    <div class="row">
+        <div class="form-group col-md-12">
+            <div class="breadcrumb-container">
+                <a id="toggle-sidebar" class="btn btn-outline-secondary btn-sm breadcrumb-button" href="#"><i class="fa fa-bars"></i></a>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-page="/Dashboard/Index">@Html.GetTitle(Model.langQueryList, 10121)</a></li>
+                    <li class="breadcrumb-item"><a asp-page="/CustomFieldGroup/CustomFieldGroups">@Html.GetTitle(Model.langQueryList, 10124)</a></li>
+                    <li class="breadcrumb-item active">
+                        @if (Model.customFieldGroupModel.customFieldGroupHead.Id == Guid.Empty)
+                        {
+                            @Html.Raw("New Custom Field Group")
+                        }
+                        else
+                        {
+                            @Model.customFieldGroupModel.customFieldGroupHead.LongName
+                        }
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <partial name="_SaveMessage" model="Model.SaveMessageModel" />
+
+    <form method="post">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card border-light mb-6">
+                    <div class="card-header">@Html.GetTitle(Model.langQueryList, 11001)</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="email">@Html.GetTitle(Model.langQueryList, 11006)</label>
+                                    <input asp-for="customFieldGroupModel.customFieldGroupHead.ShortName" class="form-control" />
+                                    <span asp-validation-for="customFieldGroupModel.customFieldGroupHead.ShortName" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="fullname">@Html.GetTitle(Model.langQueryList, 11007)</label>
+                                    <input asp-for="customFieldGroupModel.customFieldGroupHead.LongName" class="form-control" />
+                                    <span asp-validation-for="customFieldGroupModel.customFieldGroupHead.LongName" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="description">@Html.GetTitle(Model.langQueryList, 10200)</label>
+                                    <textarea asp-for="customFieldGroupModel.customFieldGroupHead.Description" class="form-control" rows="5"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="description">@Html.GetTitle(Model.langQueryList, 10201)</label>
+                                    <select asp-for="customFieldGroupModel.customFieldGroupHead.Status" asp-items="@Model.StatusList" class="custom-select"></select>
+                                    <input asp-for="customFieldGroupModel.customFieldGroupHead.Id" class="form-control" hidden />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                &nbsp;
+            </div>
+        </div>
+        <div class="row">
+            <partial name="_CustomFieldList" model="Model.customFieldTableModel" />
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                &nbsp;
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card border-light mb-6">
+                    <div class="card-body">
+                        @if (Model.customFieldGroupModel.customFieldGroupHead.Id == Guid.Empty)
+                        {
+                            <button type="submit" class="btn btn-primary">@Html.GetTitle(Model.langQueryList, 11008)</button>
+                        }
+                        else
+                        {
+                            <button type="submit" class="btn btn-primary">@Html.GetTitle(Model.langQueryList, 11009)</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_PLFormJS")
+    @await Html.PartialAsync("_PLDataTableJS")
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script>
+            $(document).ready(function () {
+
+                var customFieldButton = document.getElementById('add_customField');
+
+                customFieldButton.addEventListener('click', addCustomField, false);
+
+                function addCustomField() {
+                    var customfieldTable = $('#customField_table').DataTable()
+                    var rowCount = $('#CustomFieldTableCount').val();
+                    var customFieldGroupHeadId = $('#customFieldGroupModel_customFieldGroupHead_Id').val();
+
+                    customfieldTable.row.add([
+                        @{
+                            for (int i = 0; i < Model.customFieldTableModel.fieldListRows.Count(); i++)
+                            {
+                                @Html.Raw(Model.customFieldTableModel.fieldListRows[i]);
+                            }
+                        }
+                    ]).draw();
+
+                    $('.datepicker').datepicker();
+
+                    rowCount++;
+                    $('#CustomFieldTableCount').val(rowCount);
+                }
+            });
+    </script>
+}

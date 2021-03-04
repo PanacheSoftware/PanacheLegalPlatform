@@ -262,6 +262,36 @@
     },
     {
       "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10124,
+      "description": "Menu Heading",
+      "text": "Custom Field Groups",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10125,
+      "description": "Menu Heading",
+      "text": "View Custom Field Groups",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10126,
+      "description": "Menu Heading",
+      "text": "Create Custom Field Group",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
       "textCode": 10200,
       "description": "General titles",
       "text": "Description",
@@ -515,6 +545,36 @@
       "textCode": 10225,
       "description": "General titles",
       "text": "Details",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10226,
+      "description": "General titles",
+      "text": "Mandatory",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10227,
+      "description": "General titles",
+      "text": "History",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10228,
+      "description": "General titles",
+      "text": "GDPR",
       "dateFrom": "2020-02-17",
       "dateTo": "2119-02-17",
       "languageItems": [],
@@ -1435,6 +1495,106 @@
       "textCode": 10943,
       "description": "Task Screens",
       "text": "Assigned User",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 11000,
+      "description": "Custom Field Group Screens",
+      "text": "Custom Field Group ID",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 11001,
+      "description": "Custom Field Group Screens",
+      "text": "Custom Field Group",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 11002,
+      "description": "Custom Field Group Screens",
+      "text": "Field Name",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 11003,
+      "description": "Custom Field Group Screens",
+      "text": "Field Type",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 11004,
+      "description": "Custom Field Group Screens",
+      "text": "Add Field",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 11005,
+      "description": "Custom Field Group Screens",
+      "text": "Edit Custom Fields",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 11006,
+      "description": "Custom Field Group Screens",
+      "text": "Custom Field Group Name",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 11007,
+      "description": "Custom Field Group Screens",
+      "text": "Custom Field Group Title",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 11008,
+      "description": "Custom Field Group Screens",
+      "text": "Create Custom Field Group",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 11009,
+      "description": "Custom Field Group Screens",
+      "text": "Update Custom Field Group",
       "dateFrom": "2020-02-17",
       "dateTo": "2119-02-17",
       "languageItems": [],

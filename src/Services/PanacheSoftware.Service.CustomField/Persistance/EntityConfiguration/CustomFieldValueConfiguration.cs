@@ -24,6 +24,7 @@ namespace PanacheSoftware.Service.CustomField.Persistance.EntityConfiguration
             builder.Property(c => c.LinkType).IsRequired();
             builder.Property(c => c.LinkId).IsRequired();
             builder.Property(c => c.FieldValue).IsRequired();
+            //builder.HasKey(k => new { k.Id, k.CustomFieldHeaderId, k.LinkId });
         }
     }
 }

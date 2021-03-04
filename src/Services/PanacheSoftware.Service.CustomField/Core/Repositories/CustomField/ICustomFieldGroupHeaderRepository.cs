@@ -9,5 +9,7 @@ namespace PanacheSoftware.Service.CustomField.Core.Repositories
 {
     public interface ICustomFieldGroupHeaderRepository : IPanacheSoftwareRepository<CustomFieldGroupHeader>
     {
+        CustomFieldGroupHeader GetCustomFieldGroupHeader(Guid customFieldGroupHeaderId, bool readOnly);
+        CustomFieldGroupHeader GetCustomFieldGroupHeaderWithRelations(Guid customFieldGroupHeaderId, bool readOnly);
     }
 }

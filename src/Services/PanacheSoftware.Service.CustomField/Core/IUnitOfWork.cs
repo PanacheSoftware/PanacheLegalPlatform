@@ -9,7 +9,6 @@ namespace PanacheSoftware.Service.CustomField.Core
 {
     public interface IUnitOfWork : IPanacheSoftwareUnitOfWork
     {
-        ICustomFieldDetailRepository CustomFieldDetails { get; }
         ICustomFieldHeaderRepository CustomFieldHeaders { get; }
         ICustomFieldGroupDetailRepository CustomFieldGroupDetails { get; }
         ICustomFieldGroupHeaderRepository CustomFieldGroupHeaders { get; }

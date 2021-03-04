@@ -25,10 +25,7 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Repositories.CustomFie
 
         public CustomFieldHeader GetCustomFieldHeader(Guid customFieldHeaderId, bool readOnly)
         {
-            if (readOnly)
-                return PanacheSoftwareServiceCustomFieldContext.CustomFieldHeaders.Include(n => n.CustomFieldDetail).AsNoTracking().SingleOrDefault(a => a.Id == customFieldHeaderId);
-
-            return PanacheSoftwareServiceCustomFieldContext.CustomFieldHeaders.Include(n => n.CustomFieldDetail).SingleOrDefault(a => a.Id == customFieldHeaderId);
+            return null;
         }
     }
 }

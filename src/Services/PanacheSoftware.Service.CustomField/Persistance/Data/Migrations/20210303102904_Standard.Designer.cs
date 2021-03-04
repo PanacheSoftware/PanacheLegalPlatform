@@ -10,7 +10,7 @@ using PanacheSoftware.Service.CustomField.Persistance.Context;
 namespace PanacheSoftware.Service.CustomField.Persistance.Data.Migrations
 {
     [DbContext(typeof(PanacheSoftwareServiceCustomFieldContext))]
-    [Migration("20210302120505_Standard")]
+    [Migration("20210303102904_Standard")]
     partial class Standard
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,35 +21,6 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Data.Migrations
                 .HasAnnotation("ProductVersion", "5.0.0")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn)
                 .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
-
-            modelBuilder.Entity("PanacheSoftware.Core.Domain.CustomField.CustomFieldDetail", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<Guid>("CreatedBy");
-
-                    b.Property<DateTime>("CreatedDate");
-
-                    b.Property<Guid>("CustomFieldHeaderId");
-
-                    b.Property<Guid>("LastUpdateBy");
-
-                    b.Property<DateTime>("LastUpdateDate");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(25)");
-
-                    b.Property<Guid>("TenantId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CustomFieldHeaderId")
-                        .IsUnique();
-
-                    b.ToTable("CustomFieldDetail");
-                });
 
             modelBuilder.Entity("PanacheSoftware.Core.Domain.CustomField.CustomFieldGroupDetail", b =>
                 {
@@ -62,14 +33,15 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Data.Migrations
 
                     b.Property<Guid>("CustomFieldGroupHeaderId");
 
-                    b.Property<Guid>("CustomFieldHeaderId");
+                    b.Property<string>("FieldGroupTag")
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("FieldGroupType")
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<Guid>("LastUpdateBy");
 
                     b.Property<DateTime>("LastUpdateDate");
-
-                    b.Property<int>("SequenceNo")
-                        .HasColumnType("int");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -79,7 +51,8 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CustomFieldGroupHeaderId");
+                    b.HasIndex("CustomFieldGroupHeaderId")
+                        .IsUnique();
 
                     b.ToTable("CustomFieldGroupDetail");
                 });
@@ -129,6 +102,8 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Data.Migrations
 
                     b.Property<DateTime>("CreatedDate");
 
+                    b.Property<Guid>("CustomFieldGroupHeaderId");
+
                     b.Property<string>("CustomFieldType")
                         .IsRequired()
                         .HasColumnType("nvarchar(1000)");
@@ -147,9 +122,15 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Data.Migrations
 
                     b.Property<DateTime>("LastUpdateDate");
 
+                    b.Property<bool>("Mandatory")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("SequenceNo")
+                        .HasColumnType("int");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -158,6 +139,8 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Data.Migrations
                     b.Property<Guid>("TenantId");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CustomFieldGroupHeaderId");
 
                     b.ToTable("CustomFieldHeader");
                 });
@@ -173,7 +156,7 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Data.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("nvarchar(4000)");
 
                     b.Property<Guid>("LastUpdateBy");
 
@@ -184,7 +167,6 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Data.Migrations
                         .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("Status")
-                        .IsRequired()
                         .HasColumnType("nvarchar(25)");
 
                     b.Property<Guid>("TenantId");
@@ -251,12 +233,6 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Data.Migrations
 
                     b.Property<DateTime>("LastUpdateDate");
 
-                    b.Property<Guid>("LinkId");
-
-                    b.Property<string>("LinkType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(1000)");
-
                     b.Property<DateTime>("OriginalCreationDate");
 
                     b.Property<int>("SequenceNo")
@@ -275,21 +251,21 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Data.Migrations
                     b.ToTable("CustomFieldValueHistory");
                 });
 
-            modelBuilder.Entity("PanacheSoftware.Core.Domain.CustomField.CustomFieldDetail", b =>
-                {
-                    b.HasOne("PanacheSoftware.Core.Domain.CustomField.CustomFieldHeader", "CustomFieldHeader")
-                        .WithOne("CustomFieldDetail")
-                        .HasForeignKey("PanacheSoftware.Core.Domain.CustomField.CustomFieldDetail", "CustomFieldHeaderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CustomFieldHeader");
-                });
-
             modelBuilder.Entity("PanacheSoftware.Core.Domain.CustomField.CustomFieldGroupDetail", b =>
                 {
                     b.HasOne("PanacheSoftware.Core.Domain.CustomField.CustomFieldGroupHeader", "CustomFieldGroupHeader")
-                        .WithMany("CustomFieldGroupDetails")
+                        .WithOne("CustomFieldGroupDetail")
+                        .HasForeignKey("PanacheSoftware.Core.Domain.CustomField.CustomFieldGroupDetail", "CustomFieldGroupHeaderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CustomFieldGroupHeader");
+                });
+
+            modelBuilder.Entity("PanacheSoftware.Core.Domain.CustomField.CustomFieldHeader", b =>
+                {
+                    b.HasOne("PanacheSoftware.Core.Domain.CustomField.CustomFieldGroupHeader", "CustomFieldGroupHeader")
+                        .WithMany("CustomFieldHeaders")
                         .HasForeignKey("CustomFieldGroupHeaderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -321,12 +297,9 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Data.Migrations
 
             modelBuilder.Entity("PanacheSoftware.Core.Domain.CustomField.CustomFieldGroupHeader", b =>
                 {
-                    b.Navigation("CustomFieldGroupDetails");
-                });
+                    b.Navigation("CustomFieldGroupDetail");
 
-            modelBuilder.Entity("PanacheSoftware.Core.Domain.CustomField.CustomFieldHeader", b =>
-                {
-                    b.Navigation("CustomFieldDetail");
+                    b.Navigation("CustomFieldHeaders");
                 });
 
             modelBuilder.Entity("PanacheSoftware.Core.Domain.CustomField.CustomFieldValue", b =>

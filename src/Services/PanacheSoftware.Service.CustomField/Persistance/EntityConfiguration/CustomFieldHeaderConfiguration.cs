@@ -26,6 +26,12 @@ namespace PanacheSoftware.Service.CustomField.Persistance.EntityConfiguration
             builder.Property(c => c.Name).IsRequired();
             builder.Property(c => c.Description).IsRequired();
             builder.Property(c => c.CustomFieldType).IsRequired();
+
+            builder.HasOne(c => c.CustomFieldGroupHeader)
+                .WithMany(c => c.CustomFieldHeaders)
+                .HasForeignKey(c => c.CustomFieldGroupHeaderId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

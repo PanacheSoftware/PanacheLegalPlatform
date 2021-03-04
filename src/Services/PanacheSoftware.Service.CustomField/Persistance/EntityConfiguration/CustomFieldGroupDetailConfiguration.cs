@@ -21,11 +21,9 @@ namespace PanacheSoftware.Service.CustomField.Persistance.EntityConfiguration
             builder.Property(c => c.TenantId).IsRequired();
             builder.Property(c => c.Id).ValueGeneratedOnAdd();
             builder.Property(c => c.Status).IsRequired();
-            builder.Property(c => c.SequenceNo).IsRequired();
 
             builder.HasOne(c => c.CustomFieldGroupHeader)
-                .WithMany(d => d.CustomFieldGroupDetails)
-                .HasForeignKey(c => c.CustomFieldGroupHeaderId)
+                .WithOne(d => d.CustomFieldGroupDetail)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
         }

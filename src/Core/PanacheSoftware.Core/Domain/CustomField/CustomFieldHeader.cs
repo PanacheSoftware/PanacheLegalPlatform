@@ -9,11 +9,8 @@ namespace PanacheSoftware.Core.Domain.CustomField
 {
     public class CustomFieldHeader : PanacheSoftwareEntity
     {
-        public CustomFieldHeader()
-        {
-            CustomFieldDetail = new CustomFieldDetail();
-        }
-
+        public Guid CustomFieldGroupHeaderId { get; set; }
+        public virtual CustomFieldGroupHeader CustomFieldGroupHeader { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
 
@@ -22,7 +19,7 @@ namespace PanacheSoftware.Core.Domain.CustomField
         public bool GDPR { get; set; }
 
         public bool History { get; set; }
-
-        public virtual CustomFieldDetail CustomFieldDetail { get; set; }
+        public bool Mandatory { get; set; }
+        public int SequenceNo { get; set; }
     }
 }

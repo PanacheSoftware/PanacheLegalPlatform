@@ -11,13 +11,16 @@ namespace PanacheSoftware.Core.Domain.CustomField
     {
         public CustomFieldGroupHeader()
         {
-            CustomFieldGroupDetails = new HashSet<CustomFieldGroupDetail>();
+            CustomFieldHeaders = new HashSet<CustomFieldHeader>();
         }
 
         public string ShortName { get; set; }
         public string LongName { get; set; }
         public string Description { get; set; }
 
-        public virtual ICollection<CustomFieldGroupDetail> CustomFieldGroupDetails { get; set; }
+        public virtual CustomFieldGroupDetail CustomFieldGroupDetail { get; set; }
+
+        public virtual ICollection<CustomFieldHeader> CustomFieldHeaders { get; set; }
+
     }
 }

@@ -79,7 +79,6 @@ namespace PanacheSoftware.Service.CustomField
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 
             services.AddTransient<IUnitOfWork, UnitOfWork>();
-            services.AddTransient<ICustomFieldDetailRepository, CustomFieldDetailRepository>();
             services.AddTransient<ICustomFieldHeaderRepository, CustomFieldHeaderRepository>();
             services.AddTransient<ICustomFieldGroupDetailRepository, CustomFieldGroupDetailRepository>();
             services.AddTransient<ICustomFieldGroupHeaderRepository, CustomFieldGroupHeaderRepository>();

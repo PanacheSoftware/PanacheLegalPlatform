@@ -39,7 +39,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PanacheSoftware.API.Gateway
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BE11AB5D-0BDE-4D32-9F5B-FDC0B65A81DE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PanacheSoftware.Service.CustomField", "Services\PanacheSoftware.Service.CustomField\PanacheSoftware.Service.CustomField.csproj", "{560A7011-7A18-49C3-8880-FA084A4D5F17}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PanacheSoftware.Service.CustomField", "Services\PanacheSoftware.Service.CustomField\PanacheSoftware.Service.CustomField.csproj", "{560A7011-7A18-49C3-8880-FA084A4D5F17}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -12,9 +12,6 @@ namespace PanacheSoftware.Core.Domain.CustomField
         public Guid CustomFieldValueId { get; set; }
         public virtual CustomFieldValue CustomFieldValue { get; set; }
 
-        public Guid LinkId { get; set; }
-        public string LinkType { get; set; }
-
         public string FieldValue { get; set; }
 
         public int SequenceNo { get; set; }

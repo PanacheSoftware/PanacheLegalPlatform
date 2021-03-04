@@ -28,28 +28,6 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CustomFieldHeader",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
-                    Name = table.Column<string>(type: "longtext CHARACTER SET utf8mb4", nullable: false),
-                    Description = table.Column<string>(type: "longtext CHARACTER SET utf8mb4", nullable: false),
-                    CustomFieldType = table.Column<string>(type: "longtext CHARACTER SET utf8mb4", nullable: false),
-                    GDPR = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    History = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    TenantId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    Status = table.Column<string>(type: "longtext CHARACTER SET utf8mb4", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    LastUpdateDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "char(36)", nullable: false),
-                    LastUpdateBy = table.Column<Guid>(type: "char(36)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CustomFieldHeader", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "CustomFieldTag",
                 columns: table => new
                 {
@@ -74,8 +52,8 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Data.Migrations
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false),
                     CustomFieldGroupHeaderId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    CustomFieldHeaderId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    SequenceNo = table.Column<int>(type: "int", nullable: false),
+                    FieldGroupType = table.Column<string>(type: "longtext CHARACTER SET utf8mb4", nullable: true),
+                    FieldGroupTag = table.Column<string>(type: "longtext CHARACTER SET utf8mb4", nullable: true),
                     TenantId = table.Column<Guid>(type: "char(36)", nullable: false),
                     Status = table.Column<string>(type: "longtext CHARACTER SET utf8mb4", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
@@ -95,11 +73,18 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CustomFieldDetail",
+                name: "CustomFieldHeader",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false),
-                    CustomFieldHeaderId = table.Column<Guid>(type: "char(36)", nullable: false),
+                    CustomFieldGroupHeaderId = table.Column<Guid>(type: "char(36)", nullable: false),
+                    Name = table.Column<string>(type: "longtext CHARACTER SET utf8mb4", nullable: false),
+                    Description = table.Column<string>(type: "longtext CHARACTER SET utf8mb4", nullable: false),
+                    CustomFieldType = table.Column<string>(type: "longtext CHARACTER SET utf8mb4", nullable: false),
+                    GDPR = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    History = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    Mandatory = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    SequenceNo = table.Column<int>(type: "int", nullable: false),
                     TenantId = table.Column<Guid>(type: "char(36)", nullable: false),
                     Status = table.Column<string>(type: "longtext CHARACTER SET utf8mb4", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
@@ -109,11 +94,11 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CustomFieldDetail", x => x.Id);
+                    table.PrimaryKey("PK_CustomFieldHeader", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_CustomFieldDetail_CustomFieldHeader_CustomFieldHeaderId",
-                        column: x => x.CustomFieldHeaderId,
-                        principalTable: "CustomFieldHeader",
+                        name: "FK_CustomFieldHeader_CustomFieldGroupHeader_CustomFieldGroupHea~",
+                        column: x => x.CustomFieldGroupHeaderId,
+                        principalTable: "CustomFieldGroupHeader",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -151,8 +136,6 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Data.Migrations
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false),
                     CustomFieldValueId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    LinkId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    LinkType = table.Column<string>(type: "longtext CHARACTER SET utf8mb4", nullable: false),
                     FieldValue = table.Column<string>(type: "longtext CHARACTER SET utf8mb4", nullable: false),
                     SequenceNo = table.Column<int>(type: "int", nullable: false),
                     OriginalCreationDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
@@ -175,14 +158,14 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_CustomFieldDetail_CustomFieldHeaderId",
-                table: "CustomFieldDetail",
-                column: "CustomFieldHeaderId",
+                name: "IX_CustomFieldGroupDetail_CustomFieldGroupHeaderId",
+                table: "CustomFieldGroupDetail",
+                column: "CustomFieldGroupHeaderId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_CustomFieldGroupDetail_CustomFieldGroupHeaderId",
-                table: "CustomFieldGroupDetail",
+                name: "IX_CustomFieldHeader_CustomFieldGroupHeaderId",
+                table: "CustomFieldHeader",
                 column: "CustomFieldGroupHeaderId");
 
             migrationBuilder.CreateIndex(
@@ -199,9 +182,6 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "CustomFieldDetail");
-
-            migrationBuilder.DropTable(
                 name: "CustomFieldGroupDetail");
 
             migrationBuilder.DropTable(
@@ -211,13 +191,13 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Data.Migrations
                 name: "CustomFieldValueHistory");
 
             migrationBuilder.DropTable(
-                name: "CustomFieldGroupHeader");
-
-            migrationBuilder.DropTable(
                 name: "CustomFieldValue");
 
             migrationBuilder.DropTable(
                 name: "CustomFieldHeader");
+
+            migrationBuilder.DropTable(
+                name: "CustomFieldGroupHeader");
         }
     }
 }

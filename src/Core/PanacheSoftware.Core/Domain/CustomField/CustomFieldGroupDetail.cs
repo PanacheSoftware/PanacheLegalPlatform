@@ -12,7 +12,7 @@ namespace PanacheSoftware.Core.Domain.CustomField
         public Guid CustomFieldGroupHeaderId { get; set; }
         public virtual CustomFieldGroupHeader CustomFieldGroupHeader { get; set; }
 
-        public Guid CustomFieldHeaderId { get; set; }
-        public int SequenceNo { get; set; }
+        public string FieldGroupType { get; set; }
+        public string FieldGroupTag { get; set; }
     }
 }
