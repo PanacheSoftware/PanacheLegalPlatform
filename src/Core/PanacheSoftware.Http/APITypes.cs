@@ -15,6 +15,6 @@ namespace PanacheSoftware.Http
         public const string FILE = "FILE";
         public const string GATEWAY = "GATEWAY";
         public const string UICLIENT = "UICLIENT";
-        public const string CUSTOMFIELDGROUP = "CUSTOMFIELDGROUP";
+        public const string CUSTOMFIELD = "CUSTOMFIELD";
     }
 }

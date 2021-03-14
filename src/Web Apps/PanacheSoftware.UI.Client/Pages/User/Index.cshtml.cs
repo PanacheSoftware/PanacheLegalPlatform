@@ -337,7 +337,7 @@ namespace PanacheSoftware.UI.Client.Pages.User
                 teamListRows[i] = teamListRows[i].Replace("userProfileModel_userTeamJoins_0__", "userProfileModel_userTeamJoins_' + rowCount + '__");
                 teamListRows[i] = teamListRows[i].Replace("userProfileModel.userTeamJoins[0]", "userProfileModel.userTeamJoins[' + rowCount + ']");
                 teamListRows[i] = teamListRows[i].Replace("22222222-2222-2222-2222-222222222222", "' + userId + '");
-                teamListRows[i] = teamListRows[i].Replace("disabled", string.Empty); //Prevent the team drop down from being disabled on new rows
+                teamListRows[i] = teamListRows[i].Replace("readonly", string.Empty); //Prevent the team drop down from being disabled on new rows
 
                 teamListRows[i] = $"'{teamListRows[i]}'{eol}";
             }

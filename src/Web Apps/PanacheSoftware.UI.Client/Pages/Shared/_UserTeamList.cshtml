@@ -22,7 +22,7 @@
                                     {
                                         <tr>
                                             <!--TeamTableRowsStart-->
-                                            <td><select asp-for="userProfileModel.userTeamJoins[iCount].TeamHeaderId" asp-items="@Model.TeamSelectList" class="custom-select" disabled></select><input asp-for="userProfileModel.userTeamJoins[iCount].Id" class="form-control" hidden /><input asp-for="userProfileModel.userTeamJoins[iCount].UserId" class="form-control" hidden /></td>
+                                            <td><select asp-for="userProfileModel.userTeamJoins[iCount].TeamHeaderId" asp-items="@Model.TeamSelectList" class="custom-select" readonly></select><input asp-for="userProfileModel.userTeamJoins[iCount].Id" class="form-control" hidden /><input asp-for="userProfileModel.userTeamJoins[iCount].UserId" class="form-control" hidden /></td>
                                             <td><input asp-for="userProfileModel.userTeamJoins[iCount].DateFrom" type="text" class="form-control datepicker" /></td>
                                             <td><input asp-for="userProfileModel.userTeamJoins[iCount].DateTo" type="text" class="form-control datepicker" /></td>
                                             <td><select asp-for="userProfileModel.userTeamJoins[iCount].Status" asp-items="@Model.StatusList" class="custom-select"></select></td>

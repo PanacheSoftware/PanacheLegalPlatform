@@ -16,44 +16,17 @@ using System.Threading.Tasks;
 namespace PanacheSoftware.Service.CustomField.Controllers
 {
     [Authorize]
-    [Route("[controller]")]
+    [Route("CustomFieldGroup/[controller]")]
     [ApiController]
-    public class CustomFieldGroupController : ControllerBase
+    public class DetailController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public CustomFieldGroupController(IUnitOfWork unitOfWork, IMapper mapper)
+        public DetailController(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-        }
-
-        [HttpGet]
-        [Produces("application/json")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(401)]
-        [ProducesResponseType(404)]
-        public IActionResult Get()
-        {
-            try
-            {
-                CustomFieldGroupList customFieldGroupList = new CustomFieldGroupList();
-
-                foreach (var customFieldGroupHeader in _unitOfWork.CustomFieldGroupHeaders.GetAll(true))
-                {
-                    customFieldGroupList.CustomFieldGroupHeaders.Add(_mapper.Map<CustomFieldGroupHead>(customFieldGroupHeader));
-                }
-
-                if (customFieldGroupList.CustomFieldGroupHeaders.Count > 0)
-                    return Ok(customFieldGroupList);
-
-                return NotFound();
-            }
-            catch (Exception e)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
-            }
         }
 
         [HttpGet("{id}")]
@@ -69,11 +42,11 @@ namespace PanacheSoftware.Service.CustomField.Controllers
                 {
                     var accessToken = await HttpContext.GetTokenAsync("access_token");
 
-                    var customFieldGroupHeader = _unitOfWork.CustomFieldGroupHeaders.GetCustomFieldGroupHeaderWithRelations(parsedId, true);
+                    var customFieldGroupDetail = _unitOfWork.CustomFieldGroupDetails.GetCustomFieldGroupDetail(parsedId, true);
 
-                    if (customFieldGroupHeader != default)
+                    if (customFieldGroupDetail != default)
                     {
-                        return Ok(_mapper.Map<CustomFieldGroupHead>(customFieldGroupHeader));
+                        return Ok(_mapper.Map<CustomFieldGroupDetail>(customFieldGroupDetail));
                     }
 
                     return NotFound();
@@ -88,29 +61,32 @@ namespace PanacheSoftware.Service.CustomField.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] CustomFieldGroupHead customFieldGroupHead)
+        public IActionResult Post([FromBody] CustomFieldGroupDet customFieldGroupDet)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var accessToken = await HttpContext.GetTokenAsync("access_token");
-
-                    if (customFieldGroupHead.Id == Guid.Empty)
+                    if (customFieldGroupDet.Id == Guid.Empty)
                     {
-                        var customFieldGroupHeader = _mapper.Map<CustomFieldGroupHeader>(customFieldGroupHead);
+                        var customFieldGroupHeader = _unitOfWork.CustomFieldGroupHeaders.SingleOrDefault(c => c.Id == customFieldGroupDet.CustomFieldGroupHeaderId, true);
 
-                        _unitOfWork.CustomFieldGroupHeaders.Add(customFieldGroupHeader);
+                        if (customFieldGroupHeader != default)
+                        {
+                            var customFieldGroupDetail = _mapper.Map<CustomFieldGroupDetail>(customFieldGroupDet);
 
-                        _unitOfWork.Complete();
+                            _unitOfWork.CustomFieldGroupDetails.Add(customFieldGroupDetail);
 
-                        return Created(new Uri($"{Request.Path}/{customFieldGroupHeader.Id}", UriKind.Relative),
-                            _mapper.Map<CustomFieldGroupHead>(customFieldGroupHeader));
+                            _unitOfWork.Complete();
+
+                            return Created(new Uri($"{Request.Path}/{customFieldGroupDetail.Id}", UriKind.Relative),
+                                _mapper.Map<CustomFieldGroupDet>(customFieldGroupDetail));
+                        }
+
+                        return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"CustomFieldGroupDet.CustomFieldGroupHeaderId: '{customFieldGroupDet.CustomFieldGroupHeaderId}' not found."));
                     }
 
-                    return StatusCode(StatusCodes.Status400BadRequest,
-                        new APIErrorMessage(StatusCodes.Status400BadRequest,
-                            $"CustomFieldGroupHead.Id: '{customFieldGroupHead.Id}' is not an empty guid."));
+                    return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"CustomFieldGroupDet.Id: '{customFieldGroupDet.Id}' is not an empty guid."));
                 }
                 catch (Exception e)
                 {
@@ -127,7 +103,7 @@ namespace PanacheSoftware.Service.CustomField.Controllers
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
         [ProducesResponseType(401)]
-        public IActionResult Patch(string id, [FromBody] JsonPatchDocument<CustomFieldGroupHead> customFieldGroupHeadPatch)
+        public IActionResult Patch(string id, [FromBody] JsonPatchDocument<CustomFieldGroupDet> customFieldGroupDetPatch)
         {
             if (ModelState.IsValid)
             {
@@ -135,20 +111,21 @@ namespace PanacheSoftware.Service.CustomField.Controllers
                 {
                     if (Guid.TryParse(id, out Guid parsedId))
                     {
-                        CustomFieldGroupHeader customFieldGroupHeader = _unitOfWork.CustomFieldGroupHeaders.Get(parsedId);
+                        CustomFieldGroupDetail customFieldGroupDetail = _unitOfWork.CustomFieldGroupDetails.Get(parsedId);
 
-                        if (customFieldGroupHeader != null)
+                        if (customFieldGroupDetail != null)
                         {
-                            var customFieldGroupHead = _mapper.Map<CustomFieldGroupHead>(customFieldGroupHeader);
 
-                            customFieldGroupHeadPatch.ApplyTo(customFieldGroupHead);
+                            var customFieldGroupDet = _mapper.Map<CustomFieldGroupDet>(customFieldGroupDetail);
 
-                            _mapper.Map(customFieldGroupHead, customFieldGroupHeader);
+                            customFieldGroupDetPatch.ApplyTo(customFieldGroupDet);
+
+                            _mapper.Map(customFieldGroupDet, customFieldGroupDetail);
 
                             _unitOfWork.Complete();
 
-                            return CreatedAtRoute("Get", new { id = _mapper.Map<CustomFieldGroupHead>(customFieldGroupHeader).Id },
-                                _mapper.Map<CustomFieldGroupHead>(customFieldGroupHeader));
+                            return CreatedAtRoute("Get", new { id = _mapper.Map<CustomFieldGroupDet>(customFieldGroupDetail).Id },
+                                _mapper.Map<CustomFieldGroupDet>(customFieldGroupDetail));
                         }
 
                         return NotFound();

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PanacheSoftware.Core.Domain.CustomField;
+using PanacheSoftware.Core.Types;
 using PanacheSoftware.Database.Repositories;
 using PanacheSoftware.Service.CustomField.Core.Repositories;
 using PanacheSoftware.Service.CustomField.Persistance.Context;
@@ -25,7 +26,10 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Repositories.CustomFie
 
         public CustomFieldHeader GetCustomFieldHeader(Guid customFieldHeaderId, bool readOnly)
         {
-            return null;
+            if (readOnly)
+                return PanacheSoftwareServiceCustomFieldContext.CustomFieldHeaders.AsNoTracking().SingleOrDefault(c => c.Id == customFieldHeaderId && c.Status != StatusTypes.Closed);
+
+            return PanacheSoftwareServiceCustomFieldContext.CustomFieldHeaders.SingleOrDefault(c => c.Id == customFieldHeaderId && c.Status != StatusTypes.Closed);
         }
     }
 }

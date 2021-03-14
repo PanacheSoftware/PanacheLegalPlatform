@@ -21,21 +21,21 @@
                             </thead>
                             <tbody>
                                 @{
-                                    for (int iCount = 0; iCount < Model.customFieldGroupModel.customFieldGroupHead.CustomFieldHeaders.Count; iCount++)
+                                    for (int iCount = 0; iCount < Model.customFieldGroupHead.CustomFieldHeaders.Count; iCount++)
                                     {
                                                                 <tr>
                                                                     <!--CustomFieldTableRowsStart-->
-                                                                    <td><input asp-for="customFieldGroupModel.customFieldGroupHead.CustomFieldHeaders[iCount].Id" class="form-control" hidden /><input asp-for="customFieldGroupModel.customFieldGroupHead.CustomFieldHeaders[iCount].Name" type="text" class="form-control" disabled/></td>
-                                                                    <td><input asp-for="customFieldGroupModel.customFieldGroupHead.CustomFieldHeaders[iCount].Description" type="text" class="form-control" /></td>
-                                                                    <td><select asp-for="customFieldGroupModel.customFieldGroupHead.CustomFieldHeaders[iCount].CustomFieldType" asp-items="@Model.CustomFieldTypeList" class="custom-select" disabled></select></td>
-                                                                    <td><input asp-for="customFieldGroupModel.customFieldGroupHead.CustomFieldHeaders[iCount].Mandatory" type="checkbox" class="form-control" /></td>
-                                                                    <td><input asp-for="customFieldGroupModel.customFieldGroupHead.CustomFieldHeaders[iCount].GDPR" type="checkbox" class="form-control" /></td>
-                                                                    <td><input asp-for="customFieldGroupModel.customFieldGroupHead.CustomFieldHeaders[iCount].History" type="checkbox" class="form-control" /></td>
-                                                                    <td><select asp-for="customFieldGroupModel.customFieldGroupHead.CustomFieldHeaders[iCount].Status" asp-items="@Model.StatusList" class="custom-select"></select></td>
+                                                                    <td><input asp-for="customFieldGroupHead.CustomFieldHeaders[iCount].Id" class="form-control" hidden /><input asp-for="customFieldGroupHead.CustomFieldHeaders[iCount].CustomFieldGroupHeaderId" class="form-control" hidden /><input asp-for="customFieldGroupHead.CustomFieldHeaders[iCount].Name" type="text" class="form-control" readonly/></td>
+                                                                    <td><input asp-for="customFieldGroupHead.CustomFieldHeaders[iCount].Description" type="text" class="form-control" /></td>
+                                                                    <td><select asp-for="customFieldGroupHead.CustomFieldHeaders[iCount].CustomFieldType" asp-items="@Model.CustomFieldTypeList" class="custom-select" disabled></select></td>
+                                                                    <td><input asp-for="customFieldGroupHead.CustomFieldHeaders[iCount].Mandatory" type="checkbox" class="form-control" /></td>
+                                                                    <td><input asp-for="customFieldGroupHead.CustomFieldHeaders[iCount].GDPR" type="checkbox" class="form-control" /></td>
+                                                                    <td><input asp-for="customFieldGroupHead.CustomFieldHeaders[iCount].History" type="checkbox" class="form-control" /></td>
+                                                                    <td><select asp-for="customFieldGroupHead.CustomFieldHeaders[iCount].Status" asp-items="@Model.StatusList" class="custom-select"></select></td>
                                                                     <!--CustomFieldTableRowsEnd-->
                                                                 </tr>
                                     }
-                                    <input id="CustomFieldTableCount" value="@(Model.customFieldGroupModel.customFieldGroupHead.CustomFieldHeaders.Count)" hidden />
+                                    <input id="CustomFieldTableCount" value="@(Model.customFieldGroupHead.CustomFieldHeaders.Count)" hidden />
                                 }
                             </tbody>
                         </table>

@@ -54,7 +54,7 @@ namespace PanacheSoftware.UI.Client.Pages.CustomFieldGroup
                 return RedirectToPage("/Logout");
             }
 
-            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.CUSTOMFIELDGROUP, $"CustomFieldGroup");
+            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.CUSTOMFIELD, $"CustomFieldGroup");
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {

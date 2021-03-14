@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using PanacheSoftware.Core.Domain.API.CustomField;
 using PanacheSoftware.Core.Domain.API.Language;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace PanacheSoftware.Core.Domain.UI
     {
         public SelectList StatusList { get; set; }
         public SelectList CustomFieldTypeList { get; set; }
-        public CustomFieldGroupModel customFieldGroupModel { get; set; }
+        public CustomFieldGroupHead customFieldGroupHead { get; set; }
         public string[] fieldListRows { get; set; }
         public LangQueryList langQueryList { get; set; }
     }

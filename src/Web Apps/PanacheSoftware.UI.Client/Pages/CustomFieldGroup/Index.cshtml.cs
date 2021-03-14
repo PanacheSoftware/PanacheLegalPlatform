@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Newtonsoft.Json;
 using PanacheSoftware.Core.Domain.API.CustomField;
 using PanacheSoftware.Core.Domain.API.Language;
 using PanacheSoftware.Core.Domain.UI;
@@ -28,7 +30,7 @@ namespace PanacheSoftware.UI.Client.Pages.CustomFieldGroup
         private readonly IRazorPartialToStringRenderer _renderer;
         private readonly IModelHelper _modelHelper;
         [BindProperty]
-        public CustomFieldGroupModel customFieldGroupModel { get; set; }
+        public CustomFieldGroupHead customFieldGroupHead { get; set; }
         public CustomFieldTableModel customFieldTableModel { get; set; }
         [BindProperty(SupportsGet = true)]
         public string Id { get; set; }
@@ -61,7 +63,7 @@ namespace PanacheSoftware.UI.Client.Pages.CustomFieldGroup
             await GeneratePageConstructionModel();
 
             customFieldTableModel.StatusList = StatusList;
-            customFieldTableModel.customFieldGroupModel = customFieldGroupModel;
+            customFieldTableModel.customFieldGroupHead = customFieldGroupHead;
             customFieldTableModel.langQueryList = langQueryList;
             customFieldTableModel.CustomFieldTypeList = CustomFieldTypeList;
 
@@ -72,8 +74,7 @@ namespace PanacheSoftware.UI.Client.Pages.CustomFieldGroup
         {
             var accessToken = await HttpContext.GetTokenAsync("access_token");
 
-            customFieldGroupModel = new CustomFieldGroupModel();
-            customFieldGroupModel.customFieldGroupHead = new CustomFieldGroupHead();
+            customFieldGroupHead = new CustomFieldGroupHead();
             customFieldTableModel = new CustomFieldTableModel();
 
             await PageConstructor(SaveStates.IGNORE, accessToken);
@@ -91,11 +92,11 @@ namespace PanacheSoftware.UI.Client.Pages.CustomFieldGroup
                 {
                     if (foundId != Guid.Empty)
                     {
-                        var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.CUSTOMFIELDGROUP, $"CustomField/{foundId.ToString()}");
+                        var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.CUSTOMFIELD, $"CustomFieldGroup/{foundId}");
 
                         if (response.StatusCode == System.Net.HttpStatusCode.OK)
                         {
-                            customFieldGroupModel.customFieldGroupHead = response.ContentAsType<CustomFieldGroupHead>();
+                            customFieldGroupHead = response.ContentAsType<CustomFieldGroupHead>();
                         }
                     }
                 }
@@ -108,11 +109,156 @@ namespace PanacheSoftware.UI.Client.Pages.CustomFieldGroup
             return Page();
         }
 
+        public async Task<IActionResult> OnPostAsync()
+        {
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+            customFieldTableModel = new CustomFieldTableModel();
+
+            if (ModelState.IsValid)
+            {
+                if (customFieldGroupHead != null)
+                {
+                    if (await CreateOrUpdateCustomFieldGroupHeadAsync(accessToken))
+                    {
+                        await PageConstructor(SaveStates.SUCCESS, accessToken);
+                    }
+                    else
+                    {
+                        await PageConstructor(SaveStates.FAILED, accessToken);
+                    }
+
+                }
+
+                SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken, SaveState);
+
+                return Page();
+            }
+
+            await PageConstructor(SaveStates.FAILED, accessToken);
+
+            SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken, SaveState);
+
+            return Page();
+        }
+
+        private async Task<bool> CreateOrUpdateCustomFieldGroupHeadAsync(string apiAccessToken)
+        {
+            if (customFieldGroupHead != null)
+            {
+                if (customFieldGroupHead.Id != Guid.Empty)
+                {
+                    var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.CUSTOMFIELD, $"CustomFieldGroup/{customFieldGroupHead.Id}");
+
+                    if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        var foundCustomFieldGroupHead = response.ContentAsType<CustomFieldGroupHead>();
+
+                        if (foundCustomFieldGroupHead != null)
+                        {
+                            if (!await _modelHelper.ProcessPatch(foundCustomFieldGroupHead, customFieldGroupHead, foundCustomFieldGroupHead.Id, apiAccessToken, APITypes.CUSTOMFIELD, "CustomFieldGroup"))
+                            {
+                                return false;
+                            }
+
+                            response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.CUSTOMFIELD, $"CustomFieldGroup/Detail/{customFieldGroupHead.CustomFieldGroupDetail.Id}");
+
+                            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                            {
+                                var foundCustomFieldGroupDet = response.ContentAsType<CustomFieldGroupDet>();
+
+                                if (foundCustomFieldGroupDet != null)
+                                {
+                                    if (!await _modelHelper.ProcessPatch(foundCustomFieldGroupDet, customFieldGroupHead.CustomFieldGroupDetail, foundCustomFieldGroupDet.Id, apiAccessToken, APITypes.CUSTOMFIELD, "CustomFieldGroup/Detail"))
+                                    {
+                                        return false;
+                                    }
+                                }
+                            }
+                        }
+
+                        foreach (var customFieldHead in customFieldGroupHead.CustomFieldHeaders)
+                        {
+                            if (!await CreateOrUpdateCustomFieldAsync(customFieldHead, apiAccessToken))
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    HttpContent contentPost = new StringContent(JsonConvert.SerializeObject(customFieldGroupHead), Encoding.UTF8, "application/json");
+
+                    try
+                    {
+                        var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.CUSTOMFIELD, $"CustomFieldGroup", contentPost);
+
+                        if (response.StatusCode != System.Net.HttpStatusCode.Created)
+                        {
+                            return false;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        ErrorString = $"Error calling API: {ex.Message}";
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        private async Task<bool> CreateOrUpdateCustomFieldAsync(CustomFieldHead customFieldHead, string apiAccessToken)
+        {
+            if (customFieldHead != null)
+            {
+                if (customFieldHead.Id != Guid.Empty)
+                {
+                    var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.CUSTOMFIELD, $"CustomField/{customFieldHead.Id}");
+
+                    if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        var foundCustomFieldHead = response.ContentAsType<CustomFieldHead>();
+
+                        if (foundCustomFieldHead != null)
+                        {
+                            if (!await _modelHelper.ProcessPatch(foundCustomFieldHead, customFieldHead, foundCustomFieldHead.Id, apiAccessToken, APITypes.CUSTOMFIELD, "CustomField"))
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    HttpContent contentPost = new StringContent(JsonConvert.SerializeObject(customFieldHead), Encoding.UTF8, "application/json");
+
+                    try
+                    {
+                        var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.CUSTOMFIELD, $"CustomField", contentPost);
+
+                        if (response.StatusCode != System.Net.HttpStatusCode.Created)
+                        {
+                            return false;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        ErrorString = $"Error calling API: {ex.Message}";
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
         private async Task<bool> GeneratePageConstructionModel()
         {
             CustomFieldTableModel dummyCustomFieldTableModel = new CustomFieldTableModel()
             {
-                customFieldGroupModel = GenerateDummyCustomFieldGroupModel(),
+                customFieldGroupHead = GenerateDummyCustomFieldGroupHead(),
                 StatusList = StatusList,
                 langQueryList = langQueryList,
                 CustomFieldTypeList = CustomFieldTypeList
@@ -142,10 +288,10 @@ namespace PanacheSoftware.UI.Client.Pages.CustomFieldGroup
                     eol = "";
                 }
 
-                customFieldListRows[i] = customFieldListRows[i].Replace("customFieldGroupModel_CustomFieldHeaders_0__", "customFieldGroupModel_CustomFieldHeaders_' + rowCount + '__");
-                customFieldListRows[i] = customFieldListRows[i].Replace("customFieldGroupModel.CustomFieldHeaders[0]", "customFieldGroupModel.CustomFieldHeaders[' + rowCount + ']");
+                customFieldListRows[i] = customFieldListRows[i].Replace("customFieldGroupHead_CustomFieldHeaders_0__", "customFieldGroupHead_CustomFieldHeaders_' + rowCount + '__");
+                customFieldListRows[i] = customFieldListRows[i].Replace("customFieldGroupHead.CustomFieldHeaders[0]", "customFieldGroupHead.CustomFieldHeaders[' + rowCount + ']");
                 customFieldListRows[i] = customFieldListRows[i].Replace("11111111-1111-1111-1111-111111111111", "' + customFieldGroupHeadId + '");
-                customFieldListRows[i] = customFieldListRows[i].Replace("disabled", string.Empty);
+                customFieldListRows[i] = customFieldListRows[i].Replace("readonly", string.Empty);
 
                 customFieldListRows[i] = $"'{customFieldListRows[i]}'{eol}";
             }
@@ -155,16 +301,13 @@ namespace PanacheSoftware.UI.Client.Pages.CustomFieldGroup
             return true;
         }
 
-        private CustomFieldGroupModel GenerateDummyCustomFieldGroupModel()
+        private CustomFieldGroupHead GenerateDummyCustomFieldGroupHead()
         {
-            var dummyCustomFieldGroupModel = new CustomFieldGroupModel()
-            {
-                customFieldGroupHead = new CustomFieldGroupHead()
-            };
+            var dummyCustomFieldGroupHead = new CustomFieldGroupHead();
 
-            dummyCustomFieldGroupModel.customFieldGroupHead.CustomFieldHeaders.Add(GenerateDummyCustomField());
+            dummyCustomFieldGroupHead.CustomFieldHeaders.Add(GenerateDummyCustomField());
 
-            return dummyCustomFieldGroupModel;
+            return dummyCustomFieldGroupHead;
         }
 
         private CustomFieldHead GenerateDummyCustomField()
@@ -172,7 +315,7 @@ namespace PanacheSoftware.UI.Client.Pages.CustomFieldGroup
             var dummyCustomFieldHead = new CustomFieldHead()
             {
                 Id = Guid.Empty,
-                CustomFieldGroupHeadId = Guid.Parse("11111111-1111-1111-1111-111111111111"),
+                CustomFieldGroupHeaderId = Guid.Parse("11111111-1111-1111-1111-111111111111"),
                 Description = string.Empty,
                 CustomFieldType = CustomFieldTypes.StringField,
                 Name = string.Empty,

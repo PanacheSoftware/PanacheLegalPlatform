@@ -9,5 +9,6 @@ namespace PanacheSoftware.Service.CustomField.Core.Repositories
 {
     public interface ICustomFieldGroupDetailRepository : IPanacheSoftwareRepository<CustomFieldGroupDetail>
     {
+        CustomFieldGroupDetail GetCustomFieldGroupDetail(Guid customFieldGroupDetailId, bool readOnly);
     }
 }

@@ -18,7 +18,7 @@ namespace PanacheSoftware.Core.Domain.API.CustomField
         }
 
         public Guid Id { get; set; }
-        public Guid CustomFieldGroupHeadId { get; set; }
+        public Guid CustomFieldGroupHeaderId { get; set; }
 
         public string FieldGroupType { get; set; }
         public string FieldGroupTag { get; set; }
