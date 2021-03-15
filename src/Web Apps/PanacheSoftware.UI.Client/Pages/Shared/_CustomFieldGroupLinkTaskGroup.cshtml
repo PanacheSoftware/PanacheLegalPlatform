@@ -1,0 +1,38 @@
+﻿@model PanacheSoftware.Core.Domain.UI.CustomFieldGroupLinkTaskGroupTableModel
+@using PanacheSoftware.UI.Core.Helpers
+@{
+    <div class="col-md-12">
+        <div class="card border-light mb-6">
+            <div class="card-header">@Html.GetTitle(Model.langQueryList, 11001)</div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <table id="customFieldGroupLink_table" class="table table-striped table-bordered datatable display nowrap" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>@Html.GetTitle(Model.langQueryList, 11006)</th>
+                                    <th>@Html.GetTitle(Model.langQueryList, 10201)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    for (int iCount = 0; iCount < Model.taskGroupModel.customFieldGroupLinks.Count; iCount++)
+                                    {
+                                        <tr>
+                                            <!--CustomFieldGroupLinkTableRowsStart-->
+                                            <td><select asp-for="taskGroupModel.customFieldGroupLinks[iCount].CustomFieldGroupHeaderId" asp-items="@Model.CustomFieldGroupSelectList" class="custom-select" readonly></select><input asp-for="taskGroupModel.customFieldGroupLinks[iCount].Id" class="form-control" hidden /><input asp-for="taskGroupModel.customFieldGroupLinks[iCount].LinkId" class="form-control" hidden /></td>
+                                            <td><select asp-for="taskGroupModel.customFieldGroupLinks[iCount].Status" asp-items="@Model.StatusList" class="custom-select"></select></td>
+                                            <!--CustomFieldGroupLinkTableRowsEnd-->
+                                        </tr>
+                                    }
+                                    <input id="CustomFieldGroupLinkTableCount" value="@(Model.taskGroupModel.customFieldGroupLinks.Count)" hidden />
+                                }
+                            </tbody>
+                        </table>
+                        <input type="button" id="add_customFieldGroupLink" class="btn btn-primary pull-right add-address-btn" value="@Html.GetTitle(Model.langQueryList, 11010)" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

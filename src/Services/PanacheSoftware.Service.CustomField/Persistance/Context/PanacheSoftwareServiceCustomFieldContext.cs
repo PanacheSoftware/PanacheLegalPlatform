@@ -24,6 +24,7 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Context
         public virtual DbSet<CustomFieldTag> CustomFieldTags { get; set; }
         public virtual DbSet<CustomFieldValue> CustomFieldValues { get; set; }
         public virtual DbSet<CustomFieldValueHistory> CustomFieldValueHistorys {  get; set;  }
+        public virtual DbSet<CustomFieldGroupLink> CustomFieldGroupLinks { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -35,6 +36,7 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Context
             modelBuilder.ApplyConfiguration(new CustomFieldTagConfiguration());
             modelBuilder.ApplyConfiguration(new CustomFieldValueConfiguration());
             modelBuilder.ApplyConfiguration(new CustomFieldValueHistoryConfiguration());
+            modelBuilder.ApplyConfiguration(new CustomFieldGroupLinkConfiguration());
 
             modelBuilder.Entity<CustomFieldHeader>().HasQueryFilter(e => EF.Property<Guid>(e, "TenantId") == Guid.Parse(_userProvider.GetTenantId()));
             modelBuilder.Entity<CustomFieldGroupHeader>().HasQueryFilter(e => EF.Property<Guid>(e, "TenantId") == Guid.Parse(_userProvider.GetTenantId()));
@@ -42,6 +44,7 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Context
             modelBuilder.Entity<CustomFieldTag>().HasQueryFilter(e => EF.Property<Guid>(e, "TenantId") == Guid.Parse(_userProvider.GetTenantId()));
             modelBuilder.Entity<CustomFieldValue>().HasQueryFilter(e => EF.Property<Guid>(e, "TenantId") == Guid.Parse(_userProvider.GetTenantId()));
             modelBuilder.Entity<CustomFieldValueHistory>().HasQueryFilter(e => EF.Property<Guid>(e, "TenantId") == Guid.Parse(_userProvider.GetTenantId()));
+            modelBuilder.Entity<CustomFieldGroupLink>().HasQueryFilter(e => EF.Property<Guid>(e, "TenantId") == Guid.Parse(_userProvider.GetTenantId()));
         }
     }
 }

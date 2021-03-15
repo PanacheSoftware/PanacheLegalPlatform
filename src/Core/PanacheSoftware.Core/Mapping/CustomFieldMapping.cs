@@ -19,6 +19,8 @@ namespace PanacheSoftware.Core.Mapping
             CreateMap<CustomFieldGroupDetail, CustomFieldGroupDet>();
             CreateMap<CustomFieldGroupHead, CustomFieldGroupHeader>();
             CreateMap<CustomFieldGroupDet, CustomFieldGroupDetail>();
+            CreateMap<CustomFieldGroupLink, CustomFieldGroupLnk>();
+            CreateMap<CustomFieldGroupLnk, CustomFieldGroupLink>();
             CreateMap<CustomFieldValue, CustomFieldVal>();
             CreateMap<CustomFieldVal, CustomFieldValue>();
             CreateMap<CustomFieldValueHistory, CustomFieldValHistr>();

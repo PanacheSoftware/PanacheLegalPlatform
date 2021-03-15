@@ -15,5 +15,6 @@ namespace PanacheSoftware.Service.CustomField.Core
         ICustomFieldTagRepository CustomFieldTags { get; }
         ICustomFieldValueRepository CustomFieldValues { get; }
         ICustomFieldValueHistoryRepository CustomFieldValueHistorys { get; }
+        ICustomFieldGroupLinkRepository CustomFieldGroupLinks { get; }
     }
 }

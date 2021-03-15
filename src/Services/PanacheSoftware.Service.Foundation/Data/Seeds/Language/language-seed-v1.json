@@ -1599,6 +1599,16 @@
       "dateTo": "2119-02-17",
       "languageItems": [],
       "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 11010,
+      "description": "Custom Field Group Screens",
+      "text": "Add Custom Field Group",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
     }
   ]
 }

@@ -2,50 +2,56 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PanacheSoftware.Service.CustomField.Persistance.Context;
 
 namespace PanacheSoftware.Service.CustomField.Persistance.Data.Migrations
 {
     [DbContext(typeof(PanacheSoftwareServiceCustomFieldContext))]
-    partial class PanacheSoftwareServiceCustomFieldContextModelSnapshot : ModelSnapshot
+    [Migration("20210315152848_AddCustomFieldGroupLinks")]
+    partial class AddCustomFieldGroupLinks
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 64)
-                .HasAnnotation("ProductVersion", "5.0.0")
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn)
-                .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "5.0.0");
 
             modelBuilder.Entity("PanacheSoftware.Core.Domain.CustomField.CustomFieldGroupDetail", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
 
-                    b.Property<Guid>("CreatedBy");
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("char(36)");
 
-                    b.Property<DateTime>("CreatedDate");
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime(6)");
 
-                    b.Property<Guid>("CustomFieldGroupHeaderId");
+                    b.Property<Guid>("CustomFieldGroupHeaderId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("FieldGroupTag")
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("FieldGroupType")
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<Guid>("LastUpdateBy");
+                    b.Property<Guid>("LastUpdateBy")
+                        .HasColumnType("char(36)");
 
-                    b.Property<DateTime>("LastUpdateDate");
+                    b.Property<DateTime>("LastUpdateDate")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(25)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<Guid>("TenantId");
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("char(36)");
 
                     b.HasKey("Id");
 
@@ -58,33 +64,39 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Data.Migrations
             modelBuilder.Entity("PanacheSoftware.Core.Domain.CustomField.CustomFieldGroupHeader", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
 
-                    b.Property<Guid>("CreatedBy");
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("char(36)");
 
-                    b.Property<DateTime>("CreatedDate");
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(4000)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<Guid>("LastUpdateBy");
+                    b.Property<Guid>("LastUpdateBy")
+                        .HasColumnType("char(36)");
 
-                    b.Property<DateTime>("LastUpdateDate");
+                    b.Property<DateTime>("LastUpdateDate")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("LongName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("ShortName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(25)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<Guid>("TenantId");
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("char(36)");
 
                     b.HasKey("Id");
 
@@ -94,29 +106,37 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Data.Migrations
             modelBuilder.Entity("PanacheSoftware.Core.Domain.CustomField.CustomFieldGroupLink", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
 
-                    b.Property<Guid>("CreatedBy");
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("char(36)");
 
-                    b.Property<DateTime>("CreatedDate");
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime(6)");
 
-                    b.Property<Guid>("CustomFieldGroupHeaderId");
+                    b.Property<Guid>("CustomFieldGroupHeaderId")
+                        .HasColumnType("char(36)");
 
-                    b.Property<Guid>("LastUpdateBy");
+                    b.Property<Guid>("LastUpdateBy")
+                        .HasColumnType("char(36)");
 
-                    b.Property<DateTime>("LastUpdateDate");
+                    b.Property<DateTime>("LastUpdateDate")
+                        .HasColumnType("datetime(6)");
 
-                    b.Property<Guid>("LinkId");
+                    b.Property<Guid>("LinkId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("LinkType")
                         .IsRequired()
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(25)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<Guid>("TenantId");
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("char(36)");
 
                     b.HasKey("Id");
 
@@ -128,47 +148,54 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Data.Migrations
             modelBuilder.Entity("PanacheSoftware.Core.Domain.CustomField.CustomFieldHeader", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
 
-                    b.Property<Guid>("CreatedBy");
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("char(36)");
 
-                    b.Property<DateTime>("CreatedDate");
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime(6)");
 
-                    b.Property<Guid>("CustomFieldGroupHeaderId");
+                    b.Property<Guid>("CustomFieldGroupHeaderId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("CustomFieldType")
                         .IsRequired()
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(4000)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<bool>("GDPR")
-                        .HasColumnType("bit");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<bool>("History")
-                        .HasColumnType("bit");
+                        .HasColumnType("tinyint(1)");
 
-                    b.Property<Guid>("LastUpdateBy");
+                    b.Property<Guid>("LastUpdateBy")
+                        .HasColumnType("char(36)");
 
-                    b.Property<DateTime>("LastUpdateDate");
+                    b.Property<DateTime>("LastUpdateDate")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<bool>("Mandatory")
-                        .HasColumnType("bit");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<int>("SequenceNo")
                         .HasColumnType("int");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(25)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<Guid>("TenantId");
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("char(36)");
 
                     b.HasKey("Id");
 
@@ -180,28 +207,34 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Data.Migrations
             modelBuilder.Entity("PanacheSoftware.Core.Domain.CustomField.CustomFieldTag", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
 
-                    b.Property<Guid>("CreatedBy");
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("char(36)");
 
-                    b.Property<DateTime>("CreatedDate");
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(4000)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<Guid>("LastUpdateBy");
+                    b.Property<Guid>("LastUpdateBy")
+                        .HasColumnType("char(36)");
 
-                    b.Property<DateTime>("LastUpdateDate");
+                    b.Property<DateTime>("LastUpdateDate")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Status")
-                        .HasColumnType("nvarchar(25)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<Guid>("TenantId");
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("char(36)");
 
                     b.HasKey("Id");
 
@@ -211,33 +244,41 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Data.Migrations
             modelBuilder.Entity("PanacheSoftware.Core.Domain.CustomField.CustomFieldValue", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
 
-                    b.Property<Guid>("CreatedBy");
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("char(36)");
 
-                    b.Property<DateTime>("CreatedDate");
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime(6)");
 
-                    b.Property<Guid>("CustomFieldHeaderId");
+                    b.Property<Guid>("CustomFieldHeaderId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("FieldValue")
                         .IsRequired()
-                        .HasColumnType("nvarchar(4000)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<Guid>("LastUpdateBy");
+                    b.Property<Guid>("LastUpdateBy")
+                        .HasColumnType("char(36)");
 
-                    b.Property<DateTime>("LastUpdateDate");
+                    b.Property<DateTime>("LastUpdateDate")
+                        .HasColumnType("datetime(6)");
 
-                    b.Property<Guid>("LinkId");
+                    b.Property<Guid>("LinkId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("LinkType")
                         .IsRequired()
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(25)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<Guid>("TenantId");
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("char(36)");
 
                     b.HasKey("Id");
 
@@ -249,32 +290,40 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Data.Migrations
             modelBuilder.Entity("PanacheSoftware.Core.Domain.CustomField.CustomFieldValueHistory", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
 
-                    b.Property<Guid>("CreatedBy");
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("char(36)");
 
-                    b.Property<DateTime>("CreatedDate");
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime(6)");
 
-                    b.Property<Guid>("CustomFieldValueId");
+                    b.Property<Guid>("CustomFieldValueId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("FieldValue")
                         .IsRequired()
-                        .HasColumnType("nvarchar(4000)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<Guid>("LastUpdateBy");
+                    b.Property<Guid>("LastUpdateBy")
+                        .HasColumnType("char(36)");
 
-                    b.Property<DateTime>("LastUpdateDate");
+                    b.Property<DateTime>("LastUpdateDate")
+                        .HasColumnType("datetime(6)");
 
-                    b.Property<DateTime>("OriginalCreationDate");
+                    b.Property<DateTime>("OriginalCreationDate")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int>("SequenceNo")
                         .HasColumnType("int");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(25)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<Guid>("TenantId");
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("char(36)");
 
                     b.HasKey("Id");
 
