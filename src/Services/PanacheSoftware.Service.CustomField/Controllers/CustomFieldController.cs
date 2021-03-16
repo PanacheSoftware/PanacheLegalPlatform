@@ -98,7 +98,7 @@ namespace PanacheSoftware.Service.CustomField.Controllers
                         return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"CustomFieldHead.CustomFieldGroupHeadId: '{customFieldHead.CustomFieldGroupHeaderId}' not found."));
                     }
 
-                    return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"CcustomFieldHead.Id: '{customFieldHead.Id}' is not an empty guid."));
+                    return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"CustomFieldHead.Id: '{customFieldHead.Id}' is not an empty guid."));
                 }
                 catch (Exception e)
                 {

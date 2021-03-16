@@ -20,7 +20,7 @@
                                     {
                                         <tr>
                                             <!--CustomFieldGroupLinkTableRowsStart-->
-                                            <td><select asp-for="taskGroupModel.customFieldGroupLinks[iCount].CustomFieldGroupHeaderId" asp-items="@Model.CustomFieldGroupSelectList" class="custom-select" readonly></select><input asp-for="taskGroupModel.customFieldGroupLinks[iCount].Id" class="form-control" hidden /><input asp-for="taskGroupModel.customFieldGroupLinks[iCount].LinkId" class="form-control" hidden /></td>
+                                            <td><select asp-for="taskGroupModel.customFieldGroupLinks[iCount].CustomFieldGroupHeaderId" asp-items="@Model.CustomFieldGroupSelectList" class="custom-select" disabled></select><input asp-for="taskGroupModel.customFieldGroupLinks[iCount].Id" class="form-control" hidden /><input asp-for="taskGroupModel.customFieldGroupLinks[iCount].LinkId" class="form-control" hidden /></td>
                                             <td><select asp-for="taskGroupModel.customFieldGroupLinks[iCount].Status" asp-items="@Model.StatusList" class="custom-select"></select></td>
                                             <!--CustomFieldGroupLinkTableRowsEnd-->
                                         </tr>

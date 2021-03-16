@@ -109,9 +109,23 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
                         if (response.StatusCode == System.Net.HttpStatusCode.OK)
                         {
                             taskGroupModel.taskGroupHead = response.ContentAsType<TaskGroupHead>();
+                            
                             if(taskGroupModel.taskGroupHead != null)
                             {
                                 ParentId = taskGroupModel.taskGroupHead.ParentTaskGroupId.ToString();
+
+                                response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.CUSTOMFIELD, $"CustomFieldGroupLink/GetLinks/{LinkTypes.TaskGroup}/{taskGroupModel.taskGroupHead.Id}");
+
+                                if(response.StatusCode == System.Net.HttpStatusCode.OK)
+                                {
+                                    var customFieldGroupLnkList = response.ContentAsType<CustomFieldGroupLnkList>();
+
+                                    foreach (var customFieldGroupLnk in customFieldGroupLnkList.CustomFieldGroupLinks)
+                                    {
+                                        taskGroupModel.customFieldGroupLinks.Add(customFieldGroupLnk);
+                                    }
+                                }
+
                             }
                         }
                     }
@@ -148,8 +162,11 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
         public async Task<IActionResult> OnPostAsync()
         {
             var accessToken = await HttpContext.GetTokenAsync("access_token");
+            customFieldGroupLinkTaskGroupTableModel = new CustomFieldGroupLinkTaskGroupTableModel();
 
             await PageConstructor(SaveStates.IGNORE, accessToken);
+
+            customFieldGroupLinkTaskGroupTableModel.taskGroupModel = taskGroupModel;
 
             if (ModelState.IsValid)
             {
@@ -256,7 +273,6 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
             var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.CUSTOMFIELD, $"CustomFieldGroup");
 
             Dictionary<string, string> CustomFieldGroupListDictionary = new Dictionary<string, string>();
-            CustomFieldGroupListDictionary.Add(Guid.Empty.ToString(), "None");
 
             if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
@@ -352,8 +368,10 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
         {
             foreach (var customFieldGroupLink in taskGroupModel.customFieldGroupLinks)
             {
-                if (customFieldGroupLink.Id != Guid.Empty && customFieldGroupLink.LinkId == taskGroupHeadId && customFieldGroupLink.LinkType == LinkTypes.TaskGroup)
+                if (customFieldGroupLink.Id != Guid.Empty && customFieldGroupLink.LinkId == taskGroupHeadId)
                 {
+                    customFieldGroupLink.LinkType = LinkTypes.TaskGroup;
+
                     var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.CUSTOMFIELD, $"CustomFieldGroupLink/{customFieldGroupLink.Id}");
 
                     if (response.StatusCode == System.Net.HttpStatusCode.OK)
@@ -371,24 +389,24 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
                 }
                 else
                 {
-                    if(customFieldGroupLink.LinkId == taskGroupHeadId && customFieldGroupLink.LinkType == LinkTypes.TaskGroup)
+                    customFieldGroupLink.LinkId = taskGroupHeadId;
+                    customFieldGroupLink.LinkType = LinkTypes.TaskGroup;
+
+                    HttpContent contentPost = new StringContent(JsonConvert.SerializeObject(customFieldGroupLink), Encoding.UTF8, "application/json");
+
+                    try
                     {
-                        HttpContent contentPost = new StringContent(JsonConvert.SerializeObject(customFieldGroupLink), Encoding.UTF8, "application/json");
+                        var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.CUSTOMFIELD, $"CustomFieldGroupLink", contentPost);
 
-                        try
+                        if (response.StatusCode != System.Net.HttpStatusCode.Created)
                         {
-                            var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.CUSTOMFIELD, $"CustomFieldGroupLink", contentPost);
-
-                            if (response.StatusCode != System.Net.HttpStatusCode.Created)
-                            {
-                                return false;
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            ErrorString = $"Error calling API: {ex.Message}";
                             return false;
                         }
+                    }
+                    catch (Exception ex)
+                    {
+                        ErrorString = $"Error calling API: {ex.Message}";
+                        return false;
                     }
                 }
             }
@@ -435,6 +453,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
                 customFieldGroupLinkListRows[i] = customFieldGroupLinkListRows[i].Replace("11111111-1111-1111-1111-111111111111", "' + customFieldGroupHeadId + '");
                 customFieldGroupLinkListRows[i] = customFieldGroupLinkListRows[i].Replace("22222222-2222-2222-2222-222222222222", "' + taskGroupHeadId + '");
                 customFieldGroupLinkListRows[i] = customFieldGroupLinkListRows[i].Replace("readonly", string.Empty);
+                customFieldGroupLinkListRows[i] = customFieldGroupLinkListRows[i].Replace("disabled", string.Empty);
 
                 customFieldGroupLinkListRows[i] = $"'{customFieldGroupLinkListRows[i]}'{eol}";
             }

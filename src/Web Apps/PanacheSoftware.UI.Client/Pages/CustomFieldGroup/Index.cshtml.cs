@@ -292,6 +292,7 @@ namespace PanacheSoftware.UI.Client.Pages.CustomFieldGroup
                 customFieldListRows[i] = customFieldListRows[i].Replace("customFieldGroupHead.CustomFieldHeaders[0]", "customFieldGroupHead.CustomFieldHeaders[' + rowCount + ']");
                 customFieldListRows[i] = customFieldListRows[i].Replace("11111111-1111-1111-1111-111111111111", "' + customFieldGroupHeadId + '");
                 customFieldListRows[i] = customFieldListRows[i].Replace("readonly", string.Empty);
+                customFieldListRows[i] = customFieldListRows[i].Replace("disabled", string.Empty);
 
                 customFieldListRows[i] = $"'{customFieldListRows[i]}'{eol}";
             }

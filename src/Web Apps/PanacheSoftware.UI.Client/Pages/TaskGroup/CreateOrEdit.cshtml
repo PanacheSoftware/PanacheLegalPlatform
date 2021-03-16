@@ -43,7 +43,7 @@
 
     <partial name="_SaveMessage" model="Model.SaveMessageModel" />
 
-    <form method="post">
+    <form id="pageForm" method="post">
         <div class="row">
             <div class="col-md-12">
                 <div class="card border-light mb-6">
@@ -233,6 +233,10 @@
     @await Html.PartialAsync("_ValidationScriptsPartial")
     <script>
             $(document).ready(function () {
+
+                $('#pageForm').submit(function () {
+                    $('select').removeAttr('disabled');
+                });
 
                 var customFieldLinkButton = document.getElementById('add_customFieldGroupLink');
 
