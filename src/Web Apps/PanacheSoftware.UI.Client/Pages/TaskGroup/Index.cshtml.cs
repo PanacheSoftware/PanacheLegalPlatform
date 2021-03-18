@@ -18,6 +18,8 @@ using PanacheSoftware.UI.Core.PageModel;
 using PanacheSoftware.Core.Domain.API.Language;
 using PanacheSoftware.Core.Domain.API.Task;
 using PanacheSoftware.Core.Domain.API.File;
+using PanacheSoftware.Core.Domain.API.CustomField;
+using System.Collections.Generic;
 
 namespace PanacheSoftware.UI.Client.Pages.TaskGroup
 {
@@ -48,6 +50,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
         public string GanttJSON { get; set; }
         public LangQueryList taskGroupSummarylangQueryList { get; set; }
         public LangQueryList taskSummarylangQueryList { get; set; }
+        public CustomFieldGroupValuesModelList customFieldGroupValuesModelList { get; set; }
 
         public IndexModel(IAPIHelper apiHelper, IRazorPartialToStringRenderer renderer, IModelHelper modelHelper, IMapper mapper)
         {
@@ -153,9 +156,92 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup
 
             GanttJSON = JsonSerializer.Serialize(GanttDataModel);
 
+            customFieldGroupValuesModelList = await GetCustomFieldGroupModelList(accessToken);
+
             SaveMessageModel = await _apiHelper.GenerateSaveMessageModel(accessToken);
 
             return Page();
+        }
+
+        private async Task<CustomFieldGroupValuesModelList> GetCustomFieldGroupModelList(string accessToken)
+        {
+            var fieldGroupValuesList = new CustomFieldGroupValuesModelList();
+
+            if(!Guid.TryParse(Id, out Guid parsedId))
+                return fieldGroupValuesList;
+
+            var mainTaskGroupList = await GetCustomFieldGroupModels(accessToken, parsedId, LinkTypes.TaskGroup);
+
+            if (mainTaskGroupList.Any())
+                fieldGroupValuesList.CustomFieldGroupValuesModels.AddRange(mainTaskGroupList);
+
+            foreach (var taskGroup in taskGroupSummary.ChildTaskGroups)
+            {
+                var taskGroupList = await GetCustomFieldGroupModels(accessToken, taskGroup.Id, LinkTypes.TaskGroup);
+
+                if (taskGroupList.Any())
+                    fieldGroupValuesList.CustomFieldGroupValuesModels.AddRange(taskGroupList);
+
+                foreach (var taskItem in taskGroup.ChildTasks)
+                {
+                    var taskList = await GetCustomFieldGroupModels(accessToken, taskItem.Id, LinkTypes.Task);
+
+                    if (taskList.Any())
+                        fieldGroupValuesList.CustomFieldGroupValuesModels.AddRange(taskList);
+                }
+            }
+
+            return fieldGroupValuesList;
+        }
+
+        private async Task<List<CustomFieldGroupValuesModel>> GetCustomFieldGroupModels(string accessToken, Guid linkId, string linkType)
+        {
+            var fieldGroupValueModels = new List<CustomFieldGroupValuesModel>();
+
+            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.CUSTOMFIELD, $"CustomFieldGroupLink/GetLinks/{linkType}/{linkId}");
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var customFieldGroupLnkList = response.ContentAsType<CustomFieldGroupLnkList>();
+
+                foreach (var customFieldGroupLnk in customFieldGroupLnkList.CustomFieldGroupLinks)
+                {
+                    var customFieldGroupValuesModel = await GetCustomFieldGroupModel(accessToken, customFieldGroupLnk);
+
+                    if (customFieldGroupValuesModel != null)
+                        fieldGroupValueModels.Add(customFieldGroupValuesModel);
+                }
+            }
+
+            return fieldGroupValueModels;
+        }
+
+        private async Task<CustomFieldGroupValuesModel> GetCustomFieldGroupModel(string accessToken, CustomFieldGroupLnk customFieldGroupLnk)
+        {
+            var fieldGroupValuesModel = new CustomFieldGroupValuesModel();
+
+            fieldGroupValuesModel.LinkId = customFieldGroupLnk.LinkId;
+            fieldGroupValuesModel.LinkType = customFieldGroupLnk.LinkType;
+            fieldGroupValuesModel.customFieldGroupHeader = customFieldGroupLnk.CustomFieldGroupHeader;
+
+            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.CUSTOMFIELD, $"CustomFieldValue/GetValuesForLink/{fieldGroupValuesModel.LinkType}/{fieldGroupValuesModel.LinkId}");
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var customFieldValueList = response.ContentAsType<CustomFieldValList>();
+
+                foreach (var customFieldVal in customFieldValueList.CustomFieldValues)
+                {
+                    var foundOpenCustomField = customFieldGroupLnk.CustomFieldGroupHeader.CustomFieldHeaders.Where(h => h.Id == customFieldVal.CustomFieldHeaderId && h.Status == StatusTypes.Open).FirstOrDefault();
+
+                    if(foundOpenCustomField != default)
+                    {
+                        fieldGroupValuesModel.CustomFieldValues.Add(customFieldVal);
+                    }
+                }
+            }
+
+            return fieldGroupValuesModel;
         }
 
         private async Task<UserListModel> GetUsernames(string accessToken)

@@ -1,4 +1,5 @@
-﻿using PanacheSoftware.Core.Domain.CustomField;
+﻿using Microsoft.EntityFrameworkCore;
+using PanacheSoftware.Core.Domain.CustomField;
 using PanacheSoftware.Database.Repositories;
 using PanacheSoftware.Service.CustomField.Core.Repositories;
 using PanacheSoftware.Service.CustomField.Persistance.Context;
@@ -20,6 +21,20 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Repositories.CustomFie
         public PanacheSoftwareServiceCustomFieldContext PanacheSoftwareServiceCustomFieldContext
         {
             get { return Context as PanacheSoftwareServiceCustomFieldContext; }
+        }
+
+        public async Task<IEnumerable<CustomFieldValue>> GetCustomFieldValuesForLinkAsync(Guid linkId, string linkType, bool readOnly)
+        {
+
+            if(readOnly)
+                return await PanacheSoftwareServiceCustomFieldContext.CustomFieldValues
+                    .Include(v => v.CustomFieldValueHistorys)
+                    .AsNoTracking()
+                    .Where(v => v.LinkId == linkId && v.LinkType == linkType).ToListAsync();
+
+            return await PanacheSoftwareServiceCustomFieldContext.CustomFieldValues
+                .Include(v => v.CustomFieldValueHistorys)
+                .Where(v => v.LinkId == linkId && v.LinkType == linkType).ToListAsync();
         }
     }
 }

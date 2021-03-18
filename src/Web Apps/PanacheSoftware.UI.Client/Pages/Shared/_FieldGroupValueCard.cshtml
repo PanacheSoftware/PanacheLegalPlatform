@@ -1,0 +1,13 @@
+﻿@model PanacheSoftware.Core.Domain.UI.CustomFieldGroupValuesModel
+@using PanacheSoftware.UI.Client.Pages.Shared
+@{
+
+    <div class="col-md-12">
+        <div class="card border-light mb-6">
+            <div class="card-header">@Model.customFieldGroupHeader.LongName</div>
+            <div class="card-body">
+                <component type="typeof(CustomFieldGroupValues)" param-customFieldGroupValuesModel="Model" render-mode="ServerPrerendered" />
+            </div>
+        </div>
+    </div>
+}

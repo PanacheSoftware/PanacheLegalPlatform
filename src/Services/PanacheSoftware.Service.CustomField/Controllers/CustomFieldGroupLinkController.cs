@@ -73,7 +73,7 @@ namespace PanacheSoftware.Service.CustomField.Controllers
 
                         if (customFieldGroupHeader != null)
                         {
-                            var customFieldGroupLinks = await _unitOfWork.CustomFieldGroupLinks.GetFileLinksWithRelationsForLinkAsync(customFieldGroupLnk.LinkId, customFieldGroupLnk.LinkType, true);
+                            var customFieldGroupLinks = await _unitOfWork.CustomFieldGroupLinks.GetCustomFieldGroupLinksWithRelationsForLinkAsync(customFieldGroupLnk.LinkId, customFieldGroupLnk.LinkType, true);
 
                             if(customFieldGroupLinks.Any())
                             {
@@ -167,7 +167,7 @@ namespace PanacheSoftware.Service.CustomField.Controllers
                 {
                     var customFieldGroupLinkList = new CustomFieldGroupLnkList();
 
-                    var customFieldGroupLinks = await _unitOfWork.CustomFieldGroupLinks.GetFileLinksWithRelationsForLinkAsync(parsedId, linkType, true);
+                    var customFieldGroupLinks = await _unitOfWork.CustomFieldGroupLinks.GetCustomFieldGroupLinksWithRelationsForLinkAsync(parsedId, linkType, true);
 
                     foreach (var customFieldGroupLink in customFieldGroupLinks)
                     {

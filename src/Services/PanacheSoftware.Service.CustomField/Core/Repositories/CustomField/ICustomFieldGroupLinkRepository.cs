@@ -10,7 +10,7 @@ namespace PanacheSoftware.Service.CustomField.Core.Repositories
     public interface ICustomFieldGroupLinkRepository : IPanacheSoftwareRepository<CustomFieldGroupLink>
     {
         CustomFieldGroupLink GetCustomFieldGroupLink(Guid customFieldGroupLinkId, bool readOnly);
-        Task<IEnumerable<CustomFieldGroupLink>> GetFileLinksWithRelationsForLinkAsync(Guid linkId, string linkType, bool readOnly);
+        Task<IEnumerable<CustomFieldGroupLink>> GetCustomFieldGroupLinksWithRelationsForLinkAsync(Guid linkId, string linkType, bool readOnly);
 
     }
 }

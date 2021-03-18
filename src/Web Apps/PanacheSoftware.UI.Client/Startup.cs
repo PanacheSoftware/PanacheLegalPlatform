@@ -100,7 +100,12 @@ namespace PanacheSoftware.UI.Client
             services.AddTransient<IRazorPartialToStringRenderer, RazorPartialToStringRenderer>();
             services.AddTransient<IModelHelper, ModelHelper>();
 
+            services.AddHttpClient();
+            services.AddScoped<TokenProvider>();
+
             services.AddAutoMapper(System.Reflection.Assembly.Load("PanacheSoftware.Core"));
+
+            services.AddServerSideBlazor();
         }
 
         public IConfiguration Configuration { get; }
@@ -128,12 +133,13 @@ namespace PanacheSoftware.UI.Client
             //app.UseStaticFiles();
             //app.UseCookiePolicy();
 
-            //app.UseRouting();
+            app.UseRouting();
 
-            //app.UseEndpoints(endpoints =>
-            //{
-            //    endpoints.MapRazorPages();
-            //});
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapRazorPages();
+                endpoints.MapBlazorHub();
+            });
         }
     }
 }

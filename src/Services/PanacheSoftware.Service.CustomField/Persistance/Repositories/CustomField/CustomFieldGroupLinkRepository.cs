@@ -32,7 +32,7 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Repositories.CustomFie
             return PanacheSoftwareServiceCustomFieldContext.CustomFieldGroupLinks.SingleOrDefault(c => c.Id == customFieldGroupLinkId && c.Status != StatusTypes.Closed);
         }
 
-        public async Task<IEnumerable<CustomFieldGroupLink>> GetFileLinksWithRelationsForLinkAsync(Guid linkId, string linkType, bool readOnly)
+        public async Task<IEnumerable<CustomFieldGroupLink>> GetCustomFieldGroupLinksWithRelationsForLinkAsync(Guid linkId, string linkType, bool readOnly)
         {
             if (readOnly)
                 return await PanacheSoftwareServiceCustomFieldContext.CustomFieldGroupLinks

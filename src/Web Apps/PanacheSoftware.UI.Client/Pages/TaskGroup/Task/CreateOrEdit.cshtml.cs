@@ -305,7 +305,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup.Task
             {
                 if (customFieldGroupLink.Id != Guid.Empty && customFieldGroupLink.LinkId == taskHeadId)
                 {
-                    customFieldGroupLink.LinkType = LinkTypes.TaskGroup;
+                    customFieldGroupLink.LinkType = LinkTypes.Task;
 
                     var response = await _apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.CUSTOMFIELD, $"CustomFieldGroupLink/{customFieldGroupLink.Id}");
 
@@ -325,7 +325,7 @@ namespace PanacheSoftware.UI.Client.Pages.TaskGroup.Task
                 else
                 {
                     customFieldGroupLink.LinkId = taskHeadId;
-                    customFieldGroupLink.LinkType = LinkTypes.TaskGroup;
+                    customFieldGroupLink.LinkType = LinkTypes.Task;
 
                     HttpContent contentPost = new StringContent(JsonConvert.SerializeObject(customFieldGroupLink), Encoding.UTF8, "application/json");
 

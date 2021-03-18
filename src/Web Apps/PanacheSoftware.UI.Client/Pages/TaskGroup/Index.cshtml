@@ -53,17 +53,17 @@
                         <div class="col-md-12">
                             @if (Model.taskGroupSummary.Completed)
                             {
-                            <div class="alert alert-success">
-                                <strong>@Html.GetTitle(Model.langQueryList, 10921)</strong><br />
-                                @Html.GetTitle(Model.langQueryList, 10912): @Model.taskGroupSummary.CompletedOnDate.ToShortDateString()
-                            </div>
+                                <div class="alert alert-success">
+                                    <strong>@Html.GetTitle(Model.langQueryList, 10921)</strong><br />
+                                    @Html.GetTitle(Model.langQueryList, 10912): @Model.taskGroupSummary.CompletedOnDate.ToShortDateString()
+                                </div>
                             }
                             else
                             {
-                        <div class="alert alert-primary">
-                            <strong>@Html.GetTitle(Model.langQueryList, 10922)</strong><br />
-                            @Html.GetTitle(Model.langQueryList, 10911): @Model.taskGroupSummary.CompletionDate.ToShortDateString()
-                        </div>
+                                <div class="alert alert-primary">
+                                    <strong>@Html.GetTitle(Model.langQueryList, 10922)</strong><br />
+                                    @Html.GetTitle(Model.langQueryList, 10911): @Model.taskGroupSummary.CompletionDate.ToShortDateString()
+                                </div>
                             }
                         </div>
                     </div>
@@ -146,6 +146,22 @@
             &nbsp;
         </div>
     </div>
+
+    @if (Model.customFieldGroupValuesModelList.CustomFieldGroupValuesModels.Where(tg => tg.LinkId.ToString() == Model.Id).Any())
+    {
+        foreach (var customFieldGroupValuesModel in Model.customFieldGroupValuesModelList.CustomFieldGroupValuesModels.Where(tg => tg.LinkId.ToString() == Model.Id))
+        {
+            <div class="row">
+                <partial name="_FieldGroupValueCard" model="customFieldGroupValuesModel" />
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    &nbsp;
+                </div>
+            </div>
+        }
+    }
+
     <div class="row">
         <div class="col-md-12">
             <div class="card border-light mb-6">

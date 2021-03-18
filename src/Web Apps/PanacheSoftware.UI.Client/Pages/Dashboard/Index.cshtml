@@ -3,6 +3,11 @@
 @{
     ViewData["Title"] = "Dashboard";
     Layout = "_PSMainLayout";
+
+    var tokens = new InitialApplicationState
+    {
+        AccessToken = await HttpContext.GetTokenAsync("access_token")
+    };
 }
 
 <div id="overlay" class="overlay"></div>
@@ -32,6 +37,17 @@
         </div>
     </div>
 
+    <!--<div class="row">
+        <div class="form-group col-md-6">
+            <div class="card border-primary mb-6">
+                <div class="card-header">Counter</div>
+                <div class="card-body">-->
+                    @*<component type="typeof(Counter)" param-InitialState="tokens" render-mode="ServerPrerendered" />*@
+                    @*<component type="typeof(DashboardCounter)" param-InitialState="tokens" render-mode="ServerPrerendered" />*@
+                <!--</div>
+            </div>
+        </div>
+    </div>-->
 
     @if (Model.taskGroupSummaryList.TaskGroupSummarys.Any())
     {
