@@ -21,6 +21,7 @@ services:
       - PanacheSoftware__Secret__FoundationServiceSecret=A81F774A-6E87-4C37-BEA0-2F62CC2F374A
       - PanacheSoftware__Secret__TaskServiceSecret=8CDD9C0B-EAD3-4377-A42E-AEEAC9909C0D
       - PanacheSoftware__Secret__TeamServiceSecret=819E2211-EAD4-49D0-84E5-29E6F45587BB
+      - PanacheSoftware__Secret__CustomFieldServiceSecret=98E90BBB-2343-4B3B-B008-5A958BE60AF3
     network_mode: "host"
     restart: always
 
@@ -173,6 +174,8 @@ services:
       - PanacheSoftware__Url__TaskServiceURLSecure=https://raspberrypi:44307
       - PanacheSoftware__Url__TeamServiceURL=http://raspberrypi:55006
       - PanacheSoftware__Url__TeamServiceURLSecure=https://raspberrypi:44306
+      - PanacheSoftware__Url__CustomFieldServiceURL=http://raspberrypi:55009
+      - PanacheSoftware__Url__CustomFieldServiceURLSecure=https://raspberrypi:44309
       - PanacheSoftware__Secret__UIClientSecret=9C32BBD1-9C08-40FA-96C3-2195F61661F1
     network_mode: "host"
     restart: always

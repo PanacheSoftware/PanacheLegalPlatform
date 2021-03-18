@@ -1,6 +1,6 @@
 #See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-FROM mcr.microsoft.com/dotnet/aspnet:5.0-buster-slim AS base
+FROM mcr.microsoft.com/dotnet/aspnet:5.0-buster-slim-arm32v7 AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
@@ -21,10 +21,10 @@ COPY ["Core/PanacheSoftware.Http/PanacheSoftware.Http.csproj", "Core/PanacheSoft
 RUN dotnet restore "Services/PanacheSoftware.Service.Task/PanacheSoftware.Service.Task.csproj"
 COPY . .
 WORKDIR "/src/Services/PanacheSoftware.Service.Task"
-RUN dotnet build "PanacheSoftware.Service.Task.csproj" -c Release -o /app/build
+RUN dotnet build "PanacheSoftware.Service.Task.csproj" -c Release -o /app/build -r linux-arm
 
 FROM build AS publish
-RUN dotnet publish "PanacheSoftware.Service.Task.csproj" -c Release -o /app/publish
+RUN dotnet publish "PanacheSoftware.Service.Task.csproj" -c Release -o /app/publish -r linux-arm --self-contained false --no-restore
 
 FROM base AS final
 WORKDIR /app
