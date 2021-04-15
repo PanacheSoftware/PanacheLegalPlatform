@@ -1,0 +1,74 @@
+﻿@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+
+<CascadingValue Value="@langQueryList" Name="langQueryList">
+    <div class="sidebar-content">
+        <!-- sidebar-brand  -->
+        <div class="sidebar-item sidebar-brand">
+            <a href="#">@LanguageHelper.GetTitle(langQueryList, 10000)</a>
+        </div>
+        <!-- sidebar-header  -->
+        <SideBarUserProfile />
+        <!-- sidebar-search  -->
+        <SideBarSearch />
+        <!-- sidebar-menu  -->
+        <SideBarMenu />
+    </div>
+    <!-- sidebar-footer  -->
+    <SideBarFooter />
+</CascadingValue>
+
+@code {
+    LangQueryList langQueryList { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrWhiteSpace(TokenProvider.AccessToken))
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            if (authState != null)
+            {
+                if (!await MyFoundationService.PerformAuthCheck(TokenProvider.AccessToken, authState.User.FindFirst("sub").Value))
+                {
+                    NavigationManager.NavigateTo("/Logout", true);
+                }
+            }
+        }
+
+        await GetLAnguageList();
+    }
+
+    private async Task GetLAnguageList()
+    {
+        var textCodes = new List<long>();
+        textCodes.Add(10000);
+        textCodes.Add(10100);
+        textCodes.Add(10102);
+        textCodes.Add(10103);
+        textCodes.Add(10104);
+        textCodes.Add(10105);
+        textCodes.Add(10106);
+        textCodes.Add(10107);
+        textCodes.Add(10108);
+        textCodes.Add(10109);
+        textCodes.Add(10110);
+        textCodes.Add(10111);
+        textCodes.Add(10112);
+        textCodes.Add(10113);
+        textCodes.Add(10114);
+        textCodes.Add(10115);
+        textCodes.Add(10116);
+        textCodes.Add(10117);
+        textCodes.Add(10118);
+        textCodes.Add(10119);
+        textCodes.Add(10122);
+        textCodes.Add(10123);
+        textCodes.Add(10124);
+        textCodes.Add(10125);
+        textCodes.Add(10126);
+
+        langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, textCodes.ToArray());
+    }
+}

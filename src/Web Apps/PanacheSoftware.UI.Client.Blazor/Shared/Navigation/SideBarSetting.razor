@@ -1,0 +1,25 @@
+﻿@inject NavigationManager NavigationManager
+
+<li class="sidebar-dropdown @PageHelper.IsSelected(currentRoute:NavigationManager.ToBaseRelativePath(NavigationManager.Uri), root:"Setting", page:"", cssClass:"active", cssClassAlt:"")">
+    <a href="#">
+        <i class="fa fa-tools"></i>
+        <span class="menu-text">@LanguageHelper.GetTitle(langQueryList, 10118)</span>
+    </a>
+    <div class="sidebar-submenu" style="@PageHelper.IsSelected(currentRoute:NavigationManager.ToBaseRelativePath(NavigationManager.Uri), root:"Setting", page:"", cssClass:"display: block;", cssClassAlt:"")">
+        <ul>
+            <li>
+                <a href="/Setting/SystemSetting">@LanguageHelper.GetTitle(langQueryList, 10123)</a>
+            </li>
+            <li>
+                <a href="/Setting/Language">@LanguageHelper.GetTitle(langQueryList, 10119)</a>
+            </li>
+            <li>
+                <a href="/Setting/UserSetting">@LanguageHelper.GetTitle(langQueryList, 10122)</a>
+            </li>
+        </ul>
+    </div>
+</li>
+
+@code {
+    [CascadingParameter(Name = "langQueryList")] LangQueryList langQueryList { get; set; }
+}

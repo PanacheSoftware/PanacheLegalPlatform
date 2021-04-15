@@ -1,0 +1,12 @@
+﻿<li class="header-menu">
+    <span>@LanguageHelper.GetTitle(langQueryList, 10103)</span>
+</li>
+<SideBarDashboard />
+<SideBarClient />
+<SideBarTeam />
+<SideBarTask />
+<SideBarCustomField />
+
+@code {
+    [CascadingParameter(Name = "langQueryList")] LangQueryList langQueryList { get; set; }
+}

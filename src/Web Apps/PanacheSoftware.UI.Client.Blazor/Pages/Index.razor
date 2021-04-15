@@ -1,0 +1,58 @@
+﻿@page "/"
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+
+    <div id="overlay" class="overlay"></div>
+    <div class="container-fluid p-5">
+        <div class="row">
+            <div class="form-group col-md-12">
+                <div class="breadcrumb-container">
+                    <a id="toggle-sidebar" class="btn btn-outline-secondary btn-sm breadcrumb-button" href="#"><i class="fa fa-bars"></i></a>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item" active>&nbsp;</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-12">
+                <div class="col-md-12 text-center">
+                    @if (Loading)
+                    {
+                        <p>Loading...</p>
+                    }
+                    else
+                    {
+                        <p>Logged Out</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    @code{
+        private bool Loading { get; set; }
+
+        protected override async Task OnInitializedAsync()
+        {
+            Loading = true;
+
+            if (!string.IsNullOrWhiteSpace(TokenProvider.AccessToken))
+            {
+                var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+                if (authState != null)
+                {
+                    if (await MyFoundationService.PerformAuthCheck(TokenProvider.AccessToken, authState.User.FindFirst("sub").Value))
+                    {
+                        NavigationManager.NavigateTo("/dashboard", true);
+                    }
+                }
+            }
+
+            Loading = false;
+        }
+    }

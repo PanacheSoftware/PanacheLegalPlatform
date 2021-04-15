@@ -1,0 +1,61 @@
+@charset "utf-8";
+/* CSS Document */
+.orgchart {
+    background: #fff;
+}
+#chart-container {
+    position: relative;
+    display: inline-block;
+    top: 10px;
+    left: 10px;
+    height: 420px;
+    width: calc(100% - 24px);
+    /*border: 2px dashed #aaa;
+    border-radius: 5px;*/
+    overflow: auto;
+    text-align: center;
+}
+
+.orgchart {
+    background: #fff;
+}
+
+.orgchart td.left, .orgchart td.right, .orgchart td.top {
+    border-color: #2a445a;
+}
+
+.orgchart td > .down {
+    background-color: #2a445a;
+}
+
+.orgchart .team .title {
+    background-color: #2a445a;
+}
+
+.orgchart .team .content {
+    border-color: #2a445a;
+}
+
+.orgchart .lines .topLine {
+    border-color: #2a445a;
+}
+
+.orgchart .lines .rightLine {
+    border-color: #2a445a;
+}
+
+.orgchart .lines .leftLine {
+    border-color: #2a445a;
+}
+
+.orgchart .lines .downLine {
+    background-color: #2a445a;
+}
+
+.orgchart .verticalNodes > td::before {
+    border-color: #2a445a;
+}
+
+.orgchart .verticalNodes ul > li::before, .orgchart .verticalNodes ul > li::after {
+    border-color: #2a445a;
+}

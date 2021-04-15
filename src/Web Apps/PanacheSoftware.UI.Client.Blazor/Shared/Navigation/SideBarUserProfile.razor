@@ -1,0 +1,21 @@
+﻿<div class="sidebar-item sidebar-header d-flex flex-nowrap">
+    <div class="user-pic">
+        <img class="img-responsive img-rounded" src="/img/user.jpg">
+    </div>
+    <div class="user-info">
+        <a asp-page="/User/Profile" asp-route-id="ID">
+            <span class="user-name">
+                {FullName}
+            </span>
+        </a>
+        <span class="user-role">Administrator</span>
+        <span class="user-status">
+            <i class="fa fa-circle"></i>
+            <span>@LanguageHelper.GetTitle(langQueryList, 10100)</span>
+        </span>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter(Name = "langQueryList")] LangQueryList langQueryList { get; set; }
+}

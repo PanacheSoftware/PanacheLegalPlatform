@@ -84,7 +84,7 @@ namespace PanacheSoftware.Identity
                     ClientSecrets = { new Secret(_panacheSoftwareConfiguration.Secret.UIClientSecret.Sha256()) },
 
                     RedirectUris = { $"{UIClientURL}/signin-oidc" },
-                    FrontChannelLogoutUri = $"{UIClientURL}/signout-oidc",
+                    //FrontChannelLogoutUri = $"{UIClientURL}/signout-oidc",
                     PostLogoutRedirectUris = { $"{UIClientURL}/signout-callback-oidc" },
 
                     AlwaysIncludeUserClaimsInIdToken = true,

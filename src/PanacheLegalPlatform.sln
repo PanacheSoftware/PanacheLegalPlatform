@@ -41,6 +41,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PanacheSoftware.Service.CustomField", "Services\PanacheSoftware.Service.CustomField\PanacheSoftware.Service.CustomField.csproj", "{560A7011-7A18-49C3-8880-FA084A4D5F17}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PanacheSoftware.UI.Client.Blazor", "Web Apps\PanacheSoftware.UI.Client.Blazor\PanacheSoftware.UI.Client.Blazor.csproj", "{7A8F87AA-8B0E-4471-A272-F549D3798434}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -99,6 +101,10 @@ Global
 		{560A7011-7A18-49C3-8880-FA084A4D5F17}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{560A7011-7A18-49C3-8880-FA084A4D5F17}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{560A7011-7A18-49C3-8880-FA084A4D5F17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A8F87AA-8B0E-4471-A272-F549D3798434}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A8F87AA-8B0E-4471-A272-F549D3798434}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A8F87AA-8B0E-4471-A272-F549D3798434}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A8F87AA-8B0E-4471-A272-F549D3798434}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -117,6 +123,7 @@ Global
 		{A506BE9C-2D49-4094-98D7-E483A83E03D0} = {5E9AA283-F03D-46FB-8509-58B20DEDF48F}
 		{E91884AC-342F-402F-ADE4-D28AD8E9A0AE} = {4B71D786-0A4A-490F-9072-9F7CF9A3D458}
 		{560A7011-7A18-49C3-8880-FA084A4D5F17} = {5E9AA283-F03D-46FB-8509-58B20DEDF48F}
+		{7A8F87AA-8B0E-4471-A272-F549D3798434} = {142DA5F6-BC1A-4A09-A309-FA5ACF8289BA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B4BFE431-1987-48B6-9BE4-94174F3989E9}

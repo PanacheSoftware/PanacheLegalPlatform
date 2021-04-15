@@ -1,0 +1,79 @@
+﻿@page  "/"
+@namespace PanacheSoftware.UI.Client.Blazor.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.AspNetCore.Authentication
+@using PanacheSoftware.Http
+@{
+    Layout = null;
+
+    var tokens = new InitialApplicationState
+    {
+        AccessToken = await HttpContext.GetTokenAsync("access_token"),
+        RefreshToken = await HttpContext.GetTokenAsync("refresh_token")
+    };
+}
+
+@*<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PanacheSoftware.UI.Client.Blazor</title>
+    <base href="~/" />
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+    <link href="css/site.css" rel="stylesheet" />
+    <link href="PanacheSoftware.UI.Client.Blazor.styles.css" rel="stylesheet" />
+</head>
+<body>
+    <component type="typeof(App)" render-mode="ServerPrerendered" />
+
+    <div id="blazor-error-ui">
+        <environment include="Staging,Production">
+            An error has occurred. This application may no longer respond until reloaded.
+        </environment>
+        <environment include="Development">
+            An unhandled exception has occurred. See browser dev tools for details.
+        </environment>
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+
+    <script src="_framework/blazor.server.js"></script>
+</body>
+</html>*@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PanacheSoftware.UI.Client.Blazor</title>
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.css">
+    <link rel="stylesheet" href="css/sidebar/jquery.mCustomScrollbar.css">
+    <link rel="stylesheet" href="css/fontawesome/all.css">
+    <link rel="stylesheet" href="css/sidebar/sidebar-main.css">
+    <link rel="stylesheet" href="css/sidebar/sidebar-themes.css">
+
+    <!-- Panache Specific-->
+    <link rel="stylesheet" href="css/panache/pl-breadcrumb.css">
+
+    <link rel="stylesheet" href="css/datatables/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="css/datatables/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="css/datepicker/bootstrap-datepicker3.css">
+    <link rel="stylesheet" href="css/panache/pl-form.css">
+    <link rel="stylesheet" href="css/orgchart/jquery.orgchart.min.css">
+    <link rel="stylesheet" href="css/panache/pl-orgchart.css">
+</head>
+<body>
+
+    <component type="typeof(App)" param-InitialState="tokens" render-mode="ServerPrerendered" />
+
+    @*<script src="~/ui-core/js/jquery.js"></script>
+    <script src="~/ui-core/js/popper.min.js"></script>
+    <script src="~/ui-core/js/bootstrap.js"></script>
+    <script src="~/ui-core/js/sidebar/jquery.mCustomScrollbar.concat.min.js"></script>
+    <script src="~/ui-core/js/sidebar/sidebar-main.js"></script>*@
+    <script src="_framework/blazor.server.js"></script>
+</body>
+</html>
