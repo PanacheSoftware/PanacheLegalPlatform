@@ -2,6 +2,7 @@
 @inject TokenProvider TokenProvider
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
+@using IdentityModel;
 
 <CascadingValue Value="@langQueryList" Name="langQueryList">
     <div class="sidebar-content">
@@ -30,17 +31,17 @@
             var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             if (authState != null)
             {
-                if (!await MyFoundationService.PerformAuthCheck(TokenProvider.AccessToken, authState.User.FindFirst("sub").Value))
+                if (!await MyFoundationService.PerformAuthCheck(TokenProvider.AccessToken, authState.User.FindFirst(JwtClaimTypes.Subject).Value))
                 {
                     NavigationManager.NavigateTo("/Logout", true);
                 }
             }
         }
 
-        await GetLAnguageList();
+        await GetLanguageList();
     }
 
-    private async Task GetLAnguageList()
+    private async Task GetLanguageList()
     {
         var textCodes = new List<long>();
         textCodes.Add(10000);

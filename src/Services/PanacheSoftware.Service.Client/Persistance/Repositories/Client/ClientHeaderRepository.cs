@@ -1,10 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PanacheSoftware.Core.Domain.Client;
+using PanacheSoftware.Core.Domain.Core;
+using PanacheSoftware.Database.Domain;
 using PanacheSoftware.Database.Repositories;
 using PanacheSoftware.Service.Client.Core.Repositories;
 using PanacheSoftware.Service.Client.Persistance.Context;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace PanacheSoftware.Service.Client.Persistance.Repositories.Client
 {

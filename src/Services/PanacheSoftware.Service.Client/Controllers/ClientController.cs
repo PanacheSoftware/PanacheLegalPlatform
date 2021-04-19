@@ -12,6 +12,10 @@ using PanacheSoftware.Core.Types;
 using PanacheSoftware.Service.Client.Manager;
 using Microsoft.AspNetCore.Http;
 using PanacheSoftware.Core.Domain.API.Error;
+using PanacheSoftware.Core.Domain.Core;
+using System.Threading.Tasks;
+using PanacheSoftware.Core.Domain.API;
+using System.Collections.Generic;
 
 namespace PanacheSoftware.Service.Client.Controllers
 {
@@ -210,6 +214,29 @@ namespace PanacheSoftware.Service.Client.Controllers
                 return Ok(clientSummary);
 
             return NotFound();
+        }
+
+        [Route("[action]")]
+        [HttpGet]
+        public async Task<IActionResult> GetPaginatedClients(int? pageNumber, string sortField, string sortOrder, int pageSize)
+        {
+            var paginationModel = new Pagination(pageNumber, sortField, sortOrder);
+
+            try
+            {
+                var clientHeaderList = await _unitOfWork.ClientHeaders.GetPaginatedListAsync(paginationModel, pageSize);
+
+                var clientHeadList = new Paginated<ClientHead>(_mapper.Map<List<ClientHeader>, List<ClientHead>>(clientHeaderList.Items), clientHeaderList.Items.Count, clientHeaderList.PageIndex, pageSize, clientHeaderList.TotalPages);
+
+                if (clientHeadList.Items.Count > 0)
+                    return Ok(clientHeadList);
+
+                return NotFound();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
+            }
         }
     }
 }

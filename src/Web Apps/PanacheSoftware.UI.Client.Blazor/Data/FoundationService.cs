@@ -3,6 +3,7 @@ using PanacheSoftware.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace PanacheSoftware.UI.Client.Blazor.Data
@@ -30,6 +31,11 @@ namespace PanacheSoftware.UI.Client.Blazor.Data
         public async Task<bool> PerformAuthCheck(string accessToken, string userId)
         {
             return await apiHelper.AuthCheck(accessToken, userId);
+        }
+
+        public async Task<HttpResponseMessage> MakeAPICallAsync(string accessToken, HttpMethod httpMethod, string apiType, string uriPart)
+        {
+            return await apiHelper.MakeAPICallAsync(accessToken, httpMethod, apiType, uriPart);
         }
     }
 }

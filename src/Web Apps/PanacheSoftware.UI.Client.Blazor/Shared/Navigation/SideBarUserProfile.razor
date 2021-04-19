@@ -1,11 +1,14 @@
-﻿<div class="sidebar-item sidebar-header d-flex flex-nowrap">
+﻿@inject AuthenticationStateProvider AuthenticationStateProvider
+@using IdentityModel;
+
+<div class="sidebar-item sidebar-header d-flex flex-nowrap">
     <div class="user-pic">
-        <img class="img-responsive img-rounded" src="/img/user.jpg">
+        <img class="img-responsive img-rounded" src="@ProfilePictureBase64">
     </div>
     <div class="user-info">
-        <a asp-page="/User/Profile" asp-route-id="ID">
+        <a href="/User/Profile/@UserId">
             <span class="user-name">
-                {FullName}
+                @FullName
             </span>
         </a>
         <span class="user-role">Administrator</span>
@@ -18,4 +21,22 @@
 
 @code {
     [CascadingParameter(Name = "langQueryList")] LangQueryList langQueryList { get; set; }
+    private string FullName { get; set; }
+    private string ProfilePictureBase64 { get; set; }
+    private string UserId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetUserProfileValues();
+    }
+
+    private async Task GetUserProfileValues()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+        FullName = authState.User.FindFirst(JwtClaimTypes.Name)?.Value == null ? string.Empty : authState.User.FindFirst(JwtClaimTypes.Name).Value;
+        ProfilePictureBase64 = authState.User.FindFirst(JwtClaimTypes.Picture)?.Value == null ? Base64Images.PanacheSoftwareDot : authState.User.FindFirst(JwtClaimTypes.Picture).Value;
+        UserId = authState.User.FindFirst(JwtClaimTypes.Subject)?.Value == null ? string.Empty : authState.User.FindFirst(JwtClaimTypes.Subject).Value;
+
+    }
 }

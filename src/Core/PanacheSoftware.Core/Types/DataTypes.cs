@@ -18,6 +18,22 @@ namespace PanacheSoftware.Core.Types
         public const string IGNORE = "IGNORE";
     }
 
+    public struct SortOrders
+    {
+        public const string Ascending = "ASC";
+        public const string Descending = "DESC";
+
+        public IDictionary<string, string> GetSortOrdersDictionary()
+        {
+            Dictionary<string, string> SortOrdersDictionary = new Dictionary<string, string>();
+
+            SortOrdersDictionary.Add(Ascending, nameof(Ascending));
+            SortOrdersDictionary.Add(Descending, nameof(Descending));
+
+            return SortOrdersDictionary;
+        }
+    }
+
     public struct StatusTypes
     {
         public const string Closed = "C";

@@ -1,21 +1,5 @@
 ﻿@inherits LayoutComponentBase
 @inject IJSRuntime JSRuntime
-@*<div class="page">
-        <div class="sidebar">
-            <NavMenu />
-        </div>
-
-        <div class="main">
-            <div class="top-row px-4">
-                <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-            </div>
-
-            <div class="content px-4">
-                @Body
-            </div>
-        </div>
-    </div>*@
-
 <div class="page-wrapper default-theme sidebar-bg bg1 toggled border-radius-on">
     @*@await Component.InvokeAsync("SideBar")*@
     <SideBar />
@@ -33,7 +17,9 @@
         if (firstRender)
         {
             await JSRuntime.InvokeAsync<IJSObjectReference>("import", "/js/jquery.js");
+
             //await JSRuntime.InvokeAsync<IJSObjectReference>("import", "/js/popper.min.js");
+
             await JSRuntime.InvokeAsync<IJSObjectReference>("import", "/js/bootstrap.js");
             await JSRuntime.InvokeAsync<IJSObjectReference>("import", "/js/sidebar/jquery.mCustomScrollbar.concat.min.js");
             await JSRuntime.InvokeAsync<IJSObjectReference>("import", "/js/sidebar/sidebar-main.js");
