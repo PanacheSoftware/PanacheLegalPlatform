@@ -10,7 +10,9 @@ namespace PanacheSoftware.Core.Domain.API
     {
         public Paginated()
         {
-
+            Items = new List<T>();
+            PageIndex = 0;
+            TotalPages = 0;
         }
 
         public int PageIndex { get; set; }

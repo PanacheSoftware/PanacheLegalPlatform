@@ -1,21 +1,19 @@
-﻿@inject NavigationManager NavigationManager
-
-<li class="sidebar-dropdown @PageHelper.IsSelected(currentRoute:NavigationManager.ToBaseRelativePath(NavigationManager.Uri), root:"CustomField", page:"", cssClass:"active", cssClassAlt:"")">
-    <a href="#">
-        <i class="far fa-file-code"></i>
-        <span class="menu-text">@LanguageHelper.GetTitle(langQueryList, 10124)</span>
-    </a>
-    <div class="sidebar-submenu" style="@PageHelper.IsSelected(currentRoute:NavigationManager.ToBaseRelativePath(NavigationManager.Uri), root:"CustomField", page:"", cssClass:"display: block;", cssClassAlt:"")">
-        <ul>
-            <li>
-                <a href="/CustomFieldGroup/CustomFieldGroups">@LanguageHelper.GetTitle(langQueryList, 10125)</a>
-            </li>
-            <li>
-                <a href="/CustomFieldGroup/Index">@LanguageHelper.GetTitle(langQueryList, 10126)</a>
-            </li>
-        </ul>
-    </div>
-</li>
+﻿<BarItem>
+    <BarDropdown>
+        <BarDropdownToggle>
+            <BarIcon IconName="@("fa-file-code")" />
+            @LanguageHelper.GetTitle(langQueryList, 10124)
+        </BarDropdownToggle>
+        <BarDropdownMenu>
+            <BarDropdownItem To="taskgroup/taskgroups">
+                @LanguageHelper.GetTitle(langQueryList, 10125)
+            </BarDropdownItem>
+            <BarDropdownItem To="taskgroup/createoredit">
+                @LanguageHelper.GetTitle(langQueryList, 10126)
+            </BarDropdownItem>
+        </BarDropdownMenu>
+    </BarDropdown>
+</BarItem>
 
 @code {
     [CascadingParameter(Name = "langQueryList")] LangQueryList langQueryList { get; set; }

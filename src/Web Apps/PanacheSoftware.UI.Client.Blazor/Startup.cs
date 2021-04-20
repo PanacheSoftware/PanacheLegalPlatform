@@ -20,6 +20,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using PanacheSoftware.Http;
+using Blazorise;
+using Blazorise.Bootstrap;
+using Blazorise.Icons.FontAwesome;
 
 namespace PanacheSoftware.UI.Client.Blazor
 {
@@ -88,6 +91,14 @@ namespace PanacheSoftware.UI.Client.Blazor
                 });
 
             services.ConfigureNonBreakingSameSiteCookies();
+
+            services
+              .AddBlazorise(options =>
+              {
+                  options.ChangeTextOnKeyPress = true; // optional
+              })
+              .AddBootstrapProviders()
+              .AddFontAwesomeIcons();
 
             services.AddRazorPages();
             services.AddServerSideBlazor();

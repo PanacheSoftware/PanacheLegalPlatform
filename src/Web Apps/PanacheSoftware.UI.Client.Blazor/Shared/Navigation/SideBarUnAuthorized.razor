@@ -1,9 +1,19 @@
-﻿<div class="sidebar-content">
-    <!-- sidebar-brand  -->      
-    <div class="sidebar-item sidebar-brand">
-        <a href="#">Logged Out</a>
-    </div>
-    <SideBarLogin />
-</div>
+﻿<BarBrand>
+    <BarItem>
+        <BarLink To="">
+            <BarIcon IconName="customIcon" />
+            Panache Legal
+        </BarLink>
+    </BarItem>
+</BarBrand>
+<BarMenu>
+    <BarStart>
+        <BarLabel>Access</BarLabel>
+        <SideBarLogin />
+    </BarStart>
+</BarMenu>
+@code{
+    RenderFragment customIcon =@<img src="/img/user.jpg" style="width:32px; height: 32px" />;
+}
 
 

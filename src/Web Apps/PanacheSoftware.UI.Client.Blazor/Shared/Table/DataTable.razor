@@ -1,5 +1,125 @@
-﻿<h3>DataTable</h3>
+﻿<table id="" class="table table-striped table-bordered" style="width:100%">
+    <thead>
+        <tr>
+            @foreach (var header in HeaderItems)
+            {
+                <th>
+                    @if (@header.AllowSort)
+                    {
+                        <span @onclick="@(() => Sort(header.FieldName))">@header.FieldTitle</span><i class="@(SortIndicator(header.FieldName))"></i>
+                    }
+                    else
+                    {
+                        @header.FieldTitle
+                    }
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var row in RowItems)
+        {
+            <tr>
+                @foreach (var column in row.DataTableColumns)
+                {
+                    <td>
+                        @if (column.IsLink)
+                        {
+                            <a href="@column.LinkValue" class="btn btn-primary btn-sm"><i class="fa fa-edit"></i></a>
+                        }
+                        else
+                        {
+                            @column.Value
+                        }
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+<Pager PageIndex=@PageIndex TotalPages=@TotalPages OnClick="PageChange"
+       HasNextPage=@HasNextPage HasPreviousPage=@HasPreviousPage>
+</Pager>
+
+@if (CreateButtonLink != null)
+{
+    @if(!string.IsNullOrWhiteSpace(CreateButtonLink.LinkValue) && !string.IsNullOrWhiteSpace(CreateButtonLink.Title))
+    { 
+        <div class="float-left">
+            <a class="btn btn-primary" href="@CreateButtonLink.LinkValue">@CreateButtonLink.Title</a>
+        </div>
+    }
+}
+
 
 @code {
+    [Parameter]
+    public IReadOnlyList<DataTableHeader> HeaderItems { get; set; }
 
+    [Parameter]
+    public IReadOnlyList<DataTableRow> RowItems { get; set; }
+
+    [Parameter]
+    public CreateButton CreateButtonLink { get; set; }
+
+    [Parameter]
+    public EventCallback<int> PageChanged { get; set; }
+
+    [Parameter]
+    public EventCallback SortChanged { get; set; }
+
+    [Parameter]
+    public int PageIndex { get; set; }
+
+    [Parameter]
+    public int TotalPages { get; set; }
+
+    [Parameter]
+    public bool HasNextPage { get; set; }
+
+    [Parameter]
+    public bool HasPreviousPage { get; set; }
+
+    [Parameter]
+    public int CurrentPageNumber { get; set; }
+
+    [Parameter]
+    public string CurrentSortField { get; set; }
+
+    [Parameter]
+    public string CurrentSortOrder { get; set; }
+
+
+    protected async Task PageChange(int newPageNumber)
+    {
+        if (newPageNumber < 1 || newPageNumber > TotalPages)
+            return;
+
+        await PageChanged.InvokeAsync(newPageNumber);
+    }
+
+    private async Task Sort(string sortField)
+    {
+        if (sortField.Equals(CurrentSortField))
+        {
+            CurrentSortOrder = CurrentSortOrder.Equals(SortOrders.Ascending) ? SortOrders.Descending : SortOrders.Ascending;
+        }
+        else
+        {
+            CurrentSortField = sortField;
+            CurrentSortOrder = SortOrders.Ascending;
+        }
+
+        await SortChanged.InvokeAsync();
+    }
+
+    private string SortIndicator(string sortField)
+    {
+        if (sortField.Equals(CurrentSortField))
+        {
+            return CurrentSortOrder.Equals(SortOrders.Ascending) ? "fas fa-sort-up" : "fas fa-sort-down";
+        }
+        return string.Empty;
+    }
 }

@@ -1,21 +1,19 @@
-﻿@inject NavigationManager NavigationManager
-
-<li class="sidebar-dropdown @PageHelper.IsSelected(currentRoute:NavigationManager.ToBaseRelativePath(NavigationManager.Uri), root:"User", page:"", cssClass:"active", cssClassAlt:"")">
-    <a href="#">
-        <i class="fa fa-users"></i>
-        <span class="menu-text">@LanguageHelper.GetTitle(langQueryList, 10115)</span>
-    </a>
-    <div class="sidebar-submenu" style="@PageHelper.IsSelected(currentRoute:NavigationManager.ToBaseRelativePath(NavigationManager.Uri), root:"User", page:"", cssClass:"display: block;", cssClassAlt:"")">
-        <ul>
-            <li>
-                <a href="/User/Users">@LanguageHelper.GetTitle(langQueryList, 10116)</a>
-            </li>
-            <li>
-                <a href="/User/Index">@LanguageHelper.GetTitle(langQueryList, 10117)</a>
-            </li>
-        </ul>
-    </div>
-</li>
+﻿<BarItem>
+    <BarDropdown>
+        <BarDropdownToggle>
+            <BarIcon IconName="@("fa-users")" />
+            @LanguageHelper.GetTitle(langQueryList, 10115)
+        </BarDropdownToggle>
+        <BarDropdownMenu>
+            <BarDropdownItem To="user/users">
+                @LanguageHelper.GetTitle(langQueryList, 10116)
+            </BarDropdownItem>
+            <BarDropdownItem To="user/index">
+                @LanguageHelper.GetTitle(langQueryList, 10117)
+            </BarDropdownItem>
+        </BarDropdownMenu>
+    </BarDropdown>
+</BarItem>
 
 @code {
     [CascadingParameter(Name = "langQueryList")] LangQueryList langQueryList { get; set; }

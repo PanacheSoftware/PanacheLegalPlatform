@@ -1,7 +1,8 @@
 ﻿@inject AuthenticationStateProvider AuthenticationStateProvider
 @using IdentityModel;
 
-<div class="sidebar-item sidebar-header d-flex flex-nowrap">
+@*<div class="sidebar-item sidebar-header d-flex flex-nowrap">*@
+<SidebarItem>
     <div class="user-pic">
         <img class="img-responsive img-rounded" src="@ProfilePictureBase64">
     </div>
@@ -17,7 +18,8 @@
             <span>@LanguageHelper.GetTitle(langQueryList, 10100)</span>
         </span>
     </div>
-</div>
+</SidebarItem>
+@*</div>*@
 
 @code {
     [CascadingParameter(Name = "langQueryList")] LangQueryList langQueryList { get; set; }

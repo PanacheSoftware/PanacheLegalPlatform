@@ -2,90 +2,55 @@
 @attribute [Authorize]
 @inject FoundationService MyFoundationService
 @inject TokenProvider TokenProvider
-@inject IJSRuntime JSRuntime
 @using PanacheSoftware.Core.Domain.API.Client;
 
-<div id="overlay" class="overlay"></div>
-<div class="container-fluid p-5">
-    <div class="row">
-        <div class="form-group col-md-12">
-            <div class="breadcrumb-container">
-                <a id="toggle-sidebar" class="btn btn-outline-secondary btn-sm breadcrumb-button" href="#"><i class="fa fa-bars"></i></a>
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a asp-page="/Dashboard/Index">@LanguageHelper.GetTitle(langQueryList, 10121)</a></li>
-                    <li class="breadcrumb-item active">@LanguageHelper.GetTitle(langQueryList, 10105)</li>
-                </ol>
-            </div>
-        </div>
-    </div>
-    <form method="post">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card border-light mb-6">
-                    <div class="card-header">@LanguageHelper.GetTitle(langQueryList, 10105)</div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <table id="" class="table table-striped table-bordered" style="width:100%">
-                                    <thead>
-                                        <tr>
-                                            <th></th>
-                                            <th><span @onclick="@(() => Sort("ShortName"))">@LanguageHelper.GetTitle(langQueryList, 10301)</span><i class="@(SortIndicator("ShortName"))"></i></th>
-                                            <th><span @onclick="@(() => Sort("LongName"))">@LanguageHelper.GetTitle(langQueryList, 10302)</span><i class="@(SortIndicator("LongName"))"></i></th>
-                                            <th>@LanguageHelper.GetTitle(langQueryList, 10200)</th>
-                                            <th>@LanguageHelper.GetTitle(langQueryList, 10201)</th>
-                                            <th>@LanguageHelper.GetTitle(langQueryList, 10202)</th>
-                                            <th>@LanguageHelper.GetTitle(langQueryList, 10203)</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @if (clientList != null)
-                                        {
-                                            @foreach (var currentClient in clientList.Items)
-                                            {
-                                                <tr>
-                                                    <td>
-                                                        <a href="/Client/Index" asp-route-id="@currentClient.Id" class="btn btn-primary btn-sm"><i class="fa fa-edit"></i></a>
-                                                    </td>
-                                                    <td>@currentClient.ShortName</td>
-                                                    <td>@currentClient.LongName</td>
-                                                    <td>@currentClient.Description</td>
-                                                    <td>@currentClient.Status</td>
-                                                    <td>@currentClient.DateFrom.ToShortDateString()</td>
-                                                    <td>@currentClient.DateTo.ToShortDateString()</td>
-                                                </tr>
-                                            }
-                                        }
-                                        else
-                                        {
-                                            <tr><td colspan="7">Loading...</td></tr>
-                                        }
-                                    </tbody>
-                                </table>
-                                @if (clientList != null)
-                                {
-                                    <Pager PageIndex=@clientList.PageIndex TotalPages=@clientList.TotalPages OnClick="PageIndexChanged"
-                                            HasNextPage=@clientList.HasNextPage HasPreviousPage=@clientList.HasPreviousPage>
-                                    </Pager>
-                                }
-                                <div class="float-left">
-                                    <a class="btn btn-primary" href="/Client/Index">@LanguageHelper.GetTitle(langQueryList, 10204)</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </form>
-</div>
+<Breadcrumb>
+    <BreadcrumbItem>
+        <BreadcrumbLink To="dashboard">@LanguageHelper.GetTitle(langQueryList, 10121)</BreadcrumbLink>
+    </BreadcrumbItem>
+    <BreadcrumbItem Active="true">
+        <BreadcrumbLink>@LanguageHelper.GetTitle(langQueryList, 10105)</BreadcrumbLink>
+    </BreadcrumbItem>
+</Breadcrumb>
+
+<Card Margin="Margin.Is4.OnY">
+    <CardHeader>
+        <CardTitle>@LanguageHelper.GetTitle(langQueryList, 10105)</CardTitle>
+    </CardHeader>
+    <CardBody>
+        @if (clientList != null)
+        {
+            <DataGrid TItem="ClientHead"
+                      Data="@clientList.ClientHeaders"
+                      Filterable="true"
+                      FilterMethod="DataGridFilterMethod.StartsWith"
+                      PageSize="25"
+                      Striped="true"
+                      Bordered="true"
+                      Hoverable="true"
+                      Responsive="true"
+                      ShowPager="true"
+                      PagerPosition="DataGridPagerPosition.Bottom"
+                      ShowPageSizes="true">
+                <DataGridCommandColumn TItem="ClientHead" Width="170px" />
+                <DataGridColumn TItem="ClientHead" Field="@nameof(ClientHead.ShortName)" Caption="@LanguageHelper.GetTitle(langQueryList, 10301)" />
+                <DataGridColumn TItem="ClientHead" Field="@nameof(ClientHead.LongName)" Caption="@LanguageHelper.GetTitle(langQueryList, 10302)" />
+                <DataGridColumn TItem="ClientHead" Field="@nameof(ClientHead.Description)" Caption="@LanguageHelper.GetTitle(langQueryList, 10200)" />
+                <DataGridColumn TItem="ClientHead" Field="@nameof(ClientHead.Status)" Caption="@LanguageHelper.GetTitle(langQueryList, 10201)" />
+                <DataGridColumn TItem="ClientHead" Field="@nameof(ClientHead.DateFrom)" Caption="@LanguageHelper.GetTitle(langQueryList, 10202)" DisplayFormat="{0:dd/MM/yyyy}" />
+                <DataGridColumn TItem="ClientHead" Field="@nameof(ClientHead.DateTo)" Caption="@LanguageHelper.GetTitle(langQueryList, 10203)" DisplayFormat="{0:dd/MM/yyyy}" />
+            </DataGrid>
+        }
+        else
+        {
+            <p>Loading...</p>
+        }
+    </CardBody>
+</Card>
 
 @code {
     LangQueryList langQueryList { get; set; }
-    Paginated<ClientHead> clientList { get; set; }
-    int pageNumber = 1;
-    string currentSortField = "ShortName";
-    string currentSortOrder = SortOrders.Ascending;
+    ClientList clientList { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -107,67 +72,20 @@
 
         langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, textCodes.ToArray());
 
-        await GetClients(1, "ShortName", SortOrders.Ascending, 1);
-
-        StateHasChanged();
+        await GetClients();
     }
 
-    private async Task GetClients(int pageNumber, string sortField, string sortOrder, int pageSize)
+    private async Task GetClients()
     {
-        var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.CLIENT, $"Client/GetPaginatedClients?pageNumber={pageNumber}&sortField={sortField}&sortOrder={sortOrder}&pageSize={pageSize}");
+        var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.CLIENT, $"Client");
 
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
-            clientList = response.ContentAsType<Paginated<ClientHead>>();
+            clientList = response.ContentAsType<ClientList>();
         }
         else
         {
-            clientList = null;
+            clientList = new ClientList();
         }
     }
-
-    private async Task Sort(string sortField)
-    {
-        if (sortField.Equals(currentSortField))
-        {
-            currentSortOrder = currentSortOrder.Equals(SortOrders.Ascending) ? SortOrders.Descending : SortOrders.Ascending;
-        }
-        else
-        {
-            currentSortField = sortField;
-            currentSortOrder = SortOrders.Ascending;
-        }
-        await GetClients(1, currentSortField, currentSortOrder, 1);
-        StateHasChanged();
-    }
-
-    private string SortIndicator(string sortField)
-    {
-        if (sortField.Equals(currentSortField))
-        {
-            return currentSortOrder.Equals(SortOrders.Ascending) ? "fas fa-sort-up" : "fas fa-sort-down";
-        }
-        return string.Empty;
-    }
-
-    public async void PageIndexChanged(int newPageNumber)
-    {
-        if (newPageNumber < 1 || newPageNumber > clientList.TotalPages)
-        {
-            return;
-        }
-        pageNumber = newPageNumber;
-        await GetClients(pageNumber, currentSortField, currentSortOrder, 1);
-        StateHasChanged();
-    }
-
-    //protected override async Task OnAfterRenderAsync(bool firstRender)
-    //{
-    //    await JSRuntime.InvokeAsync<IJSObjectReference>("import", "/js/datatables/jquery.dataTables.min.js");
-    //    await JSRuntime.InvokeAsync<IJSObjectReference>("import", "/js/datatables/dataTables.bootstrap4.min.js");
-    //    await JSRuntime.InvokeAsync<IJSObjectReference>("import", "/js/datatables/responsive.bootstrap4.min.js");
-    //    await JSRuntime.InvokeAsync<IJSObjectReference>("import", "/js/datatables/dataTables.responsive.min.js");
-    //    await JSRuntime.InvokeAsync<IJSObjectReference>("import", "/js/panache/pl-datatable.js");
-    //    //await JSRuntime.InvokeVoidAsync("PLregisterDataTables");
-    //}
 }

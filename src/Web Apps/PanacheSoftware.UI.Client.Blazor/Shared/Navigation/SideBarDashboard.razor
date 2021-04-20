@@ -1,10 +1,9 @@
-﻿<li>
-    <a href="~/">
-        <i class="fa fa-tachometer-alt"></i>
-        <span class="menu-text">@LanguageHelper.GetTitle(langQueryList, 10104)</span>
-        @*<span class="badge badge-pill badge-success">New</span>*@
-    </a>
-</li>
+﻿<BarItem>
+    <BarLink To="">
+        <BarIcon IconName="IconName.Dashboard" />
+        @LanguageHelper.GetTitle(langQueryList, 10104)
+    </BarLink>
+</BarItem>
 
 @code {
     [CascadingParameter(Name = "langQueryList")] LangQueryList langQueryList { get; set; }

@@ -49,35 +49,29 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>PanacheSoftware.UI.Client.Blazor</title>
+    <base href="~/" />
 
-    @*<script src="js/jquery.js"></script>*@
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
 
-    <link rel="stylesheet" href="css/bootstrap/bootstrap.css">
-    <link rel="stylesheet" href="css/sidebar/jquery.mCustomScrollbar.css">
-    <link rel="stylesheet" href="css/fontawesome/all.css">
-    <link rel="stylesheet" href="css/sidebar/sidebar-main.css">
-    <link rel="stylesheet" href="css/sidebar/sidebar-themes.css">
-
-    <!-- Panache Specific-->
-    <link rel="stylesheet" href="css/panache/pl-breadcrumb.css">
-
-    <link rel="stylesheet" href="css/datatables/responsive.bootstrap4.min.css">
-    <link rel="stylesheet" href="css/datatables/dataTables.bootstrap4.min.css">
-    <link rel="stylesheet" href="css/datepicker/bootstrap-datepicker3.css">
-    <link rel="stylesheet" href="css/panache/pl-form.css">
-    <link rel="stylesheet" href="css/orgchart/jquery.orgchart.min.css">
-    <link rel="stylesheet" href="css/panache/pl-orgchart.css">
+    <link href="_content/Blazorise/blazorise.css" rel="stylesheet" />
+    <link href="_content/Blazorise.Bootstrap/blazorise.bootstrap.css" rel="stylesheet" />
+    <link href="_content/Blazorise.Sidebar/blazorise.sidebar.css" rel="stylesheet" />
+    <link href="_content/Blazorise.DataGrid/blazorise.datagrid.css" rel="stylesheet" />
 
 </head>
 <body>
 
     <component type="typeof(App)" param-InitialState="tokens" render-mode="ServerPrerendered" />
 
-    @*<script src="~/ui-core/js/jquery.js"></script>
-    <script src="~/ui-core/js/popper.min.js"></script>
-    <script src="~/ui-core/js/bootstrap.js"></script>
-    <script src="~/ui-core/js/sidebar/jquery.mCustomScrollbar.concat.min.js"></script>
-    <script src="~/ui-core/js/sidebar/sidebar-main.js"></script>*@
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+    <script src="_content/Blazorise/blazorise.js"></script>
+    <script src="_content/Blazorise.Bootstrap/blazorise.bootstrap.js"></script>
+    <script src="_content/Blazorise.DataGrid/blazorise.datagrid.js"></script>
+
     <script src="_framework/blazor.server.js"></script>
 </body>
 </html>

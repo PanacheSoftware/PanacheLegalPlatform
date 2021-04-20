@@ -1,4 +1,6 @@
-﻿<nav id="sidebar" class="sidebar-wrapper">
+﻿<Bar Breakpoint="Breakpoint.Desktop" NavigationBreakpoint="Breakpoint.Tablet" ThemeContrast="ThemeContrast.Dark"
+     Mode="BarMode.VerticalInline" CollapseMode="BarCollapseMode.Small">
+    <BarToggler />
     <AuthorizeView>
         <Authorized>
             <SideBarAuthorized />
@@ -7,4 +9,9 @@
             <SideBarUnAuthorized />
         </NotAuthorized>
     </AuthorizeView>
-</nav>
+</Bar>
+
+@code
+{
+    RenderFragment customIcon =@<img src="/img/user.jpg" style="width:32px; height: 32px" />;
+}

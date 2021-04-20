@@ -5,23 +5,24 @@
 @using IdentityModel;
 
 <CascadingValue Value="@langQueryList" Name="langQueryList">
-    <div class="sidebar-content">
-        <!-- sidebar-brand  -->
-        <div class="sidebar-item sidebar-brand">
-            <a href="#">@LanguageHelper.GetTitle(langQueryList, 10000)</a>
-        </div>
-        <!-- sidebar-header  -->
-        <SideBarUserProfile />
-        <!-- sidebar-search  -->
-        <SideBarSearch />
-        <!-- sidebar-menu  -->
-        <SideBarMenu />
-    </div>
-    <!-- sidebar-footer  -->
-    <SideBarFooter />
+    <BarBrand>
+        <BarItem>
+            <BarLink To="">
+                <BarIcon IconName="customIcon" />
+                @LanguageHelper.GetTitle(langQueryList, 10000)
+            </BarLink>
+        </BarItem>
+    </BarBrand>
+    <BarMenu>
+        <BarStart>
+            <SideBarMenu />
+        </BarStart>
+    </BarMenu>
 </CascadingValue>
 
 @code {
+    RenderFragment customIcon =@<img src="/img/user.jpg" style="width:32px; height: 32px" />;
+    Sidebar sidebar;
     LangQueryList langQueryList { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -71,5 +72,10 @@
         textCodes.Add(10126);
 
         langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, textCodes.ToArray());
+    }
+
+    void ToggleSidebar()
+    {
+        sidebar.Toggle();
     }
 }
