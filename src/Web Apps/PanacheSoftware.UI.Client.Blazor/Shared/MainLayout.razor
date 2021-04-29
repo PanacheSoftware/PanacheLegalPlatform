@@ -1,5 +1,4 @@
 ﻿@inherits LayoutComponentBase
-@inject IJSRuntime JSRuntime
 
 <Layout Sider="true">
     <LayoutSider>
@@ -8,6 +7,9 @@
         </LayoutSiderContent>
     </LayoutSider>
     <Layout>
+        <LayoutHeader Fixed="true">
+            <Header />
+        </LayoutHeader>
         <LayoutContent>
             <Container Fluid="true" Margin="Margin.Is4.FromTop">
                 @Body
@@ -15,42 +17,3 @@
         </LayoutContent>
     </Layout>
 </Layout>
-
-
-@*<div class="page-wrapper default-theme sidebar-bg bg1 toggled border-radius-on">*@
-    @*@await Component.InvokeAsync("SideBar")*@
-    @*<SideBar />*@
-    <!-- page-content  -->
-    @*<main class="page-content">
-        @Body
-    </main>*@
-    <!-- page-content" -->
-@*</div>*@
-<!-- page-wrapper -->
-
-@code {
-    //protected override async Task OnAfterRenderAsync(bool firstRender)
-    //{
-    //    if (firstRender)
-    //    {
-    //        await JSRuntime.InvokeAsync<IJSObjectReference>("import", "/js/jquery.js");
-
-    //        //await JSRuntime.InvokeAsync<IJSObjectReference>("import", "/js/popper.min.js");
-
-    //        await JSRuntime.InvokeAsync<IJSObjectReference>("import", "/js/bootstrap.js");
-    //        await JSRuntime.InvokeAsync<IJSObjectReference>("import", "/js/sidebar/jquery.mCustomScrollbar.concat.min.js");
-    //        await JSRuntime.InvokeAsync<IJSObjectReference>("import", "/js/sidebar/sidebar-main.js");
-
-    //        //await JSRuntime.InvokeAsync<IJSObjectReference>("import", "/js/datatables/jquery.dataTables.min.js");
-    //        //await JSRuntime.InvokeAsync<IJSObjectReference>("import", "/js/datatables/dataTables.bootstrap4.min.js");
-    //        //await JSRuntime.InvokeAsync<IJSObjectReference>("import", "/js/datatables/responsive.bootstrap4.min.js");
-    //        //await JSRuntime.InvokeAsync<IJSObjectReference>("import", "/js/datatables/dataTables.responsive.min.js");
-    //        //await JSRuntime.InvokeAsync<IJSObjectReference>("import", "/js/panache/pl-datatable.js");
-
-    //        //await JSRuntime.InvokeAsync<IJSObjectReference>("import", "/js/datepicker/bootstrap-datepicker.js");
-    //        //await JSRuntime.InvokeAsync<IJSObjectReference>("import", "/js/panache/pl-forms.js");
-
-    //        //await JSRuntime.InvokeAsync<IJSObjectReference>("import", "/js/orgchart/jquery.orgchart.min.js");
-    //    }
-    //}
-}

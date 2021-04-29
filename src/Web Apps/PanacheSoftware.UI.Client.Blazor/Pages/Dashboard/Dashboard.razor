@@ -4,6 +4,10 @@
 @inject TokenProvider TokenProvider
 @inject NavigationManager NavigationManager
 
+<PageProgressBar @ref="@pageProgressBar" pageProgressColor="Color.Warning" pageProgressVisible="@loadingPage" />
+
+@if (!loadingPage)
+{
     <Breadcrumb>
         <BreadcrumbItem>
             <BreadcrumbLink>@LanguageHelper.GetTitle(langQueryList, 10121)</BreadcrumbLink>
@@ -12,39 +16,39 @@
 
     <Row>
         <Column ColumnSize="ColumnSize.IsFull" Class="text-center">
-            <Button Color="Color.Primary" To="TaskGroup/CreateOrEdit"><Icon Name="@("fa-clipboard-list")"/> @LanguageHelper.GetTitle(langQueryList, 10113)</Button>
-            <Button Color="Color.Success" To="TaskGroup/TaskGroups"><Icon Name="@("fa-tasks")" /> @LanguageHelper.GetTitle(langQueryList, 10112)</Button>
-            <Button Color="Color.Info"><Icon Name="@("fa-address-card")" /> @LanguageHelper.GetTitle(langQueryList, 10807)</Button>
-            <Button Color="Color.Warning"><Icon Name="@("fa-users")" /> @LanguageHelper.GetTitle(langQueryList, 10408)</Button>
+            <Button Color="Color.Primary" To="TaskGroup/CreateOrEdit" Type="ButtonType.Link"><Icon Name="@("fa-clipboard-list")" /> @LanguageHelper.GetTitle(langQueryList, 10113)</Button>
+            <Button Color="Color.Success" To="TaskGroup/TaskGroups" Type="ButtonType.Link"><Icon Name="@("fa-tasks")" /> @LanguageHelper.GetTitle(langQueryList, 10112)</Button>
+            <Button Color="Color.Info" Type="ButtonType.Link"><Icon Name="@("fa-address-card")" /> @LanguageHelper.GetTitle(langQueryList, 10807)</Button>
+            <Button Color="Color.Warning" Type="ButtonType.Link"><Icon Name="@("fa-users")" /> @LanguageHelper.GetTitle(langQueryList, 10408)</Button>
         </Column>
     </Row>
+}
 
-
-@*<div id="overlay" class="overlay"></div>*@
-@*<div class="container-fluid p-5">*@
+    @*<div id="overlay" class="overlay"></div>*@
+    @*<div class="container-fluid p-5">*@
     @*<div class="row">*@
-        @*<div class="form-group col-md-12">*@
-          @*  <div class="breadcrumb-container">*@
-            @*    <a id="toggle-sidebar" class="btn btn-outline-secondary btn-sm breadcrumb-button" href="#"><i class="fa fa-bars"></i></a>*@
-              @*  <ol class="breadcrumb">*@
-                @*    <li class="breadcrumb-item" active>@LanguageHelper.GetTitle(langQueryList, 10121)</li>*@
-                @*</ol>*@
-            @*</div>*@
-        @*</div>*@
+    @*<div class="form-group col-md-12">*@
+    @*  <div class="breadcrumb-container">*@
+    @*    <a id="toggle-sidebar" class="btn btn-outline-secondary btn-sm breadcrumb-button" href="#"><i class="fa fa-bars"></i></a>*@
+    @*  <ol class="breadcrumb">*@
+    @*    <li class="breadcrumb-item" active>@LanguageHelper.GetTitle(langQueryList, 10121)</li>*@
+    @*</ol>*@
+    @*</div>*@
+    @*</div>*@
     @*</div>*@
 
     @*<div class="row">*@
-      @*  <div class="form-group col-md-12">*@
-        @*    <div class="col-md-12 text-center">*@
-          @*      <a href="/TaskGroup/CreateOrEdit" class="btn btn-primary btn-lg"><i class="fa fa-clipboard-list"></i>&nbsp;@LanguageHelper.GetTitle(langQueryList, 10113)</a>*@
-            @*    &nbsp;&nbsp;*@
-              @*  <a href="/TaskGroup/TaskGroups" class="btn btn-success btn-lg"><i class="fa fa-tasks"></i>&nbsp;@LanguageHelper.GetTitle(langQueryList, 10112)</a>*@
-                @*&nbsp;&nbsp;*@
-                @*<button type="button" class="btn btn-info btn-lg"><i class="fa fa-address-card"></i>&nbsp;@LanguageHelper.GetTitle(langQueryList, 10807)</button>*@
-                @*&nbsp;&nbsp;*@
-                @*<button type="button" class="btn btn-warning btn-lg"><i class="fa fa-users"></i>&nbsp;@LanguageHelper.GetTitle(langQueryList, 10408)</button>*@
-            @*</div>*@
-        @*</div>*@
+    @*  <div class="form-group col-md-12">*@
+    @*    <div class="col-md-12 text-center">*@
+    @*      <a href="/TaskGroup/CreateOrEdit" class="btn btn-primary btn-lg"><i class="fa fa-clipboard-list"></i>&nbsp;@LanguageHelper.GetTitle(langQueryList, 10113)</a>*@
+    @*    &nbsp;&nbsp;*@
+    @*  <a href="/TaskGroup/TaskGroups" class="btn btn-success btn-lg"><i class="fa fa-tasks"></i>&nbsp;@LanguageHelper.GetTitle(langQueryList, 10112)</a>*@
+    @*&nbsp;&nbsp;*@
+    @*<button type="button" class="btn btn-info btn-lg"><i class="fa fa-address-card"></i>&nbsp;@LanguageHelper.GetTitle(langQueryList, 10807)</button>*@
+    @*&nbsp;&nbsp;*@
+    @*<button type="button" class="btn btn-warning btn-lg"><i class="fa fa-users"></i>&nbsp;@LanguageHelper.GetTitle(langQueryList, 10408)</button>*@
+    @*</div>*@
+    @*</div>*@
     @*</div>*@
 
     @*@if (Model.taskGroupSummaryList.TaskGroupSummarys.Any())
@@ -101,14 +105,18 @@
                 }
             }
         }*@
-@*</div>*@
+    @*</div>*@
 
-@code {
-    LangQueryList langQueryList { get; set; }
+    @code {
+        LangQueryList langQueryList { get; set; }
+        PageProgressBar pageProgressBar;
+        bool loadingPage = true;
 
-    protected override async Task OnInitializedAsync()
+protected override async Task OnInitializedAsync()
     {
         await GetLAnguageList();
+        loadingPage = false;
+        pageProgressBar.ChangeVisibility(loadingPage);
     }
 
     private async Task GetLAnguageList()
@@ -122,4 +130,4 @@
 
         langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, textCodes.ToArray());
     }
-}
+    }

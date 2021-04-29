@@ -9,5 +9,6 @@ namespace PanacheSoftware.Service.Client.Manager
     public interface IClientManager
     {
         ClientSummary GetClientSummary(string id);
+        bool ClientShortNameExists(string shortName, Guid existingGuid = default);
     }
 }

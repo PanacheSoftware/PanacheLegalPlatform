@@ -3,20 +3,22 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
-
+  
   <ItemGroup>
-    <PackageReference Include="Blazorise.Bootstrap" Version="0.9.3.4" />
-    <PackageReference Include="Blazorise.DataGrid" Version="0.9.3.4" />
-    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.3.4" />
-    <PackageReference Include="Blazorise.Sidebar" Version="0.9.3.4" />
-    <PackageReference Include="IdentityModel" Version="4.4.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.0" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.10.1" />
+    <PackageReference Include="Blazorise.Bootstrap" Version="0.9.3.6" />
+    <PackageReference Include="Blazorise.Components" Version="0.9.3.6" />
+    <PackageReference Include="Blazorise.DataGrid" Version="0.9.3.6" />
+    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.3.6" />
+    <PackageReference Include="Blazorise.Sidebar" Version="0.9.3.6" />
+    <PackageReference Include="IdentityModel" Version="5.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.5" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.11.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Core\PanacheSoftware.Core\PanacheSoftware.Core.csproj" />
     <ProjectReference Include="..\..\Core\PanacheSoftware.Http\PanacheSoftware.Http.csproj" />
+    <ProjectReference Include="..\..\Web\PanacheSoftware.UI.Core\PanacheSoftware.UI.Core.csproj" />
   </ItemGroup>
 
 </Project>

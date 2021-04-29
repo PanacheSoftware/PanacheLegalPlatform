@@ -138,6 +138,9 @@ namespace PanacheSoftware.Service.Client.Controllers
                 {
                     if (clientHead.Id == Guid.Empty)
                     {
+                        if(_clientManager.ClientShortNameExists(clientHead.ShortName))
+                            return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"ClientHead.ShortName: '{clientHead.ShortName}' already exists."));
+
                         var clientHeader = _mapper.Map<ClientHeader>(clientHead);
 
                         _unitOfWork.ClientHeaders.Add(clientHeader);
@@ -181,12 +184,14 @@ namespace PanacheSoftware.Service.Client.Controllers
 
                             clientHeadPatch.ApplyTo(clientHead);
 
+                            if (_clientManager.ClientShortNameExists(clientHead.ShortName, parsedId))
+                                return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"ClientHead.ShortName: '{clientHead.ShortName}' already exists."));
+
                             _mapper.Map(clientHead, clientHeader);
 
                             _unitOfWork.Complete();
 
-                            return CreatedAtRoute("Get", new {id = _mapper.Map<ClientHead>(clientHeader).Id},
-                                _mapper.Map<ClientHead>(clientHeader));
+                            return Ok();
                         }
 
                         return NotFound();

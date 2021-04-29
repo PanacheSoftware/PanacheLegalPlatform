@@ -1,0 +1,583 @@
+﻿@page "/client/{id?}"
+@attribute [Authorize]
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@using PanacheSoftware.Core.Domain.API.Client
+@using System.IO
+
+<PageProgressBar @ref="@pageProgressBar" pageProgressColor="Color.Warning" pageProgressVisible="@loadingPage" />
+
+@if (!loadingPage)
+{
+    <Breadcrumb>
+        <BreadcrumbItem>
+            <BreadcrumbLink To="dashboard">@LanguageHelper.GetTitle(langQueryList, 10121)</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbItem>
+            <BreadcrumbLink To="client/clients">@LanguageHelper.GetTitle(langQueryList, 10300)</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbItem Active="true">
+            <BreadcrumbLink>@GetBreadCrumbTitle()</BreadcrumbLink>
+        </BreadcrumbItem>
+    </Breadcrumb>
+
+    @if (clientHead != null)
+    {
+        <Form>
+            <Row>
+                <Column>
+                    <Card Margin="Margin.Is4.OnY">
+                        <CardHeader>
+                            <CardTitle>@LanguageHelper.GetTitle(langQueryList, 10310)</CardTitle>
+                        </CardHeader>
+                        <CardBody>
+                            <Row>
+                                <Column ColumnSize="ColumnSize.Is7">
+                                    <Validations Mode="ValidationMode.Auto" Model="@clientHead">
+                                        <Validation>
+                                            <Field>
+                                                <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10301)</FieldLabel>
+                                                <TextEdit @bind-Text="clientHead.ShortName">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        </Validation>
+                                        <Validation>
+                                            <Field>
+                                                <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10302)</FieldLabel>
+                                                <TextEdit @bind-Text="clientHead.LongName">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        </Validation>
+                                        <Validation>
+                                            <Field>
+                                                <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10303)</FieldLabel>
+                                                <TextEdit @bind-Text="clientHead.ClientDetail.url">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        </Validation>
+                                        <Validation>
+                                            <Field>
+                                                <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10202)</FieldLabel>
+                                                <DateEdit TValue="DateTime" @bind-Date="@clientHead.DateFrom" InputMode="DateInputMode.Date">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </DateEdit>
+                                            </Field>
+                                        </Validation>
+                                        <Validation>
+                                            <Field>
+                                                <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10203)</FieldLabel>
+                                                <DateEdit TValue="DateTime" @bind-Date="@clientHead.DateTo" InputMode="DateInputMode.Date">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </DateEdit>
+                                            </Field>
+                                        </Validation>
+                                    </Validations>
+                                </Column>
+                                <Column ColumnSize="ColumnSize.Is5">
+                                    <Figure Size="FigureSize.Is256x256" Class="img-fluid">
+                                        <FigureImage Source="@GetClientImage()" Rounded="true" />
+                                    </Figure>
+                                    <FileEdit Changed="@OnImageUpload" Filter=".jpg, .png, .jpeg" />
+                                </Column>
+                            </Row>
+                            <Row>
+                                <Column ColumnSize="ColumnSize.Is12">
+                                    <Validations Mode="ValidationMode.Auto" Model="@clientHead">
+                                        <Field>
+                                            <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10200)</FieldLabel>
+                                            <MemoEdit @bind-Text="@clientHead.Description" Rows="5">
+                                                <Feedback>
+                                                    <ValidationError />
+                                                </Feedback>
+                                            </MemoEdit>
+                                        </Field>
+                                    </Validations>
+                                </Column>
+                            </Row>
+                            <Row>
+                                <Column ColumnSize="ColumnSize.Is4">
+                                    <Validations Mode="ValidationMode.Auto" Model="@clientHead">
+                                        <Field>
+                                            <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10201)</FieldLabel>
+                                            <SelectList TItem="SelectListModel" TValue="string" Data="@StatusSelectListValues" TextField="@((item) => item.DescriptionField)" ValueField="@((item) => item.ValueField)" SelectedValue="@clientHead.Status" SelectedValueChanged="@StatusListValueChangedHandler" />
+                                        </Field>
+                                    </Validations>
+                                </Column>
+                            </Row>
+                        </CardBody>
+                    </Card>
+                </Column>
+            </Row>
+        </Form>
+        <Row>
+            <Column>
+                <Card Margin="Margin.Is4.OnY">
+                    <CardHeader>
+                        <CardTitle>@LanguageHelper.GetTitle(langQueryList, 10304)</CardTitle>
+                    </CardHeader>
+                    <CardBody>
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is12">
+                                <Button Clicked="@OnAddContact" Color="Color.Primary">@LanguageHelper.GetTitle(langQueryList, 10305)</Button>
+                            </Column>
+                        </Row>
+                        <br />
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is12">
+                                <CascadingValue Value="@langQueryList">
+                                    <Tabs SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
+                                        <Items>
+                                            @if (clientHead.ClientContacts.Any())
+                                            {
+                                                @for (int i = 0; i < clientHead.ClientContacts.Count; i++)
+                                                {
+                                                    var counter = i; //Have to do this due to the way Razor works (https://github.com/dotnet/aspnetcore/issues/16809)
+                                                    <Tab Name="@GetContactTabName(counter)">@GetTabTitle(counter)</Tab>
+                                                }
+                                            }
+                                        </Items>
+                                        <Content>
+                                            @if (clientHead.ClientContacts.Any())
+                                            {
+                                                @for (int i = 0; i < clientHead.ClientContacts.Count; i++)
+                                                {
+                                                    var counter = i; //Have to do this due to the way Razor works (https://github.com/dotnet/aspnetcore/issues/16809)
+                                                    <ContactTab clientContact="clientHead.ClientContacts[i]" tabName="@GetContactTabName(counter)" OnMainContactChange="@MainContactChange"></ContactTab>
+                                                }
+                                            }
+                                        </Content>
+                                    </Tabs>
+                                </CascadingValue>
+                            </Column>
+                        </Row>
+                    </CardBody>
+                </Card>
+            </Column>
+        </Row>
+        <Row>
+            <Column>
+                <Card Margin="Margin.Is4.OnY">
+                    <CardBody>
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is12">
+                                <Alert Color="(Color)alertModel.AlertType" @bind-Visible="@alertModel.ShowAlert" Dismisable="true">
+                                    <AlertMessage>
+                                        @alertModel.AlertMessage
+                                    </AlertMessage>
+                                    <AlertDescription>
+                                        @alertModel.AlertDescription
+                                    </AlertDescription>
+                                    <CloseButton />
+                                </Alert>
+                            </Column>
+                        </Row>
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is4">
+                                @if (clientHead.Id == Guid.Empty)
+                                {
+                                    <Button Type="ButtonType.Submit" Color="Color.Primary" PreventDefaultOnSubmit="true" Clicked="@SubmitForm" Loading="@SavingClient">@LanguageHelper.GetTitle(langQueryList, 10309)</Button>
+                                }
+                                else
+                                {
+                                    <Button Type="ButtonType.Submit" Color="Color.Primary" PreventDefaultOnSubmit="true" Clicked="@SubmitForm" Loading="@SavingClient">@LanguageHelper.GetTitle(langQueryList, 10308)</Button>
+                                }
+                            </Column>
+                        </Row>
+                    </CardBody>
+                </Card>
+            </Column>
+        </Row>
+    }
+}
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    LangQueryList langQueryList { get; set; }
+    ClientHead clientHead { get; set; }
+    IEnumerable<SelectListModel> StatusSelectListValues { get; set; }
+    AlertModel alertModel = new AlertModel();
+    bool SavingClient = false;
+    PageProgressBar pageProgressBar;
+    bool loadingPage = true;
+
+    string selectedTab = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        CreateSelectListModels();
+        await GetLanguageList();
+        await GetClient();
+        loadingPage = false;
+        pageProgressBar.ChangeVisibility(loadingPage);
+    }
+
+    private async Task GetLanguageList()
+    {
+        var textCodes = new List<long>();
+        textCodes.Add(10121);
+        textCodes.Add(10300);
+        textCodes.Add(10310);
+        textCodes.Add(10301);
+        textCodes.Add(10302);
+        textCodes.Add(10303);
+        textCodes.Add(10202);
+        textCodes.Add(10203);
+        textCodes.Add(10221);
+        textCodes.Add(10205);
+        textCodes.Add(10200);
+        textCodes.Add(10201);
+        textCodes.Add(10304);
+        textCodes.Add(10305);
+        textCodes.Add(10309);
+        textCodes.Add(10308);
+        textCodes.Add(10206);
+        textCodes.Add(10207);
+        textCodes.Add(10208);
+        textCodes.Add(10209);
+        textCodes.Add(10210);
+        textCodes.Add(10211);
+        textCodes.Add(10306);
+        textCodes.Add(10212);
+        textCodes.Add(10213);
+        textCodes.Add(10214);
+        textCodes.Add(10215);
+        textCodes.Add(10216);
+        textCodes.Add(10217);
+
+        langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, textCodes.ToArray());
+    }
+
+    private void CreateSelectListModels()
+    {
+        StatusTypes statusTypes = new StatusTypes();
+        StatusSelectListValues = statusTypes.GetStatusTypesDictionary().Select(s => new SelectListModel { ValueField = s.Key, DescriptionField = s.Value });
+    }
+
+    private async Task GetClient()
+    {
+        clientHead = new ClientHead();
+        clientHead.Id = Guid.Empty;
+
+        if (!string.IsNullOrWhiteSpace(Id))
+        {
+            var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.CLIENT, $"Client/{Id}");
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                clientHead = response.ContentAsType<ClientHead>();
+            }
+        }
+    }
+
+    private string GetBreadCrumbTitle()
+    {
+        if (clientHead == null)
+            return string.Empty;
+
+        if (clientHead.Id == Guid.Empty)
+            return "New Client";
+
+        return clientHead.ShortName;
+    }
+
+    private void StatusListValueChangedHandler(string newValue)
+    {
+        //clientHead.Status = newValue;
+    }
+
+    private async Task SubmitForm()
+    {
+        SavingClient = true;
+        var saveResult = await SaveClient();
+
+        alertModel.ShowAlert = true;
+        alertModel.AlertType = saveResult.Item1 ? (int)Color.Success : (int)Color.Danger;
+        alertModel.AlertMessage = saveResult.Item2;
+        SavingClient = false;
+    }
+
+    private async Task<Tuple<bool, string>> SaveClient()
+    {
+        if (clientHead != null)
+        {
+            if (clientHead.Id != Guid.Empty)
+            {
+                var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.CLIENT, $"Client/{clientHead.Id}");//_apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.CLIENT, $"Client/{clientHead.Id}");
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    var foundClientHead = response.ContentAsType<ClientHead>();
+
+                    if (foundClientHead != null)
+                    {
+                        var processPatchResult = await MyFoundationService.ProcessPatch(foundClientHead, clientHead, foundClientHead.Id, TokenProvider.AccessToken, APITypes.CLIENT, "Client");
+                        if (!processPatchResult.Item1)
+                        {
+                            return processPatchResult;
+                        }
+
+                        response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.CLIENT, $"Client/Detail/{clientHead.ClientDetail.Id}");//_apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.CLIENT, $"Client/Detail/{clientHead.ClientDetail.Id}");
+
+                        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                        {
+                            var foundClientDet = response.ContentAsType<ClientDet>();
+
+                            if (foundClientDet != null)
+                            {
+                                processPatchResult = await MyFoundationService.ProcessPatch(foundClientDet, clientHead.ClientDetail, foundClientDet.Id, TokenProvider.AccessToken, APITypes.CLIENT, "Client/Detail");
+                                if (!processPatchResult.Item1)
+                                {
+                                    return processPatchResult;
+                                }
+                            }
+                        }
+                    }
+
+                    foreach (var clientCon in clientHead.ClientContacts)
+                    {
+                        var updateContactResult = await CreateOrUpdateContactAsync(clientCon);
+                        if (!updateContactResult.Item1)
+                        {
+                            return updateContactResult;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                HttpContent contentPost = new StringContent(JsonConvert.SerializeObject(clientHead), Encoding.UTF8, "application/json");
+
+                try
+                {
+                    var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Post, APITypes.CLIENT, $"Client", contentPost);//_apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.CLIENT, $"Client", contentPost);
+
+                    if (response.StatusCode != System.Net.HttpStatusCode.Created)
+                    {
+                        return new Tuple<bool, string>(false, await MyFoundationService.GetErrorFromResponse(response));
+                    }
+
+                    clientHead = response.ContentAsType<ClientHead>();
+                }
+                catch (Exception ex)
+                {
+                    return new Tuple<bool, string>(false, $"Error calling API: {ex.Message}");
+                }
+            }
+
+            return new Tuple<bool, string>(true, $"Client {clientHead.ShortName} saved");
+        }
+
+        return new Tuple<bool, string>(false, $"No client to save");
+    }
+
+    private async Task<Tuple<bool, string>> CreateOrUpdateContactAsync(ClientCon clientCon)
+    {
+        if (clientCon != null)
+        {
+            if (clientCon.Id != Guid.Empty)
+            {
+                var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.CLIENT, $"Contact/{clientCon.Id}");//_apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.CLIENT, $"Contact/{clientCon.Id}");
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    var foundClientCon = response.ContentAsType<ClientCon>();
+
+                    if (foundClientCon != null)
+                    {
+                        var patchResponse = await MyFoundationService.ProcessPatch(foundClientCon, clientCon, foundClientCon.Id, TokenProvider.AccessToken, APITypes.CLIENT, "Contact");
+
+                        if (!patchResponse.Item1)
+                        {
+                            return patchResponse;
+                        }
+                    }
+
+                    foreach (var clientAddr in clientCon.ClientAddresses)
+                    {
+                        var createAddressResult = await CreateOrUpdateAddressAsync(clientAddr);
+                        if (!createAddressResult.Item1)
+                        {
+                            return createAddressResult;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                HttpContent contentPost = new StringContent(JsonConvert.SerializeObject(clientCon), Encoding.UTF8, "application/json");
+
+                try
+                {
+                    var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Post, APITypes.CLIENT, $"Contact", contentPost);//_apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.CLIENT, $"Contact", contentPost);
+
+                    if (response.StatusCode != System.Net.HttpStatusCode.Created)
+                    {
+                        return new Tuple<bool, string>(false, await MyFoundationService.GetErrorFromResponse(response));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return new Tuple<bool, string>(false, $"Error calling API: {ex.Message}");
+                }
+            }
+
+            return new Tuple<bool, string>(true, $"Contact {clientCon.FirstName} saved");
+        }
+
+        return new Tuple<bool, string>(false, $"No contact to save");
+    }
+
+    private async Task<Tuple<bool, string>> CreateOrUpdateAddressAsync(ClientAddr clientAddr)
+    {
+        if (clientAddr != null)
+        {
+            if (clientAddr.Id != Guid.Empty)
+            {
+                var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.CLIENT, $"Address/{clientAddr.Id}");//_apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.CLIENT, $"Address/{clientAddr.Id}");
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    var foundClientAddr = response.ContentAsType<ClientAddr>();
+
+                    if (foundClientAddr != null)
+                    {
+                        var patchResponse = await MyFoundationService.ProcessPatch(foundClientAddr, clientAddr, foundClientAddr.Id, TokenProvider.AccessToken, APITypes.CLIENT, "Address");
+
+                        if (!patchResponse.Item1)
+                        {
+                            return patchResponse;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                HttpContent contentPost = new StringContent(JsonConvert.SerializeObject(clientAddr), Encoding.UTF8, "application/json");
+
+                try
+                {
+                    var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Post, APITypes.CLIENT, $"Address", contentPost);//_apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.CLIENT, $"Address", contentPost);
+
+                    if (response.StatusCode != System.Net.HttpStatusCode.Created)
+                    {
+                        return new Tuple<bool, string>(false, await MyFoundationService.GetErrorFromResponse(response));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return new Tuple<bool, string>(false, $"Error calling API: {ex.Message}");
+                }
+            }
+
+            return new Tuple<bool, string>(true, $"Contact address {clientAddr.AddressType} saved");
+        }
+
+        return new Tuple<bool, string>(false, $"No contact address to save");
+    }
+
+    private async Task OnImageUpload(FileChangedEventArgs e)
+    {
+        try
+        {
+            var OneMb = 1024 * 1024 * 15;
+            var file = e.Files.FirstOrDefault();
+            if (file == null)
+            {
+                return;
+            }
+
+            var buffer = new byte[OneMb];
+            using (var bufferedStream = new BufferedStream(file.OpenReadStream(long.MaxValue), OneMb))
+            using (var ms = new MemoryStream())
+            {
+                int readCount = 0;
+                int readBytes;
+                while ((readBytes = await bufferedStream.ReadAsync(buffer, 0, OneMb)) > 0)
+                {
+                    ms.Write(buffer, 0, readBytes);
+                }
+
+                clientHead.ClientDetail.Base64Image = $"data:{file.Type};base64,{Convert.ToBase64String(ms.ToArray())}";
+            }
+        }
+        catch (Exception exc)
+        {
+            Console.WriteLine(exc.Message);
+        }
+        finally
+        {
+            this.StateHasChanged();
+        }
+    }
+
+    private string GetClientImage()
+    {
+        if (string.IsNullOrWhiteSpace(clientHead.ClientDetail?.Base64Image))
+            return Base64Images.PanacheSoftwareDot;
+
+        return clientHead.ClientDetail.Base64Image;
+    }
+
+    private void OnAddContact()
+    {
+
+        var newClientContact = new ClientCon();
+
+        newClientContact.Id = new Guid();
+
+        clientHead.ClientContacts.Add(newClientContact);
+        OnSelectedTabChanged(GetContactTabName(clientHead.ClientContacts.Count - 1));
+        //StateHasChanged();
+    }
+
+    private void OnSelectedTabChanged(string name)
+    {
+        selectedTab = name;
+    }
+
+    private string GetContactTabName(int counter)
+    {
+        return $"ConTab{counter}";
+    }
+
+    private string GetTabTitle(int counter)
+    {
+        if (string.IsNullOrWhiteSpace(clientHead.ClientContacts[counter].FirstName))
+            return "New Contact";
+
+        if (string.IsNullOrWhiteSpace(clientHead.ClientContacts[counter].LastName))
+            return clientHead.ClientContacts[counter].FirstName;
+
+
+        return $"{clientHead.ClientContacts[counter].FirstName} {clientHead.ClientContacts[counter].LastName}";
+    }
+
+    private void MainContactChange(int contactIndex)
+    {
+        if (clientHead.ClientContacts.Count >= contactIndex)
+        {
+            if (clientHead.ClientContacts[contactIndex].MainContact)
+            {
+                for (int i = 0; i < clientHead.ClientContacts.Count; i++)
+                {
+                    if (i != contactIndex)
+                        clientHead.ClientContacts[i].MainContact = false;
+                }
+            }
+        }
+    }
+}

@@ -8,7 +8,7 @@
             <BarDropdownItem To="client/clients">
                 @LanguageHelper.GetTitle(langQueryList, 10106)
             </BarDropdownItem>
-            <BarDropdownItem To="client/index">
+            <BarDropdownItem To="client/client">
                 @LanguageHelper.GetTitle(langQueryList, 10107)
             </BarDropdownItem>
         </BarDropdownMenu>
@@ -16,6 +16,5 @@
 </BarItem>
 
 @code {
-    private bool expandSubNav;
     [CascadingParameter(Name = "langQueryList")] LangQueryList langQueryList { get; set; }
 }

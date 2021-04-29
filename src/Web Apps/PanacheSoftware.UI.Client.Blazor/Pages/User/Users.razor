@@ -1,0 +1,95 @@
+﻿@page "/user/users"
+@attribute [Authorize]
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@using PanacheSoftware.Core.Domain.Identity.API;
+
+<Breadcrumb>
+    <BreadcrumbItem>
+        <BreadcrumbLink To="dashboard">@LanguageHelper.GetTitle(langQueryList, 10121)</BreadcrumbLink>
+    </BreadcrumbItem>
+    <BreadcrumbItem Active="true">
+        <BreadcrumbLink>@LanguageHelper.GetTitle(langQueryList, 10115)</BreadcrumbLink>
+    </BreadcrumbItem>
+</Breadcrumb>
+
+<Card Margin="Margin.Is4.OnY">
+    <CardHeader>
+        <CardTitle>@LanguageHelper.GetTitle(langQueryList, 10115)</CardTitle>
+    </CardHeader>
+    <CardBody>
+        @if (userList != null)
+        {
+            <DataGrid TItem="UserModel"
+                      Data="@userList.Users"
+                      Filterable="true"
+                      FilterMethod="DataGridFilterMethod.StartsWith"
+                      PageSize="25"
+                      Striped="true"
+                      Bordered="true"
+                      Hoverable="true"
+                      Responsive="true"
+                      ShowPager="true"
+                      PagerPosition="DataGridPagerPosition.Bottom"
+                      ShowPageSizes="true">
+                <DataGridColumn TItem="UserModel" Field="@nameof(UserModel.Id)" Caption="" Width="10px" Filterable="false" Sortable="false">
+                    <DisplayTemplate>
+                        <Button To="@($"user/{context.Id}")" Type="ButtonType.Link" Color="Color.Primary"><Icon Name="@("fa-edit")" /></Button>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="UserModel" Field="@nameof(UserModel.Email)" Caption="@LanguageHelper.GetTitle(langQueryList, 10800)" />
+                <DataGridColumn TItem="UserModel" Field="@nameof(UserModel.FirstName)" Caption="@LanguageHelper.GetTitle(langQueryList, 10207)" />
+                <DataGridColumn TItem="UserModel" Field="@nameof(UserModel.Surname)" Caption="@LanguageHelper.GetTitle(langQueryList, 10209)" />
+                <DataGridColumn TItem="UserModel" Field="@nameof(UserModel.Status)" Caption="@LanguageHelper.GetTitle(langQueryList, 10201)" />
+                <DataGridColumn TItem="UserModel" Field="@nameof(UserModel.DateFrom)" Caption="@LanguageHelper.GetTitle(langQueryList, 10202)" DisplayFormat="{0:dd/MM/yyyy}" />
+                <DataGridColumn TItem="UserModel" Field="@nameof(UserModel.DateTo)" Caption="@LanguageHelper.GetTitle(langQueryList, 10203)" DisplayFormat="{0:dd/MM/yyyy}" />
+            </DataGrid>
+        }
+        else
+        {
+            <p>Loading...</p>
+        }
+    </CardBody>
+</Card>
+
+@code {
+    LangQueryList langQueryList { get; set; }
+    UserListModel userList { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetLanguageList();
+    }
+
+    private async Task GetLanguageList()
+    {
+        var textCodes = new List<long>();
+        textCodes.Add(10121);
+        textCodes.Add(10115);
+        textCodes.Add(10800);
+        textCodes.Add(10207);
+        textCodes.Add(10209);
+        textCodes.Add(10201);
+        textCodes.Add(10202);
+        textCodes.Add(10203);
+
+        langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, textCodes.ToArray());
+
+        await GetUsers();
+    }
+
+    private async Task GetUsers()
+    {
+        var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.IDENTITY, $"User");
+
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            userList = response.ContentAsType<UserListModel>();
+        }
+        else
+        {
+            userList = new UserListModel();
+        }
+    }
+}
+

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.JsonPatch;
 using Newtonsoft.Json;
 using PanacheSoftware.Core.Domain.API.Language;
+using PanacheSoftware.Core.Domain.UI;
 using PanacheSoftware.Http;
 
 namespace PanacheSoftware.UI.Core.Helpers
@@ -37,6 +38,12 @@ namespace PanacheSoftware.UI.Core.Helpers
 
         public async Task<bool> ProcessPatch(object existingObject, object updatedObject, Guid objectId, string accessToken, string apiType, string urlPrefix)
         {
+            var patchResult = await ProcessPatchWithMessage(existingObject, updatedObject, objectId, accessToken, apiType, urlPrefix);
+            return patchResult.Item1;
+        }
+
+        public async Task<Tuple<bool, string>> ProcessPatchWithMessage(object existingObject, object updatedObject, Guid objectId, string accessToken, string apiType, string urlPrefix)
+        {
             var jsonPatchDocument = new JsonPatchDocument();
 
             if (jsonPatchDocument.GeneratePatch(existingObject, updatedObject))
@@ -46,17 +53,22 @@ namespace PanacheSoftware.UI.Core.Helpers
 
                 try
                 {
-                    var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Patch, apiType, $"{urlPrefix}/{objectId.ToString()}", contentPost);
-                    return true;
+                    var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Patch, apiType, $"{urlPrefix}/{objectId}", contentPost);
+
+                    var contentString = await response.Content.ReadAsStringAsync();
+
+                    if (response.IsSuccessStatusCode)
+                        return new Tuple<bool, string>(true, string.Empty);
+
+                    return new Tuple<bool, string>(false, response.ContentAsType<APIErrorResponse>().message);
                 }
                 catch (Exception ex)
                 {
-                    var responseString = $"Error calling API: {ex.Message}";
-                    return false;
+                    return new Tuple<bool, string>(false, $"Error calling API: {ex.Message}");
                 }
             }
 
-            return true;
+            return new Tuple<bool, string>(true, string.Empty);
         }
     }
 }

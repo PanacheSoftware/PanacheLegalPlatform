@@ -32,7 +32,11 @@
                       ShowPager="true"
                       PagerPosition="DataGridPagerPosition.Bottom"
                       ShowPageSizes="true">
-                <DataGridCommandColumn TItem="TeamHead" Width="170px" />
+                <DataGridColumn TItem="TeamHead" Field="@nameof(TeamHead.Id)" Caption="" Width="10px" Filterable="false" Sortable="false">
+                    <DisplayTemplate>
+                        <Button To="@($"team/{context.Id}")" Type="ButtonType.Link" Color="Color.Primary"><Icon Name="@("fa-edit")" /></Button>
+                    </DisplayTemplate>
+                </DataGridColumn>
                 <DataGridColumn TItem="TeamHead" Field="@nameof(TeamHead.ShortName)" Caption="@LanguageHelper.GetTitle(langQueryList, 10400)" />
                 <DataGridColumn TItem="TeamHead" Field="@nameof(TeamHead.LongName)" Caption="@LanguageHelper.GetTitle(langQueryList, 10401)" />
                 <DataGridColumn TItem="TeamHead" Field="@nameof(TeamHead.Description)" Caption="@LanguageHelper.GetTitle(langQueryList, 10200)" />

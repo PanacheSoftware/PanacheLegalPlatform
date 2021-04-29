@@ -56,5 +56,17 @@ namespace PanacheSoftware.Service.Client.Manager
 
             return clientSummary;
         }
+
+        public bool ClientShortNameExists(string shortName, Guid existingGuid = default)
+        {
+            ClientHeader clientHeader;
+
+            if(existingGuid == default)
+                clientHeader = _unitOfWork.ClientHeaders.SingleOrDefault(c => c.ShortName == shortName, true);
+
+            clientHeader = _unitOfWork.ClientHeaders.SingleOrDefault(c => c.ShortName == shortName && c.Id != existingGuid, true);
+
+            return clientHeader == default ? false : true;
+        }
     }
 }
