@@ -105,7 +105,7 @@
                     <Column ColumnSize="ColumnSize.Is4">
                         <Field>
                             <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10201)</FieldLabel>
-                            <SelectList TItem="SelectListModel" TValue="string" Data="@StatusSelectListValues" TextField="@((item)=>item.DescriptionField)" ValueField="@((item)=>item.ValueField)" SelectedValue="@clientContact.Status" />
+                            <SelectList TItem="SelectListModel" TValue="string" Data="@StatusSelectListValues" TextField="@((item)=>item.DescriptionField)" ValueField="@((item)=>item.ValueField)" SelectedValue="@clientContact.Status" SelectedValueChanged="@StatusListValueChangedHandler"/>
                         </Field>
                     </Column>
                 </Row>
@@ -161,7 +161,7 @@
                         </DataGridCommandColumn>
                         <DataGridColumn TItem="ClientAddr" Field="@nameof(ClientAddr.AddressType)" Caption="@LanguageHelper.GetTitle(langQueryList, 10212)" Editable="true">
                             <EditTemplate>
-                                <SelectList TItem="SelectListModel" TValue="string" Data="@AddressTypeSelectListValues" TextField="@((item)=>item.DescriptionField)" ValueField="@((item)=>item.ValueField)" SelectedValue="@((string)( context.CellValue ))" />
+                                <SelectList TItem="SelectListModel" TValue="string" Data="@AddressTypeSelectListValues" TextField="@((item)=>item.DescriptionField)" ValueField="@((item)=>item.ValueField)" SelectedValue="@((string)( context.CellValue ))" SelectedValueChanged="@(e => { context.CellValue = e; })" />
                             </EditTemplate>
                         </DataGridColumn>
                         <DataGridColumn TItem="ClientAddr" Field="@nameof(ClientAddr.AddressLine1)" Caption="@LanguageHelper.GetTitle(langQueryList, 10213)" Editable="true"/>
@@ -171,7 +171,7 @@
                         <DataGridColumn TItem="ClientAddr" Field="@nameof(ClientAddr.Country)" Caption="@LanguageHelper.GetTitle(langQueryList, 10217)" Editable="true"/>
                         <DataGridColumn TItem="ClientAddr" Field="@nameof(ClientAddr.Status)" Caption="@LanguageHelper.GetTitle(langQueryList, 10201)" Editable="true">
                             <EditTemplate>  
-                                <SelectList TItem="SelectListModel" TValue="string" Data="@StatusSelectListValues" TextField="@((item)=>item.DescriptionField)" ValueField="@((item)=>item.ValueField)" SelectedValue="@((string)( context.CellValue ))" />
+                                <SelectList TItem="SelectListModel" TValue="string" Data="@StatusSelectListValues" TextField="@((item)=>item.DescriptionField)" ValueField="@((item)=>item.ValueField)" SelectedValue="@((string)( context.CellValue ))" SelectedValueChanged="@(e => { context.CellValue = e; })" />
                             </EditTemplate>
                         </DataGridColumn>
                      </DataGridColumns>
@@ -231,5 +231,10 @@
     int GetClientContactIndex()
     {
         return Convert.ToInt32(tabName.Substring(tabName.Length - 1, 1));
+    }
+
+    private void StatusListValueChangedHandler(string newValue)
+    {
+        clientContact.Status = newValue;
     }
 }

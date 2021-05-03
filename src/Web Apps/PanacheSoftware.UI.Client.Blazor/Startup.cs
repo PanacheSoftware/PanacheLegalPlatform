@@ -24,6 +24,7 @@ using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
 using PanacheSoftware.UI.Core.Helpers;
+using AutoMapper;
 
 namespace PanacheSoftware.UI.Client.Blazor
 {
@@ -110,6 +111,7 @@ namespace PanacheSoftware.UI.Client.Blazor
             services.AddScoped<IAPIHelper, APIHelper>();
             services.AddSingleton<WeatherForecastService>();
             services.AddScoped<IModelHelper, ModelHelper>();
+            services.AddAutoMapper(System.Reflection.Assembly.Load("PanacheSoftware.Core"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

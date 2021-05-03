@@ -143,8 +143,7 @@ namespace PanacheSoftware.Service.Team.Controllers
 
                         _unitOfWork.Complete();
 
-                        return CreatedAtRoute("Get", new {id = _mapper.Map<TeamHead>(teamHeader).Id},
-                            _mapper.Map<TeamHead>(teamHeader));
+                        return Ok();
                     }
 
                     return NotFound();
@@ -191,11 +190,35 @@ namespace PanacheSoftware.Service.Team.Controllers
             try
             {
                 if (Guid.TryParse(id, out Guid parsedId))
-                {
+                {                   
                     TeamStruct teamStruct = _teamManager.GetTeamStructure(parsedId);
 
                     if (teamStruct.Id != Guid.Empty)
                         return Ok(teamStruct);
+
+                    return NotFound();
+                }
+
+                return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"id: '{id}' is not a valid guid."));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
+            }
+        }
+
+        [Route("[action]/{id}")]
+        [HttpGet]
+        public IActionResult GetTeamTree(string id)
+        {
+            try
+            {
+                if (Guid.TryParse(id, out Guid parsedId))
+                {
+                    var teamChart = _teamManager.GetTeamTree(parsedId);
+
+                    if (teamChart.TeamNodes.Count > 0)
+                        return Ok(teamChart);
 
                     return NotFound();
                 }

@@ -4,61 +4,70 @@
 @inject TokenProvider TokenProvider
 @using PanacheSoftware.Core.Domain.API.Team;
 
-<Breadcrumb>
-    <BreadcrumbItem>
-        <BreadcrumbLink To="dashboard">@LanguageHelper.GetTitle(langQueryList, 10121)</BreadcrumbLink>
-    </BreadcrumbItem>
-    <BreadcrumbItem Active="true">
-        <BreadcrumbLink>@LanguageHelper.GetTitle(langQueryList, 10108)</BreadcrumbLink>
-    </BreadcrumbItem>
-</Breadcrumb>
+<PageProgressBar @ref="@pageProgressBar" pageProgressColor="Color.Warning" pageProgressVisible="@loadingPage" />
 
-<Card Margin="Margin.Is4.OnY">
-    <CardHeader>
-        <CardTitle>@LanguageHelper.GetTitle(langQueryList, 10108)</CardTitle>
-    </CardHeader>
-    <CardBody>
-        @if (teamList != null)
-        {
-            <DataGrid TItem="TeamHead"
-                      Data="@teamList.TeamHeaders"
-                      Filterable="true"
-                      FilterMethod="DataGridFilterMethod.StartsWith"
-                      PageSize="25"
-                      Striped="true"
-                      Bordered="true"
-                      Hoverable="true"
-                      Responsive="true"
-                      ShowPager="true"
-                      PagerPosition="DataGridPagerPosition.Bottom"
-                      ShowPageSizes="true">
-                <DataGridColumn TItem="TeamHead" Field="@nameof(TeamHead.Id)" Caption="" Width="10px" Filterable="false" Sortable="false">
-                    <DisplayTemplate>
-                        <Button To="@($"team/{context.Id}")" Type="ButtonType.Link" Color="Color.Primary"><Icon Name="@("fa-edit")" /></Button>
-                    </DisplayTemplate>
-                </DataGridColumn>
-                <DataGridColumn TItem="TeamHead" Field="@nameof(TeamHead.ShortName)" Caption="@LanguageHelper.GetTitle(langQueryList, 10400)" />
-                <DataGridColumn TItem="TeamHead" Field="@nameof(TeamHead.LongName)" Caption="@LanguageHelper.GetTitle(langQueryList, 10401)" />
-                <DataGridColumn TItem="TeamHead" Field="@nameof(TeamHead.Description)" Caption="@LanguageHelper.GetTitle(langQueryList, 10200)" />
-                <DataGridColumn TItem="TeamHead" Field="@nameof(TeamHead.Status)" Caption="@LanguageHelper.GetTitle(langQueryList, 10201)" />
-                <DataGridColumn TItem="TeamHead" Field="@nameof(TeamHead.DateFrom)" Caption="@LanguageHelper.GetTitle(langQueryList, 10202)" DisplayFormat="{0:dd/MM/yyyy}" />
-                <DataGridColumn TItem="TeamHead" Field="@nameof(TeamHead.DateTo)" Caption="@LanguageHelper.GetTitle(langQueryList, 10203)" DisplayFormat="{0:dd/MM/yyyy}" />
-            </DataGrid>
-        }
-        else
-        {
-            <p>Loading...</p>
-        }
-    </CardBody>
-</Card>
+@if (!loadingPage)
+{
+    <Breadcrumb>
+        <BreadcrumbItem>
+            <BreadcrumbLink To="dashboard">@LanguageHelper.GetTitle(langQueryList, 10121)</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbItem Active="true">
+            <BreadcrumbLink>@LanguageHelper.GetTitle(langQueryList, 10108)</BreadcrumbLink>
+        </BreadcrumbItem>
+    </Breadcrumb>
+
+    <Card Margin="Margin.Is4.OnY">
+        <CardHeader>
+            <CardTitle>@LanguageHelper.GetTitle(langQueryList, 10108)</CardTitle>
+        </CardHeader>
+        <CardBody>
+            @if (teamList != null)
+            {
+                <DataGrid TItem="TeamHead"
+                          Data="@teamList.TeamHeaders"
+                          Filterable="true"
+                          FilterMethod="DataGridFilterMethod.StartsWith"
+                          PageSize="25"
+                          Striped="true"
+                          Bordered="true"
+                          Hoverable="true"
+                          Responsive="true"
+                          ShowPager="true"
+                          PagerPosition="DataGridPagerPosition.Bottom"
+                          ShowPageSizes="true">
+                    <DataGridColumn TItem="TeamHead" Field="@nameof(TeamHead.Id)" Caption="" Width="10px" Filterable="false" Sortable="false">
+                        <DisplayTemplate>
+                            <Button To="@($"team/{context.Id}")" Type="ButtonType.Link" Color="Color.Primary"><Icon Name="@("fa-edit")" /></Button>
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn TItem="TeamHead" Field="@nameof(TeamHead.ShortName)" Caption="@LanguageHelper.GetTitle(langQueryList, 10400)" />
+                    <DataGridColumn TItem="TeamHead" Field="@nameof(TeamHead.LongName)" Caption="@LanguageHelper.GetTitle(langQueryList, 10401)" />
+                    <DataGridColumn TItem="TeamHead" Field="@nameof(TeamHead.Description)" Caption="@LanguageHelper.GetTitle(langQueryList, 10200)" />
+                    <DataGridColumn TItem="TeamHead" Field="@nameof(TeamHead.Status)" Caption="@LanguageHelper.GetTitle(langQueryList, 10201)" />
+                    <DataGridColumn TItem="TeamHead" Field="@nameof(TeamHead.DateFrom)" Caption="@LanguageHelper.GetTitle(langQueryList, 10202)" DisplayFormat="{0:dd/MM/yyyy}" />
+                    <DataGridColumn TItem="TeamHead" Field="@nameof(TeamHead.DateTo)" Caption="@LanguageHelper.GetTitle(langQueryList, 10203)" DisplayFormat="{0:dd/MM/yyyy}" />
+                </DataGrid>
+            }
+            else
+            {
+                <p>Loading...</p>
+            }
+        </CardBody>
+    </Card>
+}
 
 @code {
     LangQueryList langQueryList { get; set; }
     TeamList teamList { get; set; }
+    PageProgressBar pageProgressBar;
+    bool loadingPage = true;
 
     protected override async Task OnInitializedAsync()
     {
         await GetLanguageList();
+        loadingPage = false;
+        pageProgressBar.ChangeVisibility(loadingPage);
     }
 
     private async Task GetLanguageList()

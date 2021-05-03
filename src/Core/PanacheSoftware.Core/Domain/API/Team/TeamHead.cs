@@ -19,9 +19,12 @@ namespace PanacheSoftware.Core.Domain.API.Team
         public Guid Id { get; set; }
         [Required]
         [Display(Name = "Team ID")]
+        [RegularExpression("^[A-Z0-9]*$", ErrorMessage = "Characters A-Z or 1-9 only")]
+        [MaxLength(100, ErrorMessage = "Maximum Length 100 characters")]
         public string ShortName { get; set; }
         [Required]
         [Display(Name = "Team Name")]
+        [MaxLength(255, ErrorMessage = "Maximum Length 255 characters")]
         public string LongName { get; set; }
         [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string Description { get; set; }

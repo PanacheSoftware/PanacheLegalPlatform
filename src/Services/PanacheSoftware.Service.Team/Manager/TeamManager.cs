@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using AutoMapper;
 using PanacheSoftware.Core.Domain.API.Team;
 using PanacheSoftware.Core.Domain.Team;
@@ -47,7 +48,66 @@ namespace PanacheSoftware.Service.Team.Manager
             return childTeams;
         }
 
-        
+        public TeamChart GetTeamTree(Guid teamHeaderId)
+        {
+            var teamChart = new TeamChart();
+
+            var rootTeam = GetTeamRoot(teamHeaderId);
+
+            if(rootTeam != default)
+            {
+                
+
+                var teamTree = _unitOfWork.TeamHeaders.GetTeamTree(rootTeam.Id);
+
+                StringBuilder stackString = new StringBuilder();
+
+                Stack<TeamHeader> teamStack = new Stack<TeamHeader>();
+                teamTree.ForEach(teamStack.Push);
+                while (teamStack.Count > 0)
+                {
+                    TeamHeader item = teamStack.Pop();
+                    
+                    //string ParentShortname = item.ParentTeam == default ? string.Empty : item.ParentTeam.ShortName;
+
+                    var teamNode = new TeamNode()
+                    {
+                        Id = item.Id,
+                        TeamName = item.LongName,
+                        ParentId = item.ParentTeam == default ? Guid.Empty : item.ParentTeamId.Value
+                    };
+
+                    teamChart.TeamNodes.Add(teamNode);
+                    
+                    //stackString.AppendLine("-" + item.ShortName + ", Parent:" + ParentShortname);
+
+                    if (item.ChildTeams != null)
+                    {
+                        item.ChildTeams.ToList().ForEach(teamStack.Push);
+                    }
+                }
+            }
+
+            return teamChart;
+        }
+
+        private TeamHeader GetTeamRoot(Guid teamHeaderId)
+        {
+            var rootTeam = _unitOfWork.TeamHeaders.Get(teamHeaderId);
+
+            if (rootTeam != default)
+            {
+                while (rootTeam.ParentTeamId.HasValue)
+                {
+                    rootTeam = _unitOfWork.TeamHeaders.Get(rootTeam.ParentTeamId.Value);
+                }
+
+                if(rootTeam != default)
+                    return rootTeam;
+            }
+
+            return default;
+        }
 
         public TeamList GetTeamList(Guid teamHeaderId = default(Guid), bool validParents = false)
         {

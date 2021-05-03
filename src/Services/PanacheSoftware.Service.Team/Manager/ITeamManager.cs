@@ -11,5 +11,7 @@ namespace PanacheSoftware.Service.Team.Manager
         TeamStruct GetTeamStructure(Guid teamHeaderId);
         TeamList GetTeamsForUser(Guid userDetailId);
         //UserList GetUsersForTeam(Guid teamHeaderId);
+        TeamChart GetTeamTree(Guid teamHeaderId);
+
     }
 }

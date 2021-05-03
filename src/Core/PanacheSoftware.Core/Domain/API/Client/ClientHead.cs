@@ -24,7 +24,7 @@ namespace PanacheSoftware.Core.Domain.API.Client
         public string ShortName { get; set; }
         [Required]
         [Display(Name = "Client Name")]
-        [MaxLength(255, ErrorMessage = "Maximum Length 100 characters")]
+        [MaxLength(255, ErrorMessage = "Maximum Length 255 characters")]
         public string LongName { get; set; }
         [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string Description { get; set; }
