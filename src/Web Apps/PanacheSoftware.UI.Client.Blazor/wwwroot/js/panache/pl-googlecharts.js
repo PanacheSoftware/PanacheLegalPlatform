@@ -4,6 +4,7 @@ window.createOrgChart = (params) => {
     var nodeIds = params.nodeIds;
     var nodeNames = params.nodeNames;
     var nodeParents = params.nodeParents;
+    var currentNode = params.currentNode;
     var data = new google.visualization.DataTable();
     data.addColumn('string', 'Name');
     data.addColumn('string', 'Manager');
@@ -15,7 +16,12 @@ window.createOrgChart = (params) => {
             parentId = '';
         }
 
-        data.addRow([{ 'v': nodeIds[i], 'f': nodeNames[i] }, parentId, nodeNames[i]]);
+        var currentNodeName = nodeNames[i];
+        if (nodeIds[i] == currentNode) {
+            currentNodeName = nodeNames[i] + '<div style="color:red; font-style:italic">Current</div>';
+        }
+
+        data.addRow([{ 'v': nodeIds[i], 'f': currentNodeName }, parentId, nodeNames[i]]);
     }
 
     // Create the chart.

@@ -29,5 +29,10 @@ namespace PanacheSoftware.Core.Domain.API.Join
         public DateTime DateTo { get; set; }
         [Required]
         public string Status { get; set; }
+
+        public string TeamHeaderIdString { 
+            get { return TeamHeaderId.ToString(); }
+            set { TeamHeaderId = Guid.TryParse(value, out Guid result) ? result : Guid.Empty; }
+        }
     }
 }

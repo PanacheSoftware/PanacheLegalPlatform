@@ -107,6 +107,7 @@ namespace PanacheSoftware.UI.Client.Blazor
 
             services.AddHttpClient();
             services.AddScoped<TokenProvider>();
+            services.AddScoped<UserAppCache>();
             services.AddScoped<FoundationService>();
             services.AddScoped<IAPIHelper, APIHelper>();
             services.AddSingleton<WeatherForecastService>();

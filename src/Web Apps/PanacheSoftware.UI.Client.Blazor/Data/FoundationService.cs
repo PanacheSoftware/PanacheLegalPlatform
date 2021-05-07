@@ -23,11 +23,18 @@ namespace PanacheSoftware.UI.Client.Blazor.Data
             this.modelHelper = modelHelper;
         }
 
-        public async Task<LangQueryList> GetLanguageInfo(string accessToken, long[] textCodes)
+        public async Task<string> GetLanguageCode(string accessToken)
         {
             var languageSetting = await apiHelper.GetUserLanguage(accessToken);
 
-            var langQueryList = await apiHelper.MakeLanguageQuery(accessToken, languageSetting.Value, textCodes);
+            return languageSetting.Value;
+        }
+
+        public async Task<LangQueryList> GetLanguageInfo(string accessToken, string languageCode, long[] textCodes)
+        {
+            //var languageSetting = await apiHelper.GetUserLanguage(accessToken);
+
+            var langQueryList = await apiHelper.MakeLanguageQuery(accessToken, languageCode, textCodes);
 
             return langQueryList;
         }

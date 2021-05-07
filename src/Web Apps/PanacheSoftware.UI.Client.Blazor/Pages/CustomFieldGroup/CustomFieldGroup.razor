@@ -1,0 +1,428 @@
+﻿@page "/customfieldgroup/{id?}"
+@attribute [Authorize]
+@inject UserAppCache UserAppCache
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@using PanacheSoftware.Core.Domain.API.CustomField;
+
+<PageProgressBar @ref="@pageProgressBar" pageProgressColor="Color.Warning" pageProgressVisible="@loadingPage" />
+
+@if (!loadingPage)
+{
+    <Breadcrumb>
+        <BreadcrumbItem>
+            <BreadcrumbLink To="dashboard">@LanguageHelper.GetTitle(langQueryList, 10121)</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbItem Active="true">
+            <BreadcrumbLink To="customfieldgroup/customfieldgroups">@LanguageHelper.GetTitle(langQueryList, 10124)</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbItem Active="true">
+            <BreadcrumbLink>@GetBreadCrumbTitle()</BreadcrumbLink>
+        </BreadcrumbItem>
+    </Breadcrumb>
+
+    @if (customFieldGroupHead != null)
+    {
+        <Form>
+            <Row>
+                <Column>
+                    <Card Margin="Margin.Is4.OnY">
+                        <CardHeader>
+                            <CardTitle>@LanguageHelper.GetTitle(langQueryList, 11001)</CardTitle>
+                        </CardHeader>
+                        <CardBody>
+                            <Validations Mode="ValidationMode.Auto" Model="@customFieldGroupHead">
+                                <Row>
+                                    <Column ColumnSize="ColumnSize.Is6">
+                                        <Validation>
+                                            <Field>
+                                                <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 11006)</FieldLabel>
+                                                <TextEdit @bind-Text="customFieldGroupHead.ShortName">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        </Validation>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is6">
+                                        <Validation>
+                                            <Field>
+                                                <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 11007)</FieldLabel>
+                                                <TextEdit @bind-Text="customFieldGroupHead.LongName">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        </Validation>
+                                    </Column>
+                                </Row>
+                                <Row>
+                                    <Column ColumnSize="ColumnSize.Is12">
+                                        <Validation>
+                                            <Field>
+                                                <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10200)</FieldLabel>
+                                                <MemoEdit @bind-Text="@customFieldGroupHead.Description" Rows="5">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </MemoEdit>
+                                            </Field>
+                                        </Validation>
+                                    </Column>
+                                </Row>
+                            </Validations>
+                            <Row>
+                                <Column ColumnSize="ColumnSize.Is6">
+                                    <Field>
+                                        <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10201)</FieldLabel>
+                                        <SelectList TItem="SelectListModel" TValue="string" Data="@StatusSelectListValues" TextField="@((item) => item.DescriptionField)" ValueField="@((item) => item.ValueField)" SelectedValue="@customFieldGroupHead.Status" SelectedValueChanged="@StatusListValueChangedHandler" />
+                                    </Field>
+                                </Column>
+                            </Row>
+                        </CardBody>
+                    </Card>
+                </Column>
+            </Row>
+        </Form>
+        <Row>
+            <Column>
+                <Card Margin="Margin.Is4.OnY">
+                    <CardHeader>
+                        <CardTitle>@LanguageHelper.GetTitle(langQueryList, 11005)</CardTitle>
+                    </CardHeader>
+                    <CardBody>
+                        @if (customFieldGroupHead.CustomFieldHeaders != null)
+                        {
+                            <DataGrid TItem="CustomFieldHead"
+                                      Data="@customFieldGroupHead.CustomFieldHeaders"
+                                      Filterable="true"
+                                      FilterMethod="DataGridFilterMethod.StartsWith"
+                                      PageSize="25"
+                                      Striped="true"
+                                      Bordered="true"
+                                      Hoverable="true"
+                                      Responsive="true"
+                                      ShowPager="true"
+                                      PagerPosition="DataGridPagerPosition.Bottom"
+                                      ShowPageSizes="true"
+                                      Editable="true"
+                                      EditMode="DataGridEditMode.Form">
+                                <EmptyTemplate>No records...</EmptyTemplate>
+                                <DataGridColumns>
+                                    <DataGridCommandColumn TItem="CustomFieldHead" Width="170px">
+                                        <NewCommandTemplate>
+                                            <Button Color="Color.Success" Clicked="@context.Clicked">New</Button>
+                                        </NewCommandTemplate>
+                                        <EditCommandTemplate>
+                                            <Button Color="Color.Primary" Clicked="@context.Clicked">Edit</Button>
+                                        </EditCommandTemplate>
+                                        <SaveCommandTemplate>
+                                            <Button Color="Color.Primary" Clicked="@context.Clicked">Apply</Button>
+                                        </SaveCommandTemplate>
+                                        <DeleteCommandTemplate>
+                                            @*<Button Color="Color.Danger" Clicked="@context.Clicked">Delete</Button>*@
+                                        </DeleteCommandTemplate>
+                                        <CancelCommandTemplate>
+                                            <Button Color="Color.Secondary" Clicked="@context.Clicked">Cancel</Button>
+                                        </CancelCommandTemplate>
+                                        <ClearFilterCommandTemplate>
+                                            <Button Color="Color.Warning" Clicked="@context.Clicked">Clear Filter</Button>
+                                        </ClearFilterCommandTemplate>
+                                    </DataGridCommandColumn>
+                                    <DataGridColumn TItem="CustomFieldHead" Field="@nameof(CustomFieldHead.Name)" Caption="@LanguageHelper.GetTitle(langQueryList, 11002)" Editable="true" />
+                                    <DataGridColumn TItem="CustomFieldHead" Field="@nameof(CustomFieldHead.Description)" Caption="@LanguageHelper.GetTitle(langQueryList, 10200)" Editable="true" />
+                                    <DataGridColumn TItem="CustomFieldHead" Field="@nameof(CustomFieldHead.CustomFieldType)" Caption="@LanguageHelper.GetTitle(langQueryList, 11003)" Editable="true">
+                                        <EditTemplate>
+                                            <SelectList TItem="SelectListModel" TValue="string" Data="@CustomFieldTypeSelectListValues" TextField="@((item)=>item.DescriptionField)" ValueField="@((item)=>item.ValueField)" SelectedValue="@((string)( context.CellValue ))" SelectedValueChanged="@(e => { context.CellValue = e; })" />
+                                        </EditTemplate>
+                                    </DataGridColumn>
+                                    <DataGridCheckColumn TItem="CustomFieldHead" Field="@nameof(CustomFieldHead.Mandatory)" Caption="@LanguageHelper.GetTitle(langQueryList, 10226)" Editable="true" Filterable="false">
+                                        <DisplayTemplate>
+                                            <Check TValue="bool" Checked="context.Mandatory" Disabled="true" ReadOnly="true" />
+                                        </DisplayTemplate>
+                                    </DataGridCheckColumn>
+                                    <DataGridCheckColumn TItem="CustomFieldHead" Field="@nameof(CustomFieldHead.GDPR)" Caption="@LanguageHelper.GetTitle(langQueryList, 10228)" Editable="true" Filterable="false">
+                                        <DisplayTemplate>
+                                            <Check TValue="bool" Checked="context.GDPR" Disabled="true" ReadOnly="true" />
+                                        </DisplayTemplate>
+                                    </DataGridCheckColumn>
+                                    <DataGridCheckColumn TItem="CustomFieldHead" Field="@nameof(CustomFieldHead.History)" Caption="@LanguageHelper.GetTitle(langQueryList, 10227)" Editable="true" Filterable="false">
+                                        <DisplayTemplate>
+                                            <Check TValue="bool" Checked="context.History" Disabled="true" ReadOnly="true" />
+                                        </DisplayTemplate>
+                                    </DataGridCheckColumn>
+                                    <DataGridColumn TItem="CustomFieldHead" Field="@nameof(CustomFieldHead.Status)" Caption="@LanguageHelper.GetTitle(langQueryList, 10201)" Editable="true">
+                                        <EditTemplate>
+                                            <SelectList TItem="SelectListModel" TValue="string" Data="@StatusSelectListValues" TextField="@((item)=>item.DescriptionField)" ValueField="@((item)=>item.ValueField)" SelectedValue="@((string)( context.CellValue ))" SelectedValueChanged="@(e => { context.CellValue = e; })" />
+                                        </EditTemplate>
+                                    </DataGridColumn>
+                                </DataGridColumns>
+                            </DataGrid>
+                        }
+                        else
+                        {
+                            <p>Loading...</p>
+                        }
+                    </CardBody>
+                </Card>
+            </Column>
+        </Row>
+        <Row>
+            <Column>
+                <Card Margin="Margin.Is4.OnY">
+                    <CardBody>
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is12">
+                                <Alert Color="(Color)alertModel.AlertType" @bind-Visible="@alertModel.ShowAlert" Dismisable="true">
+                                    <AlertMessage>
+                                        @alertModel.AlertMessage
+                                    </AlertMessage>
+                                    <AlertDescription>
+                                        @alertModel.AlertDescription
+                                    </AlertDescription>
+                                    <CloseButton />
+                                </Alert>
+                            </Column>
+                        </Row>
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is4">
+                                @if (customFieldGroupHead.Id == Guid.Empty)
+                                {
+                                    <Button Type="ButtonType.Submit" Color="Color.Primary" PreventDefaultOnSubmit="true" Clicked="@SubmitForm" Loading="@SavingCustomFieldGroup">@LanguageHelper.GetTitle(langQueryList, 11008)</Button>
+                                }
+                                else
+                                {
+                                    <Button Type="ButtonType.Submit" Color="Color.Primary" PreventDefaultOnSubmit="true" Clicked="@SubmitForm" Loading="@SavingCustomFieldGroup">@LanguageHelper.GetTitle(langQueryList, 11009)</Button>
+                                }
+                            </Column>
+                        </Row>
+                    </CardBody>
+                </Card>
+            </Column>
+        </Row>
+    }
+}
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    LangQueryList langQueryList { get; set; }
+    CustomFieldGroupHead customFieldGroupHead { get; set; }
+    PageProgressBar pageProgressBar;
+    bool loadingPage = true;
+    IEnumerable<SelectListModel> StatusSelectListValues { get; set; }
+    IEnumerable<SelectListModel> CustomFieldTypeSelectListValues { get; set; }
+    AlertModel alertModel = new AlertModel();
+    bool SavingCustomFieldGroup = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetLanguageList();
+        CreateSelectListModels();
+        await GetCustomFieldGroup();
+        loadingPage = false;
+        pageProgressBar.ChangeVisibility(loadingPage);
+    }
+
+    private async Task GetLanguageList()
+    {
+        var textCodes = new List<long>();
+        textCodes.Add(10121);
+        textCodes.Add(10124);
+        textCodes.Add(11000);
+        textCodes.Add(11001);
+        textCodes.Add(11002);
+        textCodes.Add(11003);
+        textCodes.Add(11005);
+        textCodes.Add(11006);
+        textCodes.Add(11007);
+        textCodes.Add(11008);
+        textCodes.Add(11009);
+        textCodes.Add(10200);
+        textCodes.Add(10201);
+        textCodes.Add(10204);
+        textCodes.Add(10226);
+        textCodes.Add(10227);
+        textCodes.Add(10228);
+
+        langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, UserAppCache.LanguageCode, textCodes.ToArray());
+    }
+
+    private string GetBreadCrumbTitle()
+    {
+        if (customFieldGroupHead == null)
+            return string.Empty;
+
+        if (customFieldGroupHead.Id == Guid.Empty)
+            return "New Custom Field Group";
+
+        return customFieldGroupHead.ShortName;
+    }
+
+    private void CreateSelectListModels()
+    {
+        StatusTypes statusTypes = new StatusTypes();
+        StatusSelectListValues = statusTypes.GetStatusTypesDictionary().Select(s => new SelectListModel { ValueField = s.Key, DescriptionField = s.Value });
+
+        CustomFieldTypes customFieldTypes = new CustomFieldTypes();
+        CustomFieldTypeSelectListValues = customFieldTypes.GetCustomFieldTypesDictionary().Select(s => new SelectListModel { ValueField = s.Key, DescriptionField = s.Value });
+    }
+
+    private async Task GetCustomFieldGroup()
+    {
+        customFieldGroupHead = new CustomFieldGroupHead();
+        customFieldGroupHead.Id = Guid.Empty;
+
+        if (!string.IsNullOrWhiteSpace(Id))
+        {
+            var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.CUSTOMFIELD, $"CustomFieldGroup/{Id}");
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                customFieldGroupHead = response.ContentAsType<CustomFieldGroupHead>();
+            }
+        }
+    }
+
+    private void StatusListValueChangedHandler(string newValue)
+    {
+        customFieldGroupHead.Status = newValue;
+    }
+
+    private async Task SubmitForm()
+    {
+        SavingCustomFieldGroup = true;
+        var saveResult = await SaveCustomFieldGroupAsync();
+
+        alertModel.ShowAlert = true;
+        alertModel.AlertType = saveResult.Item1 ? (int)Color.Success : (int)Color.Danger;
+        alertModel.AlertMessage = saveResult.Item2;
+        SavingCustomFieldGroup = false;
+    }
+
+    private async Task<Tuple<bool, string>> SaveCustomFieldGroupAsync()
+    {
+        if (customFieldGroupHead != null)
+        {
+            if (customFieldGroupHead.Id != Guid.Empty)
+            {
+                var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.CUSTOMFIELD, $"CustomFieldGroup/{customFieldGroupHead.Id}");//_apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.CUSTOMFIELD, $"CustomFieldGroup/{customFieldGroupHead.Id}");
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    var foundCustomFieldGroupHead = response.ContentAsType<CustomFieldGroupHead>();
+
+                    if (foundCustomFieldGroupHead != null)
+                    {
+                        var processPatchResult = await MyFoundationService.ProcessPatch(foundCustomFieldGroupHead, customFieldGroupHead, foundCustomFieldGroupHead.Id, TokenProvider.AccessToken, APITypes.CUSTOMFIELD, "CustomFieldGroup");
+                        if (!processPatchResult.Item1)
+                        {
+                            return processPatchResult;
+                        }
+
+                        response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.CUSTOMFIELD, $"CustomFieldGroup/Detail/{customFieldGroupHead.CustomFieldGroupDetail.Id}");//_apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.TEAM, $"Team/Detail/{teamHead.TeamDetail.Id}");
+
+                        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                        {
+                            var foundCustomFieldGroupDet = response.ContentAsType<CustomFieldGroupDet>();
+
+                            if (foundCustomFieldGroupDet != null)
+                            {
+                                processPatchResult = await MyFoundationService.ProcessPatch(foundCustomFieldGroupDet, customFieldGroupHead.CustomFieldGroupDetail, foundCustomFieldGroupDet.Id, TokenProvider.AccessToken, APITypes.CUSTOMFIELD, "CustomFieldGroup/Detail");
+                                if (!processPatchResult.Item1)
+                                {
+                                    return processPatchResult;
+                                }
+                            }
+                        }
+                    }
+
+                    foreach (var customFieldHead in customFieldGroupHead.CustomFieldHeaders)
+                    {
+                        if (customFieldHead.Id == Guid.Empty)
+                            customFieldHead.CustomFieldGroupHeaderId = customFieldGroupHead.Id;
+
+                        var customFieldHeadResponse = await CreateOrUpdateCustomFieldAsync(customFieldHead);
+
+                        if (!customFieldHeadResponse.Item1)
+                            return customFieldHeadResponse;
+                    }
+                }
+            }
+            else
+            {
+                HttpContent contentPost = new StringContent(JsonConvert.SerializeObject(customFieldGroupHead), Encoding.UTF8, "application/json");
+
+                try
+                {
+                    var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Post, APITypes.CUSTOMFIELD, $"CustomFieldGroup", contentPost);//_apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.TEAM, $"Team", contentPost);
+
+                    if (response.StatusCode != System.Net.HttpStatusCode.Created)
+                    {
+                        return new Tuple<bool, string>(false, await MyFoundationService.GetErrorFromResponse(response));
+                    }
+
+                    customFieldGroupHead = response.ContentAsType<CustomFieldGroupHead>();
+                }
+                catch (Exception ex)
+                {
+                    return new Tuple<bool, string>(false, $"Error calling API: {ex.Message}");
+                }
+            }
+
+            return new Tuple<bool, string>(true, $"Custom Field Group {customFieldGroupHead.ShortName} saved");
+        }
+
+        return new Tuple<bool, string>(false, $"No custom field group to save");
+    }
+
+    private async Task<Tuple<bool, string>> CreateOrUpdateCustomFieldAsync(CustomFieldHead customFieldHead)
+    {
+        if (customFieldHead != null)
+        {
+            if (customFieldHead.Id != Guid.Empty)
+            {
+                var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.CUSTOMFIELD, $"CustomField/{customFieldHead.Id}");//_apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.CUSTOMFIELD, $"CustomField/{customFieldHead.Id}");
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    var foundCustomFieldHead = response.ContentAsType<CustomFieldHead>();
+
+                    if (foundCustomFieldHead != null)
+                    {
+                        var processPatchResult = await MyFoundationService.ProcessPatch(foundCustomFieldHead, customFieldHead, foundCustomFieldHead.Id, TokenProvider.AccessToken, APITypes.CUSTOMFIELD, "CustomField");
+
+                        if (!processPatchResult.Item1)
+                        {
+                            return processPatchResult;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                HttpContent contentPost = new StringContent(JsonConvert.SerializeObject(customFieldHead), Encoding.UTF8, "application/json");
+
+                try
+                {
+                    var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Post, APITypes.CUSTOMFIELD, $"CustomField", contentPost);//_apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.CLIENT, $"Address", contentPost);
+
+                    if (response.StatusCode != System.Net.HttpStatusCode.Created)
+                    {
+                        return new Tuple<bool, string>(false, await MyFoundationService.GetErrorFromResponse(response));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return new Tuple<bool, string>(false, $"Error calling API: {ex.Message}");
+                }
+            }
+
+            return new Tuple<bool, string>(true, $"Custom Field {customFieldHead.Name} saved");
+        }
+
+        return new Tuple<bool, string>(false, $"No custom field to save");
+    }
+}

@@ -135,8 +135,7 @@ namespace PanacheSoftware.Service.CustomField.Controllers
 
                                 _unitOfWork.Complete();
 
-                                return CreatedAtRoute("Get", new { id = _mapper.Map<CustomFieldGroupLnk>(customFieldGroupLink).Id },
-                                _mapper.Map<CustomFieldGroupLnk>(customFieldGroupLink));
+                                return Ok(_mapper.Map< CustomFieldGroupLnk>(customFieldGroupLink));
                             }
 
                             return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"Cannot change CustomFieldGroupHeaderId, LinkId or LinkType."));

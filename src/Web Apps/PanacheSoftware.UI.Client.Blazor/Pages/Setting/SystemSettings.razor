@@ -1,0 +1,133 @@
+﻿@page "/systemsettings"
+@attribute [Authorize]
+@inject UserAppCache UserAppCache
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@using PanacheSoftware.Core.Domain.API.Settings;
+
+<PageProgressBar @ref="@pageProgressBar" pageProgressColor="Color.Warning" pageProgressVisible="@loadingPage" />
+
+@if (!loadingPage)
+{
+    <Breadcrumb>
+        <BreadcrumbItem>
+            <BreadcrumbLink To="dashboard">@LanguageHelper.GetTitle(langQueryList, 10121)</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbItem Active="true">
+            <BreadcrumbLink>@LanguageHelper.GetTitle(langQueryList, 10123)</BreadcrumbLink>
+        </BreadcrumbItem>
+    </Breadcrumb>
+
+    <Card Margin="Margin.Is4.OnY">
+        <CardHeader>
+            <CardTitle>@LanguageHelper.GetTitle(langQueryList, 10123)</CardTitle>
+        </CardHeader>
+        <CardBody>
+            @if (settingList != null)
+            {
+                <DataGrid TItem="TenSetting"
+                          Data="@settingList.TenantSettings"
+                          Filterable="true"
+                          FilterMethod="DataGridFilterMethod.StartsWith"
+                          PageSize="25"
+                          Striped="true"
+                          Bordered="true"
+                          Hoverable="true"
+                          Responsive="true"
+                          ShowPager="true"
+                          PagerPosition="DataGridPagerPosition.Bottom"
+                          ShowPageSizes="true"
+                          Editable="true"
+                          EditMode="DataGridEditMode.Form"
+                          RowInserted="@OnRowInsertedAsync"
+                          RowUpdated="OnRowUpdatedAsync">
+                    <EmptyTemplate>No records...</EmptyTemplate>
+                    <DataGridColumns>
+                        <DataGridCommandColumn TItem="TenSetting" Width="170px">
+                            <NewCommandTemplate>
+                                <Button Color="Color.Success" Clicked="@context.Clicked">New</Button>
+                            </NewCommandTemplate>
+                            <EditCommandTemplate>
+                                <Button Color="Color.Primary" Clicked="@context.Clicked">Edit</Button>
+                            </EditCommandTemplate>
+                            <SaveCommandTemplate>
+                                <Button Color="Color.Primary" Clicked="@context.Clicked">Save</Button>
+                            </SaveCommandTemplate>
+                            <DeleteCommandTemplate>
+                                @*<Button Color="Color.Danger" Clicked="@context.Clicked">Delete</Button>*@
+                            </DeleteCommandTemplate>
+                            <CancelCommandTemplate>
+                                <Button Color="Color.Secondary" Clicked="@context.Clicked">Cancel</Button>
+                            </CancelCommandTemplate>
+                            <ClearFilterCommandTemplate>
+                                <Button Color="Color.Warning" Clicked="@context.Clicked">Clear Filter</Button>
+                            </ClearFilterCommandTemplate>
+                        </DataGridCommandColumn>
+                        <DataGridColumn TItem="TenSetting" Field="@nameof(TenSetting.Name)" Caption="@LanguageHelper.GetTitle(langQueryList, 10218)" Editable="true" />
+                        <DataGridColumn TItem="TenSetting" Field="@nameof(TenSetting.Value)" Caption="@LanguageHelper.GetTitle(langQueryList, 10219)" Editable="true" />
+                        <DataGridColumn TItem="TenSetting" Field="@nameof(TenSetting.Description)" Caption="@LanguageHelper.GetTitle(langQueryList, 10200)" Editable="true" />
+
+                    </DataGridColumns>
+                </DataGrid>
+            }
+            else
+            {
+                <p>Loading...</p>
+            }
+        </CardBody>
+    </Card>
+}
+
+@code {
+    LangQueryList langQueryList { get; set; }
+    TenantSettingList settingList { get; set; }
+    PageProgressBar pageProgressBar;
+    bool loadingPage = true;
+
+    protected async Task OnRowInsertedAsync(SavedRowItem<TenSetting, Dictionary<string, object>> e)
+    {
+        //await GetSettings();
+    }
+
+    protected async Task OnRowUpdatedAsync(SavedRowItem<TenSetting, Dictionary<string, object>> e)
+    {
+        //await GetSettings();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetLanguageList();
+        await GetSettings();
+        loadingPage = false;
+        pageProgressBar.ChangeVisibility(loadingPage);
+    }
+
+    private async Task GetLanguageList()
+    {
+        var textCodes = new List<long>();
+        textCodes.Add(10121);
+        textCodes.Add(10123);
+        textCodes.Add(10218);
+        textCodes.Add(10212);
+        textCodes.Add(10219);
+        textCodes.Add(10220);
+        textCodes.Add(10200);
+        textCodes.Add(10204);
+
+        langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, UserAppCache.LanguageCode, textCodes.ToArray());
+    }
+
+    private async Task GetSettings()
+    {
+        var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.FOUNDATION, $"Setting");
+
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            settingList = response.ContentAsType<TenantSettingList>();
+        }
+        else
+        {
+            settingList = new TenantSettingList();
+        }
+    }
+}

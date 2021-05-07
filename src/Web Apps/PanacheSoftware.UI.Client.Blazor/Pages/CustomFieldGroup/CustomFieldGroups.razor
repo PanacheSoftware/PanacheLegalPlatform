@@ -1,9 +1,9 @@
-﻿@page "/team/teams"
+﻿@page "/customfieldgroup/customfieldgroups"
 @attribute [Authorize]
 @inject UserAppCache UserAppCache
 @inject FoundationService MyFoundationService
 @inject TokenProvider TokenProvider
-@using PanacheSoftware.Core.Domain.API.Team;
+@using PanacheSoftware.Core.Domain.API.CustomField;
 
 <PageProgressBar @ref="@pageProgressBar" pageProgressColor="Color.Warning" pageProgressVisible="@loadingPage" />
 
@@ -14,19 +14,19 @@
             <BreadcrumbLink To="dashboard">@LanguageHelper.GetTitle(langQueryList, 10121)</BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbItem Active="true">
-            <BreadcrumbLink>@LanguageHelper.GetTitle(langQueryList, 10108)</BreadcrumbLink>
+            <BreadcrumbLink>@LanguageHelper.GetTitle(langQueryList, 10124)</BreadcrumbLink>
         </BreadcrumbItem>
     </Breadcrumb>
 
     <Card Margin="Margin.Is4.OnY">
         <CardHeader>
-            <CardTitle>@LanguageHelper.GetTitle(langQueryList, 10108)</CardTitle>
+            <CardTitle>@LanguageHelper.GetTitle(langQueryList, 10124)</CardTitle>
         </CardHeader>
         <CardBody>
-            @if (teamList != null)
+            @if (customFieldGroupList != null)
             {
-                <DataGrid TItem="TeamHead"
-                          Data="@teamList.TeamHeaders"
+                <DataGrid TItem="CustomFieldGroupHead"
+                          Data="@customFieldGroupList.CustomFieldGroupHeaders"
                           Filterable="true"
                           FilterMethod="DataGridFilterMethod.StartsWith"
                           PageSize="25"
@@ -37,19 +37,17 @@
                           ShowPager="true"
                           PagerPosition="DataGridPagerPosition.Bottom"
                           ShowPageSizes="true">
-                    <DataGridColumn TItem="TeamHead" Field="@nameof(TeamHead.Id)" Caption="" Width="10px" Filterable="false" Sortable="false">
+                    <DataGridColumn TItem="CustomFieldGroupHead" Field="@nameof(CustomFieldGroupHead.Id)" Caption="" Width="10px" Filterable="false" Sortable="false">
                         <DisplayTemplate>
-                            <Button To="@($"team/{context.Id}")" Type="ButtonType.Link" Color="Color.Primary"><Icon Name="@("fa-edit")" /></Button>
+                            <Button To="@($"customfieldgroup/{context.Id}")" Type="ButtonType.Link" Color="Color.Primary"><Icon Name="@("fa-edit")" /></Button>
                         </DisplayTemplate>
                     </DataGridColumn>
-                    <DataGridColumn TItem="TeamHead" Field="@nameof(TeamHead.ShortName)" Caption="@LanguageHelper.GetTitle(langQueryList, 10400)" />
-                    <DataGridColumn TItem="TeamHead" Field="@nameof(TeamHead.LongName)" Caption="@LanguageHelper.GetTitle(langQueryList, 10401)" />
-                    <DataGridColumn TItem="TeamHead" Field="@nameof(TeamHead.Description)" Caption="@LanguageHelper.GetTitle(langQueryList, 10200)" />
-                    <DataGridColumn TItem="TeamHead" Field="@nameof(TeamHead.Status)" Caption="@LanguageHelper.GetTitle(langQueryList, 10201)" />
-                    <DataGridColumn TItem="TeamHead" Field="@nameof(TeamHead.DateFrom)" Caption="@LanguageHelper.GetTitle(langQueryList, 10202)" DisplayFormat="{0:dd/MM/yyyy}" />
-                    <DataGridColumn TItem="TeamHead" Field="@nameof(TeamHead.DateTo)" Caption="@LanguageHelper.GetTitle(langQueryList, 10203)" DisplayFormat="{0:dd/MM/yyyy}" />
+                    <DataGridColumn TItem="CustomFieldGroupHead" Field="@nameof(CustomFieldGroupHead.ShortName)" Caption="@LanguageHelper.GetTitle(langQueryList, 11000)" />
+                    <DataGridColumn TItem="CustomFieldGroupHead" Field="@nameof(CustomFieldGroupHead.LongName)" Caption="@LanguageHelper.GetTitle(langQueryList, 11001)" />
+                    <DataGridColumn TItem="CustomFieldGroupHead" Field="@nameof(CustomFieldGroupHead.Description)" Caption="@LanguageHelper.GetTitle(langQueryList, 10200)" />
+                    <DataGridColumn TItem="CustomFieldGroupHead" Field="@nameof(CustomFieldGroupHead.Status)" Caption="@LanguageHelper.GetTitle(langQueryList, 10201)" />
                 </DataGrid>
-                <Button To="team" Color="Color.Success" Type="ButtonType.Link">@LanguageHelper.GetTitle(langQueryList, 10204)</Button>
+                <Button To="customfieldgroup" Color="Color.Success" Type="ButtonType.Link">@LanguageHelper.GetTitle(langQueryList, 10204)</Button>
             }
             else
             {
@@ -61,7 +59,7 @@
 
 @code {
     LangQueryList langQueryList { get; set; }
-    TeamList teamList { get; set; }
+    CustomFieldGroupList customFieldGroupList { get; set; }
     PageProgressBar pageProgressBar;
     bool loadingPage = true;
 
@@ -77,13 +75,11 @@
     {
         var textCodes = new List<long>();
         textCodes.Add(10121);
-        textCodes.Add(10108);
-        textCodes.Add(10400);
-        textCodes.Add(10401);
+        textCodes.Add(10124);
+        textCodes.Add(11000);
+        textCodes.Add(11001);
         textCodes.Add(10200);
         textCodes.Add(10201);
-        textCodes.Add(10202);
-        textCodes.Add(10203);
         textCodes.Add(10204);
 
         langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, UserAppCache.LanguageCode, textCodes.ToArray());
@@ -91,15 +87,15 @@
 
     private async Task GetTeams()
     {
-        var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.TEAM, $"Team");
+        var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.CUSTOMFIELD, $"CustomFieldGroup");
 
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
-            teamList = response.ContentAsType<TeamList>();
+            customFieldGroupList = response.ContentAsType<CustomFieldGroupList>();
         }
         else
         {
-            teamList = new TeamList();
+            customFieldGroupList = new CustomFieldGroupList();
         }
     }
 }

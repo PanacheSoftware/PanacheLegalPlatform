@@ -1,5 +1,6 @@
 ﻿@page "/team/{id?}"
 @attribute [Authorize]
+@inject UserAppCache UserAppCache
 @inject FoundationService MyFoundationService
 @inject TokenProvider TokenProvider
 @inject IMapper mapper
@@ -186,28 +187,24 @@
     string ChartDatasource = string.Empty;
     TeamChart teamChart = new TeamChart();
 
-    private void PlotData()
+    private void DrawChart()
     {
-        if(teamChart.TeamNodes.Count > 0)
+        if (teamChart.TeamNodes.Count > 0)
         {
             string[] nodeIds = teamChart.TeamNodes.Select(t => t.Id.ToString()).ToArray();
             string[] nodeNames = teamChart.TeamNodes.Select(t => t.TeamName).ToArray();
             string[] nodeParents = teamChart.TeamNodes.Select(t => t.ParentId.ToString()).ToArray();
-            JS.InvokeVoidAsync("createOrgChart", new { nodeIds, nodeNames, nodeParents });
+            string currentNode = teamHead.Id.ToString();
+            JS.InvokeVoidAsync("createOrgChart", new { nodeIds, nodeNames, nodeParents, currentNode });
         }
 
         //JsRuntime.InvokeVoidAsync("createNewChart", new { xs, ys });
         //JS.InvokeVoidAsync("createOrgChart");
     }
 
-    private void PlotSin()
-    {
-        PlotData();
-    }
-
     protected override void OnAfterRender(bool firstRender)
     {
-        PlotData();
+        DrawChart();
     }
 
     protected override async Task OnInitializedAsync()
@@ -240,7 +237,7 @@
         textCodes.Add(10500);
         textCodes.Add(10501);
 
-        langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, textCodes.ToArray());
+        langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, UserAppCache.LanguageCode, textCodes.ToArray());
     }
 
     private async Task CreateSelectListModels()
@@ -275,6 +272,7 @@
         alertModel.AlertType = saveResult.Item1 ? (int)Color.Success : (int)Color.Danger;
         alertModel.AlertMessage = saveResult.Item2;
         await CreateTeamSelectList();
+        await GetTeamStructure(true);
         SavingTeam = false;
     }
 
@@ -394,7 +392,7 @@
         TeamSelectListValues = TeamListDictionary.Select(s => new SelectListModel { ValueField = s.Key, DescriptionField = s.Value });
     }
 
-    private async Task GetTeamStructure()
+    private async Task GetTeamStructure(bool drawChart = false)
     {
         var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.TEAM, $"Team/GetTeamTree/{teamHead.Id}");
 
@@ -409,6 +407,8 @@
             //TeamChartModel teamChartModel = mapper.Map<TeamChartModel>(teamStruct);
 
             //ChartDatasource = JsonConvert.SerializeObject(teamChartModel);
+            if (drawChart)
+                DrawChart();
         }
     }
 

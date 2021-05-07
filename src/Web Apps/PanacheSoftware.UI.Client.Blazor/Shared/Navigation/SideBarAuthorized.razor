@@ -1,5 +1,6 @@
 ﻿@inject FoundationService MyFoundationService
 @inject TokenProvider TokenProvider
+@inject UserAppCache UserAppCache
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 @using IdentityModel;
@@ -7,7 +8,7 @@
 <CascadingValue Value="@langQueryList" Name="langQueryList">
     <BarBrand>
         <BarItem>
-            <BarLink To="">
+            <BarLink To="" Style="color: #CBDB2A">
                 <BarIcon IconName="customIcon" />
                 @LanguageHelper.GetTitle(langQueryList, 10000)
             </BarLink>
@@ -21,12 +22,15 @@
 </CascadingValue>
 
 @code {
-    RenderFragment customIcon =@<img src="/img/user.jpg" style="width:32px; height: 32px" />;
+    //RenderFragment customIcon =@<img src="/img/user.jpg" style="width:32px; height: 32px" />;
+    RenderFragment customIcon =@<img src="/img/PS-Green-Trans.png" style="width:42px; height: 42px" />;
     Sidebar sidebar;
     LangQueryList langQueryList { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
+        UserAppCache.OnChange += LanguageCodeChanged;
+
         if (!string.IsNullOrWhiteSpace(TokenProvider.AccessToken))
         {
             var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
@@ -39,7 +43,19 @@
             }
         }
 
+        UserAppCache.SetLanguageCode(await MyFoundationService.GetLanguageCode(TokenProvider.AccessToken));
         await GetLanguageList();
+    }
+
+    public void Dispose()
+    {
+        UserAppCache.OnChange -= LanguageCodeChanged;
+    }
+
+    private async void LanguageCodeChanged()
+    {
+        await GetLanguageList();
+        StateHasChanged();
     }
 
     private async Task GetLanguageList()
@@ -71,7 +87,7 @@
         textCodes.Add(10125);
         textCodes.Add(10126);
 
-        langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, textCodes.ToArray());
+        langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, UserAppCache.LanguageCode, textCodes.ToArray());
     }
 
     void ToggleSidebar()

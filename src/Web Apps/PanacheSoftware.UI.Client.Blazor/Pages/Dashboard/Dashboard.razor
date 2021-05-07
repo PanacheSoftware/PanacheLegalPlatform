@@ -1,5 +1,6 @@
 ﻿@page "/dashboard"
 @attribute [Authorize]
+@inject UserAppCache UserAppCache
 @inject FoundationService MyFoundationService
 @inject TokenProvider TokenProvider
 @inject NavigationManager NavigationManager
@@ -47,6 +48,6 @@
         textCodes.Add(10408);
         textCodes.Add(10807);
 
-        langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, textCodes.ToArray());
+        langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, UserAppCache.LanguageCode, textCodes.ToArray());
     }
 }

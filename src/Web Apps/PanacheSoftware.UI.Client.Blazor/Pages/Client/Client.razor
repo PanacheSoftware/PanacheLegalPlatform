@@ -2,6 +2,7 @@
 @attribute [Authorize]
 @inject FoundationService MyFoundationService
 @inject TokenProvider TokenProvider
+@inject UserAppCache UserAppCache
 @using PanacheSoftware.Core.Domain.API.Client
 @using System.IO
 
@@ -258,7 +259,7 @@
         textCodes.Add(10216);
         textCodes.Add(10217);
 
-        langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, textCodes.ToArray());
+        langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, UserAppCache.LanguageCode, textCodes.ToArray());
     }
 
     private void CreateSelectListModels()
@@ -408,6 +409,9 @@
 
                     foreach (var clientAddr in clientCon.ClientAddresses)
                     {
+                        if (clientAddr.Id == Guid.Empty)
+                            clientAddr.ClientContactId = clientCon.Id;
+
                         var createAddressResult = await CreateOrUpdateAddressAsync(clientAddr);
                         if (!createAddressResult.Item1)
                         {
@@ -536,6 +540,7 @@
     {
 
         var newClientContact = new ClientCon();
+        newClientContact.ClientHeaderId = clientHead.Id;
 
         newClientContact.Id = new Guid();
 

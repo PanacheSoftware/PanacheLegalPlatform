@@ -147,8 +147,7 @@ namespace PanacheSoftware.Service.CustomField.Controllers
 
                             _unitOfWork.Complete();
 
-                            return CreatedAtRoute("Get", new { id = _mapper.Map<CustomFieldGroupHead>(customFieldGroupHeader).Id },
-                                _mapper.Map<CustomFieldGroupHead>(customFieldGroupHeader));
+                            return Ok(_mapper.Map<CustomFieldGroupHead>(customFieldGroupHeader));
                         }
 
                         return NotFound();

@@ -73,8 +73,8 @@ namespace PanacheSoftware.Service.CustomField.Controllers
 
                         if (customFieldGroupHeader != null)
                         {
-                            if (customFieldGroupHeader.CustomFieldHeaders.All(ch => ch.Name != customFieldHead.Name))
-                            {
+                            //if (customFieldGroupHeader.CustomFieldHeaders.All(ch => ch.Name != customFieldHead.Name))
+                            //{
                                 var sequenceNo = 0; 
 
                                 var maxCustomFieldHead = customFieldGroupHeader.CustomFieldHeaders.OrderByDescending(cf => cf.SequenceNo).FirstOrDefault();
@@ -90,9 +90,9 @@ namespace PanacheSoftware.Service.CustomField.Controllers
 
                                 return Created(new Uri($"{Request.Path}/{customFieldHeader.Id}", UriKind.Relative),
                                     _mapper.Map<CustomFieldHead>(customFieldHeader));
-                            }
+                            //}
 
-                            return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"CustomFieldHead.Name: '{customFieldHead.Name}' already exists."));
+                            //return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"CustomFieldHead.Name: '{customFieldHead.Name}' already exists."));
                         }
 
                         return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"CustomFieldHead.CustomFieldGroupHeadId: '{customFieldHead.CustomFieldGroupHeaderId}' not found."));
@@ -132,10 +132,10 @@ namespace PanacheSoftware.Service.CustomField.Controllers
 
                             customFieldHeadPatch.ApplyTo(customFieldHead);
 
-                            if(customFieldHead.Name != customFieldHeader.Name)
-                            {
-                                return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"CustomFieldHead.Name: '{customFieldHeader.Name}' cannot be changed."));
-                            }
+                            //if(customFieldHead.Name != customFieldHeader.Name)
+                            //{
+                            //    return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"CustomFieldHead.Name: '{customFieldHeader.Name}' cannot be changed."));
+                            //}
 
                             if(customFieldHead.SequenceNo != customFieldHeader.SequenceNo)
                             {
@@ -149,8 +149,7 @@ namespace PanacheSoftware.Service.CustomField.Controllers
 
                             _unitOfWork.Complete();
 
-                            return CreatedAtRoute("Get", new { id = _mapper.Map<CustomFieldHead>(customFieldHeader).Id },
-                                _mapper.Map<CustomFieldHead>(customFieldHeader));
+                            return Ok(_mapper.Map<CustomFieldHead>(customFieldHeader));
                         }
 
                         return NotFound();

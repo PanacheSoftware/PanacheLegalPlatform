@@ -114,7 +114,7 @@ namespace PanacheSoftware.Service.Foundation.Controllers
 
                             _unitOfWork.Complete();
 
-                            return Created(new Uri($"{Request.Path}/{tenantSetting.Id}", UriKind.Relative),
+                            return Created(new Uri($"{Request.Path}/{tenantSetting.Id}", UriKind.Absolute),
                                 _mapper.Map<TenSetting>(tenantSetting));
                         }
 
@@ -269,7 +269,7 @@ namespace PanacheSoftware.Service.Foundation.Controllers
 
                             _unitOfWork.Complete();
 
-                            return Created(new Uri($"{Request.Path}/{userSetting.Id}", UriKind.Relative),
+                            return Created(new Uri($"{Request.Scheme}://{Request.Host}{Request.Path}/{userSetting.Id}", UriKind.Relative),
                                 _mapper.Map<UsrSetting>(userSetting));
                         }
 
@@ -316,8 +316,7 @@ namespace PanacheSoftware.Service.Foundation.Controllers
 
                             _unitOfWork.Complete();
 
-                            return CreatedAtRoute("Get", new {id = _mapper.Map<UsrSetting>(userSetting).Id},
-                                _mapper.Map<UsrSetting>(userSetting));
+                            return Ok(_mapper.Map<UsrSetting>(userSetting));
                         }
 
                         return NotFound();
