@@ -21,5 +21,11 @@ namespace PanacheSoftware.Core.Domain.API.CustomField
         public Guid CustomFieldGroupHeaderId { get; set; }
         public virtual CustomFieldGroupHead CustomFieldGroupHeader { get; set; }
         public string Status { get; set; }
+
+        public string CustomFieldGroupHeaderIdString
+        {
+            get { return CustomFieldGroupHeaderId.ToString(); }
+            set { CustomFieldGroupHeaderId = Guid.TryParse(value, out Guid result) ? result : Guid.Empty; }
+        }
     }
 }

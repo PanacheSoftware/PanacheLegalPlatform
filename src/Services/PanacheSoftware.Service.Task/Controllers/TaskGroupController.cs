@@ -211,8 +211,7 @@ namespace PanacheSoftware.Service.Task.Controllers
 
                                 _unitOfWork.Complete();
 
-                                return CreatedAtRoute("Get", new {id = _mapper.Map<TaskGroupHead>(taskGroupHeader).Id},
-                                    _mapper.Map<TaskGroupHead>(taskGroupHeader));
+                                return Ok();
                             }
 
                             return StatusCode(StatusCodes.Status400BadRequest,

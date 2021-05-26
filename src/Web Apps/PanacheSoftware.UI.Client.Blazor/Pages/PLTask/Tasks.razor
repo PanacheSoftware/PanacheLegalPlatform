@@ -1,0 +1,136 @@
+﻿@page "/task/tasks"
+@attribute [Authorize]
+@inject UserAppCache UserAppCache
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@using PanacheSoftware.Core.Domain.API.Task;
+
+<PageProgressBar @ref="@pageProgressBar" pageProgressColor="Color.Warning" pageProgressVisible="@loadingPage" />
+
+@if (!loadingPage)
+{
+    <Breadcrumb>
+        <BreadcrumbItem>
+            <BreadcrumbLink To="dashboard">@LanguageHelper.GetTitle(langQueryList, 10121)</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbItem Active="true">
+            <BreadcrumbLink>@LanguageHelper.GetTitle(langQueryList, 10112)</BreadcrumbLink>
+        </BreadcrumbItem>
+    </Breadcrumb>
+
+    <Card Margin="Margin.Is4.OnY">
+        <CardHeader>
+            <CardTitle>@LanguageHelper.GetTitle(langQueryList, 10111)</CardTitle>
+        </CardHeader>
+        <CardBody>
+            @if (taskGroupList != null)
+            {
+                <DataGrid TItem="TaskGroupHead"
+                          Data="@taskGroupList.TaskGroupHeaders"
+                          Filterable="true"
+                          FilterMethod="DataGridFilterMethod.StartsWith"
+                          PageSize="25"
+                          Striped="true"
+                          Bordered="true"
+                          Hoverable="true"
+                          Responsive="true"
+                          ShowPager="true"
+                          PagerPosition="DataGridPagerPosition.Bottom"
+                          ShowPageSizes="true">
+                    <EmptyTemplate>No records...</EmptyTemplate>
+                    <DataGridColumns>
+                        <DataGridColumn TItem="TaskGroupHead" Field="@nameof(TaskGroupHead.Id)" Caption="" Width="10px" Filterable="false" Sortable="false">
+                            <DisplayTemplate>
+                                <Button To="@($"taskgroup/{context.Id}")" Type="ButtonType.Link" Color="Color.Primary"><Icon Name="@("fa-edit")" /></Button>
+                            </DisplayTemplate>
+                        </DataGridColumn>
+                        <DataGridColumn TItem="TaskGroupHead" Field="@nameof(TaskGroupHead.ShortName)" Caption="@LanguageHelper.GetTitle(langQueryList, 10900)" />
+                        <DataGridColumn TItem="TaskGroupHead" Field="@nameof(TaskGroupHead.LongName)" Caption="@LanguageHelper.GetTitle(langQueryList, 10901)" />
+                        <DataGridColumn TItem="TaskGroupHead" Field="@nameof(TaskGroupHead.Description)" Caption="@LanguageHelper.GetTitle(langQueryList, 10200)" />
+                        <DataGridColumn TItem="TaskGroupHead" Field="@nameof(TaskGroupHead.StartDate)" Caption="@LanguageHelper.GetTitle(langQueryList, 10222)" DisplayFormat="{0:dd/MM/yyyy}" />
+                        <DataGridColumn TItem="TaskGroupHead" Field="@nameof(TaskGroupHead.Completed)" Caption="@LanguageHelper.GetTitle(langQueryList, 10913)">
+                            <DisplayTemplate>
+                                @{
+                                    if (context.Completed)
+                                    {
+                                        <Button Color="Color.Success" Disabled="true" Outline="true" Active="true"><Icon Name="IconName.Check" />Completed</Button>
+                                    }
+                                    else
+                                    {
+                                        <Button Color="Color.Warning" Disabled="true" Outline="true" Active="true">Incomplete</Button>
+                                    }
+                                }
+                            </DisplayTemplate>
+                        </DataGridColumn>
+                        <DataGridColumn TItem="TaskGroupHead" Field="@nameof(TaskGroupHead.CompletionDate)" Caption="@LanguageHelper.GetTitle(langQueryList, 10911)" DisplayFormat="{0:dd/MM/yyyy}" />
+                        <DataGridColumn TItem="TaskGroupHead" Field="@nameof(TaskGroupHead.CompletedOnDate)" Caption="@LanguageHelper.GetTitle(langQueryList, 10912)" DisplayFormat="{0:dd/MM/yyyy}">
+                            <DisplayTemplate>
+                                @{
+                                    if (context.CompletedOnDate.ToShortDateString() != "01/01/1900")
+                                    {
+                                        @(context.CompletedOnDate)
+                                    }
+                                }
+                            </DisplayTemplate>
+                        </DataGridColumn>
+                    </DataGridColumns>
+                </DataGrid>
+                <Button To="taskgroup" Color="Color.Success" Type="ButtonType.Link">@LanguageHelper.GetTitle(langQueryList, 10204)</Button>
+            }
+            else
+            {
+                <p>Loading...</p>
+            }
+        </CardBody>
+    </Card>
+}
+
+@code {
+    LangQueryList langQueryList { get; set; }
+    TaskGroupList taskGroupList { get; set; }
+    PageProgressBar pageProgressBar;
+    bool loadingPage = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetLanguageList();
+        await GetClients();
+        loadingPage = false;
+        pageProgressBar.ChangeVisibility(loadingPage);
+    }
+
+    private async Task GetLanguageList()
+    {
+        var textCodes = new List<long>();
+        textCodes.Add(10121);
+        textCodes.Add(10111);
+        textCodes.Add(10112);
+        textCodes.Add(10900);
+        textCodes.Add(10901);
+        textCodes.Add(10200);
+        textCodes.Add(10201);
+        textCodes.Add(10202);
+        textCodes.Add(10203);
+        textCodes.Add(10204);
+        textCodes.Add(10911);
+        textCodes.Add(10912);
+        textCodes.Add(10913);
+        textCodes.Add(10222);
+
+        langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, UserAppCache.LanguageCode, textCodes.ToArray());
+    }
+
+    private async Task GetClients()
+    {
+        var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.TASK, $"TaskGroup/GetMainTaskGroups");
+
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            taskGroupList = response.ContentAsType<TaskGroupList>();
+        }
+        else
+        {
+            taskGroupList = new TaskGroupList();
+        }
+    }
+}
