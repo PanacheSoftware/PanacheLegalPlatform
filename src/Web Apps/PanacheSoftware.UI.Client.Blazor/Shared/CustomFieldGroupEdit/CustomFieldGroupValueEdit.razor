@@ -1,0 +1,163 @@
+﻿@attribute [Authorize]
+@inject UserAppCache UserAppCache
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@using PanacheSoftware.Core.Domain.API.CustomField
+
+@if (customFieldGroupValuesModel != null)
+{
+    <Row>
+        <Column>
+            <Card Margin="Margin.Is4.OnY">
+                <CardHeader>
+                    <CardTitle>@customFieldGroupValuesModel.customFieldGroupHeader.LongName</CardTitle>
+                </CardHeader>
+                <CardBody>
+
+                    @foreach (var customFieldRow in CustomFieldRows)
+                    {
+                        <Row>
+
+                            @foreach (var customFieldHeaderRowField in customFieldRow.CustomFieldHeaderRowFields)
+                            {
+                                <Column ColumnSize="ColumnSize.Is6">
+                                    <Field>
+                                        @if (customFieldHeaderRowField.customFieldHeader.CustomFieldType != CustomFieldTypes.BoolField)
+                                        {
+                                            <FieldLabel>@customFieldHeaderRowField.customFieldHeader.Name</FieldLabel>
+                                        }
+
+                                        @switch (customFieldHeaderRowField.customFieldHeader.CustomFieldType)
+                                        {
+                                            case CustomFieldTypes.DateTimeField:
+                                                <DateEdit TValue="DateTime" @bind-Date="@customFieldHeaderRowField.customFieldValue.DateTimeValue" InputMode="DateInputMode.Date"></DateEdit>
+                                                break;
+                                            case CustomFieldTypes.IntField:
+                                                <NumericEdit Value="@customFieldHeaderRowField.customFieldValue.IntValue" TValue="int?"></NumericEdit>
+                                                break;
+                                            case CustomFieldTypes.DoubleField:
+                                                <NumericEdit Value="@customFieldHeaderRowField.customFieldValue.DoubleValue" TValue="double?"></NumericEdit>
+                                                break;
+                                            case CustomFieldTypes.BoolField:
+                                                <Check TValue="bool" @bind-Checked="@customFieldHeaderRowField.customFieldValue.BoolValue">@customFieldHeaderRowField.customFieldHeader.Name</Check>
+                                                break;
+                                            case CustomFieldTypes.StringField:
+                                            default:
+                                                <TextEdit @bind-Text="@customFieldHeaderRowField.customFieldValue.StringValue"></TextEdit>
+                                                break;
+                                        }
+                                    </Field>
+                                </Column>
+                            }
+                        </Row>
+                    }
+
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Alert Color="(Color)alertModel.AlertType" @bind-Visible="@alertModel.ShowAlert" Dismisable="true">
+                                <AlertMessage>
+                                    @alertModel.AlertMessage
+                                </AlertMessage>
+                                <AlertDescription>
+                                    @alertModel.AlertDescription
+                                </AlertDescription>
+                                <CloseButton />
+                            </Alert>
+                        </Column>
+                    </Row>
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Button Type="ButtonType.Submit" Color="Color.Primary" PreventDefaultOnSubmit="true" Clicked="@SaveFieldGroupValues" Loading="@SavingFieldGroup">@LanguageHelper.GetTitle(langQueryList, 10229)</Button>
+                        </Column>
+                    </Row>
+                </CardBody>
+            </Card>
+        </Column>
+    </Row>
+}
+
+@code {
+
+    [CascadingParameter]
+    LangQueryList langQueryList { get; set; }
+
+    [Parameter]
+    public CustomFieldGroupValuesModel customFieldGroupValuesModel { get; set; }
+
+    bool SavingFieldGroup = false;
+    AlertModel alertModel = new AlertModel();
+
+    int fieldRowMax = 2;
+    List<CustomFieldHeaderRow> CustomFieldRows = new List<CustomFieldHeaderRow>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        CustomFieldRows = GetRows();
+    }
+
+    private async Task SaveFieldGroupValues()
+    {
+        SavingFieldGroup = true;
+        //var saveResult = await SaveTaskGroupHeadAsync();
+
+        //alertModel.ShowAlert = true;
+        //alertModel.AlertType = saveResult.Item1 ? (int)Color.Success : (int)Color.Danger;
+        //alertModel.AlertMessage = saveResult.Item2;
+
+        //if (saveResult.Item1)
+        //{
+        //    await customFieldGroupLink.SaveFieldGroup(taskGroupHead.Id);
+        //}
+
+        SavingFieldGroup = false;
+    }
+
+    private List<CustomFieldHeaderRow> GetRows()
+    {
+        var customFieldHeaderRows = new List<CustomFieldHeaderRow>();
+        int fieldCounter = 0;
+        bool addCurrentRow = false;
+
+        var currentRow = new CustomFieldHeaderRow();
+
+        foreach (var currentCustomFieldHeader in customFieldGroupValuesModel.customFieldGroupHeader.CustomFieldHeaders)
+        {
+            if (fieldCounter == fieldRowMax)
+            {
+                customFieldHeaderRows.Add(currentRow);
+                fieldCounter = 0;
+                currentRow = new CustomFieldHeaderRow();
+            }
+
+            var customFieldHeaderRowField = new CustomFieldHeaderRowField()
+            {
+                customFieldHeader = currentCustomFieldHeader
+            };
+
+            var customFieldValue = customFieldGroupValuesModel.CustomFieldValues.Where(v => v.CustomFieldHeaderId == currentCustomFieldHeader.CustomFieldGroupHeaderId).FirstOrDefault();
+
+            if (customFieldValue == default)
+            {
+                customFieldValue = new CustomFieldVal()
+                {
+                    CustomFieldHeaderId = customFieldHeaderRowField.customFieldHeader.Id,
+                    Id = Guid.Empty,
+                    StringValue = string.Empty
+                };
+            }
+
+            customFieldHeaderRowField.customFieldValue = customFieldValue;
+
+            currentRow.CustomFieldHeaderRowFields.Add(customFieldHeaderRowField);
+
+            fieldCounter++;
+
+            addCurrentRow = true;
+        }
+
+        if (addCurrentRow)
+            customFieldHeaderRows.Add(currentRow);
+
+        return customFieldHeaderRows;
+    }
+}

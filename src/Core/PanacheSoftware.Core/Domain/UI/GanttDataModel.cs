@@ -6,6 +6,57 @@ using System.Text.Json.Serialization;
 
 namespace PanacheSoftware.Core.Domain.UI
 {
+    public partial class GCGanttModel
+    {
+        [JsonPropertyName("cols")]
+        public GCGanttColumn[] Columns { get; set; }
+
+        [JsonPropertyName("rows")]
+        public GCGanttDataRow[] Rows { get; set; }
+    }
+
+    public partial class GCGanttDataRow
+    {
+        [JsonPropertyName("c")]
+        public GCGanttDataColumn[] ColumnValues { get; set; }
+        //data.addColumn('string', 'Task ID');
+        //data.addColumn('string', 'Task Name');
+        //data.addColumn('date', 'Start Date');
+        //data.addColumn('date', 'End Date');
+        //data.addColumn('number', 'Duration');
+        //data.addColumn('number', 'Percent Complete');
+        //data.addColumn('string', 'Dependencies');
+    }
+
+    public partial class GCGanttDataColumn
+    {
+        [JsonPropertyName("v")]
+        public string Value { get; set; }
+        //data.addColumn('string', 'Task ID');
+        //data.addColumn('string', 'Task Name');
+        //data.addColumn('date', 'Start Date');
+        //data.addColumn('date', 'End Date');
+        //data.addColumn('number', 'Duration');
+        //data.addColumn('number', 'Percent Complete');
+        //data.addColumn('string', 'Dependencies');
+    }
+
+    public partial class GCGanttColumn
+    {
+        [JsonPropertyName("label")]
+        public string Label { get; set; }
+
+        [JsonPropertyName("type")]
+        public string Type { get; set; }
+        //data.addColumn('string', 'Task ID');
+        //data.addColumn('string', 'Task Name');
+        //data.addColumn('date', 'Start Date');
+        //data.addColumn('date', 'End Date');
+        //data.addColumn('number', 'Duration');
+        //data.addColumn('number', 'Percent Complete');
+        //data.addColumn('string', 'Dependencies');
+    }
+
     public partial class GanttDataModel
     {
         [JsonPropertyName("data")]

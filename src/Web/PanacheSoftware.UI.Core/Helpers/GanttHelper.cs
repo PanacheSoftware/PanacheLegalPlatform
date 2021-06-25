@@ -10,6 +10,74 @@ namespace PanacheSoftware.UI.Core.Helpers
 {
     public static class GanttHelper
     {
+        public static GCGanttModel GenerateGoogleChartsGanttModel(TaskGroupSummary taskGroupSummary)
+        {
+            var gcGanttModel = new GCGanttModel();
+
+            gcGanttModel.Columns = GenerateGoogleChartsGanttColumns().ToArray();
+
+            var ganttRows = new List<GCGanttDataRow>();
+
+            AddGoogleChartsGanttDataRows(ganttRows, taskGroupSummary, null);
+
+            gcGanttModel.Rows = ganttRows.ToArray();
+
+            return gcGanttModel;
+        }
+
+        private static IList<GCGanttColumn> GenerateGoogleChartsGanttColumns()
+        {
+            var gcGanttColumns = new List<GCGanttColumn>();
+
+            gcGanttColumns.Add(new GCGanttColumn() { Label = "Task ID", Type = "string" });
+            gcGanttColumns.Add(new GCGanttColumn() { Label = "Task Name", Type = "string" });
+            gcGanttColumns.Add(new GCGanttColumn() { Label = "Resource", Type = "string" });
+            gcGanttColumns.Add(new GCGanttColumn() { Label = "Start Date", Type = "date" });
+            gcGanttColumns.Add(new GCGanttColumn() { Label = "End Date", Type = "date" });
+            gcGanttColumns.Add(new GCGanttColumn() { Label = "Duration", Type = "number" });
+            gcGanttColumns.Add(new GCGanttColumn() { Label = "Percent Complete", Type = "number" });
+            gcGanttColumns.Add(new GCGanttColumn() { Label = "Dependencies", Type = "string" });
+
+            return gcGanttColumns;
+        }
+
+        private static void AddGoogleChartsGanttDataRows(List<GCGanttDataRow> ganttRows, TaskGroupSummary taskGroupSummary, Guid? parentId)
+        {
+            var gcGanttColumns = new List<GCGanttDataColumn>();
+
+            //Resources, make sure the resource is set to the TaskID, TaskID should be made unique within a Task.
+            gcGanttColumns.Add(new GCGanttDataColumn() { Value = taskGroupSummary.Id.ToString() });
+            gcGanttColumns.Add(new GCGanttDataColumn() { Value = MakeStringJSONSafe(taskGroupSummary.LongName) });
+            gcGanttColumns.Add(new GCGanttDataColumn() { Value = parentId.HasValue ? parentId.Value.ToString() : taskGroupSummary.Id.ToString() });
+            gcGanttColumns.Add(new GCGanttDataColumn() { Value = $"Date({taskGroupSummary.StartDate.Year}, {taskGroupSummary.StartDate.Month}, {taskGroupSummary.StartDate.Day})" });
+            gcGanttColumns.Add(new GCGanttDataColumn() { Value = $"Date({taskGroupSummary.CompletionDate.Year}, {taskGroupSummary.CompletionDate.Month}, {taskGroupSummary.CompletionDate.Day})" });
+            gcGanttColumns.Add(new GCGanttDataColumn() { Value = null });
+            gcGanttColumns.Add(new GCGanttDataColumn() { Value = Convert.ToInt32(taskGroupSummary.PercentageComplete).ToString() });
+            gcGanttColumns.Add(new GCGanttDataColumn() { Value = null });
+
+            ganttRows.Add(new GCGanttDataRow() { ColumnValues = gcGanttColumns.ToArray() });
+
+            foreach (var childTask in taskGroupSummary.ChildTasks)
+            {
+                gcGanttColumns.Clear();
+                gcGanttColumns.Add(new GCGanttDataColumn() { Value = childTask.Id.ToString() });
+                gcGanttColumns.Add(new GCGanttDataColumn() { Value = MakeStringJSONSafe(childTask.Title) });
+                gcGanttColumns.Add(new GCGanttDataColumn() { Value = childTask.TaskGroupHeaderId.ToString() });
+                gcGanttColumns.Add(new GCGanttDataColumn() { Value = $"Date({childTask.StartDate.Year}, {childTask.StartDate.Month}, {childTask.StartDate.Day})" });
+                gcGanttColumns.Add(new GCGanttDataColumn() { Value = $"Date({childTask.CompletionDate.Year}, {childTask.CompletionDate.Month}, {childTask.CompletionDate.Day})" });
+                gcGanttColumns.Add(new GCGanttDataColumn() { Value = null });
+                gcGanttColumns.Add(new GCGanttDataColumn() { Value = childTask.Completed ? "100" : "0" });
+                gcGanttColumns.Add(new GCGanttDataColumn() { Value = null });
+
+                ganttRows.Add(new GCGanttDataRow() { ColumnValues = gcGanttColumns.ToArray() });
+            }
+
+            foreach (var childTaskGroup in taskGroupSummary.ChildTaskGroups)
+            {
+                AddGoogleChartsGanttDataRows(ganttRows, childTaskGroup, taskGroupSummary.Id);
+            }
+        }
+
         public static GanttDataModel GenerateGanttDataModel(TaskGroupSummary taskGroupSummary)
         {
             var ganttDataModel = new GanttDataModel();

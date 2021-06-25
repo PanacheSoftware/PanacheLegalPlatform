@@ -1,0 +1,225 @@
+﻿@page "/taskview/{id}"
+@attribute [Authorize]
+@inject UserAppCache UserAppCache
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IJSRuntime JS;
+@using PanacheSoftware.Core.Domain.API.Task
+@using PanacheSoftware.Core.Domain.API.Team
+@using PanacheSoftware.Core.Domain.Identity.API;
+@using PanacheSoftware.Core.Domain.API.Client;
+@using PanacheSoftware.UI.Core.Helpers;
+
+<PageProgressBar @ref="@pageProgressBar" pageProgressColor="Color.Warning" pageProgressVisible="@loadingPage" />
+
+@if (!loadingPage)
+{
+    <Breadcrumb>
+        <BreadcrumbItem>
+            <BreadcrumbLink To="dashboard">@LanguageHelper.GetTitle(langQueryList, 10121)</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbItem>
+            <BreadcrumbLink To="task/tasks">@LanguageHelper.GetTitle(langQueryList, 10112)</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbItem Active="true">
+            <BreadcrumbLink>@GetBreadCrumbTitle()</BreadcrumbLink>
+        </BreadcrumbItem>
+    </Breadcrumb>
+
+    @if (taskGroupSummary != null)
+    {
+        <Row>
+            <Column>
+                <Card Margin="Margin.Is4.OnY">
+                    <CardHeader>
+                        <CardTitle>@GetBreadCrumbTitle()</CardTitle><Button To="@($"taskgroup/{taskGroupSummary.Id}")" Type="ButtonType.Link" Color="Color.Primary" Float="Float.Right"><Icon Name="@("fa-edit")" /></Button>
+                    </CardHeader>
+                    <CardBody>
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is12">
+                                <Alert Color="Color.Success" Visible="@taskGroupSummary.Completed">
+                                    <AlertMessage>
+                                        @LanguageHelper.GetTitle(langQueryList, 10921)
+                                    </AlertMessage>
+                                    <br />
+                                    <AlertDescription>
+                                        @LanguageHelper.GetTitle(langQueryList, 10912): @taskGroupSummary.CompletedOnDate.ToShortDateString()
+                                    </AlertDescription>
+                                </Alert>
+                                <Alert Color="Color.Primary" Visible="@(!taskGroupSummary.Completed)">
+                                    <AlertMessage>
+                                        @LanguageHelper.GetTitle(langQueryList, 10922)
+                                    </AlertMessage>
+                                    <br />
+                                    <AlertDescription>
+                                        @LanguageHelper.GetTitle(langQueryList, 10911): @taskGroupSummary.CompletionDate.ToShortDateString()
+                                    </AlertDescription>
+                                </Alert>
+                            </Column>
+                        </Row>
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is8">
+                                <Paragraph Style="white-space: pre-line">@taskGroupSummary.Description</Paragraph>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is4">
+                                <Paragraph><strong>@LanguageHelper.GetTitle(langQueryList, 10943):</strong><br /><Blazorise.Link To="@($"user/{taskGroupSummary.MainUserId}")">@GetUserNameForUserId(taskGroupSummary.MainUserId)</Blazorise.Link></Paragraph>
+                                <Paragraph><strong>@LanguageHelper.GetTitle(langQueryList, 10222):</strong><br />@taskGroupSummary.StartDate.ToShortDateString()</Paragraph>
+                                <Paragraph><strong>@LanguageHelper.GetTitle(langQueryList, 10911):</strong><br />@taskGroupSummary.CompletionDate.ToShortDateString()</Paragraph>
+                                <Paragraph><strong>@LanguageHelper.GetTitle(langQueryList, 10302):</strong><br /><Blazorise.Link To="@($"client/{clientSummary.Id}")">@clientSummary.LongName</Blazorise.Link></Paragraph>
+                                <Paragraph><strong>@LanguageHelper.GetTitle(langQueryList, 10306):</strong><br />@clientSummary.MainContactName<br />@clientSummary.Phone<br /><Blazorise.Link To="@($"mailto:{@clientSummary.Email}")">@clientSummary.Email</Blazorise.Link></Paragraph>
+                            </Column>
+                        </Row>
+                    </CardBody>
+                </Card>
+            </Column>
+        </Row>
+        <Row>
+            <Column>
+                <Card Margin="Margin.Is4.OnY">
+                    <CardHeader>
+                        <CardTitle>@LanguageHelper.GetTitle(langQueryList, 10923)</CardTitle>
+                    </CardHeader>
+                    <CardBody>
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is12">
+                                <Paragraph Weight="TextWeight.Bold">@LanguageHelper.GetTitle(langQueryList, 10924):</Paragraph>
+                                <Progress>
+                                    <ProgressBar Animated="true" Striped="true" Value="@((int)taskGroupSummary.PercentageComplete*100)" Background="Background.Success"></ProgressBar>
+                                </Progress>
+                            </Column>
+                        </Row>
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is12">
+                                &nbsp;
+                            </Column>
+                        </Row>
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is12">
+                                <div id="chart_div" class="card shadow m-5" style="height: 400px;"></div>
+                                @*<div id="chart_div"></div>*@
+                            </Column>
+                        </Row>
+                    </CardBody>
+                </Card>
+            </Column>
+        </Row>
+        <CascadingValue Value="langQueryList">
+            <CustomFieldGroupEdit linkId="@taskGroupSummary.Id" linkType="@LinkTypes.TaskGroup"/>
+        </CascadingValue>
+    }
+}
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    LangQueryList langQueryList { get; set; }
+    TaskGroupSummary taskGroupSummary { get; set; }
+    ClientSummary clientSummary { get; set; }
+    PageProgressBar pageProgressBar;
+    bool loadingPage = true;
+    AlertModel alertModel = new AlertModel();
+    UserListModel userListModel;
+    GCGanttModel gcGanttModel = default;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetLanguageList();
+        await GetTaskSummary();
+        loadingPage = false;
+        pageProgressBar.ChangeVisibility(loadingPage);
+    }
+
+    private void DrawChart()
+    {
+        if(gcGanttModel != default)
+        {
+            var ganttJSON = System.Text.Json.JsonSerializer.Serialize(gcGanttModel);
+            JS.InvokeVoidAsync("createGanttChart", new { ganttJSON });
+        }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        DrawChart();
+    }
+
+    private async Task GetLanguageList()
+    {
+        var textCodes = new List<long>();
+        textCodes.Add(10121);
+        textCodes.Add(10112);
+        textCodes.Add(10222);
+        textCodes.Add(10229);
+        textCodes.Add(10302);
+        textCodes.Add(10306);
+        textCodes.Add(10911);
+        textCodes.Add(10912);
+        textCodes.Add(10921);
+        textCodes.Add(10922);
+        textCodes.Add(10923);
+        textCodes.Add(10924);
+        textCodes.Add(10943);
+
+        langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, UserAppCache.LanguageCode, textCodes.ToArray());
+    }
+
+    private string GetBreadCrumbTitle()
+    {
+        if (taskGroupSummary == null)
+            return string.Empty;
+
+        return taskGroupSummary.LongName;
+    }
+
+    private async Task GetTaskSummary()
+    {
+        taskGroupSummary = new TaskGroupSummary();
+
+        if (!string.IsNullOrWhiteSpace(Id))
+        {
+            var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.TASK, $"TaskGroup/GetTaskGroupSummary/{Id}");
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                taskGroupSummary = response.ContentAsType<TaskGroupSummary>();
+
+                response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.CLIENT, $"Client/GetClientSummary/{taskGroupSummary.ClientHeaderId}");
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    clientSummary = response.ContentAsType<ClientSummary>();
+
+                    userListModel = await GetUsernames();
+
+                    gcGanttModel = GanttHelper.GenerateGoogleChartsGanttModel(taskGroupSummary);
+                }
+            }
+        }
+    }
+
+    private async Task<UserListModel> GetUsernames()
+    {
+        var userListModel = new UserListModel();
+
+        var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.IDENTITY, $"User");
+
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            userListModel = response.ContentAsType<UserListModel>();
+        }
+
+        return userListModel;
+    }
+
+    private string GetUserNameForUserId(Guid userId)
+    {
+        if (userListModel != default)
+        {
+            return userListModel.Users.Where(u => u.Id == userId).FirstOrDefault().FullName;
+        }
+
+        return string.Empty;
+    }
+
+}
