@@ -19,9 +19,10 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Repositories
             CustomFieldGroupDetails = new CustomFieldGroupDetailRepository(context);
             CustomFieldGroupHeaders = new CustomFieldGroupHeaderRepository(context);
             CustomFieldTags = new CustomFieldTagRepository(context);
-            CustomFieldValues = new CustomFieldValueRepository(context);
-            CustomFieldValueHistorys = new CustomFieldValueHistoryRepository(context);
             CustomFieldGroupLinks = new CustomFieldGroupLinkRepository(context);
+            CustomFieldValueHistorys = new CustomFieldValueHistoryRepository(context);
+            CustomFieldValues = new CustomFieldValueRepository(context);          
+            
         }
 
         public ICustomFieldHeaderRepository CustomFieldHeaders { get; private set; }

@@ -70,19 +70,8 @@
                                 <Paragraph><strong>@LanguageHelper.GetTitle(langQueryList, 10306):</strong><br />@clientSummary.MainContactName<br />@clientSummary.Phone<br /><Blazorise.Link To="@($"mailto:{@clientSummary.Email}")">@clientSummary.Email</Blazorise.Link></Paragraph>
                             </Column>
                         </Row>
-                    </CardBody>
-                </Card>
-            </Column>
-        </Row>
-        <Row>
-            <Column>
-                <Card Margin="Margin.Is4.OnY">
-                    <CardHeader>
-                        <CardTitle>@LanguageHelper.GetTitle(langQueryList, 10923)</CardTitle>
-                    </CardHeader>
-                    <CardBody>
                         <Row>
-                            <Column ColumnSize="ColumnSize.Is12">
+                            <Column ColumnSize="ColumnSize.Is12" Margin="Margin.Is4.OnY">
                                 <Paragraph Weight="TextWeight.Bold">@LanguageHelper.GetTitle(langQueryList, 10924):</Paragraph>
                                 <Progress>
                                     <ProgressBar Animated="true" Striped="true" Value="@((int)taskGroupSummary.PercentageComplete*100)" Background="Background.Success"></ProgressBar>
@@ -91,26 +80,37 @@
                         </Row>
                         <Row>
                             <Column ColumnSize="ColumnSize.Is12">
-                                &nbsp;
-                            </Column>
-                        </Row>
-                        <Row>
-                            <Column ColumnSize="ColumnSize.Is12">
-                                <div id="chart_div" class="card shadow m-5" style="height: 400px;"></div>
-                                @*<div id="chart_div"></div>*@
+                                <Accordion>
+                                    <Collapse Visible="@planVisible">
+                                        <CollapseHeader>
+                                            <Heading Size="HeadingSize.Is5">
+                                                <Button Clicked="@(()=>planVisible = !planVisible)">Plan</Button>
+                                            </Heading>
+                                        </CollapseHeader>
+                                        <CollapseBody>
+                                            <div id="chart_div" class="card shadow m-5" style="height: 400px;"></div>
+                                        </CollapseBody>
+                                    </Collapse>
+                                </Accordion>
                             </Column>
                         </Row>
                     </CardBody>
                 </Card>
             </Column>
         </Row>
-        <CascadingValue Value="langQueryList">
-            <CustomFieldGroupEdit linkId="@taskGroupSummary.Id" linkType="@LinkTypes.TaskGroup"/>
-        </CascadingValue>
+        <Row>
+            <Column ColumnSize="ColumnSize.Is12">
+                <CascadingValue Value="langQueryList">
+                    <CustomFieldGroupEdit linkId="@taskGroupSummary.Id" linkType="@LinkTypes.TaskGroup" />
+                </CascadingValue>
+            </Column>
+        </Row>
     }
 }
 
 @code {
+    bool planVisible = false;
+
     [Parameter]
     public string Id { get; set; }
     LangQueryList langQueryList { get; set; }

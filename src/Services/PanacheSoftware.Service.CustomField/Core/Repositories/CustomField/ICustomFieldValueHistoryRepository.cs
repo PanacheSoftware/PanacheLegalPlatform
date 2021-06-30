@@ -9,5 +9,6 @@ namespace PanacheSoftware.Service.CustomField.Core.Repositories
 {
     public interface ICustomFieldValueHistoryRepository : IPanacheSoftwareRepository<CustomFieldValueHistory>
     {
+        IList<CustomFieldValueHistory> GetCustomFieldValueHistorys(Guid CustomFieldHeaderId, bool readOnly);
     }
 }

@@ -184,6 +184,16 @@
                                     </AlertDescription>
                                     <CloseButton />
                                 </Alert>
+                                <Snackbar @ref="successSnackBar" Color="SnackbarColor.Success">
+                                    <SnackbarBody>
+                                        @alertModel.AlertMessage
+                                    </SnackbarBody>
+                                </Snackbar>
+                                <Snackbar @ref="errorSnackBar" Color="SnackbarColor.Danger">
+                                    <SnackbarBody>
+                                        @alertModel.AlertMessage
+                                    </SnackbarBody>
+                                </Snackbar>
                             </Column>
                         </Row>
                         <Row>
@@ -216,6 +226,8 @@
     IEnumerable<SelectListModel> CustomFieldTypeSelectListValues { get; set; }
     AlertModel alertModel = new AlertModel();
     bool SavingCustomFieldGroup = false;
+    Snackbar successSnackBar;
+    Snackbar errorSnackBar;
 
     protected override async Task OnInitializedAsync()
     {
@@ -299,6 +311,12 @@
         alertModel.ShowAlert = true;
         alertModel.AlertType = saveResult.Item1 ? (int)Color.Success : (int)Color.Danger;
         alertModel.AlertMessage = saveResult.Item2;
+        
+        if (saveResult.Item1)
+            successSnackBar.Show();
+        else
+            errorSnackBar.Show();
+
         SavingCustomFieldGroup = false;
     }
 

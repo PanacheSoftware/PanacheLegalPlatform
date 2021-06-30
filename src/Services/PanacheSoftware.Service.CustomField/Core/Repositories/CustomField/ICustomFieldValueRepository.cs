@@ -10,5 +10,6 @@ namespace PanacheSoftware.Service.CustomField.Core.Repositories
     public interface ICustomFieldValueRepository : IPanacheSoftwareRepository<CustomFieldValue>
     {
         Task<IEnumerable<CustomFieldValue>> GetCustomFieldValuesForLinkAsync(Guid linkId, string linkType, bool readOnly);
+        CustomFieldValue GetCustomFieldValue(Guid linkId, string linkType, Guid customFieldHeaderId, bool readOnly);
     }
 }

@@ -16,6 +16,7 @@ using PanacheSoftware.Core.Types;
 using PanacheSoftware.Http;
 using PanacheSoftware.Service.CustomField.Core;
 using PanacheSoftware.Service.CustomField.Core.Repositories;
+using PanacheSoftware.Service.CustomField.Manager;
 using PanacheSoftware.Service.CustomField.Persistance;
 using PanacheSoftware.Service.CustomField.Persistance.Context;
 using PanacheSoftware.Service.CustomField.Persistance.Repositories;
@@ -85,6 +86,7 @@ namespace PanacheSoftware.Service.CustomField
             services.AddTransient<ICustomFieldTagRepository, CustomFieldTagRepository>();
             services.AddTransient<ICustomFieldValueRepository, CustomFieldValueRepository>();
             services.AddTransient<ICustomFieldValueHistoryRepository, CustomFieldValueHistoryRepository>();
+            services.AddTransient<ICustomFieldManager, CustomFieldManager>();
 
             services.AddTransient<IUserProvider, UserProvider>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();

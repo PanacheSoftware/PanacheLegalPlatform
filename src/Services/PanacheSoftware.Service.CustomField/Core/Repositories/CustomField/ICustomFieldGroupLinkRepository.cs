@@ -11,6 +11,6 @@ namespace PanacheSoftware.Service.CustomField.Core.Repositories
     {
         CustomFieldGroupLink GetCustomFieldGroupLink(Guid customFieldGroupLinkId, bool readOnly);
         Task<IEnumerable<CustomFieldGroupLink>> GetCustomFieldGroupLinksWithRelationsForLinkAsync(Guid linkId, string linkType, bool readOnly);
-
+        bool CustomFieldGroupLinkExists(Guid linkId, string linkType, Guid customFieldGroupHeaderId);
     }
 }

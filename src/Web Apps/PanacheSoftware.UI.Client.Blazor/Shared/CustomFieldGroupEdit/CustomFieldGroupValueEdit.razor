@@ -2,78 +2,85 @@
 @inject UserAppCache UserAppCache
 @inject FoundationService MyFoundationService
 @inject TokenProvider TokenProvider
+@inject IMapper Mapper
 @using PanacheSoftware.Core.Domain.API.CustomField
 
 @if (customFieldGroupValuesModel != null)
 {
-    <Row>
-        <Column>
-            <Card Margin="Margin.Is4.OnY">
-                <CardHeader>
-                    <CardTitle>@customFieldGroupValuesModel.customFieldGroupHeader.LongName</CardTitle>
-                </CardHeader>
-                <CardBody>
+    <Card Margin="Margin.Is4.OnY">
+        <CardHeader>
+            <CardTitle>@customFieldGroupValuesModel.customFieldGroupHeader.LongName</CardTitle>
+        </CardHeader>
+        <CardBody>
 
-                    @foreach (var customFieldRow in CustomFieldRows)
+            @foreach (var customFieldRow in CustomFieldRows)
+            {
+                <Row>
+
+                    @foreach (var customFieldHeaderRowField in customFieldRow.CustomFieldHeaderRowFields)
                     {
-                        <Row>
+                        <Column ColumnSize="ColumnSize.Is6">
+                            <Field>
+                                @if (customFieldHeaderRowField.customFieldHeader.CustomFieldType != CustomFieldTypes.BoolField)
+                                {
+                                    <FieldLabel>@customFieldHeaderRowField.customFieldHeader.Name</FieldLabel>
+                                }
 
-                            @foreach (var customFieldHeaderRowField in customFieldRow.CustomFieldHeaderRowFields)
-                            {
-                                <Column ColumnSize="ColumnSize.Is6">
-                                    <Field>
-                                        @if (customFieldHeaderRowField.customFieldHeader.CustomFieldType != CustomFieldTypes.BoolField)
-                                        {
-                                            <FieldLabel>@customFieldHeaderRowField.customFieldHeader.Name</FieldLabel>
-                                        }
-
-                                        @switch (customFieldHeaderRowField.customFieldHeader.CustomFieldType)
-                                        {
-                                            case CustomFieldTypes.DateTimeField:
-                                                <DateEdit TValue="DateTime" @bind-Date="@customFieldHeaderRowField.customFieldValue.DateTimeValue" InputMode="DateInputMode.Date"></DateEdit>
-                                                break;
-                                            case CustomFieldTypes.IntField:
-                                                <NumericEdit Value="@customFieldHeaderRowField.customFieldValue.IntValue" TValue="int?"></NumericEdit>
-                                                break;
-                                            case CustomFieldTypes.DoubleField:
-                                                <NumericEdit Value="@customFieldHeaderRowField.customFieldValue.DoubleValue" TValue="double?"></NumericEdit>
-                                                break;
-                                            case CustomFieldTypes.BoolField:
-                                                <Check TValue="bool" @bind-Checked="@customFieldHeaderRowField.customFieldValue.BoolValue">@customFieldHeaderRowField.customFieldHeader.Name</Check>
-                                                break;
-                                            case CustomFieldTypes.StringField:
-                                            default:
-                                                <TextEdit @bind-Text="@customFieldHeaderRowField.customFieldValue.StringValue"></TextEdit>
-                                                break;
-                                        }
-                                    </Field>
-                                </Column>
-                            }
-                        </Row>
+                                @switch (customFieldHeaderRowField.customFieldHeader.CustomFieldType)
+                                {
+                                    case CustomFieldTypes.DateTimeField:
+                                        <DateEdit TValue="DateTime" @bind-Date="@customFieldHeaderRowField.customFieldValue.DateTimeValue" InputMode="DateInputMode.Date"></DateEdit>
+                                        break;
+                                    case CustomFieldTypes.IntField:
+                                        <NumericEdit @bind-Value="@customFieldHeaderRowField.customFieldValue.IntValue"></NumericEdit>
+                                        break;
+                                    case CustomFieldTypes.DoubleField:
+                                        <NumericEdit @bind-Value="@customFieldHeaderRowField.customFieldValue.DoubleValue"></NumericEdit>
+                                        break;
+                                    case CustomFieldTypes.BoolField:
+                                        <Check TValue="bool" @bind-Checked="@customFieldHeaderRowField.customFieldValue.BoolValue">@customFieldHeaderRowField.customFieldHeader.Name</Check>
+                                        break;
+                                    case CustomFieldTypes.StringField:
+                                    default:
+                                        <TextEdit @bind-Text="@customFieldHeaderRowField.customFieldValue.StringValue"></TextEdit>
+                                        break;
+                                }
+                            </Field>
+                        </Column>
                     }
+                </Row>
+            }
 
-                    <Row>
-                        <Column ColumnSize="ColumnSize.Is12">
-                            <Alert Color="(Color)alertModel.AlertType" @bind-Visible="@alertModel.ShowAlert" Dismisable="true">
-                                <AlertMessage>
-                                    @alertModel.AlertMessage
-                                </AlertMessage>
-                                <AlertDescription>
-                                    @alertModel.AlertDescription
-                                </AlertDescription>
-                                <CloseButton />
-                            </Alert>
-                        </Column>
-                    </Row>
-                    <Row>
-                        <Column ColumnSize="ColumnSize.Is12">
-                            <Button Type="ButtonType.Submit" Color="Color.Primary" PreventDefaultOnSubmit="true" Clicked="@SaveFieldGroupValues" Loading="@SavingFieldGroup">@LanguageHelper.GetTitle(langQueryList, 10229)</Button>
-                        </Column>
-                    </Row>
-                </CardBody>
-            </Card>
-        </Column>
-    </Row>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <Alert Color="(Color)alertModel.AlertType" @bind-Visible="@alertModel.ShowAlert" Dismisable="true">
+                        <AlertMessage>
+                            @alertModel.AlertMessage
+                        </AlertMessage>
+                        <AlertDescription>
+                            @alertModel.AlertDescription
+                        </AlertDescription>
+                        <CloseButton />
+                    </Alert>
+                    <Snackbar @ref="successSnackBar" Color="SnackbarColor.Success">
+                        <SnackbarBody>
+                            @alertModel.AlertMessage
+                        </SnackbarBody>
+                    </Snackbar>
+                    <Snackbar @ref="errorSnackBar" Color="SnackbarColor.Danger">
+                        <SnackbarBody>
+                            @alertModel.AlertMessage
+                        </SnackbarBody>
+                    </Snackbar>
+                </Column>
+            </Row>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <Button Type="ButtonType.Submit" Color="Color.Primary" PreventDefaultOnSubmit="true" Clicked="@SaveFieldGroupValues" Loading="@SavingFieldGroup">@LanguageHelper.GetTitle(langQueryList, 10229)</Button>
+                </Column>
+            </Row>
+        </CardBody>
+    </Card>
 }
 
 @code {
@@ -90,6 +97,9 @@
     int fieldRowMax = 2;
     List<CustomFieldHeaderRow> CustomFieldRows = new List<CustomFieldHeaderRow>();
 
+    Snackbar successSnackBar;
+    Snackbar errorSnackBar;
+
     protected override async Task OnInitializedAsync()
     {
         CustomFieldRows = GetRows();
@@ -98,18 +108,73 @@
     private async Task SaveFieldGroupValues()
     {
         SavingFieldGroup = true;
-        //var saveResult = await SaveTaskGroupHeadAsync();
+        var saveResult = await SaveCustomFieldValuesAsync();
 
-        //alertModel.ShowAlert = true;
-        //alertModel.AlertType = saveResult.Item1 ? (int)Color.Success : (int)Color.Danger;
-        //alertModel.AlertMessage = saveResult.Item2;
+        alertModel.ShowAlert = true;
+        alertModel.AlertType = saveResult.Item1 ? (int)Color.Success : (int)Color.Danger;
+        alertModel.AlertMessage = saveResult.Item2;
 
-        //if (saveResult.Item1)
-        //{
-        //    await customFieldGroupLink.SaveFieldGroup(taskGroupHead.Id);
-        //}
+        if (saveResult.Item1)
+            successSnackBar.Show();
+        else
+            errorSnackBar.Show();
 
         SavingFieldGroup = false;
+    }
+
+    private async Task<Tuple<bool, string>> SaveCustomFieldValuesAsync()
+    {
+        if (CustomFieldRows.Any())
+        {
+            foreach (var customFieldRow in CustomFieldRows)
+            {
+                foreach (var customField in customFieldRow.CustomFieldHeaderRowFields)
+                {
+                    if (customField.customFieldValue.Id != Guid.Empty)
+                    {
+                        var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.CUSTOMFIELD, $"CustomFieldValue/{customField.customFieldValue.Id}");
+
+                        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                        {
+                            var foundCustomFieldValue = response.ContentAsType<CustomFieldVal>();
+
+                            var processPatchResult = await MyFoundationService.ProcessPatch(foundCustomFieldValue, Mapper.Map<CustomFieldVal>(customField.customFieldValue), foundCustomFieldValue.Id, TokenProvider.AccessToken, APITypes.CUSTOMFIELD, "CustomFieldValue");
+
+                            if (!processPatchResult.Item1)
+                            {
+                                return processPatchResult;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        HttpContent contentPost = new StringContent(JsonConvert.SerializeObject(customField.customFieldValue), Encoding.UTF8, "application/json");
+
+                        var content = contentPost.ReadAsStringAsync().Result;
+
+                        try
+                        {
+                            var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Post, APITypes.CUSTOMFIELD, $"CustomFieldValue", contentPost);
+
+                            if (response.StatusCode != System.Net.HttpStatusCode.Created)
+                            {
+                                return new Tuple<bool, string>(false, await MyFoundationService.GetErrorFromResponse(response));
+                            }
+
+                            customField.customFieldValue = Mapper.Map<CustomFieldValMultiType>(response.ContentAsType<CustomFieldVal>());
+                        }
+                        catch (Exception ex)
+                        {
+                            return new Tuple<bool, string>(false, $"Error calling API: {ex.Message}");
+                        }
+                    }
+                }
+            }
+
+            return new Tuple<bool, string>(true, $"Custom Field Values saved");
+        }
+
+        return new Tuple<bool, string>(false, $"No Custom Field Values to save");
     }
 
     private List<CustomFieldHeaderRow> GetRows()
@@ -134,19 +199,23 @@
                 customFieldHeader = currentCustomFieldHeader
             };
 
-            var customFieldValue = customFieldGroupValuesModel.CustomFieldValues.Where(v => v.CustomFieldHeaderId == currentCustomFieldHeader.CustomFieldGroupHeaderId).FirstOrDefault();
+            var customFieldValue = customFieldGroupValuesModel.CustomFieldValues.Where(v => v.CustomFieldHeaderId == currentCustomFieldHeader.Id).FirstOrDefault();
 
             if (customFieldValue == default)
             {
-                customFieldValue = new CustomFieldVal()
+                customFieldHeaderRowField.customFieldValue = new CustomFieldValMultiType()
                 {
                     CustomFieldHeaderId = customFieldHeaderRowField.customFieldHeader.Id,
                     Id = Guid.Empty,
-                    StringValue = string.Empty
+                    StringValue = string.Empty,
+                    LinkId = customFieldGroupValuesModel.LinkId,
+                    LinkType = customFieldGroupValuesModel.LinkType
                 };
             }
-
-            customFieldHeaderRowField.customFieldValue = customFieldValue;
+            else
+            {
+                customFieldHeaderRowField.customFieldValue = Mapper.Map<CustomFieldValMultiType>(customFieldValue);
+            }
 
             currentRow.CustomFieldHeaderRowFields.Add(customFieldHeaderRowField);
 

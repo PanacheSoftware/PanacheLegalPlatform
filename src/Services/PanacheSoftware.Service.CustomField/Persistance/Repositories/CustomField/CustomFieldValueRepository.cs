@@ -12,10 +12,8 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Repositories.CustomFie
 {
     public class CustomFieldValueRepository : PanacheSoftwareRepository<CustomFieldValue>, ICustomFieldValueRepository
     {
-
         public CustomFieldValueRepository(PanacheSoftwareServiceCustomFieldContext context) : base(context)
         {
-
         }
 
         public PanacheSoftwareServiceCustomFieldContext PanacheSoftwareServiceCustomFieldContext
@@ -30,11 +28,22 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Repositories.CustomFie
                 return await PanacheSoftwareServiceCustomFieldContext.CustomFieldValues
                     .Include(v => v.CustomFieldValueHistorys)
                     .AsNoTracking()
-                    .Where(v => v.LinkId == linkId && v.LinkType == linkType).ToListAsync();
+                    .Where(v => v.LinkId == linkId).ToListAsync();
 
             return await PanacheSoftwareServiceCustomFieldContext.CustomFieldValues
                 .Include(v => v.CustomFieldValueHistorys)
-                .Where(v => v.LinkId == linkId && v.LinkType == linkType).ToListAsync();
+                .Where(v => v.LinkId == linkId).ToListAsync();
+        }
+
+        public CustomFieldValue GetCustomFieldValue(Guid linkId, string linkType, Guid customFieldHeaderId, bool readOnly)
+        {
+            if(readOnly)
+                return PanacheSoftwareServiceCustomFieldContext.CustomFieldValues
+                    .AsNoTracking()
+                    .FirstOrDefault(v => v.LinkId == linkId && v.LinkType == linkType && v.CustomFieldHeaderId == customFieldHeaderId);
+
+            return PanacheSoftwareServiceCustomFieldContext.CustomFieldValues
+                    .FirstOrDefault(v => v.LinkId == linkId && v.LinkType == linkType && v.CustomFieldHeaderId == customFieldHeaderId);
         }
     }
 }

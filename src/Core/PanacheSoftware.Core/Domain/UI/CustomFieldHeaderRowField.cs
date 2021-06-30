@@ -10,6 +10,6 @@ namespace PanacheSoftware.Core.Domain.UI
     public class CustomFieldHeaderRowField
     {
         public CustomFieldHead customFieldHeader { get; set; }
-        public CustomFieldVal customFieldValue { get; set; }
+        public CustomFieldValMultiType customFieldValue { get; set; }
     }
 }

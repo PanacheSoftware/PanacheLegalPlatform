@@ -1,4 +1,5 @@
-﻿using PanacheSoftware.Core.Types;
+﻿using PanacheSoftware.Core.Domain.API.CustomField;
+using PanacheSoftware.Core.Types;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -6,11 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PanacheSoftware.Core.Domain.API.CustomField
+namespace PanacheSoftware.Core.Domain.UI
 {
-    public class CustomFieldVal
+    public class CustomFieldValMultiType
     {
-        public CustomFieldVal()
+        public CustomFieldValMultiType()
         {
             CustomFieldValueHistorys = new List<CustomFieldValHistr>();
             LinkType = LinkTypes.Task;
@@ -24,16 +25,16 @@ namespace PanacheSoftware.Core.Domain.API.CustomField
         public Guid LinkId { get; set; }
         public string LinkType { get; set; }
 
-        public string FieldValue { get; set; }
+        public string FieldValue { get; private set; }
         public string Status { get; set; }
 
         public List<CustomFieldValHistr> CustomFieldValueHistorys { get; set; }
 
-        //public string StringValue { get => GetStringValue(); set => SetStringValue(value); }
-        //public int IntValue { get => GetIntValue(); set => SetIntValue(value); }
-        //public double DoubleValue { get => GetDoubleValue(); set => SetDoubleValue(value); }
-        //public DateTime DateTimeValue { get => GetDateValue(); set => SetDateValue(value); }
-        //public bool BoolValue { get => GetBoolValue(); set => SetBoolValue(value); }
+        public string StringValue { get => GetStringValue(); set => SetStringValue(value); }
+        public int IntValue { get => GetIntValue(); set => SetIntValue(value); }
+        public double DoubleValue { get => GetDoubleValue(); set => SetDoubleValue(value); }
+        public DateTime DateTimeValue { get => GetDateValue(); set => SetDateValue(value); }
+        public bool BoolValue { get => GetBoolValue(); set => SetBoolValue(value); }
 
         private string GetStringValue()
         {

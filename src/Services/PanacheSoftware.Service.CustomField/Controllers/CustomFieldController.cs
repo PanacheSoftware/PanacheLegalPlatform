@@ -132,6 +132,11 @@ namespace PanacheSoftware.Service.CustomField.Controllers
 
                             customFieldHeadPatch.ApplyTo(customFieldHead);
 
+                            if(customFieldHead.CustomFieldType != customFieldHeader.CustomFieldType)
+                            {
+                                return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"CustomFieldHead.CustomFieldType: '{customFieldHeader.CustomFieldType}' cannot be changed."));
+                            }
+
                             //if(customFieldHead.Name != customFieldHeader.Name)
                             //{
                             //    return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"CustomFieldHead.Name: '{customFieldHeader.Name}' cannot be changed."));

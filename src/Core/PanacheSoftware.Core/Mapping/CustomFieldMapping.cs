@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using PanacheSoftware.Core.Domain.API.CustomField;
 using PanacheSoftware.Core.Domain.CustomField;
+using PanacheSoftware.Core.Domain.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +28,8 @@ namespace PanacheSoftware.Core.Mapping
             CreateMap<CustomFieldValHistr, CustomFieldValueHistory>();
             CreateMap<CustomFieldTag, CustomFieldTg>();
             CreateMap<CustomFieldTg, CustomFieldTag>();
+            CreateMap<CustomFieldVal, CustomFieldValMultiType>();
+            CreateMap<CustomFieldValMultiType, CustomFieldVal>();
         }
     }
 }

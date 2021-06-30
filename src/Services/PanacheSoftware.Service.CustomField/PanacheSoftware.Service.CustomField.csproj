@@ -30,7 +30,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Manager\" />
     <Folder Include="Persistance\Data\Migrations\" />
   </ItemGroup>
 

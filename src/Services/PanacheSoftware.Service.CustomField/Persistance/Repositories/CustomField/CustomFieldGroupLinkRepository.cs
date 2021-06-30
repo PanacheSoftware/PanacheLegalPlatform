@@ -46,5 +46,16 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Repositories.CustomFie
                     .ThenInclude(cf => cf.CustomFieldHeaders)
                     .Where(l => l.LinkId == linkId && l.LinkType == linkType).ToListAsync();
         }
+
+        public bool CustomFieldGroupLinkExists(Guid linkId, string linkType, Guid customFieldGroupHeaderId)
+        {
+            var foundLinks = PanacheSoftwareServiceCustomFieldContext.CustomFieldGroupLinks.AsNoTracking()
+                .Where(l => l.LinkId == linkId && l.LinkType == linkType && l.CustomFieldGroupHeaderId == customFieldGroupHeaderId).FirstOrDefault();
+
+            if (foundLinks == default)
+                return false;
+
+            return true;
+        }
     }
 }
