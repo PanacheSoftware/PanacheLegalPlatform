@@ -1,0 +1,171 @@
+﻿@attribute [Authorize]
+@inject UserAppCache UserAppCache
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@using PanacheSoftware.Core.Domain.API.Task
+@using PanacheSoftware.Core.Domain.Identity.API;
+@using PanacheSoftware.Core.Domain.API.Team
+
+
+@if (TaskGroupHeaders != null && loadingTaskList != true)
+{
+    <CascadingValue Value="@StatusSelectListValues" Name="StatusSelectListValues">
+        <CascadingValue Value="@TeamSelectListValues" Name="TeamSelectListValues">
+            <CascadingValue Value="@UserSelectListValues" Name="UserSelectListValues">
+                <Row Margin="Margin.Is4.OnY">
+                    <Column ColumnSize="ColumnSize.Is12">
+                        <Accordion >
+                            @foreach (TaskGroupHead taskGroup in TaskGroupHeaders)
+                            {
+                                <TaskGroupView taskGroupHead="taskGroup" />
+                            }
+                        </Accordion>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is4.OnY">
+                    <Column ColumnSize="ColumnSize.Is12">
+                        <TaskGroupEdit ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10917)" taskGroupHead="@TaskGroupHeadCreateTemplate" TaskGroupHeadSaved="@TaskGroupHeadCreated" @ref="@addNewTaskGroupEdit" />
+                    </Column>
+                </Row>
+            </CascadingValue>
+        </CascadingValue>
+    </CascadingValue>
+}
+
+@code {
+    [CascadingParameter]
+    LangQueryList langQueryList { get; set; }
+
+    [Parameter]
+    public Guid TaskId { get; set; }
+
+    [Parameter]
+    public Guid ParentTaskGroupId { get; set; }
+
+    private TaskGroupHead TaskGroupHeadCreateTemplate { get; set; }
+
+    private List<TaskGroupHead> TaskGroupHeaders { get; set; }
+
+    IEnumerable<SelectListModel> StatusSelectListValues { get; set; }
+    IEnumerable<SelectListModel> TeamSelectListValues { get; set; }
+    IEnumerable<SelectListModel> UserSelectListValues { get; set; }
+
+    private bool loadingTaskList = true;
+
+    private TaskGroupEdit addNewTaskGroupEdit { get; set; }
+
+    private TaskGroupHead ParentTaskGroupHead { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CreateSelectListModels();
+        await GetTaskGroups();
+        loadingTaskList = false;
+    }
+
+    private async Task GetTaskGroups()
+    {
+        TaskGroupHeaders = new List<TaskGroupHead>();
+
+        if (ParentTaskGroupId != Guid.Empty)
+        {
+            var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.TASK, $"TaskGroup/{ParentTaskGroupId}");
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                ParentTaskGroupHead = response.ContentAsType<TaskGroupHead>();
+
+                foreach (var childTaskGroup in ParentTaskGroupHead.ChildTaskGroups)
+                {
+                    TaskGroupHeaders.Add(childTaskGroup);
+                }
+
+                TaskGroupHeadCreateTemplate = GetBlankTaskGroupHeadTemplate();
+            }
+        }
+    }
+
+    void TaskGroupHeadCreated(TaskGroupHead taskGroupHead)
+    {
+        if (taskGroupHead.Id == Guid.Empty)
+            return;
+
+        TaskGroupHeaders.Add(taskGroupHead);
+        addNewTaskGroupEdit.ResetTaskGroup(GetBlankTaskGroupHeadTemplate());
+        StateHasChanged();
+    }
+
+    private TaskGroupHead GetBlankTaskGroupHeadTemplate()
+    {
+        if (ParentTaskGroupHead == null)
+            return null;
+
+        return new TaskGroupHead()
+        {
+            Id = Guid.Empty,
+            ParentTaskGroupId = ParentTaskGroupHead.Id,
+            StartDate = ParentTaskGroupHead.StartDate,
+            CompletionDate = ParentTaskGroupHead.CompletionDate,
+            MainUserId = ParentTaskGroupHead.MainUserId,
+            TeamHeaderId = ParentTaskGroupHead.TeamHeaderId
+        };
+    }
+
+    private async Task CreateSelectListModels()
+    {
+        StatusTypes statusTypes = new StatusTypes();
+        StatusSelectListValues = statusTypes.GetStatusTypesDictionary().Select(s => new SelectListModel { ValueField = s.Key, DescriptionField = s.Value });
+        await CreateTeamSelectList();
+        await CreateUserSelectList();
+    }
+
+    private async Task CreateTeamSelectList()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        var userName = string.Empty;
+
+
+        if (user.Identity.IsAuthenticated)
+            userName = user.FindFirst("sub").Value;
+
+        var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.TEAM, $"UserTeam/GetTeamsForUser/{userName}");
+
+        Dictionary<string, string> TeamListDictionary = new Dictionary<string, string>();
+        TeamListDictionary.Add(Guid.Empty.ToString(), "None");
+
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var teamList = response.ContentAsType<TeamList>();
+
+            foreach (var teamHeader in teamList.TeamHeaders.OrderBy(h => h.ShortName))
+            {
+                TeamListDictionary.Add(teamHeader.Id.ToString(), teamHeader.ShortName);
+            }
+        }
+
+        TeamSelectListValues = TeamListDictionary.Select(s => new SelectListModel { ValueField = s.Key, DescriptionField = s.Value });
+    }
+
+    private async Task CreateUserSelectList()
+    {
+        var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.IDENTITY, $"User");
+
+        Dictionary<string, string> UserListDictionary = new Dictionary<string, string>();
+        UserListDictionary.Add(Guid.Empty.ToString(), "None");
+
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var userList = response.ContentAsType<UserListModel>();
+
+            foreach (var userModel in userList.Users.OrderBy(h => h.FullName))
+            {
+                UserListDictionary.Add(userModel.Id.ToString(), userModel.FullName);
+            }
+        }
+
+        UserSelectListValues = UserListDictionary.Select(s => new SelectListModel { ValueField = s.Key, DescriptionField = s.Value });
+    }
+
+}

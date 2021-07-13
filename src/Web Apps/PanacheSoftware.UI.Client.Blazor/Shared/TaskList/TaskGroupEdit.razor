@@ -1,0 +1,306 @@
+﻿@attribute [Authorize]
+@inject UserAppCache UserAppCache
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@using PanacheSoftware.Core.Domain.API.Task
+@using PanacheSoftware.Core.Domain.API.Team
+@using PanacheSoftware.Core.Domain.Identity.API;
+
+@if (taskGroupHead != null)
+{
+    <Modal @ref="taskGroupForm">
+        <ModalContent Centered="true" Size="ModalSize.Large">
+            <ModalHeader>
+                <ModalTitle>
+                    <Icon Name="IconName.Edit" />
+                    @LanguageHelper.GetTitle(langQueryList, 10931)
+                </ModalTitle>
+                <CloseButton />
+            </ModalHeader>
+            <ModalBody>
+                <Validations Mode="ValidationMode.Auto" Model="@taskGroupHead">
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is6">
+                            <Validation>
+                                <Field>
+                                    <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10223)</FieldLabel>
+                                    <TextEdit @bind-Text="taskGroupHead.ShortName">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </TextEdit>
+                                </Field>
+                            </Validation>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is6">
+                            <Validation>
+                                <Field>
+                                    <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10218)</FieldLabel>
+                                    <TextEdit @bind-Text="taskGroupHead.LongName">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </TextEdit>
+                                </Field>
+                            </Validation>
+                        </Column>
+                    </Row>
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Validation>
+                                <Field>
+                                    <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10200)</FieldLabel>
+                                    <MemoEdit @bind-Text="@taskGroupHead.Description" Rows="5">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </MemoEdit>
+                                </Field>
+                            </Validation>
+                        </Column>
+                    </Row>
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is6">
+                            <Field>
+                                <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10222)</FieldLabel>
+                                <DateEdit TValue="DateTime" @bind-Date="@taskGroupHead.StartDate" InputMode="DateInputMode.Date">
+                                </DateEdit>
+                            </Field>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is6">
+                            <Field>
+                                <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10911)</FieldLabel>
+                                <DateEdit TValue="DateTime" @bind-Date="@taskGroupHead.CompletionDate" InputMode="DateInputMode.Date">
+                                </DateEdit>
+                            </Field>
+                        </Column>
+                    </Row>
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is6">
+                            <Field>
+                                <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10902)</FieldLabel>
+                                <SelectList TItem="SelectListModel" TValue="string" Data="@TeamSelectListValues" TextField="@((item) => item.DescriptionField)" ValueField="@((item) => item.ValueField)" SelectedValue="@GetMainTeam()" SelectedValueChanged="@TeamListValueChangedHandler" />
+                            </Field>
+                        </Column>
+                    </Row>
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is6">
+                            <Field>
+                                <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10905)</FieldLabel>
+                                <SelectList TItem="SelectListModel" TValue="string" Data="@UserSelectListValues" TextField="@((item) => item.DescriptionField)" ValueField="@((item) => item.ValueField)" SelectedValue="@GetMainUser()" SelectedValueChanged="@UserListValueChangedHandler" />
+                            </Field>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is6">
+                            <Field>
+                                <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10201)</FieldLabel>
+                                <SelectList TItem="SelectListModel" TValue="string" Data="@StatusSelectListValues" TextField="@((item) => item.DescriptionField)" ValueField="@((item) => item.ValueField)" SelectedValue="@taskGroupHead.Status" SelectedValueChanged="@StatusListValueChangedHandler" />
+                            </Field>
+                        </Column>
+                    </Row>
+                </Validations>
+            </ModalBody>
+            <ModalFooter>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12">
+                        <Alert Color="(Color)alertModel.AlertType" @bind-Visible="@alertModel.ShowAlert" Dismisable="true">
+                            <AlertMessage>
+                                @alertModel.AlertMessage
+                            </AlertMessage>
+                            <AlertDescription>
+                                @alertModel.AlertDescription
+                            </AlertDescription>
+                            <CloseButton />
+                        </Alert>
+                    </Column>
+                </Row>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12">
+                        <Button Color="Color.Secondary" Clicked="@HideTaskGroupForm">@LanguageHelper.GetTitle(langQueryList, 10942)</Button>
+                        <Button Color="Color.Primary" Clicked="@SubmitForm" Loading="@SavingTaskGroupHead">@LanguageHelper.GetTitle(langQueryList, 10229)</Button>
+                    </Column>
+                </Row>
+            </ModalFooter>
+        </ModalContent>
+    </Modal>
+
+    <Button Color="Color.Primary" Clicked="@ShowTaskGroupForm">@ActionButtonTitle</Button>
+}
+
+
+@code {
+    [CascadingParameter]
+    LangQueryList langQueryList { get; set; }
+
+    [Parameter]
+    public TaskGroupHead taskGroupHead { get; set; }
+
+    [Parameter]
+    public Action<TaskGroupHead> TaskGroupHeadSaved { get; set; }
+
+    [Parameter]
+    public string ActionButtonTitle { get; set; }
+
+    [CascadingParameter(Name = "StatusSelectListValues")]
+    IEnumerable<SelectListModel> StatusSelectListValues { get; set; }
+    [CascadingParameter(Name = "TeamSelectListValues")]
+    IEnumerable<SelectListModel> TeamSelectListValues { get; set; }
+    [CascadingParameter(Name = "UserSelectListValues")]
+    IEnumerable<SelectListModel> UserSelectListValues { get; set; }
+    private Modal taskGroupForm;
+    bool SavingTaskGroupHead = false;
+    AlertModel alertModel = new AlertModel();
+
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+
+    public void ResetTaskGroup(TaskGroupHead taskGroupHeadReset)
+    {
+        if (taskGroupHeadReset == null)
+            return;
+
+        taskGroupHead = taskGroupHeadReset;
+        StateHasChanged();
+    }
+
+    private void TeamListValueChangedHandler(string newValue)
+    {
+        if (Guid.TryParse(newValue, out Guid newId))
+        {
+            taskGroupHead.TeamHeaderId = newId;
+        }
+        else
+        {
+            taskGroupHead.TeamHeaderId = Guid.Empty;
+        }
+    }
+
+    private void UserListValueChangedHandler(string newValue)
+    {
+        if (Guid.TryParse(newValue, out Guid newId))
+        {
+            taskGroupHead.MainUserId = newId;
+        }
+        else
+        {
+            taskGroupHead.MainUserId = Guid.Empty;
+        }
+    }
+
+    private void StatusListValueChangedHandler(string newValue)
+    {
+        taskGroupHead.Status = newValue;
+    }
+
+    private string GetMainTeam()
+    {
+        if (taskGroupHead == default)
+            return string.Empty;
+
+        return taskGroupHead.TeamHeaderId.ToString();
+    }
+
+    private string GetMainUser()
+    {
+        if (taskGroupHead == default)
+            return string.Empty;
+
+        return taskGroupHead.MainUserId.ToString();
+    }
+
+    private void ShowTaskGroupForm()
+    {
+        taskGroupForm.Show();
+    }
+
+    private void HideTaskGroupForm()
+    {
+        taskGroupForm.Hide();
+    }
+
+    private async Task SubmitForm()
+    {
+        SavingTaskGroupHead = true;
+        var saveResult = await SaveTaskGroupHeadAsync();
+
+        alertModel.ShowAlert = true;
+        alertModel.AlertType = saveResult.Item1 ? (int)Color.Success : (int)Color.Danger;
+        alertModel.AlertMessage = saveResult.Item2;
+
+        if (saveResult.Item1)
+        {
+            HideTaskGroupForm();
+            TaskGroupHeadSaved?.Invoke(taskGroupHead);
+        }
+
+        SavingTaskGroupHead = false;
+    }
+
+    private async Task<Tuple<bool, string>> SaveTaskGroupHeadAsync()
+    {
+        if (taskGroupHead != null)
+        {
+            if (taskGroupHead.Id != Guid.Empty)
+            {
+                var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.TASK, $"TaskGroup/{taskGroupHead.Id}");
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    var foundTaskGroupHead = response.ContentAsType<TaskGroupHead>();
+
+                    if (foundTaskGroupHead != null)
+                    {
+                        var processPatchResult = await MyFoundationService.ProcessPatch(foundTaskGroupHead, taskGroupHead, foundTaskGroupHead.Id, TokenProvider.AccessToken, APITypes.TASK, "TaskGroup");
+                        if (!processPatchResult.Item1)
+                        {
+                            return processPatchResult;
+                        }
+
+                        response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.TASK, $"TaskGroup/Detail/{taskGroupHead.TaskGroupDetail.Id}");
+
+                        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                        {
+                            var foundTaskGroupDet = response.ContentAsType<TaskGroupDet>();
+
+                            if (foundTaskGroupDet != null)
+                            {
+                                processPatchResult = await MyFoundationService.ProcessPatch(foundTaskGroupDet, taskGroupHead.TaskGroupDetail, foundTaskGroupDet.Id, TokenProvider.AccessToken, APITypes.TASK, "TaskGroup/Detail");
+                                if (!processPatchResult.Item1)
+                                {
+                                    return processPatchResult;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                HttpContent contentPost = new StringContent(JsonConvert.SerializeObject(taskGroupHead), Encoding.UTF8, "application/json");
+
+                try
+                {
+                    var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Post, APITypes.TASK, $"TaskGroup", contentPost);
+
+                    if (response.StatusCode != System.Net.HttpStatusCode.Created)
+                    {
+                        return new Tuple<bool, string>(false, await MyFoundationService.GetErrorFromResponse(response));
+                    }
+
+                    taskGroupHead = response.ContentAsType<TaskGroupHead>();
+                }
+                catch (Exception ex)
+                {
+                    return new Tuple<bool, string>(false, $"Error calling API: {ex.Message}");
+                }
+            }
+
+            return new Tuple<bool, string>(true, $"Task Group {taskGroupHead.ShortName} saved");
+        }
+
+        return new Tuple<bool, string>(false, $"No task group to save");
+    }
+
+}

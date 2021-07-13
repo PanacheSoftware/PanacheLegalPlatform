@@ -105,6 +105,15 @@
                 </CascadingValue>
             </Column>
         </Row>
+        <Row>
+            <Column ColumnSize="ColumnSize.Is12">
+                <CascadingValue Value="langQueryList">
+                    <CascadingValue Value="taskGroupSummary.ChildTaskGroups">
+                        <TaskList ParentTaskGroupId="@taskGroupSummary.Id" />
+                    </CascadingValue>
+                </CascadingValue>
+            </Column>
+        </Row>
     }
 }
 
@@ -148,18 +157,39 @@
     {
         var textCodes = new List<long>();
         textCodes.Add(10121);
+        textCodes.Add(10111);
         textCodes.Add(10112);
+        textCodes.Add(10200);
+        textCodes.Add(10201);
+        textCodes.Add(10218);
         textCodes.Add(10222);
+        textCodes.Add(10223);
+        textCodes.Add(10224);
+        textCodes.Add(10225);
         textCodes.Add(10229);
         textCodes.Add(10302);
         textCodes.Add(10306);
+        textCodes.Add(10902);
+        textCodes.Add(10904);
+        textCodes.Add(10905);
+        textCodes.Add(10906);
+        textCodes.Add(10907);
+        textCodes.Add(10908);
         textCodes.Add(10911);
         textCodes.Add(10912);
+        textCodes.Add(10915);
+        textCodes.Add(10917);
+        textCodes.Add(10918);
         textCodes.Add(10921);
         textCodes.Add(10922);
         textCodes.Add(10923);
         textCodes.Add(10924);
+        textCodes.Add(10931);
+        textCodes.Add(10942);
         textCodes.Add(10943);
+        textCodes.Add(11001);
+        textCodes.Add(11006);
+        textCodes.Add(11010);
 
         langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, UserAppCache.LanguageCode, textCodes.ToArray());
     }

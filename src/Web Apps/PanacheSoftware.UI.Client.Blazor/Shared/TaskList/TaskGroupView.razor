@@ -1,0 +1,31 @@
+﻿@attribute [Authorize]
+@inject UserAppCache UserAppCache
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@using PanacheSoftware.Core.Domain.API.Task
+
+@if (taskGroupHead != null)
+{
+    <Collapse Visible="@taskGroupExpanded">
+        <CollapseHeader>
+            <Heading Size="HeadingSize.Is5">
+                <Button Clicked="@(() => taskGroupExpanded = !taskGroupExpanded)">@taskGroupHead.LongName</Button>
+            </Heading>
+        </CollapseHeader>
+        <CollapseBody>
+        
+        </CollapseBody>
+    </Collapse>
+}
+
+@code {
+
+    [CascadingParameter]
+    LangQueryList langQueryList { get; set; }
+
+    [Parameter]
+    public TaskGroupHead taskGroupHead { get; set; }
+
+    private bool taskGroupExpanded = false;
+}
