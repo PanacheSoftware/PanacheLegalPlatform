@@ -1,0 +1,117 @@
+﻿@attribute [Authorize]
+@inject UserAppCache UserAppCache
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@inject IMapper Mapper
+@using PanacheSoftware.Core.Domain.Identity.API;
+@using PanacheSoftware.Core.Domain.API.Task
+
+@if (taskHead != null)
+{
+    <Card Margin="Margin.Is4.OnY">
+        <CardHeader>
+            <CardTitle>
+                @taskHead.Title
+                @if (taskHead.Completed)
+                {
+                    <Badge Color="Color.Success" Class="float-right">@LanguageHelper.GetTitle(langQueryList, 10921)</Badge>
+                }
+                else
+                {
+                    <Badge Color="Color.Primary" Class="float-right">@LanguageHelper.GetTitle(langQueryList, 10928)</Badge>
+                }
+            </CardTitle>
+        </CardHeader>
+        <CardBody>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <Paragraph><strong>@LanguageHelper.GetTitle(langQueryList, 10943):</strong> <Blazorise.Link To="@($"user/{taskHead.MainUserId}")">@GetUserNameForUserId(taskHead.MainUserId)</Blazorise.Link></Paragraph>
+                </Column>
+            </Row>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <Paragraph>&nbsp;</Paragraph>
+                </Column>
+            </Row>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <Paragraph>@taskHead.Description</Paragraph>
+                </Column>
+            </Row>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <Paragraph>&nbsp;</Paragraph>
+                </Column>
+            </Row>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <Alert Color="(Color)alertModel.AlertType" @bind-Visible="@alertModel.ShowAlert" Dismisable="true">
+                        <AlertMessage>
+                            @alertModel.AlertMessage
+                        </AlertMessage>
+                        <AlertDescription>
+                            @alertModel.AlertDescription
+                        </AlertDescription>
+                        <CloseButton />
+                    </Alert>
+                    <Snackbar @ref="successSnackBar" Color="SnackbarColor.Success">
+                        <SnackbarBody>
+                            @alertModel.AlertMessage
+                        </SnackbarBody>
+                    </Snackbar>
+                    <Snackbar @ref="errorSnackBar" Color="SnackbarColor.Danger">
+                        <SnackbarBody>
+                            @alertModel.AlertMessage
+                        </SnackbarBody>
+                    </Snackbar>
+                </Column>
+            </Row>
+            <Row Margin="Margin.Is4.OnY">
+                <Column ColumnSize="ColumnSize.Is12">
+                    <TaskItemEdit ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10935)" taskHead="@taskHead" TaskHeadSaved="@TaskHeadEdited" @ref="@taskHeadEdit" />
+                </Column>
+            </Row>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <CustomFieldGroupEdit linkId="@taskHead.Id" linkType="@LinkTypes.Task" />
+                </Column>
+            </Row>
+        </CardBody>
+    </Card>
+}
+
+@code {
+    [CascadingParameter]
+    LangQueryList langQueryList { get; set; }
+
+    [CascadingParameter]
+    UserListModel userListModel { get; set; }
+
+    [Parameter]
+    public TaskHead taskHead { get; set; }
+
+    AlertModel alertModel = new AlertModel();
+    Snackbar successSnackBar;
+    Snackbar errorSnackBar;
+
+    private TaskItemEdit taskHeadEdit { get; set; }
+
+
+    private string GetUserNameForUserId(Guid userId)
+    {
+        if (userListModel != default)
+        {
+            return userListModel.Users.Where(u => u.Id == userId).FirstOrDefault().FullName;
+        }
+
+        return string.Empty;
+    }
+
+    void TaskHeadEdited(TaskHead taskHead)
+    {
+        if (taskHead.Id == Guid.Empty)
+            return;
+
+        StateHasChanged();
+    }
+}

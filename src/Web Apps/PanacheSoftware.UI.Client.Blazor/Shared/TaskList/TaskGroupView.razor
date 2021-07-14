@@ -11,10 +11,41 @@
         <CollapseHeader>
             <Heading Size="HeadingSize.Is5">
                 <Button Clicked="@(() => taskGroupExpanded = !taskGroupExpanded)">@taskGroupHead.LongName</Button>
+                @if (taskGroupHead.Completed)
+                {
+                    <Badge Color="Color.Success" Class="float-right">@LanguageHelper.GetTitle(langQueryList, 10921)</Badge>
+                }
+                else
+                {
+                    <Badge Color="Color.Primary" Class="float-right">@LanguageHelper.GetTitle(langQueryList, 10928)</Badge>
+                }
             </Heading>
         </CollapseHeader>
         <CollapseBody>
-        
+            @foreach (var taskHead in taskGroupHead.ChildTasks)
+            {
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12">
+                        <TaskItemView taskHead="@taskHead" />
+                    </Column>
+                </Row>
+            }
+
+            <Row>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <CustomFieldGroupEdit linkId="@taskGroupHead.Id" linkType="@LinkTypes.TaskGroup" />
+                </Column>
+            </Row>
+            <Row Margin="Margin.Is4.OnY">
+                <Column ColumnSize="ColumnSize.Is12">
+                    <TaskItemEdit ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10930)" taskHead="@taskHeadCreateTemplate" TaskHeadSaved="@TaskHeadCreated" @ref="@taskEdit" />
+                </Column>
+            </Row>
+            <Row Margin="Margin.Is4.OnY">
+                <Column ColumnSize="ColumnSize.Is12">
+                    <TaskGroupEdit ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10931)" taskGroupHead="@taskGroupHead" TaskGroupHeadSaved="@TaskGroupHeadCreated" @ref="@taskGroupEdit" />
+                </Column>
+            </Row>
         </CollapseBody>
     </Collapse>
 }
@@ -27,5 +58,49 @@
     [Parameter]
     public TaskGroupHead taskGroupHead { get; set; }
 
+    private TaskHead taskHeadCreateTemplate { get; set; }
+
     private bool taskGroupExpanded = false;
+
+    private TaskGroupEdit taskGroupEdit { get; set; }
+
+    private TaskItemEdit taskEdit { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        taskHeadCreateTemplate = GetBlankTaskHeadTemplate();
+    }
+
+    void TaskGroupHeadCreated(TaskGroupHead taskGroupHead)
+    {
+        if (taskGroupHead.Id == Guid.Empty)
+            return;
+
+        StateHasChanged();
+    }
+
+    private TaskHead GetBlankTaskHeadTemplate()
+    {
+        if (taskGroupHead == null)
+            return null;
+
+        return new TaskHead()
+        {
+            Id = Guid.Empty,
+            TaskGroupHeaderId = taskGroupHead.Id,
+            StartDate = taskGroupHead.StartDate,
+            CompletionDate = taskGroupHead.CompletionDate,
+            MainUserId = taskGroupHead.MainUserId
+        };
+    }
+
+    void TaskHeadCreated(TaskHead taskHead)
+    {
+        if (taskHead.Id == Guid.Empty)
+            return;
+
+        taskGroupHead.ChildTasks.Add(taskHead);
+        taskEdit.ResetTask(GetBlankTaskHeadTemplate());
+        StateHasChanged();
+    }
 }

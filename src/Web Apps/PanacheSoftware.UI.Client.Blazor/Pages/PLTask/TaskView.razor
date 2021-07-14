@@ -109,7 +109,9 @@
             <Column ColumnSize="ColumnSize.Is12">
                 <CascadingValue Value="langQueryList">
                     <CascadingValue Value="taskGroupSummary.ChildTaskGroups">
-                        <TaskList ParentTaskGroupId="@taskGroupSummary.Id" />
+                        <CascadingValue Value="userListModel">
+                            <TaskList ParentTaskGroupId="@taskGroupSummary.Id" />
+                        </CascadingValue>
                     </CascadingValue>
                 </CascadingValue>
             </Column>
@@ -169,6 +171,7 @@
         textCodes.Add(10229);
         textCodes.Add(10302);
         textCodes.Add(10306);
+        textCodes.Add(10900);
         textCodes.Add(10902);
         textCodes.Add(10904);
         textCodes.Add(10905);
@@ -184,7 +187,10 @@
         textCodes.Add(10922);
         textCodes.Add(10923);
         textCodes.Add(10924);
+        textCodes.Add(10928);
+        textCodes.Add(10930);
         textCodes.Add(10931);
+        textCodes.Add(10935);
         textCodes.Add(10942);
         textCodes.Add(10943);
         textCodes.Add(11001);
