@@ -1,0 +1,26 @@
+﻿<Snackbar @ref="successSnackBar" Color="SnackbarColor.Success">
+    <SnackbarBody>
+        @SnackBarMessage
+    </SnackbarBody>
+</Snackbar>
+<Snackbar @ref="errorSnackBar" Color="SnackbarColor.Danger">
+    <SnackbarBody>
+        @SnackBarMessage
+    </SnackbarBody>
+</Snackbar>
+
+@code {
+    Snackbar successSnackBar;
+    Snackbar errorSnackBar;
+    private string SnackBarMessage { get; set; }
+
+    public void ShowSnackBar(bool success, string message)
+    {
+        SnackBarMessage = message;
+
+        if (success)
+            successSnackBar.Show();
+        else
+            errorSnackBar.Show();
+    }
+}

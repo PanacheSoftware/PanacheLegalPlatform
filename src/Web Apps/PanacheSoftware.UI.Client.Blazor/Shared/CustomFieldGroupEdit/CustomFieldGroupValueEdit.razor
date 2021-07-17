@@ -53,25 +53,7 @@
 
             <Row>
                 <Column ColumnSize="ColumnSize.Is12">
-                    <Alert Color="(Color)alertModel.AlertType" @bind-Visible="@alertModel.ShowAlert" Dismisable="true">
-                        <AlertMessage>
-                            @alertModel.AlertMessage
-                        </AlertMessage>
-                        <AlertDescription>
-                            @alertModel.AlertDescription
-                        </AlertDescription>
-                        <CloseButton />
-                    </Alert>
-                    <Snackbar @ref="successSnackBar" Color="SnackbarColor.Success">
-                        <SnackbarBody>
-                            @alertModel.AlertMessage
-                        </SnackbarBody>
-                    </Snackbar>
-                    <Snackbar @ref="errorSnackBar" Color="SnackbarColor.Danger">
-                        <SnackbarBody>
-                            @alertModel.AlertMessage
-                        </SnackbarBody>
-                    </Snackbar>
+                    <PLAlert includeSnackBar="true" @ref="plAlert" />
                 </Column>
             </Row>
             <Row>
@@ -92,13 +74,10 @@
     public CustomFieldGroupValuesModel customFieldGroupValuesModel { get; set; }
 
     bool SavingFieldGroup = false;
-    AlertModel alertModel = new AlertModel();
+    PLAlert plAlert { get; set; }
 
     int fieldRowMax = 2;
     List<CustomFieldHeaderRow> CustomFieldRows = new List<CustomFieldHeaderRow>();
-
-    Snackbar successSnackBar;
-    Snackbar errorSnackBar;
 
     protected override async Task OnInitializedAsync()
     {
@@ -110,14 +89,7 @@
         SavingFieldGroup = true;
         var saveResult = await SaveCustomFieldValuesAsync();
 
-        alertModel.ShowAlert = true;
-        alertModel.AlertType = saveResult.Item1 ? (int)Color.Success : (int)Color.Danger;
-        alertModel.AlertMessage = saveResult.Item2;
-
-        if (saveResult.Item1)
-            successSnackBar.Show();
-        else
-            errorSnackBar.Show();
+        plAlert.ShowAlert(saveResult.Item1, saveResult.Item2);
 
         SavingFieldGroup = false;
     }

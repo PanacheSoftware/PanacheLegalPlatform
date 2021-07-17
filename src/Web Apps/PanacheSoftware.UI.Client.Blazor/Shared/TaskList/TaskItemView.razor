@@ -44,6 +44,17 @@
                 </Column>
             </Row>
             <Row>
+                <Column ColumnSize="ColumnSize.Is6">
+                    <Paragraph>
+                        <strong>@LanguageHelper.GetTitle(langQueryList, 10911):</strong> @taskHead.CompletionDate.ToShortDateString()
+                        @if (taskHead.Completed)
+                        {
+                            <br /><strong>@LanguageHelper.GetTitle(langQueryList, 10912):</strong>@taskHead.CompletedOnDate.ToShortDateString()
+                        }
+                    </Paragraph>
+                </Column>
+            </Row>
+            <Row>
                 <Column ColumnSize="ColumnSize.Is12">
                     <Alert Color="(Color)alertModel.AlertType" @bind-Visible="@alertModel.ShowAlert" Dismisable="true">
                         <AlertMessage>

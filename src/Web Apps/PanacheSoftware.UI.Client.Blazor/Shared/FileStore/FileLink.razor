@@ -1,0 +1,60 @@
+﻿@attribute [Authorize]
+@inject UserAppCache UserAppCache
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@using PanacheSoftware.Core.Domain.API.File
+
+<br />
+<FileHistory fileHead="@fileHead" linkId="@linkId" linkType="@linkType"/>
+@if (!string.IsNullOrWhiteSpace(@fileHead.FileVersions.OrderByDescending(v => v.VersionNumber).FirstOrDefault().URI))
+{
+    <Blazorise.Link To="@fileHead.FileVersions.OrderByDescending(v => v.VersionNumber).FirstOrDefault().URI" Target="Target.Blank">
+        @fileHead.FileDetail.FileTitle
+    </Blazorise.Link>
+}
+else
+{
+    <Blazorise.Link To="@GetFileDownloadLink()" Target="Target.Blank">
+        @fileHead.FileDetail.FileTitle
+    </Blazorise.Link>
+}
+@switch (fileHead.FileDetail.FileExtension)
+{
+    case ".pdf":
+        <Icon Name="IconName.FilePdf" />
+        break;
+    case ".docx":
+    case ".doc":
+        <Icon IconName="@("fa-file-word")" Class="fa-fw" />
+        break;
+    case "URI":
+        <Icon IconName="@("fa-link")" Class="fa-fw" />
+        break;
+    default:
+        <Icon IconName="@("fa-file")" Class="fa-fw" />
+        break;
+}
+
+@code {
+    [CascadingParameter]
+    LangQueryList langQueryList { get; set; }
+
+    [Parameter]
+    public Guid linkId { get; set; }
+
+    [Parameter]
+    public string linkType { get; set; }
+
+    [Parameter]
+    public FileHead fileHead { get; set; }
+
+    private string fileDownloadLink { get; set; }
+
+    private string GetFileDownloadLink()
+    {
+        if (fileHead == default)
+            return string.Empty;
+
+        return $"/File/Download/{fileHead.FileVersions.OrderByDescending(v => v.VersionNumber).FirstOrDefault().Id}";
+    }
+}

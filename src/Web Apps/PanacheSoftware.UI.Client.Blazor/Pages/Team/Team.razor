@@ -142,15 +142,7 @@
                     <CardBody>
                         <Row>
                             <Column ColumnSize="ColumnSize.Is12">
-                                <Alert Color="(Color)alertModel.AlertType" @bind-Visible="@alertModel.ShowAlert" Dismisable="true">
-                                    <AlertMessage>
-                                        @alertModel.AlertMessage
-                                    </AlertMessage>
-                                    <AlertDescription>
-                                        @alertModel.AlertDescription
-                                    </AlertDescription>
-                                    <CloseButton />
-                                </Alert>
+                                <PLAlert includeSnackBar="true" @ref="plAlert" />
                             </Column>
                         </Row>
                         <Row>
@@ -180,7 +172,7 @@
     TeamHead teamHead { get; set; }
     IEnumerable<SelectListModel> StatusSelectListValues { get; set; }
     IEnumerable<SelectListModel> TeamSelectListValues { get; set; }
-    AlertModel alertModel = new AlertModel();
+    PLAlert plAlert { get; set; }
     bool SavingTeam = false;
     PageProgressBar pageProgressBar;
     bool loadingPage = true;
@@ -268,9 +260,7 @@
         SavingTeam = true;
         var saveResult = await SaveTeamAsync();
 
-        alertModel.ShowAlert = true;
-        alertModel.AlertType = saveResult.Item1 ? (int)Color.Success : (int)Color.Danger;
-        alertModel.AlertMessage = saveResult.Item2;
+        plAlert.ShowAlert(saveResult.Item1, saveResult.Item2);
         await CreateTeamSelectList();
         await GetTeamStructure(true);
         SavingTeam = false;

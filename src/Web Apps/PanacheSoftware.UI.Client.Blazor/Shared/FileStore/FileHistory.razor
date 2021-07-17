@@ -1,0 +1,113 @@
+﻿@attribute [Authorize]
+@inject UserAppCache UserAppCache
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@using PanacheSoftware.Core.Domain.API.File
+
+@if (fileHead != null)
+{
+    <Modal @ref="fileHistoryForm">
+        <ModalContent Centered="true" Size="ModalSize.Large">
+            <ModalHeader>
+                <ModalTitle>
+                    <Icon Name="IconName.History" />
+                    @fileHead.FileDetail.FileTitle
+                </ModalTitle>
+                <CloseButton />
+            </ModalHeader>
+            <ModalBody>
+                <DataGrid TItem="FileVer"
+                          Data="@fileHead.FileVersions"
+                          Filterable="true"
+                          FilterMethod="DataGridFilterMethod.StartsWith"
+                          PageSize="10"
+                          Striped="true"
+                          Bordered="true"
+                          Hoverable="true"
+                          Responsive="true"
+                          ShowPager="true"
+                          PagerPosition="DataGridPagerPosition.Bottom"
+                          ShowPageSizes="true">
+                    <EmptyTemplate>No records...</EmptyTemplate>
+                    <DataGridColumns>
+                        <DataGridColumn TItem="FileVer" Field="@nameof(FileVer.VersionNumber)" Caption="@LanguageHelper.GetTitle(langQueryList, 10936)" />
+                        <DataGridColumn TItem="FileVer" Caption="@LanguageHelper.GetTitle(langQueryList, 10937)">
+                            <DisplayTemplate>
+                                @{
+                                    if (!string.IsNullOrWhiteSpace(context.URI))
+                                    {
+                                        @context.URI
+                                    }
+                                    else
+                                    {
+                                        @context.TrustedName
+                                    }
+                                }
+                            </DisplayTemplate>
+                        </DataGridColumn>
+                        <DataGridColumn TItem="FileVer" Field="@nameof(FileVer.UploadDate)" Caption="@LanguageHelper.GetTitle(langQueryList, 10938)" DisplayFormat="{0:dd/MM/yyyy}" />
+                        <DataGridColumn TItem="FileVer" Caption="@LanguageHelper.GetTitle(langQueryList, 10939)">
+                            <DisplayTemplate>
+                                @{
+                                    if (!string.IsNullOrWhiteSpace(context.URI))
+                                    {
+                                        <Blazorise.Link To="@context.URI" Target="Target.Blank">
+                                            @LanguageHelper.GetTitle(langQueryList, 10939)
+                                        </Blazorise.Link>
+                                    }
+                                    else
+                                    {
+                                        <Blazorise.Link To="@GetFileDownloadLink(context.Id)" Target="Target.Blank">
+                                            @LanguageHelper.GetTitle(langQueryList, 10940)
+                                        </Blazorise.Link>
+                                    }
+                                }
+                            </DisplayTemplate>
+                        </DataGridColumn>
+                    </DataGridColumns>
+                </DataGrid>
+            </ModalBody>
+            <ModalFooter>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12">
+                        <Button Color="Color.Secondary" Clicked="@HideFileHistory">@LanguageHelper.GetTitle(langQueryList, 10942)</Button>
+                    </Column>
+                </Row>
+            </ModalFooter>
+        </ModalContent>
+    </Modal>
+
+    <Button Clicked="@ShowFileHistory" Size="Size.ExtraSmall"><Icon Name="IconName.History" /></Button>
+}
+
+@code {
+    [CascadingParameter]
+    LangQueryList langQueryList { get; set; }
+
+    [Parameter]
+    public Guid linkId { get; set; }
+
+    [Parameter]
+    public string linkType { get; set; }
+
+    [Parameter]
+    public FileHead fileHead { get; set; }
+
+    private Modal fileHistoryForm;
+
+    private string GetFileDownloadLink(Guid fileVersionId)
+    {
+        return $"/File/Download/{fileVersionId}";
+    }
+
+    private void ShowFileHistory()
+    {
+        fileHistoryForm.Show();
+    }
+
+    private void HideFileHistory()
+    {
+        fileHistoryForm.Hide();
+    }
+}

@@ -190,15 +190,7 @@
                     <CardBody>
                         <Row>
                             <Column ColumnSize="ColumnSize.Is12">
-                                <Alert Color="(Color)alertModel.AlertType" @bind-Visible="@alertModel.ShowAlert" Dismisable="true">
-                                    <AlertMessage>
-                                        @alertModel.AlertMessage
-                                    </AlertMessage>
-                                    <AlertDescription>
-                                        @alertModel.AlertDescription
-                                    </AlertDescription>
-                                    <CloseButton />
-                                </Alert>
+                                <PLAlert includeSnackBar="true" @ref="plAlert" />
                             </Column>
                         </Row>
                         <Row>
@@ -229,7 +221,7 @@
     bool loadingPage = true;
     IEnumerable<SelectListModel> StatusSelectListValues { get; set; }
     IEnumerable<SelectListModel> LanguageCodeSelectListValues { get; set; }
-    AlertModel alertModel = new AlertModel();
+    PLAlert plAlert { get; set; }
     bool SavingTextCode = false;
     bool textCodeEdit = false;
 
@@ -330,9 +322,8 @@
         SavingTextCode = true;
         var saveResult = await SaveTextCodeAsync();
 
-        alertModel.ShowAlert = true;
-        alertModel.AlertType = saveResult.Item1 ? (int)Color.Success : (int)Color.Danger;
-        alertModel.AlertMessage = saveResult.Item2;
+        plAlert.ShowAlert(saveResult.Item1, saveResult.Item2);
+
         SavingTextCode = false;
     }
 

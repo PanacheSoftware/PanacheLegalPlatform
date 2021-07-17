@@ -86,15 +86,7 @@
             <ModalFooter>
                 <Row>
                     <Column ColumnSize="ColumnSize.Is12">
-                        <Alert Color="(Color)alertModel.AlertType" @bind-Visible="@alertModel.ShowAlert" Dismisable="true">
-                            <AlertMessage>
-                                @alertModel.AlertMessage
-                            </AlertMessage>
-                            <AlertDescription>
-                                @alertModel.AlertDescription
-                            </AlertDescription>
-                            <CloseButton />
-                        </Alert>
+                        <PLAlert includeSnackBar="true" @ref="plAlert" />
                     </Column>
                 </Row>
                 <Row>
@@ -132,7 +124,7 @@
     IEnumerable<SelectListModel> UserSelectListValues { get; set; }
     private Modal taskForm;
     bool SavingTaskHead = false;
-    AlertModel alertModel = new AlertModel();
+    PLAlert plAlert { get; set; }
     CustomFieldGroupLink customFieldGroupLink;
 
     protected override async Task OnInitializedAsync()
@@ -189,9 +181,7 @@
         SavingTaskHead = true;
         var saveResult = await SaveTaskHeadAsync();
 
-        alertModel.ShowAlert = true;
-        alertModel.AlertType = saveResult.Item1 ? (int)Color.Success : (int)Color.Danger;
-        alertModel.AlertMessage = saveResult.Item2;
+        plAlert.ShowAlert(saveResult.Item1, saveResult.Item2);
 
         if (saveResult.Item1)
         {

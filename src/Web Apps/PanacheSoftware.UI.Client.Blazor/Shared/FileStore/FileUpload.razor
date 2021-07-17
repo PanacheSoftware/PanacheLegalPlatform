@@ -1,0 +1,54 @@
+﻿@attribute [Authorize]
+@inject UserAppCache UserAppCache
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@inject IMapper Mapper
+@using PanacheSoftware.Core.Domain.API.Client
+@using PanacheSoftware.Core.Domain.Identity.API
+@using PanacheSoftware.Core.Domain.API.Join
+@using PanacheSoftware.Core.Domain.API.Team
+@using System.IO
+@using Microsoft.AspNetCore.Http;
+
+<h3>FileUpload</h3>
+
+@code {
+
+    private async Task OnImageUpload(FileChangedEventArgs e)
+    {
+        try
+        {
+            var OneMb = 1024 * 1024 * 15;
+            var file = e.Files.FirstOrDefault();
+            if (file == null)
+            {
+                return;
+            }
+
+            var buffer = new byte[OneMb];
+            using (var bufferedStream = new BufferedStream(file.OpenReadStream(long.MaxValue), OneMb))
+            using (var ms = new MemoryStream())
+            {
+                int readCount = 0;
+                int readBytes;
+                while ((readBytes = await bufferedStream.ReadAsync(buffer, 0, OneMb)) > 0)
+                {
+                    ms.Write(buffer, 0, readBytes);
+                }
+
+                var formFile = new FormFile(ms, 0, ms.Length, "someFile", "SomeFileName");
+
+                //userProfileModel.userModel.Base64ProfileImage = $"data:{file.Type};base64,{Convert.ToBase64String(ms.ToArray())}";
+        }
+        }
+        catch (Exception exc)
+        {
+            Console.WriteLine(exc.Message);
+        }
+        finally
+        {
+            this.StateHasChanged();
+        }
+    }
+
+}

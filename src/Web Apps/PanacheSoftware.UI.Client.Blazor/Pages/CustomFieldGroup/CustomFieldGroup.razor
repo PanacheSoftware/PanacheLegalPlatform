@@ -175,25 +175,7 @@
                     <CardBody>
                         <Row>
                             <Column ColumnSize="ColumnSize.Is12">
-                                <Alert Color="(Color)alertModel.AlertType" @bind-Visible="@alertModel.ShowAlert" Dismisable="true">
-                                    <AlertMessage>
-                                        @alertModel.AlertMessage
-                                    </AlertMessage>
-                                    <AlertDescription>
-                                        @alertModel.AlertDescription
-                                    </AlertDescription>
-                                    <CloseButton />
-                                </Alert>
-                                <Snackbar @ref="successSnackBar" Color="SnackbarColor.Success">
-                                    <SnackbarBody>
-                                        @alertModel.AlertMessage
-                                    </SnackbarBody>
-                                </Snackbar>
-                                <Snackbar @ref="errorSnackBar" Color="SnackbarColor.Danger">
-                                    <SnackbarBody>
-                                        @alertModel.AlertMessage
-                                    </SnackbarBody>
-                                </Snackbar>
+                                <PLAlert includeSnackBar="true" @ref="plAlert" />
                             </Column>
                         </Row>
                         <Row>
@@ -224,10 +206,8 @@
     bool loadingPage = true;
     IEnumerable<SelectListModel> StatusSelectListValues { get; set; }
     IEnumerable<SelectListModel> CustomFieldTypeSelectListValues { get; set; }
-    AlertModel alertModel = new AlertModel();
     bool SavingCustomFieldGroup = false;
-    Snackbar successSnackBar;
-    Snackbar errorSnackBar;
+    PLAlert plAlert { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -308,14 +288,7 @@
         SavingCustomFieldGroup = true;
         var saveResult = await SaveCustomFieldGroupAsync();
 
-        alertModel.ShowAlert = true;
-        alertModel.AlertType = saveResult.Item1 ? (int)Color.Success : (int)Color.Danger;
-        alertModel.AlertMessage = saveResult.Item2;
-        
-        if (saveResult.Item1)
-            successSnackBar.Show();
-        else
-            errorSnackBar.Show();
+        plAlert.ShowAlert(saveResult.Item1, saveResult.Item2);
 
         SavingCustomFieldGroup = false;
     }

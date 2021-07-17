@@ -1,0 +1,40 @@
+﻿<Alert Color="(Color)alertModel.AlertType" @bind-Visible="@alertModel.ShowAlert" Dismisable="true">
+    <AlertMessage>
+        @alertModel.AlertMessage
+    </AlertMessage>
+    <AlertDescription>
+        @alertModel.AlertDescription
+    </AlertDescription>
+    <CloseButton />
+</Alert>
+@if (includeSnackBar)
+{
+    <PLSnackBar @ref="@plSnackBar" />
+}
+
+
+@code {
+    [Parameter]
+    public bool includeSnackBar { get; set; }
+
+    public AlertModel alertModel { get; set; }
+    private PLSnackBar plSnackBar { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        alertModel = new AlertModel();
+    }
+
+    public void ShowAlert(bool success, string message)
+    {
+        alertModel.ShowAlert = true;
+        alertModel.AlertType = success ? (int)Color.Success : (int)Color.Danger;
+        alertModel.AlertMessage = message;
+
+        if (includeSnackBar)
+        {
+            plSnackBar.ShowSnackBar(success, message);
+        }
+        StateHasChanged();
+    }
+}

@@ -92,15 +92,7 @@
                 </Row>
                 <Row>
                     <Column ColumnSize="ColumnSize.Is12">
-                        <Alert Color="(Color)alertModel.AlertType" @bind-Visible="@alertModel.ShowAlert" Dismisable="true">
-                            <AlertMessage>
-                                @alertModel.AlertMessage
-                            </AlertMessage>
-                            <AlertDescription>
-                                @alertModel.AlertDescription
-                            </AlertDescription>
-                            <CloseButton />
-                        </Alert>
+                        <PLAlert includeSnackBar="true" @ref="plAlert" />
                     </Column>
                 </Row>
                 @if (showSave)
@@ -136,7 +128,7 @@
     IEnumerable<SelectListModel> StatusSelectListValues { get; set; }
     IEnumerable<SelectListModel> CustomFieldGroupListValues { get; set; }
     bool SavingFieldGroup = false;
-    AlertModel alertModel = new AlertModel();
+    PLAlert plAlert { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -206,7 +198,7 @@
             linkId = updatedId;
 
             await SaveFieldGroupLinks();
-            return alertModel.AlertType == (int)Color.Danger ? false : true;
+            return plAlert.alertModel.AlertType == (int)Color.Danger ? false : true;
         }
 
         return false;
@@ -217,9 +209,7 @@
         SavingFieldGroup = true;
         var saveResult = await SaveCustomFieldGroups();
 
-        alertModel.ShowAlert = true;
-        alertModel.AlertType = saveResult.Item1 ? (int)Color.Success : (int)Color.Danger;
-        alertModel.AlertMessage = saveResult.Item2;
+        plAlert.ShowAlert(saveResult.Item1, saveResult.Item2);
         SavingFieldGroup = false;
     }
 

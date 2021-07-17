@@ -1,0 +1,50 @@
+﻿@attribute [Authorize]
+@inject UserAppCache UserAppCache
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@using PanacheSoftware.Core.Domain.API.File
+
+@if (fileList != null)
+{
+    <Paragraph>
+        <strong>@LanguageHelper.GetTitle(langQueryList, 10932):</strong>
+        @foreach (var fileHeader in fileList.FileHeaders)
+        {
+            
+        }
+    </Paragraph>
+}
+
+@code {
+    [CascadingParameter]
+    LangQueryList langQueryList { get; set; }
+
+    [Parameter]
+    public Guid linkId { get; set; }
+
+    [Parameter]
+    public string linkType { get; set; }
+
+    private FileList fileList { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        fileList = await GetFilesForLink();
+    }
+
+
+    private async Task<FileList> GetFilesForLink()
+    {
+        var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.FILE, $"File/Link/GetFilesForLink/{linkType}/{linkId}");
+
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            FileList fileList = response.ContentAsType<FileList>();
+
+            return fileList;
+        }
+
+        return new FileList();
+    }
+
+}
