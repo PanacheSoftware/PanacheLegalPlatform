@@ -1,0 +1,81 @@
+﻿@attribute [Authorize]
+@inject UserAppCache UserAppCache
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@inject IMapper Mapper
+@using PanacheSoftware.Core.Domain.API.File
+
+<Modal @ref="fileUploadForm">
+    <ModalContent Centered="true" Size="ModalSize.Large">
+        <ModalHeader>
+            <ModalTitle>
+                <Icon Name="IconName.FileUpload" />
+            </ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <FileUpload linkId="@linkId" linkType="@linkType" fileHeaderId="Guid.Empty" FileUploaded="@FileUploadedAction" @ref="@fileUpload"/>
+                </Column>
+            </Row>
+        </ModalBody>
+        <ModalFooter>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <Button Color="Color.Secondary" Clicked="@HideFileUploadForm">@LanguageHelper.GetTitle(langQueryList, 10942)</Button>
+                </Column>
+            </Row>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+<Button Color="Color.Primary" Clicked="@ShowFileUploadForm">@ActionButtonTitle</Button>
+
+@code {
+    [CascadingParameter]
+    LangQueryList langQueryList { get; set; }
+
+    private Modal fileUploadForm;
+
+    [Parameter]
+    public Guid linkId { get; set; }
+
+    [Parameter]
+    public string linkType { get; set; }
+
+    [Parameter]
+    public string ActionButtonTitle { get; set; }
+
+    [Parameter]
+    public Action<Tuple<bool, FileHead>> FileUploaded { get; set; }
+
+    FileUpload fileUpload { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+
+    private void ShowFileUploadForm()
+    {
+        fileUploadForm.Show();
+    }
+
+    private void HideFileUploadForm()
+    {
+        fileUploadForm.Hide();
+    }
+
+    void FileUploadedAction(Tuple<bool, FileHead> fileUploadResult)
+    {
+        if (fileUploadResult.Item1)
+        {
+            fileUpload.ResetFileUpload();
+            HideFileUploadForm();
+            FileUploaded?.Invoke(fileUploadResult);
+        }
+
+        StateHasChanged();
+    }
+}

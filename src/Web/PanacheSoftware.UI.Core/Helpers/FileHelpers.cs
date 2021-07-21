@@ -22,7 +22,7 @@ namespace PanacheSoftware.UI.Core.Helpers
         // and the official specifications for the file types you wish to add.
         private static readonly Dictionary<string, List<byte[]>> _fileSignature = new Dictionary<string, List<byte[]>>
         {
-            { ".pdf", new List<byte[]> { new byte[] { 0x23, 0x50, 0x44, 0x46 } } },
+            { ".pdf", new List<byte[]> { new byte[] { 0x25, 0x50, 0x44, 0x46 } } },
             { ".doc", new List<byte[]> { new byte[] { 0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1 } } },
             { ".docx", new List<byte[]> { new byte[] { 0x50, 0x4B, 0x03, 0x04 } } },
             { ".xls", new List<byte[]> { new byte[] { 0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1 } } },
@@ -62,8 +62,8 @@ namespace PanacheSoftware.UI.Core.Helpers
         // systems. For more information, see the topic that accompanies this sample
         // app.
 
-        public static async Task<byte[]> ProcessFormFile<T>(IFormFile formFile, 
-            ModelStateDictionary modelState, string[] permittedExtensions, 
+        public static async Task<Tuple<byte[], bool, string>> ProcessFormFile<T>(IFormFile formFile, 
+            string[] permittedExtensions, 
             long sizeLimit)
         {
             var fieldDisplayName = string.Empty;
@@ -95,19 +95,12 @@ namespace PanacheSoftware.UI.Core.Helpers
             // a BOM as their content.
             if (formFile.Length == 0)
             {
-                modelState.AddModelError(formFile.Name, 
-                    $"{fieldDisplayName}({trustedFileNameForDisplay}) is empty.");
-
-                return new byte[0];
+                return new Tuple<byte[], bool, string>(new byte[0], false, $"{fieldDisplayName}({trustedFileNameForDisplay}) is empty.");
             }
             
             if (formFile.Length > (sizeLimit * 1048576))
             {
-                modelState.AddModelError(formFile.Name,
-                    $"{fieldDisplayName}({trustedFileNameForDisplay}) exceeds " +
-                    $"{sizeLimit:N1} MB.");
-
-                return new byte[0];
+                return new Tuple<byte[], bool, string>(new byte[0], false, $"{fieldDisplayName}({trustedFileNameForDisplay}) exceeds {sizeLimit:N1} MB.");
             }
 
             try
@@ -121,33 +114,24 @@ namespace PanacheSoftware.UI.Core.Helpers
                     // empty after removing the BOM.
                     if (memoryStream.Length == 0)
                     {
-                        modelState.AddModelError(formFile.Name,
-                            $"{fieldDisplayName}({trustedFileNameForDisplay}) is empty.");
+                        return new Tuple<byte[], bool, string>(new byte[0], false, $"{fieldDisplayName}({trustedFileNameForDisplay}) is empty.");
                     }
 
                     if (!IsValidFileExtensionAndSignature(
                         formFile.FileName, memoryStream, permittedExtensions))
                     {
-                        modelState.AddModelError(formFile.Name,
-                            $"{fieldDisplayName}({trustedFileNameForDisplay}) file " +
-                            "type isn't permitted or the file's signature " +
-                            "doesn't match the file's extension.");
+                        return new Tuple<byte[], bool, string>(new byte[0], false, $"{fieldDisplayName}({trustedFileNameForDisplay}) file type isn't permitted or the file's signature doesn't match the file's extension.");
                     }
                     else
                     {
-                        return memoryStream.ToArray();
+                        return new Tuple<byte[], bool, string>(memoryStream.ToArray(), true, $"{fieldDisplayName}({trustedFileNameForDisplay}) processed okay.");
                     }
                 }
             }
             catch (Exception ex)
             {
-                modelState.AddModelError(formFile.Name,
-                    $"{fieldDisplayName}({trustedFileNameForDisplay}) upload failed. " +
-                    $"Please contact the Help Desk for support. Error: {ex.HResult}");
-                // Log the exception
+                return new Tuple<byte[], bool, string>(new byte[0], false, $"{fieldDisplayName}({trustedFileNameForDisplay}) upload failed. Please contact the Help Desk for support. Error: {ex.HResult}");
             }
-
-            return new byte[0];
         }
 
         private static bool IsValidFileExtensionAndSignature(string fileName, Stream data, string[] permittedExtensions)

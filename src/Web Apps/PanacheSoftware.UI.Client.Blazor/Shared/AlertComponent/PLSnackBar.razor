@@ -23,4 +23,11 @@
         else
             errorSnackBar.Show();
     }
+
+    public void HideSnackBar()
+    {
+        successSnackBar.Hide();
+        errorSnackBar.Hide();
+        StateHasChanged();
+    }
 }

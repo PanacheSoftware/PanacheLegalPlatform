@@ -116,6 +116,10 @@
     [Parameter]
     public string ActionButtonTitle { get; set; }
 
+    [Parameter]
+    public TaskHead resetTaskHead { get; set; }
+
+
     [CascadingParameter(Name = "StatusSelectListValues")]
     IEnumerable<SelectListModel> StatusSelectListValues { get; set; }
     [CascadingParameter(Name = "TeamSelectListValues")]
@@ -176,6 +180,11 @@
         taskForm.Hide();
     }
 
+    private void HideMessages()
+    {
+        plAlert.HideAlert();
+    }
+
     private async Task SubmitForm()
     {
         SavingTaskHead = true;
@@ -186,8 +195,16 @@
         if (saveResult.Item1)
         {
             await customFieldGroupLink.SaveFieldGroup(taskHead.Id);
-            HideTaskForm();
             TaskHeadSaved?.Invoke(taskHead);
+
+            if(resetTaskHead != default)
+            {
+                taskHead = resetTaskHead;
+            }
+
+            customFieldGroupLink.ResetCustomFieldGroupLinks();
+            HideMessages();
+            HideTaskForm();
         }
 
         SavingTaskHead = false;

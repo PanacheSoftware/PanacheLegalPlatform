@@ -3,6 +3,7 @@
 @inject FoundationService MyFoundationService
 @inject TokenProvider TokenProvider
 @using PanacheSoftware.Core.Domain.API.File
+@using System.Linq
 
 @if (fileList != null)
 {
@@ -10,8 +11,11 @@
         <strong>@LanguageHelper.GetTitle(langQueryList, 10932):</strong>
         @foreach (var fileHeader in fileList.FileHeaders)
         {
-            
+            <FileLink fileHead="fileHeader" linkId="@linkId" linkType="@linkType" />
         }
+    </Paragraph>
+    <Paragraph>
+        <FileUploadModal ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10221)" linkId="@linkId" linkType="@linkType" FileUploaded="@FileUploadedAction"/>
     </Paragraph>
 }
 
@@ -45,6 +49,17 @@
         }
 
         return new FileList();
+    }
+
+    void FileUploadedAction(Tuple<bool, FileHead> fileUploadResult)
+    {
+        if (fileUploadResult.Item1)
+        {
+            if (!fileList.FileHeaders.Contains(fileUploadResult.Item2))
+                fileList.FileHeaders.Add(fileUploadResult.Item2);
+        }
+
+        StateHasChanged();
     }
 
 }

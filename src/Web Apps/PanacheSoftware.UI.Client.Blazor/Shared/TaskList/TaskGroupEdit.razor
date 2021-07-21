@@ -138,6 +138,9 @@
     [Parameter]
     public string ActionButtonTitle { get; set; }
 
+    [Parameter]
+    public TaskGroupHead resetTaskGroupHead { get; set; }
+
     [CascadingParameter(Name = "StatusSelectListValues")]
     IEnumerable<SelectListModel> StatusSelectListValues { get; set; }
     [CascadingParameter(Name = "TeamSelectListValues")]
@@ -161,6 +164,11 @@
 
         taskGroupHead = taskGroupHeadReset;
         StateHasChanged();
+    }
+
+    private void HideMessages()
+    {
+        plAlert.HideAlert();
     }
 
     private void TeamListValueChangedHandler(string newValue)
@@ -228,8 +236,16 @@
         if (saveResult.Item1)
         {
             await customFieldGroupLink.SaveFieldGroup(taskGroupHead.Id);
-            HideTaskGroupForm();
             TaskGroupHeadSaved?.Invoke(taskGroupHead);
+
+            if (resetTaskGroupHead != default)
+            {
+                taskGroupHead = resetTaskGroupHead;
+            }
+
+            customFieldGroupLink.ResetCustomFieldGroupLinks();
+            HideMessages();
+            HideTaskGroupForm();
         }
 
         SavingTaskGroupHead = false;

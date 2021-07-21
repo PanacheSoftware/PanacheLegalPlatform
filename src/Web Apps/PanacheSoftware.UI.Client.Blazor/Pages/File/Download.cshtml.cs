@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Mime;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -20,19 +21,24 @@ namespace PanacheSoftware.UI.Client.Blazor.Pages.File
     public class DownloadModel : PageModel
     {
         private readonly IAPIHelper _apiHelper;
-        private readonly TokenProvider tokenProvider;
+        private readonly TokenProvider _tokenProvider;
 
         [BindProperty(SupportsGet = true)]
         public string Id { get; set; }
 
+        [BindProperty(SupportsGet = true)]
+        public string VersionId { get; set; }
+
         public DownloadModel(TokenProvider tokenProvider, IAPIHelper apiHelper)
         {
-            this.tokenProvider = tokenProvider;
+            _tokenProvider = tokenProvider;
             _apiHelper = apiHelper;
         }
 
         public async Task<ActionResult> OnGetAsync()
         {
+            var accessToken = await HttpContext.GetTokenAsync("access_token");
+
             if (!string.IsNullOrWhiteSpace(Id))
             {
                 if (Guid.TryParse(Id, out Guid parsedId))
@@ -40,15 +46,20 @@ namespace PanacheSoftware.UI.Client.Blazor.Pages.File
                     if (parsedId != Guid.Empty)
                     {
                         //var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FILE, $"File/Version/{parsedId}");
-                        var response = await _apiHelper.MakeAPICallAsync(tokenProvider.AccessToken, HttpMethod.Get, APITypes.FILE, $"File/Version/{parsedId}");
+                        var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FILE, $"File/{parsedId}");
 
                         if (response.StatusCode == System.Net.HttpStatusCode.OK)
                         {
-                            var fileVersion = response.ContentAsType<FileVer>();
+                            var fileHeader = response.ContentAsType<FileHead>();
 
-                            if (fileVersion != null)
+                            if (Guid.TryParse(VersionId, out Guid versionId))
                             {
-                                return File(fileVersion.Content, MediaTypeNames.Application.Octet, fileVersion.TrustedName);
+                                var foundFileVersion = fileHeader.FileVersions.FirstOrDefault(v => v.Id == versionId);
+
+                                if (foundFileVersion != null)
+                                {
+                                    return File(foundFileVersion.Content, fileHeader.FileDetail.FileType, foundFileVersion.TrustedName);
+                                }
                             }
                         }
                     }

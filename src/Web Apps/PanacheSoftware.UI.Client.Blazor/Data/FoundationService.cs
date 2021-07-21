@@ -1,4 +1,5 @@
 ﻿using PanacheSoftware.Core.Domain.API.Language;
+using PanacheSoftware.Core.Domain.API.Settings;
 using PanacheSoftware.Core.Domain.UI;
 using PanacheSoftware.Http;
 using PanacheSoftware.UI.Core.Helpers;
@@ -28,6 +29,18 @@ namespace PanacheSoftware.UI.Client.Blazor.Data
             var languageSetting = await apiHelper.GetUserLanguage(accessToken);
 
             return languageSetting.Value;
+        }
+
+        public async Task<SettingHead> GetSystemSetting(string accessToken, string settingName)
+        {
+            var response = await MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FOUNDATION, $"Setting/{settingName}");
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                return response.ContentAsType<SettingHead>();
+            }
+
+            return null;
         }
 
         public async Task<LangQueryList> GetLanguageInfo(string accessToken, string languageCode, long[] textCodes)

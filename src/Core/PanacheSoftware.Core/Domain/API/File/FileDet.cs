@@ -1,6 +1,7 @@
 ﻿using PanacheSoftware.Core.Types;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace PanacheSoftware.Core.Domain.API.File
@@ -18,7 +19,11 @@ namespace PanacheSoftware.Core.Domain.API.File
 
         public Guid Id { get; set; }
         public Guid FileHeaderId { get; set; }
+        [Required]
+        [Display(Name = "File Title is required")]
         public string FileTitle { get; set; }
+        [Required]
+        [Display(Name = "File Description is required")]
         public string Description { get; set; }
         public string FileType { get; set; }
         public string FileExtension { get; set; }

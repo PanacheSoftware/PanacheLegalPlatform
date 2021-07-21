@@ -38,7 +38,7 @@
             </Row>
             <Row Margin="Margin.Is4.OnY">
                 <Column ColumnSize="ColumnSize.Is12">
-                    <TaskItemEdit ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10930)" taskHead="@taskHeadCreateTemplate" TaskHeadSaved="@TaskHeadCreated" @ref="@taskEdit" />
+                    <TaskItemEdit ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10930)" taskHead="@taskHeadCreateTemplate" TaskHeadSaved="@TaskHeadCreated"  resetTaskHead="GetBlankTaskHeadTemplate()" @ref="@taskEdit" />
                 </Column>
             </Row>
             <Row Margin="Margin.Is4.OnY">

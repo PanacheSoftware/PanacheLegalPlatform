@@ -1,4 +1,4 @@
-﻿<Alert Color="(Color)alertModel.AlertType" @bind-Visible="@alertModel.ShowAlert" Dismisable="true">
+﻿<Alert Color="(Color)alertModel.AlertType" @bind-Visible="@alertModel.ShowAlert" Dismisable="true" @ref="alert">
     <AlertMessage>
         @alertModel.AlertMessage
     </AlertMessage>
@@ -19,6 +19,7 @@
 
     public AlertModel alertModel { get; set; }
     private PLSnackBar plSnackBar { get; set; }
+    private Alert alert { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -35,6 +36,14 @@
         {
             plSnackBar.ShowSnackBar(success, message);
         }
+        StateHasChanged();
+    }
+
+    public void HideAlert()
+    {
+        alertModel.ShowAlert = false;
+        alert.Hide();
+        plSnackBar.HideSnackBar();
         StateHasChanged();
     }
 }

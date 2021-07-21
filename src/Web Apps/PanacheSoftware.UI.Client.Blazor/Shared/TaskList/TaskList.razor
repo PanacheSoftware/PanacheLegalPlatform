@@ -25,7 +25,7 @@
                 </Row>
                 <Row Margin="Margin.Is4.OnY">
                     <Column ColumnSize="ColumnSize.Is12">
-                        <TaskGroupEdit ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10917)" taskGroupHead="@TaskGroupHeadCreateTemplate" TaskGroupHeadSaved="@TaskGroupHeadCreated" @ref="@addNewTaskGroupEdit" />
+                        <TaskGroupEdit ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10917)" taskGroupHead="@TaskGroupHeadCreateTemplate" TaskGroupHeadSaved="@TaskGroupHeadCreated" resetTaskGroupHead="GetBlankTaskGroupHeadTemplate()" @ref="@addNewTaskGroupEdit" />
                     </Column>
                 </Row>
             </CascadingValue>
@@ -92,7 +92,6 @@
             return;
 
         TaskGroupHeaders.Add(taskGroupHead);
-        addNewTaskGroupEdit.ResetTaskGroup(GetBlankTaskGroupHeadTemplate());
         StateHasChanged();
     }
 

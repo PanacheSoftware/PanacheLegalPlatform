@@ -204,6 +204,18 @@
         return false;
     }
 
+    public void ResetCustomFieldGroupLinks()
+    {
+        HideMessages();
+        customFieldGroupLnkList.CustomFieldGroupLinks = new List<CustomFieldGroupLnk>();
+        StateHasChanged();
+    }
+
+    private void HideMessages()
+    {
+        plAlert.HideAlert();
+    }
+
     private async Task SaveFieldGroupLinks()
     {
         SavingFieldGroup = true;

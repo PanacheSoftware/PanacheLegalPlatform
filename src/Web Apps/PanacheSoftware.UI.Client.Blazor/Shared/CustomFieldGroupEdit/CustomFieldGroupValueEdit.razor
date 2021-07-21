@@ -94,6 +94,11 @@
         SavingFieldGroup = false;
     }
 
+    private void HideMessages()
+    {
+        plAlert.HideAlert();
+    }
+
     private async Task<Tuple<bool, string>> SaveCustomFieldValuesAsync()
     {
         if (CustomFieldRows.Any())

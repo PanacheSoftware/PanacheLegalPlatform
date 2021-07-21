@@ -147,10 +147,12 @@ namespace PanacheSoftware.UI.Client.Pages.File
                         var fileSizeSetting = await _apiHelper.GetSystemSetting(accessToken, "FILE_UPLOAD_MAX");
                         var fileExtPermitted = await _apiHelper.GetSystemSetting(accessToken, "FILE_UPLOAD_EXT");
 
-                        var formFileContent =
-                            await FileHelpers.ProcessFormFile<FileUploadModel>(
-                                FileUploadModel.FormFile, ModelState, GeneralHelpers.SeperatedListToEnumerable(fileExtPermitted.Value, prefix: ".").ToArray<string>(),
-                                long.Parse(fileSizeSetting.Value));
+                        //var formFileContent =
+                        //    await FileHelpers.ProcessFormFile<FileUploadModel>(
+                        //        FileUploadModel.FormFile, ModelState, GeneralHelpers.SeperatedListToEnumerable(fileExtPermitted.Value, prefix: ".").ToArray<string>(),
+                        //        long.Parse(fileSizeSetting.Value));
+
+                        var formFileContent = new byte[0];
 
                         if (!ModelState.IsValid)
                             return false;

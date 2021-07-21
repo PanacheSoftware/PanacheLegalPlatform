@@ -27,7 +27,7 @@ namespace PanacheSoftware.Core.Domain.API.CustomField
         [MaxLength(100, ErrorMessage = "Maximum Length 100 characters")]
         public string ShortName { get; set; }
         [Required]
-        [Display(Name = "Custom Fiueld Group Name")]
+        [Display(Name = "Custom Field Group Name")]
         [MaxLength(255, ErrorMessage = "Maximum Length 255 characters")]
         public string LongName { get; set; }
         [DisplayFormat(ConvertEmptyStringToNull = false)]

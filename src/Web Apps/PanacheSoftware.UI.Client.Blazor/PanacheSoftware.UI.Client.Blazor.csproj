@@ -6,12 +6,12 @@
   
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.0" />
-    <PackageReference Include="Blazorise.Bootstrap" Version="0.9.3.9" />
-    <PackageReference Include="Blazorise.Components" Version="0.9.3.9" />
-    <PackageReference Include="Blazorise.DataGrid" Version="0.9.3.9" />
-    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.3.9" />
-    <PackageReference Include="Blazorise.Sidebar" Version="0.9.3.9" />
-    <PackageReference Include="Blazorise.Snackbar" Version="0.9.3.9" />
+    <PackageReference Include="Blazorise.Bootstrap" Version="0.9.4.1" />
+    <PackageReference Include="Blazorise.Components" Version="0.9.4.1" />
+    <PackageReference Include="Blazorise.DataGrid" Version="0.9.4.1" />
+    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.4.1" />
+    <PackageReference Include="Blazorise.Sidebar" Version="0.9.4.1" />
+    <PackageReference Include="Blazorise.Snackbar" Version="0.9.4.1" />
     <PackageReference Include="IdentityModel" Version="5.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.5" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.11.0" />
