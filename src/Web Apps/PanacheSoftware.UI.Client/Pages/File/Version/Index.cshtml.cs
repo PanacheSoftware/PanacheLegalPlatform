@@ -158,10 +158,10 @@ namespace PanacheSoftware.UI.Client.Pages.File.Version
                         var fileSizeSetting = await _apiHelper.GetSystemSetting(accessToken, "FILE_UPLOAD_MAX");
                         var fileExtPermitted = await _apiHelper.GetSystemSetting(accessToken, "FILE_UPLOAD_EXT");
 
-                        var formFileContent =
-                            await FileHelpers.ProcessFormFile<FileUploadModel>(
-                                FileVersionUploadModel.FormFile, ModelState, GeneralHelpers.SeperatedListToEnumerable(fileExtPermitted.Value, prefix: ".").ToArray<string>(),
-                                long.Parse(fileSizeSetting.Value));
+                        //var formFileContent =
+                        //    await FileHelpers.ProcessFormFile<FileUploadModel>(
+                        //        FileVersionUploadModel.FormFile, ModelState, GeneralHelpers.SeperatedListToEnumerable(fileExtPermitted.Value, prefix: ".").ToArray<string>(),
+                        //        long.Parse(fileSizeSetting.Value));
 
                         if (!ModelState.IsValid)
                             return false;
@@ -169,7 +169,7 @@ namespace PanacheSoftware.UI.Client.Pages.File.Version
                         FileVersionUploadModel.FileVersion.Size = FileVersionUploadModel.FormFile.Length;
                         FileVersionUploadModel.FileVersion.UntrustedName = FileVersionUploadModel.FormFile.FileName;
                         FileVersionUploadModel.FileVersion.TrustedName = WebUtility.HtmlEncode(FileVersionUploadModel.FormFile.FileName);
-                        FileVersionUploadModel.FileVersion.Content = formFileContent;
+                        //FileVersionUploadModel.FileVersion.Content = formFileContent;
                     }
                     else
                     {

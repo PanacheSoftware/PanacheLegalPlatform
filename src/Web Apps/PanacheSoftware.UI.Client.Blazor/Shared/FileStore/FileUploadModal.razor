@@ -48,7 +48,7 @@
     public string ActionButtonTitle { get; set; }
 
     [Parameter]
-    public Action<Tuple<bool, FileHead>> FileUploaded { get; set; }
+    public Action<Tuple<bool, FileHead, FileVer>> FileUploaded { get; set; }
 
     FileUpload fileUpload { get; set; }
 
@@ -67,7 +67,7 @@
         fileUploadForm.Hide();
     }
 
-    void FileUploadedAction(Tuple<bool, FileHead> fileUploadResult)
+    void FileUploadedAction(Tuple<bool, FileHead, FileVer> fileUploadResult)
     {
         if (fileUploadResult.Item1)
         {

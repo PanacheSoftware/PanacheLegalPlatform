@@ -104,7 +104,7 @@
     FileUploadModel fileUploadModel { get; set; }
 
     [Parameter]
-    public Action<Tuple<bool, FileHead>> FileUploaded { get; set; }
+    public Action<Tuple<bool, FileHead, FileVer>> FileUploaded { get; set; }
 
     PLAlert plAlert { get; set; }
 
@@ -212,63 +212,61 @@
             return;
         }
 
-        if (fileUploadModel.FileHeader.Id == Guid.Empty)
+        var fileVer = new FileVer()
         {
-            var fileVer = new FileVer()
+            FileHeaderId = fileUploadModel.FileHeader.Id
+        };
+
+        if (fileUploadModel.FormFile != default)
+        {
+            var fileSizeSetting = await MyFoundationService.GetSystemSetting(TokenProvider.AccessToken, "FILE_UPLOAD_MAX");
+            var fileExtPermitted = await MyFoundationService.GetSystemSetting(TokenProvider.AccessToken, "FILE_UPLOAD_EXT");
+
+            formFileProcessResponse =
+                await FileHelpers.ProcessFormFile<FileUploadModel>(
+                    fileUploadModel.FormFile, GeneralHelpers.SeperatedListToEnumerable(fileExtPermitted.Value, prefix: ".").ToArray<string>(),
+                    long.Parse(fileSizeSetting.Value));
+
+            if (formFileProcessResponse.Item2)
             {
-                FileHeaderId = fileUploadModel.FileHeader.Id
-            };
+                fileUploadModel.FileHeader.FileDetail.FileExtension = Path.GetExtension(fileUploadModel.FormFile.FileName).ToLowerInvariant();
+                fileUploadModel.FileHeader.FileDetail.FileType = fileUploadModel.FormFile.ContentType;
 
-            if (fileUploadModel.FormFile != default)
-            {
-                var fileSizeSetting = await MyFoundationService.GetSystemSetting(TokenProvider.AccessToken, "FILE_UPLOAD_MAX");
-                var fileExtPermitted = await MyFoundationService.GetSystemSetting(TokenProvider.AccessToken, "FILE_UPLOAD_EXT");
-
-                formFileProcessResponse =
-                    await FileHelpers.ProcessFormFile<FileUploadModel>(
-                        fileUploadModel.FormFile, GeneralHelpers.SeperatedListToEnumerable(fileExtPermitted.Value, prefix: ".").ToArray<string>(),
-                        long.Parse(fileSizeSetting.Value));
-
-                if (formFileProcessResponse.Item2)
-                {
-                    fileUploadModel.FileHeader.FileDetail.FileExtension = Path.GetExtension(fileUploadModel.FormFile.FileName).ToLowerInvariant();
-                    fileUploadModel.FileHeader.FileDetail.FileType = fileUploadModel.FormFile.ContentType;
-
-                    fileVer.Size = fileUploadModel.FormFile.Length;
-                    fileVer.UntrustedName = fileUploadModel.FormFile.FileName;
-                    fileVer.TrustedName = WebUtility.HtmlEncode(fileUploadModel.FormFile.FileName);
-                    fileVer.Content = formFileProcessResponse.Item1;
-                }
+                fileVer.Size = fileUploadModel.FormFile.Length;
+                fileVer.UntrustedName = fileUploadModel.FormFile.FileName;
+                fileVer.TrustedName = WebUtility.HtmlEncode(fileUploadModel.FormFile.FileName);
+                fileVer.Content = formFileProcessResponse.Item1;
             }
-            else
+        }
+        else
+        {
+            if (string.IsNullOrWhiteSpace(fileUploadModel.URI))
             {
-                if(string.IsNullOrWhiteSpace(fileUploadModel.URI))
-                {
-                    plAlert.ShowAlert(false, $"Link cannot be blank");
-                    return;
-                }
-
-                fileVer.URI = fileUploadModel.URI;
-                fileUploadModel.FileHeader.FileDetail.FileExtension = "URI";
-                fileUploadModel.FileHeader.FileDetail.FileType = "URI";
-                formFileProcessResponse = new Tuple<byte[], bool, string>(new byte[0], true, $"URI Processed");
+                plAlert.ShowAlert(false, $"Link cannot be blank");
+                return;
             }
 
-            fileUploadModel.FileHeader.FileLinks.Add(new FileLnk()
-            {
-                LinkId = fileUploadModel.linkId,
-                LinkType = fileUploadModel.linkType,
-                FileHeaderId = fileUploadModel.FileHeader.Id
-            });
-
-            fileUploadModel.FileHeader.FileVersions.Add(fileVer);
+            fileVer.URI = fileUploadModel.URI;
+            fileUploadModel.FileHeader.FileDetail.FileExtension = "URI";
+            fileUploadModel.FileHeader.FileDetail.FileType = "URI";
+            formFileProcessResponse = new Tuple<byte[], bool, string>(new byte[0], true, $"URI Processed");
         }
 
-        if(formFileProcessResponse.Item2)
+        fileUploadModel.FileHeader.FileLinks.Add(new FileLnk()
         {
-            var saveResult = await CreateOrUpdateFileAsync();
+            LinkId = fileUploadModel.linkId,
+            LinkType = fileUploadModel.linkType,
+            FileHeaderId = fileUploadModel.FileHeader.Id
+        });
+
+        if (formFileProcessResponse.Item2)
+        {
+            if(fileUploadModel.FileHeader.Id == Guid.Empty)
+                fileUploadModel.FileHeader.FileVersions.Add(fileVer);
+
+            var saveResult = await CreateOrUpdateFileAsync(fileVer);
             plAlert.ShowAlert(saveResult.Item1, saveResult.Item2);
-            FileUploaded?.Invoke(new Tuple<bool, FileHead>(saveResult.Item1, fileUploadModel.FileHeader));
+            FileUploaded?.Invoke(new Tuple<bool, FileHead, FileVer>(saveResult.Item1, fileUploadModel.FileHeader, fileUploadModel.FileHeader.FileVersions.OrderByDescending(v => v.VersionNumber).FirstOrDefault()));
         }
         else
         {
@@ -278,34 +276,24 @@
         SavingFile = false;
     }
 
-    private async Task<Tuple<bool, string>> CreateOrUpdateFileAsync()
+    private async Task<Tuple<bool, string>> CreateOrUpdateFileAsync(FileVer fileVer = default)
     {
         if (fileUploadModel.FileHeader != null)
         {
             if (fileUploadModel.FileHeader.Id != Guid.Empty)
             {
-                var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.FILE, $"File/{fileUploadModel.FileHeader.Id}");
-
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                if (fileVer != default)
                 {
-                    var foundFileHeader = response.ContentAsType<FileHead>();
+                    HttpContent contentPost = new StringContent(JsonConvert.SerializeObject(fileVer), Encoding.UTF8, "application/json");
 
-                    if (foundFileHeader != null)
+                    var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Post, APITypes.FILE, $"File/Version", contentPost);
+
+                    if (response.StatusCode != System.Net.HttpStatusCode.Created)
                     {
-                        var processPatchResult = await MyFoundationService.ProcessPatch(foundFileHeader, fileUploadModel.FileHeader, foundFileHeader.Id, TokenProvider.AccessToken, APITypes.FILE, "File");
-
-                        if (!processPatchResult.Item1)
-                        {
-                            return processPatchResult;
-                        }
-
-                        processPatchResult = await MyFoundationService.ProcessPatch(foundFileHeader.FileDetail, fileUploadModel.FileHeader.FileDetail, foundFileHeader.Id, TokenProvider.AccessToken, APITypes.FILE, "File/Detail");
-
-                        if (!processPatchResult.Item1)
-                        {
-                            return processPatchResult;
-                        }
+                        return new Tuple<bool, string>(false, await MyFoundationService.GetErrorFromResponse(response));
                     }
+
+                    fileUploadModel.FileHeader.FileVersions.Add(response.ContentAsType<FileVer>());
                 }
             }
             else

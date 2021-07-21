@@ -17,56 +17,65 @@
                 <CloseButton />
             </ModalHeader>
             <ModalBody>
-                <DataGrid TItem="FileVer"
-                          Data="@fileHead.FileVersions"
-                          Filterable="true"
-                          FilterMethod="DataGridFilterMethod.StartsWith"
-                          PageSize="10"
-                          Striped="true"
-                          Bordered="true"
-                          Hoverable="true"
-                          Responsive="true"
-                          ShowPager="true"
-                          PagerPosition="DataGridPagerPosition.Bottom"
-                          ShowPageSizes="true">
-                    <EmptyTemplate>No records...</EmptyTemplate>
-                    <DataGridColumns>
-                        <DataGridColumn TItem="FileVer" Field="@nameof(FileVer.VersionNumber)" Caption="@LanguageHelper.GetTitle(langQueryList, 10936)" />
-                        <DataGridColumn TItem="FileVer" Caption="@LanguageHelper.GetTitle(langQueryList, 10937)">
-                            <DisplayTemplate>
-                                @{
-                                    if (!string.IsNullOrWhiteSpace(context.URI))
-                                    {
-                                        @context.URI
-                                    }
-                                    else
-                                    {
-                                        @context.TrustedName
-                                    }
-                                }
-                            </DisplayTemplate>
-                        </DataGridColumn>
-                        <DataGridColumn TItem="FileVer" Field="@nameof(FileVer.UploadDate)" Caption="@LanguageHelper.GetTitle(langQueryList, 10938)" DisplayFormat="{0:dd/MM/yyyy}" />
-                        <DataGridColumn TItem="FileVer" Caption="@LanguageHelper.GetTitle(langQueryList, 10939)">
-                            <DisplayTemplate>
-                                @{
-                                    if (!string.IsNullOrWhiteSpace(context.URI))
-                                    {
-                                        <Blazorise.Link To="@context.URI" Target="Target.Blank">
-                                            @LanguageHelper.GetTitle(langQueryList, 10939)
-                                        </Blazorise.Link>
-                                    }
-                                    else
-                                    {
-                                        <Blazorise.Link To="@GetFileDownloadLink(context.Id)" Target="Target.Blank">
-                                            @LanguageHelper.GetTitle(langQueryList, 10940)
-                                        </Blazorise.Link>
-                                    }
-                                }
-                            </DisplayTemplate>
-                        </DataGridColumn>
-                    </DataGridColumns>
-                </DataGrid>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12">
+                        <DataGrid TItem="FileVer"
+                                  Data="@fileHead.FileVersions"
+                                  Filterable="true"
+                                  FilterMethod="DataGridFilterMethod.StartsWith"
+                                  PageSize="10"
+                                  Striped="true"
+                                  Bordered="true"
+                                  Hoverable="true"
+                                  Responsive="true"
+                                  ShowPager="true"
+                                  PagerPosition="DataGridPagerPosition.Bottom"
+                                  ShowPageSizes="true">
+                            <EmptyTemplate>No records...</EmptyTemplate>
+                            <DataGridColumns>
+                                <DataGridColumn TItem="FileVer" Field="@nameof(FileVer.VersionNumber)" Caption="@LanguageHelper.GetTitle(langQueryList, 10936)" />
+                                <DataGridColumn TItem="FileVer" Field="@nameof(FileVer.TrustedName)" Caption="@LanguageHelper.GetTitle(langQueryList, 10937)">
+                                    <DisplayTemplate>
+                                        @{
+                                            if (!string.IsNullOrWhiteSpace(context.URI))
+                                            {
+                                                @context.URI
+                                            }
+                                            else
+                                            {
+                                                @context.TrustedName
+                                            }
+                                        }
+                                    </DisplayTemplate>
+                                </DataGridColumn>
+                                <DataGridColumn TItem="FileVer" Field="@nameof(FileVer.UploadDate)" Caption="@LanguageHelper.GetTitle(langQueryList, 10938)" DisplayFormat="{0:dd/MM/yyyy}" />
+                                <DataGridColumn TItem="FileVer" Field="@nameof(FileVer.URI)" Caption="@LanguageHelper.GetTitle(langQueryList, 10939)">
+                                    <DisplayTemplate>
+                                        @{
+                                            if (!string.IsNullOrWhiteSpace(context.URI))
+                                            {
+                                                <Blazorise.Link To="@context.URI" Target="Target.Blank">
+                                                    @LanguageHelper.GetTitle(langQueryList, 10939)
+                                                </Blazorise.Link>
+                                            }
+                                            else
+                                            {
+                                                <Blazorise.Link To="@GetFileDownloadLink(context.Id)" Target="Target.Blank">
+                                                    @LanguageHelper.GetTitle(langQueryList, 10940)
+                                                </Blazorise.Link>
+                                            }
+                                        }
+                                    </DisplayTemplate>
+                                </DataGridColumn>
+                            </DataGridColumns>
+                        </DataGrid>
+                    </Column>
+                </Row>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12">
+                        <FileUpload fileHeaderId="@fileHead.Id" linkId="@linkId" linkType="@linkType" FileUploaded="@FileUploadedAction" @ref="@fileUpload"/>
+                    </Column>
+                </Row>
             </ModalBody>
             <ModalFooter>
                 <Row>
@@ -96,9 +105,14 @@
 
     private Modal fileHistoryForm;
 
+    FileUpload fileUpload { get; set; }
+
+    [Parameter]
+    public Action<Tuple<bool, FileHead, FileVer>> FileUploaded { get; set; }
+
     private string GetFileDownloadLink(Guid fileVersionId)
     {
-        return $"/File/Download/{fileVersionId}";
+        return $"/File/Download/{fileHead.Id}/{fileVersionId}";
     }
 
     private void ShowFileHistory()
@@ -109,5 +123,17 @@
     private void HideFileHistory()
     {
         fileHistoryForm.Hide();
+    }
+
+    void FileUploadedAction(Tuple<bool, FileHead, FileVer> fileUploadResult)
+    {
+        if (fileUploadResult.Item1)
+        {
+            //fileUpload.ResetFileUpload();
+            fileHead.FileVersions.Add(fileUploadResult.Item3);
+            FileUploaded?.Invoke(new Tuple<bool, FileHead, FileVer>(fileUploadResult.Item1, fileUploadResult.Item2, fileUploadResult.Item3));
+        }
+
+        StateHasChanged();
     }
 }

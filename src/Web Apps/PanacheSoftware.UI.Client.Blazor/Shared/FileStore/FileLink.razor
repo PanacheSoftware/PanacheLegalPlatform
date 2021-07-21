@@ -5,7 +5,7 @@
 @using PanacheSoftware.Core.Domain.API.File
 
 <br />
-@*<FileHistory fileHead="@fileHead" linkId="@linkId" linkType="@linkType"/>*@
+<FileHistory fileHead="@fileHead" linkId="@linkId" linkType="@linkType"/>
 @if (!string.IsNullOrWhiteSpace(@fileHead.FileVersions.OrderByDescending(v => v.VersionNumber).FirstOrDefault().URI))
 {
     <Blazorise.Link To="@fileHead.FileVersions.OrderByDescending(v => v.VersionNumber).FirstOrDefault().URI" Target="Target.Blank">
@@ -57,6 +57,16 @@ else
         if (fileHead == default)
             return string.Empty;
 
-        return $"/File/Download/{fileHead.Id}/{fileHead.FileVersions.OrderByDescending(v => v.VersionNumber).FirstOrDefault().Id}";
+        return $"/File/Download/{fileHead.Id}/{Guid.Empty}";
+    }
+
+    void FileUploadedAction(Tuple<bool, FileHead, FileVer> fileUploadResult)
+    {
+        if (fileUploadResult.Item1)
+        {
+            fileHead.FileVersions.Add(fileUploadResult.Item3);
+        }
+
+        StateHasChanged();
     }
 }

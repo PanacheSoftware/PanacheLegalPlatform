@@ -54,7 +54,12 @@ namespace PanacheSoftware.UI.Client.Blazor.Pages.File
 
                             if (Guid.TryParse(VersionId, out Guid versionId))
                             {
-                                var foundFileVersion = fileHeader.FileVersions.FirstOrDefault(v => v.Id == versionId);
+                                var foundFileVersion = fileHeader.FileVersions.OrderByDescending(v => v.VersionNumber).FirstOrDefault();
+
+                                if (versionId != Guid.Empty)
+                                {
+                                    foundFileVersion = fileHeader.FileVersions.FirstOrDefault(v => v.Id == versionId);
+                                }
 
                                 if (foundFileVersion != null)
                                 {
