@@ -130,7 +130,9 @@
         if (fileUploadResult.Item1)
         {
             //fileUpload.ResetFileUpload();
-            fileHead.FileVersions.Add(fileUploadResult.Item3);
+            if(fileUploadResult.Item3 != default)
+                fileHead.FileVersions.Add(fileUploadResult.Item3);
+
             FileUploaded?.Invoke(new Tuple<bool, FileHead, FileVer>(fileUploadResult.Item1, fileUploadResult.Item2, fileUploadResult.Item3));
         }
 

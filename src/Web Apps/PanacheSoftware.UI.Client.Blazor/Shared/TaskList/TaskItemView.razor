@@ -57,28 +57,30 @@
                     <FileLinks linkId="@taskHead.Id" linkType="@LinkTypes.Task" />
                 </Column>
             </Row>
+            @if (!taskHead.Completed)
+            {
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is6">
+                        <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10913)</FieldLabel>
+                        <Addons>
+                            <Addon AddonType="AddonType.Body">
+                                <DateEdit TValue="DateTime" @bind-Date="@taskHead.StartDate" InputMode="DateInputMode.Date">
+                                </DateEdit>
+                            </Addon>
+                            <Addon AddonType="AddonType.End">
+                                <Button Color="Color.Primary" Clicked="@CompleteTask" Loading="@completeTask">@LanguageHelper.GetTitle(langQueryList, 10921)</Button>
+                            </Addon>
+                        </Addons>
+
+                    </Column>
+                </Row>
+            }
             <Row>
-                <Column ColumnSize="ColumnSize.Is12">
-                    <Alert Color="(Color)alertModel.AlertType" @bind-Visible="@alertModel.ShowAlert" Dismisable="true">
-                        <AlertMessage>
-                            @alertModel.AlertMessage
-                        </AlertMessage>
-                        <AlertDescription>
-                            @alertModel.AlertDescription
-                        </AlertDescription>
-                        <CloseButton />
-                    </Alert>
-                    <Snackbar @ref="successSnackBar" Color="SnackbarColor.Success">
-                        <SnackbarBody>
-                            @alertModel.AlertMessage
-                        </SnackbarBody>
-                    </Snackbar>
-                    <Snackbar @ref="errorSnackBar" Color="SnackbarColor.Danger">
-                        <SnackbarBody>
-                            @alertModel.AlertMessage
-                        </SnackbarBody>
-                    </Snackbar>
-                </Column>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12">
+                        <PLAlert includeSnackBar="true" @ref="plAlert" />
+                    </Column>
+                </Row>
             </Row>
             <Row Margin="Margin.Is4.OnY">
                 <Column ColumnSize="ColumnSize.Is12">
@@ -110,6 +112,18 @@
 
     private TaskItemEdit taskHeadEdit { get; set; }
 
+    private bool completeTask = false;
+
+    private DateTime completeDate;
+    PLAlert plAlert { get; set; }
+
+    [Parameter]
+    public Action<TaskHead> TaskComplete { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        completeDate = taskHead.CompletionDate;
+    }
 
     private string GetUserNameForUserId(Guid userId)
     {
@@ -127,5 +141,38 @@
             return;
 
         StateHasChanged();
+    }
+
+    private async Task CompleteTask()
+    {
+        completeTask = true;
+
+        var completeResult = await SetCompletetionDateAsync();
+
+        plAlert.ShowAlert(completeResult.Item1, completeResult.Item2);
+
+        if (completeResult.Item1)
+        {
+            TaskComplete?.Invoke(taskHead);
+        }
+
+        completeTask = false;
+    }
+
+    private async Task<Tuple<bool, string>> SetCompletetionDateAsync()
+    {
+        if (taskHead != null)
+        {
+            var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Post, APITypes.TASK, $"Task/Complete/{taskHead.Id}/{completeDate.ToString("yyyyMMddHHmmss")}");
+
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                return new Tuple<bool, string>(false, await MyFoundationService.GetErrorFromResponse(response));
+            }
+
+            return new Tuple<bool, string>(true, $"Task {taskHead.Title} completed");
+        }
+
+        return new Tuple<bool, string>(false, $"No task to complete");
     }
 }

@@ -120,8 +120,7 @@ namespace PanacheSoftware.Service.File.Controllers
 
                             _unitOfWork.Complete();
 
-                            return CreatedAtRoute("Get", new {id = _mapper.Map<FileVer>(fileVersion).Id},
-                                _mapper.Map<FileVer>(fileVersion));
+                            return Ok();
                         }
 
                         return NotFound();

@@ -59,25 +59,31 @@
                     <Validation>
                         <Field>
                             <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10939)</FieldLabel>
-                            <FieldBody>
-                                <Addons>
-                                    <Addon AddonType="AddonType.Body">
-                                        <TextEdit @bind-Text="fileUploadModel.URI">
-                                            <Feedback>
-                                                <ValidationError />
-                                            </Feedback>
-                                        </TextEdit>
-                                    </Addon>
-                                    <Addon AddonType="AddonType.End">
-                                        <Button Color="Color.Secondary" Clicked="@SaveVersion">@LanguageHelper.GetTitle(langQueryList, 10229)</Button>
-                                    </Addon>
-                                </Addons>
-                            </FieldBody>
+                            <TextEdit @bind-Text="fileUploadModel.URI">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
                         </Field>
                     </Validation>
                 </Column>
             </Row>
         </Validations>
+        <Row>
+            <Column ColumnSize="ColumnSize.Is12">
+                <Alert Color="Color.Warning" @bind-Visible="@SavingFile">
+                    <Paragraph>
+                        Uploading File
+                    </Paragraph>
+                    <SpinKit Type="SpinKitType.Circle" />
+                </Alert>
+            </Column>
+        </Row>
+        <Row>
+            <Column ColumnSize="ColumnSize.Is12">
+                <Button Color="Color.Primary" Clicked="@SaveVersion" Loading="@SavingFile">@LanguageHelper.GetTitle(langQueryList, 10229)</Button>
+            </Column>
+        </Row>
         <Row>
             <Column ColumnSize="ColumnSize.Is12">
                 <PLAlert includeSnackBar="true" @ref="plAlert" />
@@ -120,9 +126,11 @@
         plAlert.HideAlert();
     }
 
-    public void ResetFileUpload()
+    public async Task ResetFileUpload()
     {
-        HideMessages();
+
+        //HideMessages();
+        await CreateFileUploadModel();
     }
 
     private async Task CreateFileUploadModel()
@@ -146,10 +154,13 @@
 
     private async Task OnFileUpload(FileChangedEventArgs e)
     {
+        SavingFile = true;
+
         try
         {
             var OneMb = 1024 * 1024 * 15;
             var file = e.Files.FirstOrDefault();
+
             if (file == null)
             {
                 return;
@@ -159,7 +170,6 @@
             var bufferedStream = new BufferedStream(file.OpenReadStream(long.MaxValue), OneMb);
             var ms = new MemoryStream();
 
-            int readCount = 0;
             int readBytes;
             while ((readBytes = await bufferedStream.ReadAsync(buffer, 0, OneMb)) > 0)
             {
@@ -173,26 +183,6 @@
             };
 
             await SaveVersion();
-
-
-            //using (var bufferedStream = new BufferedStream(file.OpenReadStream(long.MaxValue), OneMb))
-            //using (var ms = new MemoryStream())
-            //{
-            //    int readCount = 0;
-            //    int readBytes;
-            //    while ((readBytes = await bufferedStream.ReadAsync(buffer, 0, OneMb)) > 0)
-            //    {
-            //        ms.Write(buffer, 0, readBytes);
-            //    }
-
-            //    fileUploadModel.FormFile = new FormFile(ms, 0, ms.Length, file.Name, file.Name)
-            //    {
-            //        Headers = new HeaderDictionary(),
-            //        ContentType = file.Type
-            //    };
-
-            //    //fileUploadModel.FormFile = new FormFile(ms, 0, ms.Length, file.Name, file.Name) { ContentType = file.Type };
-            //}
         }
         catch (Exception exc)
         {
@@ -203,12 +193,14 @@
     private async Task SaveVersion()
     {
         SavingFile = true;
+        var newUpload = false;
 
-        Tuple<byte[], bool, string> formFileProcessResponse = new Tuple<byte[], bool, string>(new byte[0], false, $"File not processed");
+        Tuple<byte[], bool, string> formFileProcessResponse = new Tuple<byte[], bool, string>(new byte[0], true, $"Version processed");
 
         if(string.IsNullOrWhiteSpace(fileUploadModel.FileHeader.FileDetail.FileTitle) || string.IsNullOrWhiteSpace(fileUploadModel.FileHeader.FileDetail.Description))
         {
             plAlert.ShowAlert(false, $"File Title and Description cannot be blank");
+            SavingFile = false;
             return;
         }
 
@@ -236,37 +228,48 @@
                 fileVer.UntrustedName = fileUploadModel.FormFile.FileName;
                 fileVer.TrustedName = WebUtility.HtmlEncode(fileUploadModel.FormFile.FileName);
                 fileVer.Content = formFileProcessResponse.Item1;
+                newUpload = true;
             }
         }
         else
         {
-            if (string.IsNullOrWhiteSpace(fileUploadModel.URI))
+            if (!string.IsNullOrWhiteSpace(fileUploadModel.URI))
             {
-                plAlert.ShowAlert(false, $"Link cannot be blank");
-                return;
+                fileVer.URI = fileUploadModel.URI;
+                fileUploadModel.FileHeader.FileDetail.FileExtension = "URI";
+                fileUploadModel.FileHeader.FileDetail.FileType = "URI";
+                formFileProcessResponse = new Tuple<byte[], bool, string>(new byte[0], true, $"URI Processed");
+                newUpload = true;
             }
-
-            fileVer.URI = fileUploadModel.URI;
-            fileUploadModel.FileHeader.FileDetail.FileExtension = "URI";
-            fileUploadModel.FileHeader.FileDetail.FileType = "URI";
-            formFileProcessResponse = new Tuple<byte[], bool, string>(new byte[0], true, $"URI Processed");
+            else
+            {
+                if(fileUploadModel.FileHeader.Id == Guid.Empty)
+                {
+                    plAlert.ShowAlert(false, $"URI cannot be blank");
+                    SavingFile = false;
+                    return;
+                }
+            }
         }
 
-        fileUploadModel.FileHeader.FileLinks.Add(new FileLnk()
+        if (newUpload && fileUploadModel.FileHeader.Id == Guid.Empty)
         {
-            LinkId = fileUploadModel.linkId,
-            LinkType = fileUploadModel.linkType,
-            FileHeaderId = fileUploadModel.FileHeader.Id
-        });
+            fileUploadModel.FileHeader.FileLinks.Add(new FileLnk()
+            {
+                LinkId = fileUploadModel.linkId,
+                LinkType = fileUploadModel.linkType,
+                FileHeaderId = fileUploadModel.FileHeader.Id
+            });
+        }
 
         if (formFileProcessResponse.Item2)
         {
             if(fileUploadModel.FileHeader.Id == Guid.Empty)
                 fileUploadModel.FileHeader.FileVersions.Add(fileVer);
 
-            var saveResult = await CreateOrUpdateFileAsync(fileVer);
+            var saveResult = await CreateOrUpdateFileAsync(newUpload ? fileVer : null);
             plAlert.ShowAlert(saveResult.Item1, saveResult.Item2);
-            FileUploaded?.Invoke(new Tuple<bool, FileHead, FileVer>(saveResult.Item1, fileUploadModel.FileHeader, fileUploadModel.FileHeader.FileVersions.OrderByDescending(v => v.VersionNumber).FirstOrDefault()));
+            FileUploaded?.Invoke(new Tuple<bool, FileHead, FileVer>(saveResult.Item1, fileUploadModel.FileHeader, newUpload ? fileUploadModel.FileHeader.FileVersions.OrderByDescending(v => v.VersionNumber).FirstOrDefault() : null));
         }
         else
         {
@@ -294,6 +297,32 @@
                     }
 
                     fileUploadModel.FileHeader.FileVersions.Add(response.ContentAsType<FileVer>());
+                }
+
+                var responseFileDet = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.FILE, $"File/Detail/{fileUploadModel.FileHeader.FileDetail.Id}");
+
+                if (responseFileDet.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    var fileDetail = responseFileDet.ContentAsType<FileDet>();
+
+                    if (fileDetail != null)
+                    {
+                        var processPatchResult = await MyFoundationService.ProcessPatch(fileDetail, fileUploadModel.FileHeader.FileDetail, fileDetail.Id, TokenProvider.AccessToken, APITypes.FILE, "File/Detail");
+
+                        if (!processPatchResult.Item1)
+                        {
+                            return processPatchResult;
+                        }
+
+                        responseFileDet = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.FILE, $"File/Detail/{fileUploadModel.FileHeader.FileDetail.Id}");
+
+                        if (responseFileDet.StatusCode == System.Net.HttpStatusCode.OK)
+                        {
+                            fileDetail = responseFileDet.ContentAsType<FileDet>();
+
+                            fileUploadModel.FileHeader.FileDetail = fileDetail;
+                        }
+                    }
                 }
             }
             else

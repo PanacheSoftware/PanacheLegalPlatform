@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -214,9 +215,9 @@ namespace PanacheSoftware.Service.Task.Controllers
             return BadRequest(new APIErrorMessage(StatusCodes.Status400BadRequest, "One or more validation errors occurred.", ModelState));
         }
 
-        [Route("[action]/{id}")]
+        [Route("[action]/{id}/{completionDate}")]
         [HttpPost]
-        public async Task<IActionResult> Complete(string id)
+        public async Task<IActionResult> Complete(string id, string completionDate)
         {
             try
             {
@@ -234,18 +235,21 @@ namespace PanacheSoftware.Service.Task.Controllers
                             {
                                 taskHeader.Completed = true;
 
-                                if (DateTime.Today <= taskHeader.StartDate)
+                                var dateTimeFormatString = "yyyyMMddHHmmss";
+                                DateTime.TryParseExact(string.IsNullOrWhiteSpace(completionDate) ? "19000101000000" : completionDate, dateTimeFormatString, null, DateTimeStyles.None, out DateTime convertedDateTime);
+
+                                if (convertedDateTime >= taskHeader.StartDate)
                                 {
-                                    taskHeader.CompletedOnDate = taskHeader.CompletionDate;
-                                }
-                                else
-                                {
-                                    taskHeader.CompletedOnDate = DateTime.Today;
+                                    taskHeader.CompletedOnDate = convertedDateTime;
+
+                                    _unitOfWork.Complete();
+
+                                    return Ok(_mapper.Map<TaskHead>(taskHeader));
                                 }
 
-                                _unitOfWork.Complete();
-
-                                return Ok(_mapper.Map<TaskHead>(taskHeader));
+                                return StatusCode(StatusCodes.Status400BadRequest,
+                                new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                    $"Completion Date: IS greater than {taskHeader.StartDate}."));
                             }
 
                             return StatusCode(StatusCodes.Status400BadRequest,

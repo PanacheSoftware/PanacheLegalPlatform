@@ -12,6 +12,7 @@
     <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.4.1" />
     <PackageReference Include="Blazorise.Sidebar" Version="0.9.4.1" />
     <PackageReference Include="Blazorise.Snackbar" Version="0.9.4.1" />
+    <PackageReference Include="Blazorise.SpinKit" Version="0.9.4.1" />
     <PackageReference Include="IdentityModel" Version="5.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.5" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.11.0" />

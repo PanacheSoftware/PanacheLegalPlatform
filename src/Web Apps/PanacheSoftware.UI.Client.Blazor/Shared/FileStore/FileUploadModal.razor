@@ -67,12 +67,12 @@
         fileUploadForm.Hide();
     }
 
-    void FileUploadedAction(Tuple<bool, FileHead, FileVer> fileUploadResult)
+    async void FileUploadedAction(Tuple<bool, FileHead, FileVer> fileUploadResult)
     {
         if (fileUploadResult.Item1)
         {
-            fileUpload.ResetFileUpload();
-            HideFileUploadForm();
+            await fileUpload.ResetFileUpload();
+            //HideFileUploadForm();
             FileUploaded?.Invoke(fileUploadResult);
         }
 
