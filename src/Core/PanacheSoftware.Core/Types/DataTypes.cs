@@ -156,6 +156,7 @@ namespace PanacheSoftware.Core.Types
         public const string Client = "Client";
         public const string Team = "Team";
         public const string Folder = "Folder";
+        public const string Template = "Template";
 
         public IDictionary<string, string> GetLinkTypesDictionary()
         {
@@ -166,6 +167,7 @@ namespace PanacheSoftware.Core.Types
             LinkTypesDictionary.Add(Client, Client);
             LinkTypesDictionary.Add(Team, Team);
             LinkTypesDictionary.Add(Folder, Folder);
+            LinkTypesDictionary.Add(Template, Template);
 
             return LinkTypesDictionary;
         }

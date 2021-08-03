@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <UserSecretsId>edde1cd2-7d4e-4018-9e8e-d837001e2341</UserSecretsId>
   </PropertyGroup>
   
   <ItemGroup>
@@ -15,6 +16,7 @@
     <PackageReference Include="Blazorise.SpinKit" Version="0.9.4.1" />
     <PackageReference Include="IdentityModel" Version="5.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.5" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.13" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.11.0" />
   </ItemGroup>
 

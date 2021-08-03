@@ -24,6 +24,7 @@ using PanacheSoftware.Service.Task.Manager;
 using PanacheSoftware.Service.Task.Persistance;
 using PanacheSoftware.Service.Task.Persistance.Context;
 using PanacheSoftware.Service.Task.Persistance.Repositories.Task;
+using PanacheSoftware.Service.Task.Persistance.Repositories.Template;
 
 namespace PanacheSoftware.Service.Task
 {
@@ -80,6 +81,12 @@ namespace PanacheSoftware.Service.Task
             services.AddTransient<ITaskGroupHeaderRepository, TaskGroupHeaderRepository>();
             services.AddTransient<ITaskHeaderRepository, TaskHeaderRepository>();
             services.AddTransient<ITaskDetailRepository, TaskDetailRepository>();
+            services.AddTransient<ITemplateHeaderRepository, TemplateHeaderRepository>();
+            services.AddTransient<ITemplateDetailRepository, TemplateDetailRepository>();
+            services.AddTransient<ITemplateGroupHeaderRepository, TemplateGroupHeaderRepository>();
+            services.AddTransient<ITemplateGroupDetailRepository, TemplateGroupDetailRepository>();
+            services.AddTransient<ITemplateItemHeaderRepository, TemplateItemHeaderRepository>();
+            services.AddTransient<ITemplateItemDetailRepository, TemplateItemDetailRepository>();
             services.AddTransient<ITaskManager, TaskManager>();
 
             services.AddTransient<IUserProvider, UserProvider>();

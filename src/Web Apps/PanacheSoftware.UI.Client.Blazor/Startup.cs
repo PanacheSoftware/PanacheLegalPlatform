@@ -71,7 +71,7 @@ namespace PanacheSoftware.UI.Client.Blazor
                     options.ResponseType = "code";
                     options.UsePkce = true;
 
-                    //options.RequireHttpsMetadata = false;
+                    options.RequireHttpsMetadata = false;
 
                     options.SaveTokens = true;
                     options.GetClaimsFromUserInfoEndpoint = true;
@@ -129,13 +129,14 @@ namespace PanacheSoftware.UI.Client.Blazor
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseStaticFiles();
             
             
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseCookiePolicy();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapBlazorHub();
