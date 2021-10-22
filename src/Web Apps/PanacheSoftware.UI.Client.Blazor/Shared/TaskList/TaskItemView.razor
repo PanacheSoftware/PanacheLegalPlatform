@@ -46,7 +46,8 @@
             <Row>
                 <Column ColumnSize="ColumnSize.Is6">
                     <Paragraph>
-                        <strong>@LanguageHelper.GetTitle(langQueryList, 10911):</strong> @taskHead.CompletionDate.ToShortDateString()
+                        <strong>@LanguageHelper.GetTitle(langQueryList, 10222):</strong> @taskHead.StartDate.ToShortDateString()
+                        <br /><strong>@LanguageHelper.GetTitle(langQueryList, 10911):</strong> @taskHead.CompletionDate.ToShortDateString()
                         @if (taskHead.Completed)
                         {
                             <br /><strong>@LanguageHelper.GetTitle(langQueryList, 10912):</strong>@taskHead.CompletedOnDate.ToShortDateString()
@@ -54,7 +55,7 @@
                     </Paragraph>
                 </Column>
                 <Column ColumnSize="ColumnSize.Is6">
-                    <FileLinks linkId="@taskHead.Id" linkType="@LinkTypes.Task" />
+                    <FileLinks linkId="@taskHead.Id" linkType="@LinkTypes.Task" ReadOnly="@taskHead.Completed"/>
                 </Column>
             </Row>
             @if (!taskHead.Completed)
@@ -64,32 +65,34 @@
                         <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10913)</FieldLabel>
                         <Addons>
                             <Addon AddonType="AddonType.Body">
-                                <DateEdit TValue="DateTime" @bind-Date="@taskHead.StartDate" InputMode="DateInputMode.Date">
+                                <DateEdit TValue="DateTime" @bind-Date="@taskHead.CompletionDate" InputMode="DateInputMode.Date">
                                 </DateEdit>
                             </Addon>
                             <Addon AddonType="AddonType.End">
                                 <Button Color="Color.Primary" Clicked="@CompleteTask" Loading="@completeTask">@LanguageHelper.GetTitle(langQueryList, 10921)</Button>
                             </Addon>
                         </Addons>
-
                     </Column>
                 </Row>
             }
             <Row>
                 <Row>
                     <Column ColumnSize="ColumnSize.Is12">
-                        <PLAlert includeSnackBar="true" @ref="plAlert" />
+                        <PLAlert includeSnackBar="true" includeAlert="false" @ref="plAlert" />
                     </Column>
                 </Row>
             </Row>
-            <Row Margin="Margin.Is4.OnY">
-                <Column ColumnSize="ColumnSize.Is12">
-                    <TaskItemEdit ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10935)" taskHead="@taskHead" TaskHeadSaved="@TaskHeadEdited" @ref="@taskHeadEdit" />
-                </Column>
-            </Row>
+            @if (!taskHead.Completed)
+            {
+                <Row Margin="Margin.Is4.OnY">
+                    <Column ColumnSize="ColumnSize.Is12">
+                        <TaskItemEdit ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10935)" taskHead="@taskHead" TaskHeadSaved="@TaskHeadEdited" @ref="@taskHeadEdit" />
+                    </Column>
+                </Row>
+            }
             <Row>
                 <Column ColumnSize="ColumnSize.Is12">
-                    <CustomFieldGroupEdit linkId="@taskHead.Id" linkType="@LinkTypes.Task" />
+                    <CustomFieldGroupEdit linkId="@taskHead.Id" linkType="@LinkTypes.Task" ReadOnly="@taskHead.Completed"/>
                 </Column>
             </Row>
         </CardBody>
@@ -114,7 +117,7 @@
 
     private bool completeTask = false;
 
-    private DateTime completeDate;
+    //private DateTime completeDate;
     PLAlert plAlert { get; set; }
 
     [Parameter]
@@ -122,7 +125,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        completeDate = taskHead.CompletionDate;
+        //completeDate = taskHead.CompletionDate;
     }
 
     private string GetUserNameForUserId(Guid userId)
@@ -153,7 +156,9 @@
 
         if (completeResult.Item1)
         {
+            await GetTaskItem();
             TaskComplete?.Invoke(taskHead);
+            StateHasChanged();
         }
 
         completeTask = false;
@@ -163,7 +168,7 @@
     {
         if (taskHead != null)
         {
-            var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Post, APITypes.TASK, $"Task/Complete/{taskHead.Id}/{completeDate.ToString("yyyyMMddHHmmss")}");
+            var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Post, APITypes.TASK, $"Task/Complete/{taskHead.Id}/{taskHead.CompletionDate.ToString("yyyyMMddHHmmss")}");
 
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
             {
@@ -174,5 +179,18 @@
         }
 
         return new Tuple<bool, string>(false, $"No task to complete");
+    }
+
+    private async Task GetTaskItem()
+    {
+        if(taskHead != null)
+        {
+            var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.TASK, $"Task/{taskHead.Id}");
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                taskHead = response.ContentAsType<TaskHead>();
+            }
+        }
     }
 }

@@ -182,19 +182,23 @@
                                       ShowPager="true"
                                       PagerPosition="DataGridPagerPosition.Bottom"
                                       ShowPageSizes="true"
-                                      Editable="true"
-                                      EditMode="DataGridEditMode.Form">
+                                      Editable="@TeamListEditable"
+                                      EditMode="DataGridEditMode.Form"
+                                      NewItemDefaultSetter="@OnUserTeamJoinNewItemDefaultSetter">
                                 <EmptyTemplate>No records...</EmptyTemplate>
                                 <DataGridColumns>
                                     <DataGridCommandColumn TItem="UserTeamJoin" Width="170px">
                                         <NewCommandTemplate>
-                                            <Button Color="Color.Success" Clicked="@context.Clicked">New</Button>
+                                            @if (TeamListEditable)
+                                            {
+                                                <Button Color="Color.Success" Clicked="@context.Clicked">New</Button>
+                                            }
                                         </NewCommandTemplate>
                                         <EditCommandTemplate>
                                             <Button Color="Color.Primary" Clicked="@context.Clicked">Edit</Button>
                                         </EditCommandTemplate>
                                         <SaveCommandTemplate>
-                                            <Button Color="Color.Primary" Clicked="@context.Clicked">Save</Button>
+                                            <Button Color="Color.Primary" Clicked="@context.Clicked">Apply</Button>
                                         </SaveCommandTemplate>
                                         <DeleteCommandTemplate>
                                             @*<Button Color="Color.Danger" Clicked="@context.Clicked">Delete</Button>*@
@@ -243,7 +247,7 @@
                     <CardBody>
                         <Row>
                             <Column ColumnSize="ColumnSize.Is12">
-                                <PLAlert includeSnackBar="true" @ref="plAlert" />
+                                <PLAlert includeSnackBar="true" includeAlert="true" @ref="plAlert" />
                             </Column>
                         </Row>
                         <Row>
@@ -273,6 +277,7 @@
     UserProfileModel userProfileModel { get; set; }
 
     bool UsernameReadOnly = false;
+    bool TeamListEditable = false;
 
     IEnumerable<SelectListModel> StatusSelectListValues { get; set; }
     IEnumerable<SelectListModel> TeamSelectListValues { get; set; }
@@ -289,6 +294,7 @@
         await GetLanguageList();
         await GetUser();
         loadingPage = false;
+        TeamListEditable = TeamSelectListValues.Any();
         pageProgressBar.ChangeVisibility(loadingPage);
     }
 
@@ -567,6 +573,12 @@
             return Base64Images.PanacheSoftwareDot;
 
         return userProfileModel.userModel.Base64ProfileImage;
+    }
+
+    void OnUserTeamJoinNewItemDefaultSetter(UserTeamJoin userTeamJoin)
+    {
+        if (TeamSelectListValues.Any())
+            userTeamJoin.TeamHeaderIdString = TeamSelectListValues.First().ValueField;
     }
 }
 

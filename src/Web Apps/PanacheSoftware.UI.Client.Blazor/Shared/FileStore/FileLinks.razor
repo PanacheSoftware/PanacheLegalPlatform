@@ -8,15 +8,21 @@
 @if (fileList != null)
 {
     <Paragraph>
-        <strong>@LanguageHelper.GetTitle(langQueryList, 10932):</strong>
+        @if (!ReadOnly || fileList.FileHeaders.Any())
+        {
+            <strong>@LanguageHelper.GetTitle(langQueryList, 10932):</strong>
+        }
         @foreach (var fileHeader in fileList.FileHeaders)
         {
             <FileLink fileHead="fileHeader" linkId="@linkId" linkType="@linkType" />
         }
     </Paragraph>
-    <Paragraph>
-        <FileUploadModal ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10221)" linkId="@linkId" linkType="@linkType" FileUploaded="@FileUploadedAction"/>
-    </Paragraph>
+    @if (!ReadOnly)
+    {
+        <Paragraph>
+            <FileUploadModal ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10221)" linkId="@linkId" linkType="@linkType" FileUploaded="@FileUploadedAction"/>
+        </Paragraph>
+    }
 }
 
 @code {
@@ -28,6 +34,9 @@
 
     [Parameter]
     public string linkType { get; set; }
+
+    [Parameter]
+    public bool ReadOnly { get; set; }
 
     private FileList fileList { get; set; }
 

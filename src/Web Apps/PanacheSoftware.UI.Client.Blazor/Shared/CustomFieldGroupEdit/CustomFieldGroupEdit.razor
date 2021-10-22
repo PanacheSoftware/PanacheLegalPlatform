@@ -10,7 +10,7 @@
     {
         @foreach (var customFieldGroupValuesModel in customFieldGroupValuesModelList.CustomFieldGroupValuesModels)
         {
-            <CustomFieldGroupValueEdit customFieldGroupValuesModel="customFieldGroupValuesModel" />
+            <CustomFieldGroupValueEdit customFieldGroupValuesModel="customFieldGroupValuesModel" ReadOnly="ReadOnly"/>
         }
     }
 }
@@ -25,6 +25,9 @@
 
     [Parameter]
     public string linkType { get; set; }
+
+    [Parameter]
+    public bool ReadOnly { get; set; }
 
     private CustomFieldGroupValuesModelList customFieldGroupValuesModelList { get; set; }
 

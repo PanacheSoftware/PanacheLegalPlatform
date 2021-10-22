@@ -21,7 +21,7 @@ namespace PanacheSoftware.Service.Task.Persistance
             TaskHeaders = new TaskHeaderRepository((PanacheSoftwareServiceTaskContext)_context, TaskGroupHeaders);
             TaskDetails = new TaskDetailRepository((PanacheSoftwareServiceTaskContext)_context);
 
-            TemplateHeaders = new TemplateHeaderRepository((PanacheSoftwareServiceTaskContext)_context);
+            TemplateHeaders = new TemplateHeaderRepository((PanacheSoftwareServiceTaskContext)_context, userProvider, apiHelper);
             TemplateDetails = new TemplateDetailRepository((PanacheSoftwareServiceTaskContext)_context);
             TemplateGroupHeaders = new TemplateGroupHeaderRepository((PanacheSoftwareServiceTaskContext)_context);
             TemplateGroupDetails = new TemplateGroupDetailRepository((PanacheSoftwareServiceTaskContext)_context);

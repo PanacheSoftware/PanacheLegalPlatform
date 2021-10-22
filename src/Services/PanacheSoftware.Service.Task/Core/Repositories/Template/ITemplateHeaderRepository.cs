@@ -9,5 +9,7 @@ namespace PanacheSoftware.Service.Task.Core.Repositories
 {
     public interface ITemplateHeaderRepository : IPanacheSoftwareRepository<TemplateHeader>
     {
+        Task<TemplateHeader> GetTemplateHeaderWithRelationsAsync(string templateHeaderShortName, bool readOnly, string accessToken);
+        Task<TemplateHeader> GetTemplateHeaderWithRelationsAsync(Guid templateHeaderId, bool readOnly, string accessToken);
     }
 }

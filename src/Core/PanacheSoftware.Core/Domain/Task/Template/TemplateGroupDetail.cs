@@ -13,5 +13,6 @@ namespace PanacheSoftware.Core.Domain.Task.Template
         public virtual TemplateGroupHeader TemplateGroupHeader { get; set; }
 
         public int TotalDays { get; set; }
+        public int DaysOffset { get; set; }
     }
 }

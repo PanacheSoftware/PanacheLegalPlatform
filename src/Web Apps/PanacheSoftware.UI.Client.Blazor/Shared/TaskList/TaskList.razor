@@ -15,22 +15,44 @@
             <CascadingValue Value="@UserSelectListValues" Name="UserSelectListValues">
                 <Row Margin="Margin.Is4.OnY">
                     <Column ColumnSize="ColumnSize.Is12">
-                        <Accordion >
+                        <Accordion>
                             @foreach (TaskGroupHead taskGroup in TaskGroupHeaders)
                             {
-                                <TaskGroupView taskGroupHead="taskGroup" />
+                                <TaskGroupView taskGroupHead="taskGroup" TaskGroupComplete="@TaskGroupCompleted" />
                             }
                         </Accordion>
                     </Column>
                 </Row>
-                <Row Margin="Margin.Is4.OnY">
-                    <Column ColumnSize="ColumnSize.Is12">
-                        <TaskGroupEdit ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10917)" taskGroupHead="@TaskGroupHeadCreateTemplate" TaskGroupHeadSaved="@TaskGroupHeadCreated" resetTaskGroupHead="GetBlankTaskGroupHeadTemplate()" @ref="@addNewTaskGroupEdit" />
-                    </Column>
-                </Row>
+                @if (showAddTaskGroup)
+                {
+                    <Row Margin="Margin.Is4.OnY">
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <TaskGroupEdit ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10917)" taskGroupHead="@TaskGroupHeadCreateTemplate" TaskGroupHeadSaved="@TaskGroupHeadCreated" resetTaskGroupHead="GetBlankTaskGroupHeadTemplate()" @ref="@addNewTaskGroupEdit" />
+                        </Column>
+                    </Row>
+                }
             </CascadingValue>
         </CascadingValue>
     </CascadingValue>
+}
+else
+{
+    foreach (var taskGroupTitle in TaskGroupTitles)
+    {
+        <Row Margin="Margin.Is4.OnY">
+            <Column ColumnSize="ColumnSize.Is12">
+                <Accordion>
+                    <Collapse Visible="@false">
+                        <CollapseHeader>
+                            @taskGroupTitle
+                            <br />
+                            <SpinKit Type="SpinKitType.Chase" Size="20px" />
+                        </CollapseHeader>
+                    </Collapse>
+                </Accordion>
+            </Column>
+        </Row>
+    }
 }
 
 @code {
@@ -42,6 +64,12 @@
 
     [Parameter]
     public Guid ParentTaskGroupId { get; set; }
+
+    [Parameter]
+    public IList<string> TaskGroupTitles { get; set; }
+
+    [Parameter]
+    public bool showAddTaskGroup { get; set; }
 
     private TaskGroupHead TaskGroupHeadCreateTemplate { get; set; }
 
@@ -84,6 +112,12 @@
                 TaskGroupHeadCreateTemplate = GetBlankTaskGroupHeadTemplate();
             }
         }
+    }
+
+    public void ParentTaskComplete()
+    {
+        showAddTaskGroup = false;
+        StateHasChanged();
     }
 
     void TaskGroupHeadCreated(TaskGroupHead taskGroupHead)
@@ -165,6 +199,20 @@
         }
 
         UserSelectListValues = UserListDictionary.Select(s => new SelectListModel { ValueField = s.Key, DescriptionField = s.Value });
+    }
+
+    void TaskGroupCompleted(TaskGroupHead taskgroupHead)
+    {
+        int existingIndex = TaskGroupHeaders.FindIndex(tg => tg.Id == taskgroupHead.Id);
+
+        if (existingIndex < 0)
+            return;
+
+        TaskGroupHeaders[existingIndex] = taskgroupHead;
+
+        //TaskGroupComplete?.Invoke(taskGroupHead);
+
+        StateHasChanged();
     }
 
 }

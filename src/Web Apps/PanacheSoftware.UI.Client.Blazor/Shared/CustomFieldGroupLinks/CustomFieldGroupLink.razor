@@ -28,13 +28,17 @@
                                       ShowPager="true"
                                       PagerPosition="DataGridPagerPosition.Bottom"
                                       ShowPageSizes="true"
-                                      Editable="true"
-                                      EditMode="DataGridEditMode.Form">
+                                      Editable="@CustomFieldGroupTableEditable"
+                                      EditMode="DataGridEditMode.Form"
+                                      NewItemDefaultSetter="@OnCustomFieldGroupLnkNewItemDefaultSetter">
                                 <EmptyTemplate>No records...</EmptyTemplate>
                                 <DataGridColumns>
                                     <DataGridCommandColumn TItem="CustomFieldGroupLnk" Width="170px">
                                         <NewCommandTemplate>
-                                            <Button Color="Color.Success" Clicked="@context.Clicked">New</Button>
+                                            @if (CustomFieldGroupTableEditable)
+                                            {
+                                                <Button Color="Color.Success" Clicked="@context.Clicked">New</Button>
+                                            }
                                         </NewCommandTemplate>
                                         <EditCommandTemplate>
                                             <Button Color="Color.Primary" Clicked="@context.Clicked">Edit</Button>
@@ -92,7 +96,7 @@
                 </Row>
                 <Row>
                     <Column ColumnSize="ColumnSize.Is12">
-                        <PLAlert includeSnackBar="true" @ref="plAlert" />
+                        <PLAlert includeSnackBar="true" includeAlert="false" @ref="plAlert" />
                     </Column>
                 </Row>
                 @if (showSave)
@@ -129,12 +133,14 @@
     IEnumerable<SelectListModel> CustomFieldGroupListValues { get; set; }
     bool SavingFieldGroup = false;
     PLAlert plAlert { get; set; }
+    bool CustomFieldGroupTableEditable = false;
 
     protected override async Task OnInitializedAsync()
     {
         await GetLanguageList();
         await CreateSelectListModels();
         await GetCustomFieldGroupLink();
+        CustomFieldGroupTableEditable = CustomFieldGroupListValues.Any();
     }
 
     private async Task GetLanguageList()
@@ -176,7 +182,7 @@
         var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.CUSTOMFIELD, $"CustomFieldGroup");
 
         Dictionary<string, string> CustomFieldGroupListDictionary = new Dictionary<string, string>();
-        CustomFieldGroupListDictionary.Add(Guid.Empty.ToString(), "None");
+        //CustomFieldGroupListDictionary.Add(Guid.Empty.ToString(), "None");
 
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
@@ -283,6 +289,12 @@
         }
 
         return new Tuple<bool, string>(false, $"No custom field group to save");
+    }
+
+    void OnCustomFieldGroupLnkNewItemDefaultSetter(CustomFieldGroupLnk customFieldGroupLnk)
+    {
+        if (CustomFieldGroupListValues.Any())
+            customFieldGroupLnk.CustomFieldGroupHeaderIdString = CustomFieldGroupListValues.First().ValueField;
     }
 
 

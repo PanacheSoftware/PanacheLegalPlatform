@@ -137,7 +137,8 @@
                                   PagerPosition="DataGridPagerPosition.Bottom"
                                   ShowPageSizes="true"
                                   Editable="true"
-                                  EditMode="DataGridEditMode.Form">
+                                  EditMode="DataGridEditMode.Form"
+                                  NewItemDefaultSetter="@OnAddressNewItemDefaultSetter">
                             <EmptyTemplate>No records...</EmptyTemplate>
                             <DataGridColumns>
                                 <DataGridCommandColumn TItem="ClientAddr" Width="170px">
@@ -242,5 +243,11 @@
     private void TitleListValueChangedHandler(string newValue)
     {
         clientContact.Title = newValue;
+    }
+
+    void OnAddressNewItemDefaultSetter(ClientAddr clientAddr)
+    {
+        if (AddressTypeSelectListValues.Any())
+            clientAddr.AddressType = AddressTypeSelectListValues.First().ValueField;
     }
 }

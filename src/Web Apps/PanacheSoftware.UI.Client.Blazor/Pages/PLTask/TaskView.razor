@@ -73,12 +73,10 @@
                         <Row>
                             <Column ColumnSize="ColumnSize.Is12" Margin="Margin.Is4.OnY">
                                 <Paragraph Weight="TextWeight.Bold">@LanguageHelper.GetTitle(langQueryList, 10924):</Paragraph>
-                                <Progress>
-                                    <ProgressBar Animated="true" Striped="true" Value="@((int)taskGroupSummary.PercentageComplete*100)" Background="Background.Success"></ProgressBar>
-                                </Progress>
+                                <Progress Animated="true" Striped="true" Value="@percentageComplete" Color="Color.Success" />
                             </Column>
                         </Row>
-                        <Row>
+                        @*<Row>
                             <Column ColumnSize="ColumnSize.Is12">
                                 <Accordion>
                                     <Collapse Visible="@planVisible">
@@ -93,7 +91,7 @@
                                     </Collapse>
                                 </Accordion>
                             </Column>
-                        </Row>
+                        </Row>*@
                     </CardBody>
                 </Card>
             </Column>
@@ -101,7 +99,7 @@
         <Row>
             <Column ColumnSize="ColumnSize.Is12">
                 <CascadingValue Value="langQueryList">
-                    <CustomFieldGroupEdit linkId="@taskGroupSummary.Id" linkType="@LinkTypes.TaskGroup" />
+                    <CustomFieldGroupEdit linkId="@taskGroupSummary.Id" linkType="@LinkTypes.TaskGroup" ReadOnly="@taskGroupSummary.Completed"/>
                 </CascadingValue>
             </Column>
         </Row>
@@ -110,7 +108,7 @@
                 <CascadingValue Value="langQueryList">
                     <CascadingValue Value="taskGroupSummary.ChildTaskGroups">
                         <CascadingValue Value="userListModel">
-                            <TaskList ParentTaskGroupId="@taskGroupSummary.Id" />
+                            <TaskList ParentTaskGroupId="@taskGroupSummary.Id" TaskGroupTitles="@taskGroupTitles" showAddTaskGroup="@allowTaskAdd"/>
                         </CascadingValue>
                     </CascadingValue>
                 </CascadingValue>
@@ -132,13 +130,18 @@
     AlertModel alertModel = new AlertModel();
     UserListModel userListModel;
     GCGanttModel gcGanttModel = default;
+    int percentageComplete = 0;
+    List<string> taskGroupTitles = new List<string>();
+    bool allowTaskAdd = true;
 
     protected override async Task OnInitializedAsync()
     {
         await GetLanguageList();
         await GetTaskSummary();
+        allowTaskAdd = !taskGroupSummary.Completed;
+        GetTaskGroupTitles();
         loadingPage = false;
-        pageProgressBar.ChangeVisibility(loadingPage);
+        pageProgressBar.ChangeVisibility(loadingPage);       
     }
 
     private void DrawChart()
@@ -229,6 +232,8 @@
             {
                 taskGroupSummary = response.ContentAsType<TaskGroupSummary>();
 
+                percentageComplete = Convert.ToInt32(taskGroupSummary.PercentageComplete * 100);
+
                 response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.CLIENT, $"Client/GetClientSummary/{taskGroupSummary.ClientHeaderId}");
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
@@ -239,6 +244,17 @@
 
                     gcGanttModel = GanttHelper.GenerateGoogleChartsGanttModel(taskGroupSummary);
                 }
+            }
+        }
+    }
+
+    private void GetTaskGroupTitles()
+    {
+        if(taskGroupSummary != null)
+        {
+            foreach (var taskGroup in taskGroupSummary.ChildTaskGroups)
+            {
+                taskGroupTitles.Add(taskGroup.LongName);
             }
         }
     }

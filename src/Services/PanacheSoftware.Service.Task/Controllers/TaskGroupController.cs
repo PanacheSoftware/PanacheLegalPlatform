@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -234,9 +235,9 @@ namespace PanacheSoftware.Service.Task.Controllers
             return BadRequest(new APIErrorMessage(StatusCodes.Status400BadRequest, "One or more validation errors occurred.", ModelState));
         }
 
-        [Route("[action]/{id}")]
+        [Route("[action]/{id}/{completionDate}")]
         [HttpPost]
-        public async Task<IActionResult> Complete(string id)
+        public async Task<IActionResult> Complete(string id, string completionDate)
         {
             try
             {
@@ -261,18 +262,21 @@ namespace PanacheSoftware.Service.Task.Controllers
                                     {
                                         taskGroupHeader.Completed = true;
 
-                                        if (DateTime.Today <= taskGroupHeader.StartDate)
+                                        var dateTimeFormatString = "yyyyMMddHHmmss";
+                                        DateTime.TryParseExact(string.IsNullOrWhiteSpace(completionDate) ? "19000101000000" : completionDate, dateTimeFormatString, null, DateTimeStyles.None, out DateTime convertedDateTime);
+
+                                        if (convertedDateTime >= taskGroupHeader.StartDate)
                                         {
-                                            taskGroupHeader.CompletedOnDate = taskGroupHeader.CompletionDate;
-                                        }
-                                        else
-                                        {
-                                            taskGroupHeader.CompletedOnDate = DateTime.Today;
+                                            taskGroupHeader.CompletedOnDate = convertedDateTime;
+
+                                            _unitOfWork.Complete();
+
+                                            return Ok(_mapper.Map<TaskGroupHead>(taskGroupHeader));
                                         }
 
-                                        _unitOfWork.Complete();
-
-                                        return Ok(_mapper.Map<TaskGroupHead>(taskGroupHeader));
+                                        return StatusCode(StatusCodes.Status400BadRequest,
+                                        new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                            $"Completion Date: IS greater than {taskGroupHeader.StartDate}."));
                                     }
 
                                     return NotFound();

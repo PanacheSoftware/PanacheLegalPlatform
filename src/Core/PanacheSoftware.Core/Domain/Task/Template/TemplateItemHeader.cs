@@ -22,8 +22,6 @@ namespace PanacheSoftware.Core.Domain.Task.Template
 
         public string TaskType { get; set; }
 
-        public bool Completed { get; set; }
-
         public int SequenceNumber { get; set; }
         
 

@@ -1,12 +1,15 @@
-﻿<Alert Color="(Color)alertModel.AlertType" @bind-Visible="@alertModel.ShowAlert" Dismisable="true" @ref="alert">
-    <AlertMessage>
-        @alertModel.AlertMessage
-    </AlertMessage>
-    <AlertDescription>
-        @alertModel.AlertDescription
-    </AlertDescription>
-    <CloseButton />
-</Alert>
+﻿@if (includeAlert)
+{
+    <Alert Color="(Color)alertModel.AlertType" @bind-Visible="@alertModel.ShowAlert" Dismisable="true" @ref="alert">
+        <AlertMessage>
+            @alertModel.AlertMessage
+        </AlertMessage>
+        <AlertDescription>
+            @alertModel.AlertDescription
+        </AlertDescription>
+        <CloseButton />
+    </Alert>
+}
 @if (includeSnackBar)
 {
     <PLSnackBar @ref="@plSnackBar" />
@@ -16,6 +19,9 @@
 @code {
     [Parameter]
     public bool includeSnackBar { get; set; }
+
+    [Parameter]
+    public bool includeAlert { get; set; }
 
     public AlertModel alertModel { get; set; }
     private PLSnackBar plSnackBar { get; set; }
@@ -42,8 +48,14 @@
     public void HideAlert()
     {
         alertModel.ShowAlert = false;
-        alert.Hide();
-        plSnackBar.HideSnackBar();
+        if (includeAlert)
+        {
+            alert.Hide();
+        }
+        if (includeSnackBar)
+        {
+            plSnackBar.HideSnackBar();
+        }
         StateHasChanged();
     }
 }
