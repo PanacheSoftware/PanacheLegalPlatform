@@ -4,6 +4,7 @@
 @inject FoundationService MyFoundationService
 @inject TokenProvider TokenProvider
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager uriHelper;
 @inject IJSRuntime JS;
 @using PanacheSoftware.Core.Domain.API.Task
 @using PanacheSoftware.Core.Domain.API.Team
@@ -77,21 +78,21 @@
                             </Column>
                         </Row>
                         @*<Row>
-                            <Column ColumnSize="ColumnSize.Is12">
-                                <Accordion>
-                                    <Collapse Visible="@planVisible">
-                                        <CollapseHeader>
-                                            <Heading Size="HeadingSize.Is5">
-                                                <Button Clicked="@(()=>planVisible = !planVisible)">Plan</Button>
-                                            </Heading>
-                                        </CollapseHeader>
-                                        <CollapseBody>
-                                            <div id="chart_div" class="card shadow m-5" style="height: 400px;"></div>
-                                        </CollapseBody>
-                                    </Collapse>
-                                </Accordion>
-                            </Column>
-                        </Row>*@
+                                <Column ColumnSize="ColumnSize.Is12">
+                                    <Accordion>
+                                        <Collapse Visible="@planVisible">
+                                            <CollapseHeader>
+                                                <Heading Size="HeadingSize.Is5">
+                                                    <Button Clicked="@(()=>planVisible = !planVisible)">Plan</Button>
+                                                </Heading>
+                                            </CollapseHeader>
+                                            <CollapseBody>
+                                                <div id="chart_div" class="card shadow m-5" style="height: 400px;"></div>
+                                            </CollapseBody>
+                                        </Collapse>
+                                    </Accordion>
+                                </Column>
+                            </Row>*@
                     </CardBody>
                 </Card>
             </Column>
@@ -99,7 +100,7 @@
         <Row>
             <Column ColumnSize="ColumnSize.Is12">
                 <CascadingValue Value="langQueryList">
-                    <CustomFieldGroupEdit linkId="@taskGroupSummary.Id" linkType="@LinkTypes.TaskGroup" ReadOnly="@taskGroupSummary.Completed"/>
+                    <CustomFieldGroupEdit linkId="@taskGroupSummary.Id" linkType="@LinkTypes.TaskGroup" ReadOnly="@taskGroupSummary.Completed" />
                 </CascadingValue>
             </Column>
         </Row>
@@ -108,7 +109,7 @@
                 <CascadingValue Value="langQueryList">
                     <CascadingValue Value="taskGroupSummary.ChildTaskGroups">
                         <CascadingValue Value="userListModel">
-                            <TaskList ParentTaskGroupId="@taskGroupSummary.Id" TaskGroupTitles="@taskGroupTitles" showAddTaskGroup="@allowTaskAdd"/>
+                            <TaskList ParentTaskGroupId="@taskGroupSummary.Id" TaskGroupTitles="@taskGroupTitles" showAddTaskGroup="@allowTaskAdd" TaskGroupUpdated="@TaskGroupOrTaskItemCompleted" TaskGroupCompleted="@TaskGroupOrTaskItemCompleted" TaskGroupTaskItemCompleted="@TaskGroupOrTaskItemCompleted" ParentTaskCompleted="@ParentTaskCompleted" />
                         </CascadingValue>
                     </CascadingValue>
                 </CascadingValue>
@@ -141,12 +142,12 @@
         allowTaskAdd = !taskGroupSummary.Completed;
         GetTaskGroupTitles();
         loadingPage = false;
-        pageProgressBar.ChangeVisibility(loadingPage);       
+        pageProgressBar.ChangeVisibility(loadingPage);
     }
 
     private void DrawChart()
     {
-        if(gcGanttModel != default)
+        if (gcGanttModel != default)
         {
             var ganttJSON = System.Text.Json.JsonSerializer.Serialize(gcGanttModel);
             JS.InvokeVoidAsync("createGanttChart", new { ganttJSON });
@@ -250,7 +251,7 @@
 
     private void GetTaskGroupTitles()
     {
-        if(taskGroupSummary != null)
+        if (taskGroupSummary != null)
         {
             foreach (var taskGroup in taskGroupSummary.ChildTaskGroups)
             {
@@ -281,6 +282,26 @@
         }
 
         return string.Empty;
+    }
+
+    private async Task TaskGroupOrTaskItemCompleted()
+    {
+        if (!string.IsNullOrWhiteSpace(Id))
+        {
+            var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.TASK, $"TaskGroup/GetTaskGroupSummary/{Id}");
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var tempTaskGroupSummary = response.ContentAsType<TaskGroupSummary>();
+
+                percentageComplete = Convert.ToInt32(tempTaskGroupSummary.PercentageComplete * 100);
+            }
+        }
+    }
+
+    private async Task ParentTaskCompleted()
+    {
+        uriHelper.NavigateTo(uriHelper.Uri, forceLoad: true);
     }
 
 }

@@ -111,13 +111,19 @@
     public TaskHead taskHead { get; set; }
 
     [Parameter]
-    public Action<TaskHead> TaskHeadSaved { get; set; }
+    public EventCallback<TaskHead> TaskItemCreated { get; set; }
+
+    [Parameter]
+    public EventCallback<TaskHead> TaskItemUpdated { get; set; }
 
     [Parameter]
     public string ActionButtonTitle { get; set; }
 
     [Parameter]
     public TaskHead resetTaskHead { get; set; }
+
+    [Parameter]
+    public bool CreationForm { get; set; }
 
 
     [CascadingParameter(Name = "StatusSelectListValues")]
@@ -136,14 +142,14 @@
 
     }
 
-    public void ResetTask(TaskHead taskHeadReset)
-    {
-        if (taskHeadReset == null)
-            return;
+    //public void ResetTask(TaskHead taskHeadReset)
+    //{
+    //    if (taskHeadReset == null)
+    //        return;
 
-        taskHead = taskHeadReset;
-        StateHasChanged();
-    }
+    //    taskHead = taskHeadReset;
+    //    StateHasChanged();
+    //}
 
     private void UserListValueChangedHandler(string newValue)
     {
@@ -172,6 +178,9 @@
 
     private void ShowTaskForm()
     {
+        if (CreationForm)
+            taskHead = resetTaskHead;
+
         taskForm.Show();
     }
 
@@ -188,6 +197,9 @@
     private async Task SubmitForm()
     {
         SavingTaskHead = true;
+
+        var currentId = taskHead.Id;
+
         var saveResult = await SaveTaskHeadAsync();
 
         plAlert.ShowAlert(saveResult.Item1, saveResult.Item2);
@@ -195,7 +207,15 @@
         if (saveResult.Item1)
         {
             await customFieldGroupLink.SaveFieldGroup(taskHead.Id);
-            TaskHeadSaved?.Invoke(taskHead);
+
+            if (currentId == Guid.Empty)
+            {
+                await TaskItemCreated.InvokeAsync(taskHead);
+            }
+            else
+            {
+                await TaskItemUpdated.InvokeAsync(taskHead);
+            }
 
             if(resetTaskHead != default)
             {

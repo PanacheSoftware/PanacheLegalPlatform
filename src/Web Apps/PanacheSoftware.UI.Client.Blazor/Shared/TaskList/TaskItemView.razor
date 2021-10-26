@@ -86,7 +86,7 @@
             {
                 <Row Margin="Margin.Is4.OnY">
                     <Column ColumnSize="ColumnSize.Is12">
-                        <TaskItemEdit ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10935)" taskHead="@taskHead" TaskHeadSaved="@TaskHeadEdited" @ref="@taskHeadEdit" />
+                        <TaskItemEdit ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10935)" taskHead="@taskHead" TaskItemCreated="@TaskItemCreated" CreationForm="false" @ref="@taskHeadEdit" />
                     </Column>
                 </Row>
             }
@@ -121,7 +121,13 @@
     PLAlert plAlert { get; set; }
 
     [Parameter]
-    public Action<TaskHead> TaskComplete { get; set; }
+    public EventCallback<TaskHead> TaskCompleted { get; set; }
+
+    [Parameter]
+    public EventCallback<TaskHead> TaskCreated { get; set; }
+
+    [Parameter]
+    public EventCallback<TaskHead> TaskUpdated { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -138,12 +144,9 @@
         return string.Empty;
     }
 
-    void TaskHeadEdited(TaskHead taskHead)
+    private async Task TaskItemCreated(TaskHead taskHead)
     {
-        if (taskHead.Id == Guid.Empty)
-            return;
-
-        StateHasChanged();
+        await TaskCreated.InvokeAsync(taskHead);
     }
 
     private async Task CompleteTask()
@@ -157,7 +160,7 @@
         if (completeResult.Item1)
         {
             await GetTaskItem();
-            TaskComplete?.Invoke(taskHead);
+            await TaskCompleted.InvokeAsync(taskHead);
             StateHasChanged();
         }
 

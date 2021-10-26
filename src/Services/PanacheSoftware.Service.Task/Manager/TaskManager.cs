@@ -100,42 +100,84 @@ namespace PanacheSoftware.Service.Task.Manager
             return null;
         }
 
+        //private void UpdatePercentages(TaskGroupSummary taskSummary)
+        //{
+        //    double childTaskCompletion = 0;
+        //    double childTaskGroupCompletion = 0;
+
+        //    if(taskSummary.ChildTasks.Any())
+        //    {
+        //        childTaskCompletion = Convert.ToDouble(taskSummary.ChildTasks.Where(c => c.Completed).Count()) / Convert.ToDouble(taskSummary.ChildTasks.Count());
+        //    }
+
+        //    if (taskSummary.ChildTaskGroups.Any())
+        //    {
+        //        for (int iCount = 0; iCount < taskSummary.ChildTaskGroups.Count; iCount++)
+        //        {
+        //            UpdatePercentages(taskSummary.ChildTaskGroups[iCount]);
+
+        //            childTaskGroupCompletion += taskSummary.ChildTaskGroups[iCount].PercentageComplete;
+        //        }
+        //    }
+
+        //    if(taskSummary.ChildTasks.Any() && taskSummary.ChildTaskGroups.Any())
+        //    {
+        //        taskSummary.PercentageComplete = (childTaskCompletion + childTaskGroupCompletion) / (taskSummary.ChildTaskGroups.Count + 1);
+        //    }
+        //    else if (taskSummary.ChildTasks.Any())
+        //    {
+        //        taskSummary.PercentageComplete = childTaskCompletion;
+        //    }
+        //    else
+        //    {
+        //        taskSummary.PercentageComplete = childTaskGroupCompletion / taskSummary.ChildTaskGroups.Count;
+        //    }
+
+        //    if (Double.IsNaN(taskSummary.PercentageComplete))
+        //        taskSummary.PercentageComplete = 0.0;
+        //}
+
         private void UpdatePercentages(TaskGroupSummary taskSummary)
         {
-            double childTaskCompletion = 0;
-            double childTaskGroupCompletion = 0;
+            var parentRunningTotals = new RunningTotals();
 
-            if(taskSummary.ChildTasks.Any())
-            {
-                childTaskCompletion = Convert.ToDouble(taskSummary.ChildTasks.Where(c => c.Completed).Count()) / Convert.ToDouble(taskSummary.ChildTasks.Count());
-            }
+            UpdateRunningTotals(taskSummary, parentRunningTotals);
 
-            if (taskSummary.ChildTaskGroups.Any())
-            {
-                for (int iCount = 0; iCount < taskSummary.ChildTaskGroups.Count; iCount++)
-                {
-                    UpdatePercentages(taskSummary.ChildTaskGroups[iCount]);
-
-                    childTaskGroupCompletion += taskSummary.ChildTaskGroups[iCount].PercentageComplete;
-                }
-            }
-
-            if(taskSummary.ChildTasks.Any() && taskSummary.ChildTaskGroups.Any())
-            {
-                taskSummary.PercentageComplete = (childTaskCompletion + childTaskGroupCompletion) / (taskSummary.ChildTaskGroups.Count + 1);
-            }
-            else if (taskSummary.ChildTasks.Any())
-            {
-                taskSummary.PercentageComplete = childTaskCompletion;
-            }
-            else
-            {
-                taskSummary.PercentageComplete = childTaskGroupCompletion / taskSummary.ChildTaskGroups.Count;
-            }
+            taskSummary.PercentageComplete = parentRunningTotals.TotalComplete / (parentRunningTotals.TotalComplete + parentRunningTotals.TotalInComplete);
 
             if (Double.IsNaN(taskSummary.PercentageComplete))
                 taskSummary.PercentageComplete = 0.0;
+
+            //foreach (var chidTaskGroup in taskSummary.ChildTaskGroups)
+            //{
+            //    var childRunningTotals = new RunningTotals();
+
+            //    UpdateRunningTotals(chidTaskGroup, parentRunningTotals);
+
+            //    chidTaskGroup.PercentageComplete = childRunningTotals.TotalComplete / (childRunningTotals.TotalComplete + childRunningTotals.TotalInComplete);
+
+            //    if (Double.IsNaN(chidTaskGroup.PercentageComplete))
+            //        chidTaskGroup.PercentageComplete = 0.0;
+            //}
         }
+
+        private void UpdateRunningTotals(TaskGroupSummary taskSummary, RunningTotals runningTotal)
+        {
+            runningTotal.TotalComplete += taskSummary.ChildTasks.Where(ct => ct.Completed).Count();
+            runningTotal.TotalInComplete += taskSummary.ChildTasks.Where(ct => !ct.Completed).Count();
+
+            if (taskSummary.Completed)
+                runningTotal.TotalComplete += 1;
+
+            if (!taskSummary.Completed)
+                runningTotal.TotalInComplete += 1;
+
+            foreach (var childTaskGroup in taskSummary.ChildTaskGroups)
+            {
+                UpdateRunningTotals(childTaskGroup, runningTotal);
+            }
+        }
+
 
         public async Task<TaskGroupList> GetTaskGroupListAsync(string accessToken)
         {
@@ -337,5 +379,11 @@ namespace PanacheSoftware.Service.Task.Manager
         //    return userTeams;
         //}
 
+    }
+
+    public class RunningTotals
+    {
+        public double TotalComplete { get; set; }
+        public double TotalInComplete { get; set; }
     }
 }

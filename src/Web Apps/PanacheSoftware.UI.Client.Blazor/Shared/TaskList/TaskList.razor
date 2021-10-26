@@ -18,19 +18,41 @@
                         <Accordion>
                             @foreach (TaskGroupHead taskGroup in TaskGroupHeaders)
                             {
-                                <TaskGroupView taskGroupHead="taskGroup" TaskGroupComplete="@TaskGroupCompleted" />
+                                <TaskGroupView taskGroupHead="taskGroup" TaskGroupUpdated="@TGUpdated" TaskGroupCompleted="TGCompleted" TaskGroupTaskItemCompleted="@TGTaskItemCompleted" TaskGroupTaskItemCreated="@TGTaskItemCreated" />
                             }
                         </Accordion>
                     </Column>
                 </Row>
                 @if (showAddTaskGroup)
                 {
+                    @if (!TaskGroupHeaders.Where(tg => tg.Completed == false).Any())
+                    {
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is6">
+                                <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10913)</FieldLabel>
+                                <Addons>
+                                    <Addon AddonType="AddonType.Body">
+                                        <DateEdit TValue="DateTime" @bind-Date="@ParentTaskGroupHead.CompletionDate" InputMode="DateInputMode.Date">
+                                        </DateEdit>
+                                    </Addon>
+                                    <Addon AddonType="AddonType.End">
+                                        <Button Color="Color.Primary" Clicked="@CompleteTaskGroup" Loading="@completeTaskGroup">@LanguageHelper.GetTitle(langQueryList, 10921)</Button>
+                                    </Addon>
+                                </Addons>
+                            </Column>
+                        </Row>
+                    }
                     <Row Margin="Margin.Is4.OnY">
                         <Column ColumnSize="ColumnSize.Is12">
-                            <TaskGroupEdit ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10917)" taskGroupHead="@TaskGroupHeadCreateTemplate" TaskGroupHeadSaved="@TaskGroupHeadCreated" resetTaskGroupHead="GetBlankTaskGroupHeadTemplate()" @ref="@addNewTaskGroupEdit" />
+                            <TaskGroupEdit ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10917)" taskGroupHead="@TaskGroupHeadCreateTemplate" TaskGroupCreated="@TaskGroupHeadCreated" resetTaskGroupHead="GetBlankTaskGroupHeadTemplate()" @ref="@addNewTaskGroupEdit" />
                         </Column>
                     </Row>
                 }
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12">
+                        <PLAlert includeSnackBar="true" includeAlert="true" @ref="plAlert" />
+                    </Column>
+                </Row>
             </CascadingValue>
         </CascadingValue>
     </CascadingValue>
@@ -71,6 +93,18 @@ else
     [Parameter]
     public bool showAddTaskGroup { get; set; }
 
+    [Parameter]
+    public EventCallback<Task> TaskGroupUpdated { get; set; }
+
+    [Parameter]
+    public EventCallback<Task> TaskGroupCompleted { get; set; }
+
+    [Parameter]
+    public EventCallback<Task> TaskGroupTaskItemCompleted { get; set; }
+
+    [Parameter]
+    public EventCallback<Task> ParentTaskCompleted { get; set; }
+
     private TaskGroupHead TaskGroupHeadCreateTemplate { get; set; }
 
     private List<TaskGroupHead> TaskGroupHeaders { get; set; }
@@ -84,6 +118,10 @@ else
     private TaskGroupEdit addNewTaskGroupEdit { get; set; }
 
     private TaskGroupHead ParentTaskGroupHead { get; set; }
+
+    private bool completeTaskGroup = false;
+
+    PLAlert plAlert { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -122,10 +160,8 @@ else
 
     void TaskGroupHeadCreated(TaskGroupHead taskGroupHead)
     {
-        if (taskGroupHead.Id == Guid.Empty)
-            return;
-
         TaskGroupHeaders.Add(taskGroupHead);
+        TaskGroupUpdated.InvokeAsync();
         StateHasChanged();
     }
 
@@ -201,7 +237,9 @@ else
         UserSelectListValues = UserListDictionary.Select(s => new SelectListModel { ValueField = s.Key, DescriptionField = s.Value });
     }
 
-    void TaskGroupCompleted(TaskGroupHead taskgroupHead)
+
+
+    void TGUpdated(TaskGroupHead taskgroupHead)
     {
         int existingIndex = TaskGroupHeaders.FindIndex(tg => tg.Id == taskgroupHead.Id);
 
@@ -210,9 +248,64 @@ else
 
         TaskGroupHeaders[existingIndex] = taskgroupHead;
 
+        TaskGroupUpdated.InvokeAsync();
+
         //TaskGroupComplete?.Invoke(taskGroupHead);
 
-        StateHasChanged();
+        //StateHasChanged();
+
+        //TaskGroupChange.InvokeAsync();
+    }
+
+    void TGTaskItemCompleted(TaskGroupHead taskgroupHead)
+    {
+        TaskGroupCompleted.InvokeAsync();
+    }
+
+    void TGCompleted(TaskGroupHead taskgroupHead)
+    {
+        TaskGroupCompleted.InvokeAsync();
+    }
+
+    void TGTaskItemCreated(TaskGroupHead taskgroupHead)
+    {
+        TaskGroupUpdated.InvokeAsync();
+    }
+
+    private async Task CompleteTaskGroup()
+    {
+        completeTaskGroup = true;
+
+        var completeResult = await SetCompletetionDateAsync();
+
+        plAlert.ShowAlert(completeResult.Item1, completeResult.Item2);
+
+        if (completeResult.Item1)
+        {
+            ParentTaskGroupHead.Completed = true;
+            await ParentTaskCompleted.InvokeAsync();
+            ParentTaskComplete();
+            StateHasChanged();
+        }
+
+        completeTaskGroup = false;
+    }
+
+    private async Task<Tuple<bool, string>> SetCompletetionDateAsync()
+    {
+        if (ParentTaskGroupHead != null)
+        {
+            var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Post, APITypes.TASK, $"TaskGroup/Complete/{ParentTaskGroupHead.Id}/{ParentTaskGroupHead.CompletionDate.ToString("yyyyMMddHHmmss")}");
+
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                return new Tuple<bool, string>(false, await MyFoundationService.GetErrorFromResponse(response));
+            }
+
+            return new Tuple<bool, string>(true, $"Task {ParentTaskGroupHead.LongName} completed");
+        }
+
+        return new Tuple<bool, string>(false, $"No task group to complete");
     }
 
 }

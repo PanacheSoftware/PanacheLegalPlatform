@@ -133,7 +133,10 @@
     public TaskGroupHead taskGroupHead { get; set; }
 
     [Parameter]
-    public Action<TaskGroupHead> TaskGroupHeadSaved { get; set; }
+    public EventCallback<TaskGroupHead> TaskGroupCreated { get; set; }
+
+    [Parameter]
+    public EventCallback<TaskGroupHead> TaskGroupUpdated { get; set; }
 
     [Parameter]
     public string ActionButtonTitle { get; set; }
@@ -231,12 +234,22 @@
         SavingTaskGroupHead = true;
         var saveResult = await SaveTaskGroupHeadAsync();
 
+        var taskGroupId = taskGroupHead.Id;
+
         plAlert.ShowAlert(saveResult.Item1, saveResult.Item2);
 
         if (saveResult.Item1)
         {
             await customFieldGroupLink.SaveFieldGroup(taskGroupHead.Id);
-            TaskGroupHeadSaved?.Invoke(taskGroupHead);
+
+            if(taskGroupId == Guid.Empty)
+            {
+                await TaskGroupUpdated.InvokeAsync(taskGroupHead);
+            }
+            else
+            {
+                await TaskGroupCreated.InvokeAsync(taskGroupHead);
+            }
 
             if (resetTaskGroupHead != default)
             {

@@ -38,7 +38,7 @@
             {
                 <Row>
                     <Column ColumnSize="ColumnSize.Is12">
-                        <TaskItemView taskHead="@taskHead" TaskComplete="@TaskCompleted" />
+                        <TaskItemView taskHead="@taskHead" TaskCompleted="@TaskCompleted" TaskCreated="@TaskCreated"/>
                     </Column>
                 </Row>
             }
@@ -71,12 +71,12 @@
             {
                 <Row Margin="Margin.Is4.OnY">
                     <Column ColumnSize="ColumnSize.Is12">
-                        <TaskItemEdit ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10930)" taskHead="@taskHeadCreateTemplate" TaskHeadSaved="@TaskHeadCreated" resetTaskHead="GetBlankTaskHeadTemplate()" @ref="@taskEdit" />
+                        <TaskItemEdit ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10930)" taskHead="@taskHeadCreateTemplate" TaskItemCreated="@TaskItemCreated" resetTaskHead="GetBlankTaskHeadTemplate()" CreationForm="true" @ref="@taskEdit" />
                     </Column>
                 </Row>
                 <Row Margin="Margin.Is4.OnY">
                     <Column ColumnSize="ColumnSize.Is12">
-                        <TaskGroupEdit ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10931)" taskGroupHead="@taskGroupHead" TaskGroupHeadSaved="@TaskGroupHeadCreated" @ref="@taskGroupEdit" />
+                        <TaskGroupEdit ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10931)" taskGroupHead="@taskGroupHead" @ref="@taskGroupEdit" />
                     </Column>
                 </Row>
             }
@@ -115,7 +115,19 @@
     PLAlert plAlert { get; set; }
 
     [Parameter]
-    public Action<TaskGroupHead> TaskGroupComplete { get; set; }
+    public EventCallback<TaskGroupHead> TaskGroupCompleted { get; set; }
+
+    [Parameter]
+    public EventCallback<TaskGroupHead> TaskGroupUpdated { get; set; }
+
+    [Parameter]
+    public EventCallback<TaskGroupHead> TaskGroupCreated { get; set; }
+
+    [Parameter]
+    public EventCallback<TaskGroupHead> TaskGroupTaskItemCompleted { get; set; }
+
+    [Parameter]
+    public EventCallback<TaskGroupHead> TaskGroupTaskItemCreated { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -145,14 +157,12 @@
         };
     }
 
-    void TaskHeadCreated(TaskHead taskHead)
+    private async Task TaskItemCreated(TaskHead taskHead)
     {
-        if (taskHead.Id == Guid.Empty)
-            return;
-
         taskGroupHead.ChildTasks.Add(taskHead);
-        taskEdit.ResetTask(GetBlankTaskHeadTemplate());
-        StateHasChanged();
+        //taskEdit.ResetTask(GetBlankTaskHeadTemplate());
+        await TaskGroupUpdated.InvokeAsync(taskGroupHead);
+        //StateHasChanged();
     }
 
     private string GetUserNameForUserId(Guid userId)
@@ -176,7 +186,7 @@
         if (completeResult.Item1)
         {
             taskGroupHead.Completed = true;
-            TaskGroupComplete?.Invoke(taskGroupHead);
+            await TaskGroupCompleted.InvokeAsync(taskGroupHead);
             StateHasChanged();
         }
 
@@ -210,8 +220,13 @@
 
         taskGroupHead.ChildTasks[existingIndex] = taskHead;
 
-        TaskGroupComplete?.Invoke(taskGroupHead);
+        TaskGroupTaskItemCompleted.InvokeAsync(taskGroupHead);
 
         StateHasChanged();
+    }
+
+    void TaskCreated(TaskHead taskHead)
+    {
+        TaskGroupTaskItemCreated.InvokeAsync(taskGroupHead);
     }
 }
