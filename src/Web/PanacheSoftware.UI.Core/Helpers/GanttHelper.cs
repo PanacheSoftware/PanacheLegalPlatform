@@ -10,6 +10,42 @@ namespace PanacheSoftware.UI.Core.Helpers
 {
     public static class GanttHelper
     {
+        public static PLGanttModel GenerateChartJSGanttModel(TaskGroupSummary taskGroupSummary)
+        {
+            var plGanttModel = new PLGanttModel();
+
+            AddGanttEntry(plGanttModel, taskGroupSummary);
+
+            return plGanttModel;
+        }
+
+        private static void AddGanttEntry(PLGanttModel plGanttModel, TaskGroupSummary taskGroupSummary)
+        {
+            var ganttDataHolder = new GanttDataHolder(true, 
+                taskGroupSummary.StartDate,
+                taskGroupSummary.CompletedOnDate == DateTime.Parse("01/01/1900") ? taskGroupSummary.CompletionDate : taskGroupSummary.CompletedOnDate, 
+                MakeStringJSONSafe(taskGroupSummary.LongName),
+                taskGroupSummary.Completed);
+
+            plGanttModel.AddDataHolder(ganttDataHolder);
+
+            foreach (var childTask in taskGroupSummary.ChildTasks)
+            {
+                var childTaskGanttDataHolder = new GanttDataHolder(false,
+                childTask.StartDate,
+                childTask.CompletedOnDate == DateTime.Parse("01/01/1900") ? childTask.CompletionDate : childTask.CompletedOnDate,
+                MakeStringJSONSafe(childTask.Title),
+                childTask.Completed);
+
+                plGanttModel.AddDataHolder(childTaskGanttDataHolder);
+            }
+
+            foreach (var childTaskGroup in taskGroupSummary.ChildTaskGroups)
+            {
+                AddGanttEntry(plGanttModel, childTaskGroup);
+            }
+        }
+
         public static GCGanttModel GenerateGoogleChartsGanttModel(TaskGroupSummary taskGroupSummary)
         {
             var gcGanttModel = new GCGanttModel();

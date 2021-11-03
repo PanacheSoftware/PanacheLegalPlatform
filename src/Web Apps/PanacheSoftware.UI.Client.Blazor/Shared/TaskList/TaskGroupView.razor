@@ -8,7 +8,7 @@
 
 @if (taskGroupHead != null)
 {
-    <Collapse Visible="@taskGroupExpanded">
+    <Collapse Visible="@taskGroupExpanded" Shadow="Shadow.Default">
         <CollapseHeader>
             <Heading Size="HeadingSize.Is5">
                 <Button Clicked="@(() => taskGroupExpanded = !taskGroupExpanded)">@taskGroupHead.LongName</Button>

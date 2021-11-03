@@ -32,7 +32,7 @@
     {
         <Row>
             <Column>
-                <Card Margin="Margin.Is4.OnY">
+                <Card Margin="Margin.Is4.OnY" Shadow="Shadow.Default">
                     <CardHeader>
                         <CardTitle>@GetBreadCrumbTitle()</CardTitle><Button To="@($"taskgroup/{taskGroupSummary.Id}")" Type="ButtonType.Link" Color="Color.Primary" Float="Float.Right"><Icon Name="@("fa-edit")" /></Button>
                     </CardHeader>
@@ -77,22 +77,29 @@
                                 <Progress Animated="true" Striped="true" Value="@percentageComplete" Color="Color.Success" />
                             </Column>
                         </Row>
-                        @*<Row>
+
+
+                        
+
+                        <Row>
                                 <Column ColumnSize="ColumnSize.Is12">
                                     <Accordion>
                                         <Collapse Visible="@planVisible">
                                             <CollapseHeader>
                                                 <Heading Size="HeadingSize.Is5">
-                                                    <Button Clicked="@(()=>planVisible = !planVisible)">Plan</Button>
+                                                    <Button Clicked="@(()=>planVisible = !planVisible)">Task Plan</Button>
                                                 </Heading>
                                             </CollapseHeader>
                                             <CollapseBody>
-                                                <div id="chart_div" class="card shadow m-5" style="height: 400px;"></div>
+                                                @*<div id="chart_div" class="card shadow m-5" style="height: 400px;"></div>*@
+                                                <CascadingValue Value="langQueryList">
+                                                    <GanttView taskGroupSummary="taskGroupSummary" @ref="@ganttView" />
+                                                </CascadingValue>
                                             </CollapseBody>
                                         </Collapse>
                                     </Accordion>
                                 </Column>
-                            </Row>*@
+                            </Row>
                     </CardBody>
                 </Card>
             </Column>
@@ -134,6 +141,8 @@
     int percentageComplete = 0;
     List<string> taskGroupTitles = new List<string>();
     bool allowTaskAdd = true;
+
+    GanttView ganttView;
 
     protected override async Task OnInitializedAsync()
     {
@@ -295,6 +304,8 @@
                 var tempTaskGroupSummary = response.ContentAsType<TaskGroupSummary>();
 
                 percentageComplete = Convert.ToInt32(tempTaskGroupSummary.PercentageComplete * 100);
+
+                await ganttView.UpdateTaskSummary(tempTaskGroupSummary);
             }
         }
     }

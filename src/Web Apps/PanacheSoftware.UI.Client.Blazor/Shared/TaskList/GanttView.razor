@@ -1,0 +1,104 @@
+﻿@attribute [Authorize]
+@inject UserAppCache UserAppCache
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IJSRuntime JSRuntime
+@using PanacheSoftware.UI.Core.Helpers;
+@using PanacheSoftware.Core.Domain.API.Task;
+
+@if (taskGroupSummary != null)
+{
+    <canvas id="@Id"></canvas>
+}
+
+@code {
+    [CascadingParameter]
+    LangQueryList langQueryList { get; set; }
+
+    [Parameter]
+    public TaskGroupSummary taskGroupSummary { get; set; }
+
+    private string Id = "bar1";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await UpdateChart(taskGroupSummary);       
+    }
+
+    public async Task UpdateTaskSummary(TaskGroupSummary taskGroup)
+    {
+        taskGroupSummary = taskGroup;
+        await UpdateChart(taskGroup);
+    }
+
+    private async Task UpdateChart(TaskGroupSummary taskGroup)
+    {
+        if (taskGroup != null)
+        {
+            var ganttDataModel = GanttHelper.GenerateChartJSGanttModel(taskGroup);
+
+            var config = new
+            {
+                Type = "horizontalBar",
+                Options = new
+                {
+                    Responsive = true,
+                    Legend = false,
+                    Tooltips = new
+                    {
+                        Enabled = false
+                    },
+                    Events = new[]
+                    {
+                        new {}
+                    },
+                    Scales = new
+                    {
+                        XAxes = new[]
+                    {
+                        new {
+                            Type = "time",
+                            Time = new
+                            {
+                                DisplayFormats = new
+                                {
+                                    //Day = "YYYY-MM-DD"
+                                    Day = "DD MMM YYYY"                                 
+                                }
+                            },
+                            Ticks = new
+                            {
+                                Min = ganttDataModel.StartTime,
+                                Max = ganttDataModel.EndTime
+                            }
+                        }
+                }
+                    }
+                },
+                Data = new
+                {
+                    Datasets = new[]
+                    {
+                    new {
+                        Data = ganttDataModel.DateRanges.ToArray(),
+                        BackgroundColor = ganttDataModel.TaskColours.ToArray(),
+                        BorderColor = ganttDataModel.TaskBorderColours.ToArray(),
+                        BorderWidth = 1
+                    }
+                },
+                    Labels = ganttDataModel.TaskNames.ToArray()
+                }
+            };
+
+            await JSRuntime.InvokeVoidAsync("setup", Id, config);
+        }
+    }
+
+    private long GetTime(DateTime dateTime)
+    {
+        var time = (dateTime.ToUniversalTime() - new DateTime(1970, 1, 1));
+        return (long)(time.TotalMilliseconds + 0.5);
+    }
+}
