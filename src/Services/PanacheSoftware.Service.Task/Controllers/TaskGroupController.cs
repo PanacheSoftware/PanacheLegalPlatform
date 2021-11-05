@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -113,6 +114,16 @@ namespace PanacheSoftware.Service.Task.Controllers
                     {
                         var taskGroupHeader = _mapper.Map<TaskGroupHeader>(taskGroupHead);
 
+                        if(taskGroupHeader.ChildTaskGroups.Any())
+                            return StatusCode(StatusCodes.Status400BadRequest,
+                                new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                $"Cannot create child task groups when creating parent"));
+
+                        if (taskGroupHeader.ChildTasks.Any())
+                            return StatusCode(StatusCodes.Status400BadRequest,
+                                new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                $"Cannot create child tasks when creating task group"));
+
                         if (!await _taskManager.TaskGroupTeamOkayAsync(taskGroupHeader, accessToken))
                             return StatusCode(StatusCodes.Status400BadRequest,
                                 new APIErrorMessage(StatusCodes.Status400BadRequest,
@@ -122,6 +133,13 @@ namespace PanacheSoftware.Service.Task.Controllers
                             return StatusCode(StatusCodes.Status400BadRequest,
                                 new APIErrorMessage(StatusCodes.Status400BadRequest,
                                     $"TaskGroupHead.ParentTaskGroupId: '{taskGroupHead.ParentTaskGroupId}' is invalid."));
+
+                        var dateCheck = await _taskManager.TaskGroupDatesOkayAsync(taskGroupHeader, accessToken);
+
+                        if(!dateCheck.Item1)
+                            return StatusCode(StatusCodes.Status400BadRequest, 
+                                new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                dateCheck.Item2));
 
                         if (!await _taskManager.SetNewTaskGroupSequenceNoAsync(taskGroupHeader, accessToken))
                             return StatusCode(StatusCodes.Status400BadRequest,
@@ -183,25 +201,12 @@ namespace PanacheSoftware.Service.Task.Controllers
                                 taskGroupHead.OriginalCompletionDate = taskGroupHeader.OriginalCompletionDate;
                                 taskGroupHead.OriginalStartDate = taskGroupHeader.OriginalStartDate;
 
-                                if (taskGroupHeader.ParentTaskGroupId != null)
-                                {
-                                    TaskGroupHeader parentTaskGroupHeader =
-                                        _unitOfWork.TaskGroupHeaders.SingleOrDefault(
-                                            c => c.Id == taskGroupHeader.ParentTaskGroupId, true);
+                                var dateCheck = await _taskManager.TaskGroupDatesOkayAsync(_mapper.Map<TaskGroupHeader>(taskGroupHead), accessToken);
 
-                                    if (parentTaskGroupHeader != null)
-                                    {
-                                        //Make sure the start and completion dates don't fall outside of the group headers dates
-                                        taskGroupHead.StartDate =
-                                            (taskGroupHead.StartDate < parentTaskGroupHeader.StartDate)
-                                                ? parentTaskGroupHeader.StartDate
-                                                : taskGroupHead.StartDate;
-                                        taskGroupHead.CompletionDate =
-                                            (taskGroupHead.CompletionDate > parentTaskGroupHeader.CompletionDate)
-                                                ? parentTaskGroupHeader.CompletionDate
-                                                : taskGroupHead.CompletionDate;
-                                    }
-                                }
+                                if (!dateCheck.Item1)
+                                    return StatusCode(StatusCodes.Status400BadRequest,
+                                        new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                        dateCheck.Item2));
 
                                 _mapper.Map(taskGroupHead, taskGroupHeader);
 
@@ -265,18 +270,18 @@ namespace PanacheSoftware.Service.Task.Controllers
                                         var dateTimeFormatString = "yyyyMMddHHmmss";
                                         DateTime.TryParseExact(string.IsNullOrWhiteSpace(completionDate) ? "19000101000000" : completionDate, dateTimeFormatString, null, DateTimeStyles.None, out DateTime convertedDateTime);
 
-                                        if (convertedDateTime >= taskGroupHeader.StartDate)
-                                        {
-                                            taskGroupHeader.CompletedOnDate = convertedDateTime;
+                                        taskGroupHeader.CompletedOnDate = convertedDateTime;
 
-                                            _unitOfWork.Complete();
+                                        var dateCheck = await _taskManager.TaskGroupDatesOkayAsync(taskGroupHeader, accessToken);
 
-                                            return Ok(_mapper.Map<TaskGroupHead>(taskGroupHeader));
-                                        }
+                                        if (!dateCheck.Item1)
+                                            return StatusCode(StatusCodes.Status400BadRequest,
+                                                new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                                dateCheck.Item2));
 
-                                        return StatusCode(StatusCodes.Status400BadRequest,
-                                        new APIErrorMessage(StatusCodes.Status400BadRequest,
-                                            $"Completion Date: IS greater than {taskGroupHeader.StartDate}."));
+                                        _unitOfWork.Complete();
+
+                                        return Ok(_mapper.Map<TaskGroupHead>(taskGroupHeader));
                                     }
 
                                     return NotFound();

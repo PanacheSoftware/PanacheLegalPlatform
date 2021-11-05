@@ -88,13 +88,12 @@ namespace PanacheSoftware.Service.Task.Controllers
                                     var taskHeader = _mapper.Map<TaskHeader>(taskHead);
 
                                     //Make sure the start and completion dates don't fall outside of the group headers dates
-                                    taskHeader.StartDate = (taskHeader.StartDate < taskGroupHeader.StartDate)
-                                        ? taskGroupHeader.StartDate
-                                        : taskHeader.StartDate;
-                                    taskHeader.CompletionDate =
-                                        (taskHeader.CompletionDate > taskGroupHeader.CompletionDate)
-                                            ? taskGroupHeader.CompletionDate
-                                            : taskHeader.CompletionDate;
+                                    var dateCheck = await _taskManager.TaskDatesOkayAsync(taskHeader);
+
+                                    if (!dateCheck.Item1)
+                                        return StatusCode(StatusCodes.Status400BadRequest,
+                                            new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                            dateCheck.Item2));
 
                                     if (!await _taskManager.SetNewTaskSequenceNoAsync(taskHeader, accessToken))
                                         return StatusCode(StatusCodes.Status400BadRequest,
@@ -175,13 +174,12 @@ namespace PanacheSoftware.Service.Task.Controllers
                                     taskHead.OriginalStartDate = taskHeader.OriginalStartDate;
 
                                     //Make sure the start and completion dates don't fall outside of the group headers dates
-                                    taskHead.StartDate = (taskHead.StartDate < taskGroupHeader.StartDate)
-                                        ? taskGroupHeader.StartDate
-                                        : taskHead.StartDate;
-                                    taskHead.CompletionDate =
-                                        (taskHead.CompletionDate > taskGroupHeader.CompletionDate)
-                                            ? taskGroupHeader.CompletionDate
-                                            : taskHead.CompletionDate;
+                                    var dateCheck = await _taskManager.TaskDatesOkayAsync(_mapper.Map<TaskHeader>(taskHead));
+
+                                    if (!dateCheck.Item1)
+                                        return StatusCode(StatusCodes.Status400BadRequest,
+                                            new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                            dateCheck.Item2));
 
                                     _mapper.Map(taskHead, taskHeader);
 
@@ -238,18 +236,18 @@ namespace PanacheSoftware.Service.Task.Controllers
                                 var dateTimeFormatString = "yyyyMMddHHmmss";
                                 DateTime.TryParseExact(string.IsNullOrWhiteSpace(completionDate) ? "19000101000000" : completionDate, dateTimeFormatString, null, DateTimeStyles.None, out DateTime convertedDateTime);
 
-                                if (convertedDateTime >= taskHeader.StartDate)
-                                {
-                                    taskHeader.CompletedOnDate = convertedDateTime;
+                                taskHeader.CompletedOnDate = convertedDateTime;
 
-                                    _unitOfWork.Complete();
+                                var dateCheck = await _taskManager.TaskDatesOkayAsync(taskHeader);
 
-                                    return Ok(_mapper.Map<TaskHead>(taskHeader));
-                                }
+                                if (!dateCheck.Item1)
+                                    return StatusCode(StatusCodes.Status400BadRequest,
+                                        new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                        dateCheck.Item2));
 
-                                return StatusCode(StatusCodes.Status400BadRequest,
-                                new APIErrorMessage(StatusCodes.Status400BadRequest,
-                                    $"Completion Date: IS greater than {taskHeader.StartDate}."));
+                                _unitOfWork.Complete();
+
+                                return Ok(_mapper.Map<TaskHead>(taskHeader));
                             }
 
                             return StatusCode(StatusCodes.Status400BadRequest,

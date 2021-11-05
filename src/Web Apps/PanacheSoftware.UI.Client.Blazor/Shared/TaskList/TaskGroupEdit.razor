@@ -144,6 +144,9 @@
     [Parameter]
     public TaskGroupHead resetTaskGroupHead { get; set; }
 
+    [Parameter]
+    public bool CreationForm { get; set; }
+
     [CascadingParameter(Name = "StatusSelectListValues")]
     IEnumerable<SelectListModel> StatusSelectListValues { get; set; }
     [CascadingParameter(Name = "TeamSelectListValues")]
@@ -221,6 +224,9 @@
 
     private void ShowTaskGroupForm()
     {
+        if (CreationForm)
+            taskGroupHead = resetTaskGroupHead;
+
         taskGroupForm.Show();
     }
 
@@ -232,9 +238,10 @@
     private async Task SubmitForm()
     {
         SavingTaskGroupHead = true;
-        var saveResult = await SaveTaskGroupHeadAsync();
 
         var taskGroupId = taskGroupHead.Id;
+
+        var saveResult = await SaveTaskGroupHeadAsync();
 
         plAlert.ShowAlert(saveResult.Item1, saveResult.Item2);
 
@@ -244,11 +251,11 @@
 
             if(taskGroupId == Guid.Empty)
             {
-                await TaskGroupUpdated.InvokeAsync(taskGroupHead);
+                await TaskGroupCreated.InvokeAsync(taskGroupHead);
             }
             else
             {
-                await TaskGroupCreated.InvokeAsync(taskGroupHead);
+                await TaskGroupUpdated.InvokeAsync(taskGroupHead);
             }
 
             if (resetTaskGroupHead != default)

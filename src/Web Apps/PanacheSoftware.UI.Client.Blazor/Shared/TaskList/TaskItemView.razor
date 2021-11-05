@@ -86,7 +86,7 @@
             {
                 <Row Margin="Margin.Is4.OnY">
                     <Column ColumnSize="ColumnSize.Is12">
-                        <TaskItemEdit ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10935)" taskHead="@taskHead" TaskItemCreated="@TaskItemCreated" CreationForm="false" @ref="@taskHeadEdit" />
+                        <TaskItemEdit ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10935)" taskHead="@taskHead" TaskItemCreated="@TaskItemCreated" TaskItemUpdated="@TaskItemUpdated" CreationForm="false" @ref="@taskHeadEdit" />
                     </Column>
                 </Row>
             }
@@ -147,6 +147,11 @@
     private async Task TaskItemCreated(TaskHead taskHead)
     {
         await TaskCreated.InvokeAsync(taskHead);
+    }
+
+    private async Task TaskItemUpdated(TaskHead taskHead)
+    {
+        await TaskUpdated.InvokeAsync(taskHead);
     }
 
     private async Task CompleteTask()

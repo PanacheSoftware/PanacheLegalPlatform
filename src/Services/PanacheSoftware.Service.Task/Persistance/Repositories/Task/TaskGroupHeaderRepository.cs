@@ -68,8 +68,11 @@ namespace PanacheSoftware.Service.Task.Persistance.Repositories.Task
 
             if (readOnly)
                 taskGroupHeader = PanacheSoftwareServiceTaskContext.TaskGroupHeaders
+                .AsNoTracking()
                 .Include(t => t.TaskGroupDetail)
+                .AsNoTracking()
                 .Include(t => t.ChildTasks.Where(ct => ct.Status != StatusTypes.Closed))
+                .AsNoTracking()
                 .Include(t => t.ChildTaskGroups.Where(ctg => ctg.Status != StatusTypes.Closed))
                 .ThenInclude(ct => ct.ChildTasks.Where(ct => ct.Status != StatusTypes.Closed))
                 .AsNoTracking()
@@ -121,6 +124,30 @@ namespace PanacheSoftware.Service.Task.Persistance.Repositories.Task
                 .Include(t => t.ChildTasks)
                 .AsEnumerable()
                 .Where(t => t.Id == taskGroupHeaderId).ToList();
+        }
+
+        public async Task<List<TaskGroupHeader>> GetChildTaskGroupHeadersAsync(Guid taskGroupHeaderId, bool includeChildTasks, bool readOnly)
+        {
+            if(readOnly)
+            {
+                if (includeChildTasks)
+                    return PanacheSoftwareServiceTaskContext.TaskGroupHeaders.Where(t => t.ParentTaskGroupId == taskGroupHeaderId).AsNoTracking().Include(t => t.ChildTasks).AsNoTracking().ToList();
+
+                return PanacheSoftwareServiceTaskContext.TaskGroupHeaders.Where(t => t.ParentTaskGroupId == taskGroupHeaderId).AsNoTracking().ToList();
+            }
+
+            if(includeChildTasks)
+                return PanacheSoftwareServiceTaskContext.TaskGroupHeaders.Where(t => t.ParentTaskGroupId == taskGroupHeaderId).Include(t => t.ChildTasks).ToList();
+
+            return PanacheSoftwareServiceTaskContext.TaskGroupHeaders.Where(t => t.ParentTaskGroupId == taskGroupHeaderId).ToList();
+        }
+
+        public async Task<List<TaskHeader>> GetChildTaskHeadersAsync(Guid taskGroupHeaderId, bool readOnly)
+        {
+            if(readOnly)
+                return PanacheSoftwareServiceTaskContext.TaskHeaders.Where(t => t.TaskGroupHeaderId == taskGroupHeaderId).AsNoTracking().ToList();
+
+            return PanacheSoftwareServiceTaskContext.TaskHeaders.Where(t => t.TaskGroupHeaderId == taskGroupHeaderId).ToList();
         }
 
         public Guid TaskGroupNameToId(string taskGroupShortName)

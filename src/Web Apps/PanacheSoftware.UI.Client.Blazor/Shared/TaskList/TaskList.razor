@@ -18,7 +18,7 @@
                         <Accordion>
                             @foreach (TaskGroupHead taskGroup in TaskGroupHeaders)
                             {
-                                <TaskGroupView taskGroupHead="taskGroup" TaskGroupUpdated="@TGUpdated" TaskGroupCompleted="TGCompleted" TaskGroupTaskItemCompleted="@TGTaskItemCompleted" TaskGroupTaskItemCreated="@TGTaskItemCreated" />
+                                <TaskGroupView taskGroupHead="taskGroup" TaskGroupUpdated="@TGUpdated" TaskGroupCompleted="TGCompleted" TaskGroupTaskItemCompleted="@TGTaskItemCompleted" TaskGroupTaskItemCreated="@TGTaskItemCreated" TaskGroupTaskItemUpdated="@TGTaskItemUpdated"/>
                             }
                         </Accordion>
                     </Column>
@@ -44,7 +44,7 @@
                     }
                     <Row Margin="Margin.Is4.OnY">
                         <Column ColumnSize="ColumnSize.Is12">
-                            <TaskGroupEdit ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10917)" taskGroupHead="@TaskGroupHeadCreateTemplate" TaskGroupCreated="@TaskGroupHeadCreated" resetTaskGroupHead="GetBlankTaskGroupHeadTemplate()" @ref="@addNewTaskGroupEdit" />
+                            <TaskGroupEdit ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10917)" taskGroupHead="@TaskGroupHeadCreateTemplate" TaskGroupCreated="@TaskGroupHeadCreated" resetTaskGroupHead="GetBlankTaskGroupHeadTemplate()" CreationForm="true" TaskGroupUpdated="@TGUpdated" @ref="@addNewTaskGroupEdit" />
                         </Column>
                     </Row>
                 }
@@ -101,6 +101,9 @@ else
 
     [Parameter]
     public EventCallback<Task> TaskGroupTaskItemCompleted { get; set; }
+
+    [Parameter]
+    public EventCallback<Task> TaskGroupTaskItemUpdated { get; set; }
 
     [Parameter]
     public EventCallback<Task> ParentTaskCompleted { get; set; }
@@ -258,6 +261,11 @@ else
     }
 
     void TGTaskItemCompleted(TaskGroupHead taskgroupHead)
+    {
+        TaskGroupCompleted.InvokeAsync();
+    }
+
+    void TGTaskItemUpdated(TaskGroupHead taskgroupHead)
     {
         TaskGroupCompleted.InvokeAsync();
     }

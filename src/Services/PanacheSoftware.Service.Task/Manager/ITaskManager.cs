@@ -20,5 +20,7 @@ namespace PanacheSoftware.Service.Task.Manager
         Task<bool> CanCompleteTaskGroupAsync(Guid taskGroupHeaderId, string accessToken);
         Task<bool> CanAccessTaskGroupHeaderAsync(Guid taskGroupHeaderId, string accessToken);
         Task<bool> TaskGroupTeamOkayAsync(TaskGroupHeader taskGroupHeader, string accessToken);
+        Task<Tuple<bool, string>> TaskGroupDatesOkayAsync(TaskGroupHeader taskGroupHeader, string accessToken);
+        Task<Tuple<bool, string>> TaskDatesOkayAsync(TaskHeader taskHeader);
     }
 }

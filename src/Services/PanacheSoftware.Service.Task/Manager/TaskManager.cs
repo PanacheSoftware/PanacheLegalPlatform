@@ -7,6 +7,7 @@ using PanacheSoftware.Http;
 using PanacheSoftware.Service.Task.Core;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -279,8 +280,8 @@ namespace PanacheSoftware.Service.Task.Manager
                 //taskGroupHeader.MainUserId = Guid.Empty;
 
                 //Make sure the start and completion dates don't fall outside of the group headers dates
-                taskGroupHeader.StartDate = (taskGroupHeader.StartDate < parentTaskGroupHeader.StartDate) ? parentTaskGroupHeader.StartDate : taskGroupHeader.StartDate;
-                taskGroupHeader.CompletionDate = (taskGroupHeader.CompletionDate > parentTaskGroupHeader.CompletionDate) ? parentTaskGroupHeader.CompletionDate : taskGroupHeader.CompletionDate;
+                //taskGroupHeader.StartDate = (taskGroupHeader.StartDate < parentTaskGroupHeader.StartDate) ? parentTaskGroupHeader.StartDate : taskGroupHeader.StartDate;
+                //taskGroupHeader.CompletionDate = (taskGroupHeader.CompletionDate > parentTaskGroupHeader.CompletionDate) ? parentTaskGroupHeader.CompletionDate : taskGroupHeader.CompletionDate;
             }
             else
             {
@@ -320,7 +321,7 @@ namespace PanacheSoftware.Service.Task.Manager
 
                 if (taskGroupHeader.ChildTasks.Any())
                 {
-                    if(taskGroupHeader.ChildTasks.Where(c => c.Completed == false).Any())
+                    if (taskGroupHeader.ChildTasks.Where(c => c.Completed == false).Any())
                     {
                         return false;
                     }
@@ -336,9 +337,9 @@ namespace PanacheSoftware.Service.Task.Manager
 
             var taskGroupHeader = _unitOfWork.TaskGroupHeaders.Get(taskGroupHeaderId);
 
-            if(taskGroupHeader != null)
+            if (taskGroupHeader != null)
             {
-                if(taskGroupHeader.ParentTaskGroupId != null)
+                if (taskGroupHeader.ParentTaskGroupId != null)
                 {
                     return await CanAccessTaskGroupHeaderAsync(taskGroupHeader.ParentTaskGroupId ?? Guid.Empty, accessToken);
                 }
@@ -352,12 +353,137 @@ namespace PanacheSoftware.Service.Task.Manager
             return false;
         }
 
+        public async Task<Tuple<bool, string>> TaskGroupDatesOkayAsync(TaskGroupHeader taskGroupHeader, string accessToken)
+        {
+            var returnMessage = string.Empty;
+
+            if (taskGroupHeader.ParentTaskGroupId.HasValue)
+            {
+                var parentTaskGroupHeader = _unitOfWork.TaskGroupHeaders.Get(taskGroupHeader.ParentTaskGroupId.GetValueOrDefault());
+
+                if(parentTaskGroupHeader != default)
+                {
+                    if (taskGroupHeader.StartDate < parentTaskGroupHeader.StartDate)
+                        returnMessage = ReturnMessageBuilder(returnMessage, $"{taskGroupHeader.ShortName}: Start Date is earlier than parent task group Start Date");
+
+                    if (taskGroupHeader.CompletionDate > parentTaskGroupHeader.CompletionDate)
+                        returnMessage = ReturnMessageBuilder(returnMessage, $"{taskGroupHeader.ShortName}: Completion Date is later than parent task group Completion Date");
+                }
+            }
+
+            var dateTimeFormatString = "yyyyMMddHHmmss";
+            DateTime.TryParseExact("19000101000000", dateTimeFormatString, null, DateTimeStyles.None, out DateTime convertedDateTime);
+
+            if (taskGroupHeader.CompletedOnDate > convertedDateTime)
+            {
+                if (taskGroupHeader.CompletedOnDate < taskGroupHeader.StartDate)
+                    returnMessage = ReturnMessageBuilder(returnMessage, $"{taskGroupHeader.ShortName}: Completed On Date is earlier than Start Date");
+
+
+                if (taskGroupHeader.CompletedOnDate > taskGroupHeader.CompletionDate)
+                    returnMessage = ReturnMessageBuilder(returnMessage, $"{taskGroupHeader.ShortName}: Completed On Date is later than Completion Date");
+            }
+
+            if (taskGroupHeader.Id != Guid.Empty)
+            {
+                var childTaskHeaders = await _unitOfWork.TaskGroupHeaders.GetChildTaskHeadersAsync(taskGroupHeader.Id, true);
+                var childTaskGroupHeaders = await _unitOfWork.TaskGroupHeaders.GetChildTaskGroupHeadersAsync(taskGroupHeader.Id, false, true);
+
+                foreach (var childTask in childTaskHeaders)
+                {
+                    if (childTask.StartDate < taskGroupHeader.StartDate)
+                        returnMessage = ReturnMessageBuilder(returnMessage, $"Child Task - {childTask.Title}: Child Task Start Date is earlier than Start Date");
+
+                    if (childTask.CompletionDate > taskGroupHeader.CompletionDate)
+                        returnMessage = ReturnMessageBuilder(returnMessage, $"Child Task - {childTask.Title}: Child Task Completion Date is later than Completion Date");
+
+                    if (taskGroupHeader.CompletedOnDate > convertedDateTime)
+                    {
+                        if (childTask.Completed)
+                        {
+                            if (childTask.CompletedOnDate > taskGroupHeader.CompletedOnDate)
+                                returnMessage = ReturnMessageBuilder(returnMessage, $"Child Task - {childTask.Title}: Child Task Completion On Date is later than Completion On Date");
+                        }
+                        else
+                        {
+                            if (childTask.CompletionDate > taskGroupHeader.CompletedOnDate)
+                                returnMessage = ReturnMessageBuilder(returnMessage, $"Child Task - {childTask.Title}: Child Task Completion Date is later than Completion On Date");
+                        }
+                    }
+                }
+
+                foreach (var childTaskGroup in childTaskGroupHeaders)
+                {
+                    if (childTaskGroup.StartDate < taskGroupHeader.StartDate)
+                        returnMessage = ReturnMessageBuilder(returnMessage, $"Child Task Group - {childTaskGroup.ShortName}: Child Task Group Start Date is earlier than Start Date");
+
+                    if (childTaskGroup.CompletionDate > taskGroupHeader.CompletionDate)
+                        returnMessage = ReturnMessageBuilder(returnMessage, $"Child Task Group - {childTaskGroup.ShortName}: Child Task Group Completion Date is later than Completion Date");
+
+                    if (taskGroupHeader.CompletedOnDate > convertedDateTime)
+                    {
+                        if (childTaskGroup.Completed)
+                        {
+                            if (childTaskGroup.CompletedOnDate > taskGroupHeader.CompletedOnDate)
+                                returnMessage = ReturnMessageBuilder(returnMessage, $"Child Task Group - {childTaskGroup.ShortName}: Child Task Group Completion On Date is later than Completion On Date");
+                        }
+                        else
+                        {
+                            if (childTaskGroup.CompletionDate > taskGroupHeader.CompletedOnDate)
+                                returnMessage = ReturnMessageBuilder(returnMessage, $"Child Task Group - {childTaskGroup.ShortName}: Child Task Group Completion Date is later than Completion On Date");
+                        }
+                    }
+                }
+            }
+
+            return new Tuple<bool, string>(string.IsNullOrWhiteSpace(returnMessage), returnMessage);
+        }
+
+        public async Task<Tuple<bool, string>> TaskDatesOkayAsync(TaskHeader taskHeader)
+        {
+            var returnMessage = string.Empty;
+
+            var taskGroupHeader = _unitOfWork.TaskGroupHeaders.Get(taskHeader.TaskGroupHeaderId);
+
+            if (taskGroupHeader != default)
+            {
+                if (taskHeader.StartDate < taskGroupHeader.StartDate)
+                    returnMessage = ReturnMessageBuilder(returnMessage, $"{taskHeader.Title}: Start Date is earlier than parent task group Start Date");
+
+                if (taskHeader.CompletionDate > taskGroupHeader.CompletionDate)
+                    returnMessage = ReturnMessageBuilder(returnMessage, $"{taskHeader.Title}: Completion Date is later than parent task group Completion Date");
+            }
+
+            var dateTimeFormatString = "yyyyMMddHHmmss";
+            DateTime.TryParseExact("19000101000000", dateTimeFormatString, null, DateTimeStyles.None, out DateTime convertedDateTime);
+
+            if (taskHeader.CompletedOnDate > convertedDateTime)
+            {
+                if (taskHeader.CompletedOnDate < taskHeader.StartDate)
+                    returnMessage = ReturnMessageBuilder(returnMessage, $"{taskGroupHeader.ShortName}: Completed On Date is earlier than Start Date");
+
+
+                if (taskHeader.CompletedOnDate > taskGroupHeader.CompletionDate)
+                    returnMessage = ReturnMessageBuilder(returnMessage, $"{taskGroupHeader.ShortName}: Completed On Date is later than task group Completion Date");
+            }
+
+            return new Tuple<bool, string>(string.IsNullOrWhiteSpace(returnMessage), returnMessage);
+        }
+
         private async Task<List<Guid>> GetUserTeamsAsync(string accessToken)
         {
             if(_userTeams == null)
                 _userTeams = await _apiHelper.GetTeamsForUserId(accessToken, _userProvider.GetUserId());
 
             return _userTeams;
+        }
+
+        private string ReturnMessageBuilder(string existingMessage, string message)
+        {
+            if (string.IsNullOrWhiteSpace(existingMessage))
+                return message;
+
+            return $"{existingMessage}, {message}";
         }
 
         //private async Task<List<Guid>> GetTeamsForUser(string accessToken)
@@ -378,7 +504,6 @@ namespace PanacheSoftware.Service.Task.Manager
 
         //    return userTeams;
         //}
-
     }
 
     public class RunningTotals

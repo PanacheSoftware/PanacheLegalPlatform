@@ -33,6 +33,10 @@
                     <Card Margin="Margin.Is4.OnY"  Shadow="Shadow.Default">
                         <CardHeader>
                             <CardTitle>@GetBreadCrumbTitle()</CardTitle>
+                            @if(taskGroupHead.Id != Guid.Empty)
+                            {
+                                <Button To="@($"taskview/{taskGroupHead.Id}")" Type="ButtonType.Link" Color="Color.Primary" Float="Float.Right"><Icon Name="@("fa-tasks")" /></Button>
+                            }
                         </CardHeader>
                         <CardBody>
                             <Validations Mode="ValidationMode.Auto" Model="@taskGroupHead">

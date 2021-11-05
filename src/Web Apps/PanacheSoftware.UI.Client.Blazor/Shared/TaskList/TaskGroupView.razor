@@ -38,7 +38,7 @@
             {
                 <Row>
                     <Column ColumnSize="ColumnSize.Is12">
-                        <TaskItemView taskHead="@taskHead" TaskCompleted="@TaskCompleted" TaskCreated="@TaskCreated"/>
+                        <TaskItemView taskHead="@taskHead" TaskCompleted="@TaskCompleted" TaskUpdated="@TaskUpdated" TaskCreated="@TaskCreated"/>
                     </Column>
                 </Row>
             }
@@ -76,7 +76,7 @@
                 </Row>
                 <Row Margin="Margin.Is4.OnY">
                     <Column ColumnSize="ColumnSize.Is12">
-                        <TaskGroupEdit ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10931)" taskGroupHead="@taskGroupHead" @ref="@taskGroupEdit" />
+                        <TaskGroupEdit ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10931)" taskGroupHead="@taskGroupHead" TaskGroupUpdated="@TGUpdated" @ref="@taskGroupEdit" />
                     </Column>
                 </Row>
             }
@@ -129,6 +129,9 @@
     [Parameter]
     public EventCallback<TaskGroupHead> TaskGroupTaskItemCreated { get; set; }
 
+    [Parameter]
+    public EventCallback<TaskGroupHead> TaskGroupTaskItemUpdated { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         taskHeadCreateTemplate = GetBlankTaskHeadTemplate();
@@ -163,6 +166,19 @@
         //taskEdit.ResetTask(GetBlankTaskHeadTemplate());
         await TaskGroupUpdated.InvokeAsync(taskGroupHead);
         //StateHasChanged();
+    }
+
+    private async Task TaskItemUpdated(TaskHead taskHead)
+    {
+        taskGroupHead.ChildTasks.Add(taskHead);
+        //taskEdit.ResetTask(GetBlankTaskHeadTemplate());
+        await TaskGroupUpdated.InvokeAsync(taskGroupHead);
+        //StateHasChanged();
+    }
+
+    private async Task TGUpdated(TaskGroupHead tgHead)
+    {
+        await TaskGroupUpdated.InvokeAsync(tgHead);
     }
 
     private string GetUserNameForUserId(Guid userId)
@@ -228,5 +244,19 @@
     void TaskCreated(TaskHead taskHead)
     {
         TaskGroupTaskItemCreated.InvokeAsync(taskGroupHead);
+    }
+
+    void TaskUpdated(TaskHead taskHead)
+    {
+        int existingIndex = taskGroupHead.ChildTasks.FindIndex(ct => ct.Id == taskHead.Id);
+
+        if (existingIndex < 0)
+            return;
+
+        taskGroupHead.ChildTasks[existingIndex] = taskHead;
+
+        TaskGroupTaskItemUpdated.InvokeAsync(taskGroupHead);
+
+        StateHasChanged();
     }
 }
