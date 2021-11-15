@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 namespace PanacheSoftware.Service.Task.Controllers
 {
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class TemplateController : ControllerBase
     {
@@ -160,6 +160,55 @@ namespace PanacheSoftware.Service.Task.Controllers
                     }
 
                     return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"id: '{id}' is not a valid guid."));
+                }
+                catch (Exception e)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError,
+                        new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
+                }
+            }
+
+            return BadRequest(new APIErrorMessage(StatusCodes.Status400BadRequest, "One or more validation errors occurred.", ModelState));
+        }
+
+        [Route("[action]/{id}")]
+        [HttpPost]
+        public async Task<IActionResult> CreateTemplateFromTask([FromBody] TemplateHead templateHead, string id)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var accessToken = await HttpContext.GetTokenAsync("access_token");
+
+                    if (templateHead.Id == Guid.Empty)
+                    {
+                        if(!Guid.TryParse(id, out Guid taskHeaderId))
+                            return StatusCode(StatusCodes.Status400BadRequest,
+                                new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                    $"Id: is not a valid guid."));
+
+                        var creationResult = await _templateManager.CreateTemplateFromTask(templateHead, taskHeaderId, accessToken);
+
+                        if(creationResult.Item1 == Guid.Empty)
+                            return StatusCode(StatusCodes.Status400BadRequest,
+                                new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                    $"{creationResult.Item2}"));
+
+                        var templateHeader = await _unitOfWork.TemplateHeaders.GetTemplateHeaderWithRelationsAsync(creationResult.Item1, false, accessToken);
+
+                        if(templateHeader == null)
+                            return StatusCode(StatusCodes.Status400BadRequest,
+                                new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                    $"Error retrieving Template Header: {creationResult.Item1}"));
+
+                        return Created(new Uri($"{Request.Path}/{templateHeader.Id}", UriKind.Relative),
+                            _mapper.Map<TemplateHead>(templateHeader));
+                    }
+
+                    return StatusCode(StatusCodes.Status400BadRequest,
+                        new APIErrorMessage(StatusCodes.Status400BadRequest,
+                            $"TemplateHead.Id: '{templateHead.Id}' is not an empty guid."));
                 }
                 catch (Exception e)
                 {

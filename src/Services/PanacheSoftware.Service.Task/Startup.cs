@@ -88,6 +88,7 @@ namespace PanacheSoftware.Service.Task
             services.AddTransient<ITemplateItemHeaderRepository, TemplateItemHeaderRepository>();
             services.AddTransient<ITemplateItemDetailRepository, TemplateItemDetailRepository>();
             services.AddTransient<ITaskManager, TaskManager>();
+            services.AddTransient<ITemplateManager, TemplateManager>();
 
             services.AddTransient<IUserProvider, UserProvider>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();

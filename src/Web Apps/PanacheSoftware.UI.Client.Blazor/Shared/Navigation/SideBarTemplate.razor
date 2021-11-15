@@ -1,0 +1,20 @@
+﻿<BarItem>
+    <BarDropdown>
+        <BarDropdownToggle>
+            <BarIcon IconName="IconName.List"/>
+            @LanguageHelper.GetTitle(langQueryList, 10128)
+        </BarDropdownToggle>
+        <BarDropdownMenu>
+            <BarDropdownItem To="/template/templates">
+                @LanguageHelper.GetTitle(langQueryList, 10127)
+            </BarDropdownItem>
+            <BarDropdownItem To="/template">
+                @LanguageHelper.GetTitle(langQueryList, 10129)
+            </BarDropdownItem>
+        </BarDropdownMenu>
+    </BarDropdown>
+</BarItem>
+
+@code {
+    [CascadingParameter(Name = "langQueryList")] LangQueryList langQueryList { get; set; }
+}

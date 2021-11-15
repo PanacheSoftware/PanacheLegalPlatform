@@ -94,7 +94,7 @@
     protected override async Task OnInitializedAsync()
     {
         await GetLanguageList();
-        await GetClients();
+        await GetTasks();
         loadingPage = false;
         pageProgressBar.ChangeVisibility(loadingPage);
     }
@@ -120,7 +120,7 @@
         langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, UserAppCache.LanguageCode, textCodes.ToArray());
     }
 
-    private async Task GetClients()
+    private async Task GetTasks()
     {
         var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.TASK, $"TaskGroup/GetMainTaskGroups");
 

@@ -26,7 +26,8 @@
 
 @code {
     //RenderFragment customIcon =@<img src="/img/user.jpg" style="width:32px; height: 32px" />;
-    RenderFragment customIcon =@<img src="/img/PS-Green-Trans.png" style="width:42px; height: 42px" />;
+    RenderFragment customIcon =@<img src="/img/PS-Green-Trans.png" style="width:42px; height: 42px" />
+    ;
     Sidebar sidebar;
     LangQueryList langQueryList { get; set; }
 
@@ -89,6 +90,9 @@
         textCodes.Add(10124);
         textCodes.Add(10125);
         textCodes.Add(10126);
+        textCodes.Add(10127);
+        textCodes.Add(10128);
+        textCodes.Add(10129);
 
         langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, UserAppCache.LanguageCode, textCodes.ToArray());
     }

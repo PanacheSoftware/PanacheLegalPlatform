@@ -9,5 +9,6 @@ namespace PanacheSoftware.Service.Task.Manager
     public interface ITemplateManager
     {
         Task<TemplateHeadList> GetTemplateHeadListAsync(string accessToken);
+        Task<Tuple<Guid, string>> CreateTemplateFromTask(TemplateHead templateHead, Guid TaskGroupHeaderId, string accessToken);
     }
 }

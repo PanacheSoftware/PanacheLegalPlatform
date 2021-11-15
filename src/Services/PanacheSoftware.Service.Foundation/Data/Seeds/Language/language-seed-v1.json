@@ -292,6 +292,36 @@
     },
     {
       "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10127,
+      "description": "Menu Heading",
+      "text": "Templates",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10128,
+      "description": "Menu Heading",
+      "text": "Template",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10129,
+      "description": "Menu Heading",
+      "text": "Create Template",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
       "textCode": 10200,
       "description": "General titles",
       "text": "Description",
@@ -1522,6 +1552,26 @@
     },
     {
       "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10944,
+      "description": "Task Screens",
+      "text": "Template ID",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10945,
+      "description": "Task Screens",
+      "text": "Template Name",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
       "textCode": 11000,
       "description": "Custom Field Group Screens",
       "text": "Custom Field Group ID",
@@ -1625,6 +1675,66 @@
       "textCode": 11010,
       "description": "Custom Field Group Screens",
       "text": "Add Custom Field Group",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 11100,
+      "description": "Template Screens",
+      "text": "Template",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 11101,
+      "description": "Template Screens",
+      "text": "Based on task",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 11102,
+      "description": "Template Screens",
+      "text": "Task main description",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 11103,
+      "description": "Template Screens",
+      "text": "Task length (days)",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 11104,
+      "description": "Template Screens",
+      "text": "Create Template",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 11105,
+      "description": "Template Screens",
+      "text": "Update Template",
       "dateFrom": "2020-02-17",
       "dateTo": "2119-02-17",
       "languageItems": [],
