@@ -80,7 +80,7 @@ namespace PanacheSoftware.Identity
                     //Don't show consent page
                     RequireConsent = false,
 
-                    AllowedGrantTypes = GrantTypes.Code,
+                    AllowedGrantTypes = GrantTypes.CodeAndClientCredentials,
                     ClientSecrets = { new Secret(_panacheSoftwareConfiguration.Secret.UIClientSecret.Sha256()) },
 
                     RedirectUris = { $"{UIClientURL}/signin-oidc" },
@@ -89,7 +89,7 @@ namespace PanacheSoftware.Identity
 
                     AlwaysIncludeUserClaimsInIdToken = true,
 
-                    AccessTokenType = AccessTokenType.Reference,
+                    AccessTokenType = AccessTokenType.Jwt,
 
                     AllowOfflineAccess = true,
                     AllowedScopes = {

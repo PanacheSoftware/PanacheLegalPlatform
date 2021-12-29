@@ -18,7 +18,15 @@
         <Card Margin="Margin.Is4.OnY" Shadow="Shadow.Default">
             <CardBody>
                 <Row>
-                    bearer @TokenProvider.AccessToken
+                    <Column ColumnSize="ColumnSize.Is12">
+                        <Field>
+                            <MemoEdit @bind-Text="@tokenText" Rows="5" ReadOnly=true>
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </MemoEdit>
+                        </Field>
+                    </Column>
                 </Row>
             </CardBody>
         </Card>
@@ -27,10 +35,12 @@
 
 @code {
     LangQueryList langQueryList { get; set; }
+    string tokenText = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
         await GetLanguageList();
+        tokenText = TokenProvider.AccessToken;
     }
 
     private async Task GetLanguageList()
