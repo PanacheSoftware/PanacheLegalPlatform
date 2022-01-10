@@ -37,6 +37,7 @@
         await GetLanguageList();
         loadingPage = false;
         pageProgressBar.ChangeVisibility(loadingPage);
+        await CallGateway();
     }
 
     private async Task GetLanguageList()
@@ -49,5 +50,17 @@
         textCodes.Add(10807);
 
         langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, UserAppCache.LanguageCode, textCodes.ToArray());
+    }
+
+    private async Task CallGateway()
+    {
+        var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.GATEWAY, $"administration/configuration");
+
+        var test = response.ContentAsString();
+
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            
+        }    
     }
 }

@@ -1,5 +1,8 @@
 {
-  "ReRoutes": [
+  "GlobalConfiguration": {
+    "BaseUrl": "http://localhost:55003"
+  },
+  "Routes": [
     //--------------------------------------------------Client
     {
       "DownstreamPathTemplate": "/Client/",
