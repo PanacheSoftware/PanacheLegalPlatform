@@ -28,7 +28,14 @@
 
         UserAppCache.SetLanguageCode(await MyFoundationService.GetLanguageCode(TokenProvider.AccessToken));
 
+        await CheckGateway();
+
         //return base.OnInitializedAsync();
+    }
+
+    private async Task CheckGateway()
+    {
+        await MyFoundationService.CheckBaseGatewayConfig(TokenProvider.AccessToken);    
     }
 
     private Theme theme = new Theme

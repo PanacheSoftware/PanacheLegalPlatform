@@ -12,6 +12,8 @@
     <PackageReference Include="IdentityModel" Version="4.4.0" />
     <PackageReference Include="CompareNETObjects" Version="4.67.0" />
     <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="5.0.11" />
+    <PackageReference Include="Microsoft.OpenApi" Version="1.2.3" />
+    <PackageReference Include="Microsoft.OpenApi.Readers" Version="1.2.3" />
   </ItemGroup>
 
   <ItemGroup>

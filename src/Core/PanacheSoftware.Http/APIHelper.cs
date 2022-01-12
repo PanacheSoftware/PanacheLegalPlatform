@@ -11,6 +11,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using PanacheSoftware.Core.Domain.Configuration;
+using Microsoft.OpenApi.Readers;
+using Microsoft.OpenApi.Models;
+using PanacheSoftware.Core.Domain.Ocelot;
 
 namespace PanacheSoftware.Http
 {
@@ -136,16 +139,19 @@ namespace PanacheSoftware.Http
             return langQueryList;
         }
 
-        public string GetBaseURL(string apiType)
+        public string GetBaseURL(string apiType, bool ignoreGateway = false)
         {
             var panacheSoftwareConfiguration = new PanacheSoftwareConfiguration();
             _configuration.Bind("PanacheSoftware", panacheSoftwareConfiguration);
 
-            //If appsttings specifies we should use the API gateway force all API requests through their
-            if(bool.Parse(panacheSoftwareConfiguration.CallMethod.UseAPIGateway))
-                return bool.Parse(panacheSoftwareConfiguration.CallMethod.APICallsSecure)
-                    ? panacheSoftwareConfiguration.Url.APIGatewayURLSecure
-                    : panacheSoftwareConfiguration.Url.APIGatewayURL;
+            if (!ignoreGateway)
+            {
+                //If appsttings specifies we should use the API gateway force all API requests through their
+                if (bool.Parse(panacheSoftwareConfiguration.CallMethod.UseAPIGateway))
+                    return bool.Parse(panacheSoftwareConfiguration.CallMethod.APICallsSecure)
+                        ? panacheSoftwareConfiguration.Url.APIGatewayURLSecure
+                        : panacheSoftwareConfiguration.Url.APIGatewayURL;
+            }
 
             //Otherwise return the URL specific to the APIType passed in
             switch (apiType)
@@ -201,6 +207,133 @@ namespace PanacheSoftware.Http
             }
 
             return true;
+        }
+
+        public async Task<bool> CheckGatewayConfig(string accessToken)
+        {
+            //If no accesstoken we won't be able to query the gateway so just assume it's okay, it
+            //will be checked again once there is a valid token.
+            if (string.IsNullOrWhiteSpace(accessToken))
+                return true;
+
+            var response = await MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"administration/configuration");
+
+            if(response.IsSuccessStatusCode)
+            {
+                var gatewayConfig = response.ContentAsType<Root>();
+
+                if(gatewayConfig != null)
+                {
+                    if(gatewayConfig.routes != null)
+                    {
+                        if(gatewayConfig.routes.Count > 0)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        public async Task<bool> CreateBaseGatewayConfig(string accessToken)
+        {
+            var apiList = new APIList();
+
+            apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.FOUNDATION, true), string.Empty));
+            apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.TEAM, true), string.Empty));
+            apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.IDENTITY, true), string.Empty));
+            apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.TASK, true), string.Empty));
+            apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.CLIENT, true), string.Empty));
+            apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.CUSTOMFIELD, true), string.Empty));
+            apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.FILE, true), string.Empty));
+
+            return await ProcessAPIConfig(accessToken, apiList, GetBaseURL(APITypes.GATEWAY));
+        }
+
+        private async Task<OpenApiDocument> GetOpenAPIDocument(Uri APIBaseURI, string URIGetPart)
+        {
+            var httpClient = new HttpClient
+            {
+                BaseAddress = APIBaseURI
+            };
+
+            var stream = await httpClient.GetStreamAsync(URIGetPart);
+
+            return new OpenApiStreamReader().Read(stream, out var diagnostic);
+        }
+
+        public async Task<bool> ProcessAPIConfig(string accessToken, APIList apiList, string GatewayURI)
+        {
+            if(string.IsNullOrWhiteSpace(GatewayURI))
+                return false;
+
+            var OcelotConfiguration = new Root();
+            OcelotConfiguration.routes = new List<Route>();
+
+            OcelotConfiguration.globalConfiguration = new GlobalConfiguration()
+            {
+                baseUrl = GatewayURI
+            };
+
+            foreach (var apiDetail in apiList.APIListDetails)
+            {
+                var routes = await GenerateRoutes(apiDetail);
+
+                if(routes.Count > 0)
+                    OcelotConfiguration.routes.AddRange(routes);
+            }
+
+            HttpContent contentPost = new StringContent(JsonConvert.SerializeObject(OcelotConfiguration), Encoding.UTF8, "application/json");
+
+            var contentText = contentPost.ReadAsStringAsync();
+
+            var response = await MakeAPICallAsync(accessToken, HttpMethod.Post, APITypes.GATEWAY, $"administration/configuration", contentPost);
+
+            return response.IsSuccessStatusCode;
+        }
+
+        private async Task<IList<Route>> GenerateRoutes(APIListDetail apiListDetail)
+        {
+            var routes = new List<Route>();
+
+            var openAPIDocument = await GetOpenAPIDocument(apiListDetail.APIBaseURI, apiListDetail.APIGetPart);         
+
+            foreach (var path in openAPIDocument.Paths)
+            {
+                var route = new Route();
+
+                route.downstreamPathTemplate = path.Key;
+                route.upstreamPathTemplate = path.Key;
+                route.upstreamHttpMethod = new List<string>();
+
+                foreach (var operation in path.Value.Operations)
+                {
+                    route.upstreamHttpMethod.Add(operation.Key.ToString());
+                }
+
+                route.downstreamScheme = apiListDetail.HttpPart;
+
+                route.authenticationOptions = new AuthenticationOptions()
+                {
+                    authenticationProviderKey = "GatewayKey"
+                };
+
+                route.downstreamHostAndPorts = new List<DownstreamHostAndPort>();
+
+                route.downstreamHostAndPorts.Add(new DownstreamHostAndPort()
+                {
+                    host = apiListDetail.HostPart,
+                    port = apiListDetail.PortPart
+                });
+
+                route.routeIsCaseSensitive = true;
+
+                routes.Add(route);
+            }
+
+            return routes;
         }
 
         //public string GetScope(string apiType)

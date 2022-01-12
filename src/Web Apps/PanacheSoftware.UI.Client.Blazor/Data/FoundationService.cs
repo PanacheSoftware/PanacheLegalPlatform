@@ -1,5 +1,6 @@
 ﻿using PanacheSoftware.Core.Domain.API.Language;
 using PanacheSoftware.Core.Domain.API.Settings;
+using PanacheSoftware.Core.Domain.Ocelot;
 using PanacheSoftware.Core.Domain.UI;
 using PanacheSoftware.Http;
 using PanacheSoftware.UI.Core.Helpers;
@@ -81,6 +82,19 @@ namespace PanacheSoftware.UI.Client.Blazor.Data
                 return "Not Found";
 
             return httpResponseMessage.ContentAsType<APIErrorResponse>().message;
+        }
+
+        public async Task<bool> ProcessAPIConfig(string accessToken, APIList apiList, string gatewayURI)
+        {
+            return await apiHelper.ProcessAPIConfig(accessToken, apiList, gatewayURI);
+        }
+
+        public async Task<bool> CheckBaseGatewayConfig(string accessToken)
+        {
+            if (!await apiHelper.CheckGatewayConfig(accessToken))
+                return await apiHelper.CreateBaseGatewayConfig(accessToken);
+
+            return false;
         }
     }
 }

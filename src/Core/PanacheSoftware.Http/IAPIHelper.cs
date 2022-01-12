@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using PanacheSoftware.Core.Domain.API.Language;
 using PanacheSoftware.Core.Domain.API.Settings;
+using PanacheSoftware.Core.Domain.Ocelot;
 using PanacheSoftware.Core.Domain.UI;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,10 @@ namespace PanacheSoftware.Http
         Task<SettingHead> GetSystemSetting(string accessToken, string settingName);
         Task<List<Guid>> GetTeamsForUserId(string accessToken, string userId);
 
-        string GetBaseURL(string apiType);
+        string GetBaseURL(string apiType, bool ignoreGateway = false);
         //string GetScope(string apiType);
+        Task<bool> ProcessAPIConfig(string accessToken, APIList apiList, string GatewayURI);
+        Task<bool> CheckGatewayConfig(string accessToken);
+        Task<bool> CreateBaseGatewayConfig(string accessToken);
     }
 }
