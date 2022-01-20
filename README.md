@@ -6,6 +6,10 @@
 
 ![Platform Build](https://github.com/PanacheSoftware/PanacheLegalPlatform/workflows/Platform%20Build/badge.svg)
 
+## Branches
+
+Significant updates and changes to the project are currently within the 'Field/APICreation' branch.  These changes will be merged into the main branch shortly.
+
 ## Panache Legal Platform
 
 Panache Legal is a complete open source LegalTech platform available to use with unlimited users for no licence fee.
