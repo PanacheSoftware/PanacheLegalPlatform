@@ -44,7 +44,7 @@
                     }
                     <Row Margin="Margin.Is4.OnY">
                         <Column ColumnSize="ColumnSize.Is12">
-                            <TaskGroupEdit ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10917)" taskGroupHead="@TaskGroupHeadCreateTemplate" TaskGroupCreated="@TaskGroupHeadCreated" resetTaskGroupHead="GetBlankTaskGroupHeadTemplate()" CreationForm="true" TaskGroupUpdated="@TGUpdated" @ref="@addNewTaskGroupEdit" />
+                            <TaskGroupEdit ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10917)" taskGroupHead="@TaskGroupHeadCreateTemplate" TaskGroupCreated="@TaskGroupHeadCreated" resetTaskGroupHead="GetBlankTaskGroupHeadTemplate()" CreationForm="true" TaskGroupUpdated="@TGUpdated" @ref="@addNewTaskGroupEdit" CustomFieldGroupChange="@CustomFieldGroupsChanged" />
                         </Column>
                     </Row>
                 }
@@ -314,6 +314,11 @@ else
         }
 
         return new Tuple<bool, string>(false, $"No task group to complete");
+    }
+
+    void CustomFieldGroupsChanged()
+    {
+        
     }
 
 }

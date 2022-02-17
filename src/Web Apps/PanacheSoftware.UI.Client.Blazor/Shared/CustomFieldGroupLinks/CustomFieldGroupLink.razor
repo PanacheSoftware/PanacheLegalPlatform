@@ -135,6 +135,9 @@
     PLAlert plAlert { get; set; }
     bool CustomFieldGroupTableEditable = false;
 
+    [Parameter]
+    public EventCallback<Task> CustomFieldGroupChange { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         await GetLanguageList();
@@ -228,6 +231,7 @@
         var saveResult = await SaveCustomFieldGroups();
 
         plAlert.ShowAlert(saveResult.Item1, saveResult.Item2);
+        await CustomFieldGroupChange.InvokeAsync();
         SavingFieldGroup = false;
     }
 

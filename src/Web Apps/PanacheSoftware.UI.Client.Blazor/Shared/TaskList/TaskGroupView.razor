@@ -45,7 +45,7 @@
 
             <Row>
                 <Column ColumnSize="ColumnSize.Is12">
-                    <CustomFieldGroupEdit linkId="@taskGroupHead.Id" linkType="@LinkTypes.TaskGroup" ReadOnly="@taskGroupHead.Completed" />
+                    <CustomFieldGroupEdit @ref="customFieldGroupEdit" linkId="@taskGroupHead.Id" linkType="@LinkTypes.TaskGroup" ReadOnly="@taskGroupHead.Completed" />
                 </Column>
             </Row>
 
@@ -76,7 +76,7 @@
                 </Row>
                 <Row Margin="Margin.Is4.OnY">
                     <Column ColumnSize="ColumnSize.Is12">
-                        <TaskGroupEdit ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10931)" taskGroupHead="@taskGroupHead" TaskGroupUpdated="@TGUpdated" @ref="@taskGroupEdit" />
+                        <TaskGroupEdit ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10931)" taskGroupHead="@taskGroupHead" TaskGroupUpdated="@TGUpdated" @ref="@taskGroupEdit" CustomFieldGroupChange="@CustomFieldGroupsChanged" />
                     </Column>
                 </Row>
             }
@@ -131,6 +131,8 @@
 
     [Parameter]
     public EventCallback<TaskGroupHead> TaskGroupTaskItemUpdated { get; set; }
+
+    private CustomFieldGroupEdit customFieldGroupEdit;
 
     protected override async Task OnInitializedAsync()
     {
@@ -258,5 +260,10 @@
         TaskGroupTaskItemUpdated.InvokeAsync(taskGroupHead);
 
         StateHasChanged();
+    }
+
+    void CustomFieldGroupsChanged()
+    {
+        customFieldGroupEdit.UpdateCustomFieldGroups();
     }
 }

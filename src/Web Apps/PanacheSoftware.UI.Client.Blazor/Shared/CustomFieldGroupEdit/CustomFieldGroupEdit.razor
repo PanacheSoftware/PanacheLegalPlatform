@@ -46,6 +46,12 @@
             customFieldGroupValuesModelList.CustomFieldGroupValuesModels.AddRange(mainTaskGroupList);
     }
 
+    public async void UpdateCustomFieldGroups()
+    {
+        await GetCustomFieldGroupModelList();
+        StateHasChanged();
+    }
+
     private async Task<List<CustomFieldGroupValuesModel>> GetCustomFieldGroupModels()
     {
         var fieldGroupValueModels = new List<CustomFieldGroupValuesModel>();

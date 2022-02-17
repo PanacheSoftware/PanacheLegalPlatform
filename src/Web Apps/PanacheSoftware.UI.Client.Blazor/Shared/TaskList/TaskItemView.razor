@@ -86,13 +86,13 @@
             {
                 <Row Margin="Margin.Is4.OnY">
                     <Column ColumnSize="ColumnSize.Is12">
-                        <TaskItemEdit ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10935)" taskHead="@taskHead" TaskItemCreated="@TaskItemCreated" TaskItemUpdated="@TaskItemUpdated" CreationForm="false" @ref="@taskHeadEdit" />
+                        <TaskItemEdit ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10935)" taskHead="@taskHead" TaskItemCreated="@TaskItemCreated" TaskItemUpdated="@TaskItemUpdated" CreationForm="false" @ref="@taskHeadEdit" CustomFieldGroupChange="@CustomFieldGroupsChanged" />
                     </Column>
                 </Row>
             }
             <Row>
                 <Column ColumnSize="ColumnSize.Is12">
-                    <CustomFieldGroupEdit linkId="@taskHead.Id" linkType="@LinkTypes.Task" ReadOnly="@taskHead.Completed"/>
+                    <CustomFieldGroupEdit @ref="customFieldGroupEdit" linkId="@taskHead.Id" linkType="@LinkTypes.Task" ReadOnly="@taskHead.Completed"/>
                 </Column>
             </Row>
         </CardBody>
@@ -128,6 +128,8 @@
 
     [Parameter]
     public EventCallback<TaskHead> TaskUpdated { get; set; }
+
+    private CustomFieldGroupEdit customFieldGroupEdit;
 
     protected override async Task OnInitializedAsync()
     {
@@ -200,5 +202,10 @@
                 taskHead = response.ContentAsType<TaskHead>();
             }
         }
+    }
+
+    void CustomFieldGroupsChanged()
+    {
+        customFieldGroupEdit.UpdateCustomFieldGroups();
     }
 }

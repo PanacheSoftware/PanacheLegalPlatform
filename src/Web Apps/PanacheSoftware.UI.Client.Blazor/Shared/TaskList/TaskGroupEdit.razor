@@ -101,7 +101,7 @@
                 </Validations>
                 <Row>
                     <Column>
-                        <CustomFieldGroupLink @ref="customFieldGroupLink" linkId="taskGroupHead.Id" linkType="@LinkTypes.TaskGroup" />
+                        <CustomFieldGroupLink @ref="customFieldGroupLink" linkId="taskGroupHead.Id" linkType="@LinkTypes.TaskGroup" CustomFieldGroupChange="@CustomFieldGroupsChanged" />
                     </Column>
                 </Row>
             </ModalBody>
@@ -137,6 +137,9 @@
 
     [Parameter]
     public EventCallback<TaskGroupHead> TaskGroupUpdated { get; set; }
+
+    [Parameter]
+    public EventCallback<Task> CustomFieldGroupChange { get; set; }
 
     [Parameter]
     public string ActionButtonTitle { get; set; }
@@ -334,6 +337,11 @@
         }
 
         return new Tuple<bool, string>(false, $"No task group to save");
+    }
+
+    void CustomFieldGroupsChanged()
+    {
+        CustomFieldGroupChange.InvokeAsync(); 
     }
 
 }
