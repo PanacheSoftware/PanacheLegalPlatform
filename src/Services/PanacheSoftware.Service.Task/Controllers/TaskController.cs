@@ -76,56 +76,72 @@ namespace PanacheSoftware.Service.Task.Controllers
 
                     if (taskHead.Id == Guid.Empty)
                     {
-                        TaskGroupHeader taskGroupHeader =
-                            _unitOfWork.TaskGroupHeaders.SingleOrDefault(c => c.Id == taskHead.TaskGroupHeaderId, true);
+                        var taskHeader = _mapper.Map<TaskHeader>(taskHead);
 
-                        if (taskGroupHeader != null)
-                        {
-                            if (await _taskManager.CanAccessTaskGroupHeaderAsync(taskGroupHeader.Id, accessToken))
-                            {
-                                if (taskGroupHeader.Id != Guid.Empty)
-                                {
-                                    var taskHeader = _mapper.Map<TaskHeader>(taskHead);
+                        var taskHeaderCreation = await _taskManager.CreateTaskHeader(taskHeader, accessToken);
 
-                                    //Make sure the start and completion dates don't fall outside of the group headers dates
-                                    var dateCheck = await _taskManager.TaskDatesOkayAsync(taskHeader);
-
-                                    if (!dateCheck.Item1)
-                                        return StatusCode(StatusCodes.Status400BadRequest,
-                                            new APIErrorMessage(StatusCodes.Status400BadRequest,
-                                            dateCheck.Item2));
-
-                                    if (!await _taskManager.SetNewTaskSequenceNoAsync(taskHeader, accessToken))
-                                        return StatusCode(StatusCodes.Status400BadRequest,
-                                            new APIErrorMessage(StatusCodes.Status400BadRequest,
-                                                $"Unable to set task sequence number."));
-
-                                    _unitOfWork.TaskHeaders.Add(taskHeader);
-
-                                    _unitOfWork.Complete();
-
-                                    return Created(new Uri($"{Request.Path}/{taskHeader.Id}", UriKind.Relative),
-                                        _mapper.Map<TaskHead>(taskHeader));
-                                }
-
-                                return StatusCode(StatusCodes.Status400BadRequest,
-                                    new APIErrorMessage(StatusCodes.Status400BadRequest,
-                                        $"TaskHead.TaskGroupHeaderId: '{taskHead.TaskGroupHeaderId}' cannot be empty."));
-                            }
-
+                        if (!taskHeaderCreation.Item1)
                             return StatusCode(StatusCodes.Status400BadRequest,
                                 new APIErrorMessage(StatusCodes.Status400BadRequest,
-                                    $"TaskHead.TaskGroupHeaderId: Can't access '{taskHead.TaskGroupHeaderId}'."));
-                        }
+                                taskHeaderCreation.Item2));
 
-                        return StatusCode(StatusCodes.Status400BadRequest,
-                            new APIErrorMessage(StatusCodes.Status400BadRequest,
-                                $"TaskHead.TaskGroupHeaderId: '{taskHead.TaskGroupHeaderId}' is not valid."));
+                        return Created(new Uri($"{Request.Path}/{taskHeader.Id}", UriKind.Relative), 
+                            _mapper.Map<TaskHead>(taskHeader));
+
                     }
 
-                    return StatusCode(StatusCodes.Status400BadRequest,
-                        new APIErrorMessage(StatusCodes.Status400BadRequest,
-                            $"TaskHead.Id: '{taskHead.Id}' is not an empty guid."));
+                    //if (taskHead.Id == Guid.Empty)
+                    //{
+                    //    TaskGroupHeader taskGroupHeader =
+                    //        _unitOfWork.TaskGroupHeaders.SingleOrDefault(c => c.Id == taskHead.TaskGroupHeaderId, true);
+
+                    //    if (taskGroupHeader != null)
+                    //    {
+                    //        if (await _taskManager.CanAccessTaskGroupHeaderAsync(taskGroupHeader.Id, accessToken))
+                    //        {
+                    //            if (taskGroupHeader.Id != Guid.Empty)
+                    //            {
+                    //                var taskHeader = _mapper.Map<TaskHeader>(taskHead);
+
+                    //                //Make sure the start and completion dates don't fall outside of the group headers dates
+                    //                var dateCheck = await _taskManager.TaskDatesOkayAsync(taskHeader);
+
+                    //                if (!dateCheck.Item1)
+                    //                    return StatusCode(StatusCodes.Status400BadRequest,
+                    //                        new APIErrorMessage(StatusCodes.Status400BadRequest,
+                    //                        dateCheck.Item2));
+
+                    //                if (!await _taskManager.SetNewTaskSequenceNoAsync(taskHeader, accessToken))
+                    //                    return StatusCode(StatusCodes.Status400BadRequest,
+                    //                        new APIErrorMessage(StatusCodes.Status400BadRequest,
+                    //                            $"Unable to set task sequence number."));
+
+                    //                _unitOfWork.TaskHeaders.Add(taskHeader);
+
+                    //                _unitOfWork.Complete();
+
+                    //                return Created(new Uri($"{Request.Path}/{taskHeader.Id}", UriKind.Relative),
+                    //                    _mapper.Map<TaskHead>(taskHeader));
+                    //            }
+
+                    //            return StatusCode(StatusCodes.Status400BadRequest,
+                    //                new APIErrorMessage(StatusCodes.Status400BadRequest,
+                    //                    $"TaskHead.TaskGroupHeaderId: '{taskHead.TaskGroupHeaderId}' cannot be empty."));
+                    //        }
+
+                    //        return StatusCode(StatusCodes.Status400BadRequest,
+                    //            new APIErrorMessage(StatusCodes.Status400BadRequest,
+                    //                $"TaskHead.TaskGroupHeaderId: Can't access '{taskHead.TaskGroupHeaderId}'."));
+                    //    }
+
+                    //    return StatusCode(StatusCodes.Status400BadRequest,
+                    //        new APIErrorMessage(StatusCodes.Status400BadRequest,
+                    //            $"TaskHead.TaskGroupHeaderId: '{taskHead.TaskGroupHeaderId}' is not valid."));
+                    //}
+
+                    //return StatusCode(StatusCodes.Status400BadRequest,
+                    //    new APIErrorMessage(StatusCodes.Status400BadRequest,
+                    //        $"TaskHead.Id: '{taskHead.Id}' is not an empty guid."));
                 }
                 catch (Exception e)
                 {

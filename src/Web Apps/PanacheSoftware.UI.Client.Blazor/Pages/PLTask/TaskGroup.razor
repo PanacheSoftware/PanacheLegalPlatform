@@ -5,6 +5,7 @@
 @inject TokenProvider TokenProvider
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @using PanacheSoftware.Core.Domain.API.Task
+@using PanacheSoftware.Core.Domain.API.Task.Template
 @using PanacheSoftware.Core.Domain.API.Team
 @using PanacheSoftware.Core.Domain.Identity.API;
 @using PanacheSoftware.Core.Domain.API.Client;
@@ -27,10 +28,32 @@
 
     @if (taskGroupHead != null)
     {
+        @if (string.IsNullOrWhiteSpace(Id))
+        {
+            <Row>
+                <Column>
+                    <Card Margin="Margin.Is4.OnY" Shadow="Shadow.Default">
+                        <CardHeader>
+                            <CardTitle>@LanguageHelper.GetTitle(langQueryList, 11100)</CardTitle>
+                        </CardHeader>
+                        <CardBody>
+                            <Row>
+                                <Column ColumnSize="ColumnSize.Is6">
+                                    <Field>
+                                        <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 11100)</FieldLabel>
+                                        <SelectList TItem="SelectListModel" TValue="string" Data="@TemplateSelectListValues" TextField="@((item) => item.DescriptionField)" ValueField="@((item) => item.ValueField)" SelectedValue="@TemplateId.ToString()" SelectedValueChanged="@TemplateListValueChangedHandler" />
+                                    </Field>
+                                </Column>
+                            </Row>
+                        </CardBody>
+                    </Card>
+                </Column>
+            </Row>
+        }
         <Form>
             <Row>
                 <Column>
-                    <Card Margin="Margin.Is4.OnY"  Shadow="Shadow.Default">
+                    <Card Margin="Margin.Is4.OnY" Shadow="Shadow.Default">
                         <CardHeader>
                             <CardTitle>@GetBreadCrumbTitle()</CardTitle>
                             @if(taskGroupHead.Id != Guid.Empty)
@@ -88,7 +111,7 @@
         </Form>
         <Row>
             <Column>
-                <Card Margin="Margin.Is4.OnY">
+                <Card Margin="Margin.Is4.OnY" Shadow="Shadow.Default">
                     <CardHeader>
                         <CardTitle>@LanguageHelper.GetTitle(langQueryList, 10224)</CardTitle>
                     </CardHeader>
@@ -102,11 +125,14 @@
                                 </Field>
                             </Column>
                             <Column ColumnSize="ColumnSize.Is6">
-                                <Field>
-                                    <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10911)</FieldLabel>
-                                    <DateEdit TValue="DateTime" @bind-Date="@taskGroupHead.CompletionDate" InputMode="DateInputMode.Date">
-                                    </DateEdit>
-                                </Field>
+                                @if (!DisableFields)
+                                {
+                                    <Field>
+                                        <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10911)</FieldLabel>
+                                        <DateEdit TValue="DateTime" @bind-Date="@taskGroupHead.CompletionDate" InputMode="DateInputMode.Date">
+                                        </DateEdit>
+                                    </Field>
+                                }
                             </Column>
                         </Row>
                     </CardBody>
@@ -115,7 +141,7 @@
         </Row>
         <Row>
             <Column>
-                <Card Margin="Margin.Is4.OnY">
+                <Card Margin="Margin.Is4.OnY" Shadow="Shadow.Default">
                     <CardHeader>
                         <CardTitle>@LanguageHelper.GetTitle(langQueryList, 10225)</CardTitle>
                     </CardHeader>
@@ -165,14 +191,17 @@
                 </Card>
             </Column>
         </Row>
+        @if (!DisableFields)
+        {
+            <Row>
+                <Column>
+                    <CustomFieldGroupLink @ref="customFieldGroupLink" linkId="taskGroupHead.Id" linkType="@LinkTypes.TaskGroup" />
+                </Column>
+            </Row>
+        }
         <Row>
             <Column>
-                <CustomFieldGroupLink @ref="customFieldGroupLink" linkId="taskGroupHead.Id" linkType="@LinkTypes.TaskGroup" />
-            </Column>
-        </Row>
-        <Row>
-            <Column>
-                <Card Margin="Margin.Is4.OnY">
+                <Card Margin="Margin.Is4.OnY" Shadow="Shadow.Default">
                     <CardBody>
                         <Row>
                             <Column ColumnSize="ColumnSize.Is12">
@@ -209,12 +238,17 @@
     IEnumerable<SelectListModel> TeamSelectListValues { get; set; }
     IEnumerable<SelectListModel> ClientSelectListValues { get; set; }
     IEnumerable<SelectListModel> UserSelectListValues { get; set; }
+    IEnumerable<SelectListModel> TemplateSelectListValues { get; set; }
     PLAlert plAlert { get; set; }
     bool SavingTaskGroupHead = false;
     CustomFieldGroupLink customFieldGroupLink;
+    Guid TemplateId { get; set; }
+    bool DisableFields = false;
+    TemplateHeadList templateHeadList { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
+        TemplateId = Guid.Empty;
         await GetLanguageList();
         await CreateSelectListModels();
         await GetTaskGroup();
@@ -247,6 +281,7 @@
         textCodes.Add(11001);
         textCodes.Add(11006);
         textCodes.Add(11010);
+        textCodes.Add(11100);
 
         langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, UserAppCache.LanguageCode, textCodes.ToArray());
     }
@@ -285,6 +320,8 @@
         await CreateTeamSelectList();
         await CreateUserSelectList();
         await CreateClientSelectList();
+        if(string.IsNullOrWhiteSpace(Id))
+            await CreateTemplateSelectList();
     }
 
     private void StatusListValueChangedHandler(string newValue)
@@ -351,7 +388,9 @@
 
                 try
                 {
-                    var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Post, APITypes.TASK, $"TaskGroup", contentPost);
+                    var uriPart = TemplateId == Guid.Empty ? "TaskGroup" : $"TaskGroup/CreateTaskFromTemplate/{TemplateId}";
+
+                    var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Post, APITypes.TASK, uriPart, contentPost);
 
                     if (response.StatusCode != System.Net.HttpStatusCode.Created)
                     {
@@ -400,6 +439,26 @@
         TeamSelectListValues = TeamListDictionary.Select(s => new SelectListModel { ValueField = s.Key, DescriptionField = s.Value });
     }
 
+    private async Task CreateTemplateSelectList()
+    {
+        var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.TASK, $"Template");
+
+        Dictionary<string, string> TemplateListDictionary = new Dictionary<string, string>();
+        TemplateListDictionary.Add(Guid.Empty.ToString(), "None");
+
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            templateHeadList = response.ContentAsType<TemplateHeadList>();
+
+            foreach (var templateHeader in templateHeadList.TemplateHeaders.OrderBy(h => h.ShortName))
+            {
+                TemplateListDictionary.Add(templateHeader.Id.ToString(), templateHeader.ShortName);
+            }
+        }
+
+        TemplateSelectListValues = TemplateListDictionary.Select(s => new SelectListModel { ValueField = s.Key, DescriptionField = s.Value });
+    }
+
     private string GetMainTeam()
     {
         if (taskGroupHead == default)
@@ -418,6 +477,39 @@
         {
             taskGroupHead.TeamHeaderId = Guid.Empty;
         }
+    }
+
+    private void TemplateListValueChangedHandler(string newValue)
+    {
+        if (Guid.TryParse(newValue, out Guid newId))
+        {
+            TemplateId = newId;
+
+            if (newId != Guid.Empty)
+            {
+                DisableFields = true;
+
+                var chosenTemplate = templateHeadList.TemplateHeaders.Where(h => h.Id == newId).FirstOrDefault();
+
+                if(chosenTemplate != null)
+                {
+                    taskGroupHead.Description = chosenTemplate.Description;
+                }
+
+                //var taskGroupHead = await GetTaskGroupSummary(newId);
+
+                //if (taskGroupHead != null)
+                //{
+                //    templateHeadModel.TemplateHeader.TemplateDetail.Description = taskGroupHead.Description;
+                //    return;
+                //}
+
+                return;
+            }
+        }
+        
+        TemplateId = Guid.Empty;
+        DisableFields = false;
     }
 
     private async Task CreateUserSelectList()

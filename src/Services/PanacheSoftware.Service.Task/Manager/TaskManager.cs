@@ -1,8 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore.Internal;
+using Newtonsoft.Json;
+using PanacheSoftware.Core.Domain.API.CustomField;
+using PanacheSoftware.Core.Domain.API.File;
 using PanacheSoftware.Core.Domain.API.Task;
 using PanacheSoftware.Core.Domain.API.Team;
 using PanacheSoftware.Core.Domain.Task;
+using PanacheSoftware.Core.Types;
 using PanacheSoftware.Http;
 using PanacheSoftware.Service.Task.Core;
 using System;
@@ -10,6 +14,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace PanacheSoftware.Service.Task.Manager
@@ -468,6 +473,254 @@ namespace PanacheSoftware.Service.Task.Manager
             }
 
             return new Tuple<bool, string>(string.IsNullOrWhiteSpace(returnMessage), returnMessage);
+        }
+
+        public async Task<Tuple<Guid, string>> CreateTaskFromTemplate(TaskGroupHead taskHeader, Guid TemplateId, string accessToken)
+        {
+            var returnResult = new Tuple<Guid, string>(Guid.Empty, string.Empty);
+
+            var templateHeader = await _unitOfWork.TemplateHeaders.GetTemplateHeaderWithRelationsAsync(TemplateId, true, accessToken);
+
+            if (templateHeader == null)
+                return new Tuple<Guid, string>(Guid.Empty, $"Id: {TemplateId}, Is not a template");
+
+            var taskGroupHeader = _mapper.Map<TaskGroupHeader>(taskHeader);
+
+            taskGroupHeader.CompletionDate = taskGroupHeader.StartDate.AddDays(templateHeader.TemplateDetail.TotalDays);
+
+            var taskHeaderCreation = await CreateTaskGroupHeader(taskGroupHeader, accessToken);
+
+            if (!taskHeaderCreation.Item1)
+                return new Tuple<Guid, string>(Guid.Empty, taskHeaderCreation.Item2);
+
+            var taskFileLinks = new List<FileHead>();
+            var customFieldLinks = new List<CustomFieldGroupLnk>();
+
+            await GetCustomFieldLinks(customFieldLinks, LinkTypes.Template, TemplateId, LinkTypes.TaskGroup, taskGroupHeader.Id, accessToken);
+
+            foreach (var templateGroupHeader in templateHeader.TemplateGroupHeaders.OrderBy(s => s.SequenceNumber))
+            {
+                var childTaskGroupHead = new TaskGroupHead();
+                childTaskGroupHead.Description = templateGroupHeader.Description;
+                childTaskGroupHead.LongName = templateGroupHeader.LongName;
+                childTaskGroupHead.MainUserId = taskGroupHeader.MainUserId;
+                childTaskGroupHead.SequenceNumber = templateGroupHeader.SequenceNumber;
+                childTaskGroupHead.ShortName = templateGroupHeader.ShortName;
+                childTaskGroupHead.StartDate = taskGroupHeader.StartDate.AddDays(templateGroupHeader.TemplateGroupDetail.DaysOffset);
+                childTaskGroupHead.CompletionDate = childTaskGroupHead.StartDate.AddDays(templateGroupHeader.TemplateGroupDetail.TotalDays);
+                childTaskGroupHead.ParentTaskGroupId = taskGroupHeader.Id;
+                childTaskGroupHead.TeamHeaderId = taskGroupHeader.TeamHeaderId;
+
+                var childTaskGroupHeader = _mapper.Map<TaskGroupHeader>(childTaskGroupHead);
+                
+                var childTaskGroupCreation = await CreateTaskGroupHeader(childTaskGroupHeader, accessToken);
+
+                if(!childTaskGroupCreation.Item1)
+                    return new Tuple<Guid, string>(Guid.Empty, childTaskGroupCreation.Item2);
+
+                await GetCustomFieldLinks(customFieldLinks, LinkTypes.Template, templateGroupHeader.Id, LinkTypes.TaskGroup, childTaskGroupHeader.Id, accessToken);
+
+                foreach (var templateItemHeader in templateGroupHeader.TemplateItemHeaders)
+                {
+                    var childTaskItemHead = new TaskHead();
+                    childTaskItemHead.Title = templateItemHeader.Title;
+                    childTaskItemHead.TaskType = templateItemHeader.TaskType;
+                    childTaskItemHead.Description = templateItemHeader.Description;
+                    childTaskItemHead.StartDate = childTaskGroupHeader.StartDate.AddDays(templateItemHeader.TemplateItemDetail.DaysOffset);
+                    childTaskItemHead.CompletionDate = childTaskItemHead.StartDate.AddDays(templateItemHeader.TemplateItemDetail.TotalDays);
+                    childTaskItemHead.TaskGroupHeaderId = childTaskGroupHeader.Id;
+                    childTaskItemHead.MainUserId = childTaskGroupHeader.MainUserId;
+
+                    var childTaskItemHeader = _mapper.Map<TaskHeader>(childTaskItemHead);
+
+                    var childTaskItemCreation = await CreateTaskHeader(childTaskItemHeader, accessToken);
+
+                    if(!childTaskItemCreation.Item1)
+                        return new Tuple<Guid, string>(Guid.Empty, childTaskItemCreation.Item2);
+
+                    await GetCustomFieldLinks(customFieldLinks, LinkTypes.Template, templateItemHeader.Id, LinkTypes.Task, childTaskItemHeader.Id, accessToken);
+
+                    var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FILE, $"File/Link/GetFilesForLink/{NodeTypes.Template}/{templateItemHeader.Id}");
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var fileList = response.ContentAsType<FileList>();
+
+                        foreach (var fileHead in fileList.FileHeaders)
+                        {
+                            var fileHeadToCreate = new FileHead();
+                            var fileVer = new FileVer();
+                            var latestFileVerion = fileHead.FileVersions.OrderByDescending(v => v.VersionNumber).FirstOrDefault();
+
+                            if (latestFileVerion != null)
+                            {
+                                fileHeadToCreate.FileDetail.FileTitle = fileHead.FileDetail.FileTitle;
+                                fileHeadToCreate.FileDetail.Description = fileHead.FileDetail.Description;
+
+                                if (!string.IsNullOrWhiteSpace(latestFileVerion.URI))
+                                {
+                                    fileHeadToCreate.FileDetail.FileExtension = "URI";
+                                    fileHeadToCreate.FileDetail.FileType = "URI";
+                                    fileVer.URI = latestFileVerion.URI;
+                                    fileVer.VersionNumber = 0;
+                                }
+                                else
+                                {
+                                    fileHeadToCreate.FileDetail.FileExtension = fileHead.FileDetail.FileExtension;
+                                    fileHeadToCreate.FileDetail.FileType = fileHead.FileDetail.FileType;
+                                    fileVer.Content = latestFileVerion.Content;
+                                    fileVer.UntrustedName = latestFileVerion.UntrustedName;
+                                    fileVer.UploadDate = DateTime.Today;
+                                    fileVer.Size = latestFileVerion.Size;
+                                    fileVer.VersionNumber = 0;
+                                }
+
+                                fileHeadToCreate.FileVersions.Add(fileVer);
+
+                                fileHeadToCreate.FileLinks.Add(new FileLnk()
+                                {
+                                    LinkId = childTaskItemHeader.Id,
+                                    LinkType = LinkTypes.Task,
+                                    FileHeaderId = fileHeadToCreate.Id
+                                });
+                            }
+
+                            taskFileLinks.Add(fileHeadToCreate);
+                        }
+                    }
+                }
+            }
+
+            foreach (var fileToCreate in taskFileLinks)
+            {
+                HttpContent contentPost = new StringContent(JsonConvert.SerializeObject(fileToCreate), Encoding.UTF8, "application/json");
+
+                try
+                {
+                    var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Post, APITypes.FILE, $"File", contentPost);
+
+                    if (response.StatusCode != System.Net.HttpStatusCode.Created)
+                    {
+                        return new Tuple<Guid, string>(Guid.Empty, $"Error creating file for Task Item: {fileToCreate.FileLinks.FirstOrDefault().LinkId}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return new Tuple<Guid, string>(Guid.Empty, $"Error creating file for Task Item: {fileToCreate.FileLinks.FirstOrDefault().LinkId}");
+                }
+            }
+
+            foreach (var customFieldGroupLink in customFieldLinks)
+            {
+                HttpContent contentPost = new StringContent(JsonConvert.SerializeObject(customFieldGroupLink), Encoding.UTF8, "application/json");
+
+                try
+                {
+                    var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Post, APITypes.CUSTOMFIELD, $"CustomFieldGroupLink", contentPost);
+
+                    if (response.StatusCode != System.Net.HttpStatusCode.Created)
+                    {
+                        return new Tuple<Guid, string>(Guid.Empty, $"Error creating custom filed group link for template: {customFieldGroupLink.LinkId}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return new Tuple<Guid, string>(Guid.Empty, $"Error creating custom filed group link for template: {customFieldGroupLink.LinkId}");
+                }
+            }
+
+            return new Tuple<Guid, string>(taskGroupHeader.Id, $"Created okay");
+        }
+
+        public async Task<Tuple<bool, string>> CreateTaskGroupHeader(TaskGroupHeader taskGroupHeader, string accessToken)
+        {
+            if(taskGroupHeader.Id != Guid.Empty)
+                return new Tuple<bool, string>(false, $"TaskGroupHead.Id: '{taskGroupHeader.Id}' is not an empty guid.");
+
+            if (taskGroupHeader.ChildTaskGroups.Any())
+                return new Tuple<bool, string>(false, "Cannot create child task groups when creating parent");
+
+            if (taskGroupHeader.ChildTasks.Any())
+                return new Tuple<bool, string>(false, "Cannot create child tasks when creating task group");
+
+            if (!await TaskGroupTeamOkayAsync(taskGroupHeader, accessToken))
+                return new Tuple<bool, string>(false, $"TaskGroupHead.TeamHeaderId: Can't access '{taskGroupHeader.TeamHeaderId}'.");
+
+            if (!await TaskGroupParentOkayAsync(taskGroupHeader, accessToken))
+                return new Tuple<bool, string>(false, $"TaskGroupHead.ParentTaskGroupId: '{taskGroupHeader.ParentTaskGroupId}' is invalid.");
+
+            var dateCheck = await TaskGroupDatesOkayAsync(taskGroupHeader, accessToken);
+
+            if (!dateCheck.Item1)
+                return new Tuple<bool, string>(false, dateCheck.Item2);
+
+            if (!await SetNewTaskGroupSequenceNoAsync(taskGroupHeader, accessToken))
+                return new Tuple<bool, string>(false, $"Unable to set task sequence number.");
+
+            taskGroupHeader.OriginalCompletionDate = taskGroupHeader.CompletionDate;
+            taskGroupHeader.CompletedOnDate = DateTime.Parse("01/01/1900");
+            taskGroupHeader.Completed = false;
+
+            if(taskGroupHeader.TaskGroupDetail == null)
+                taskGroupHeader.TaskGroupDetail = new TaskGroupDetail();
+
+            _unitOfWork.TaskGroupHeaders.Add(taskGroupHeader);
+
+            _unitOfWork.Complete();
+
+            return new Tuple<bool, string>(true, $"Created okay");
+        }
+
+        public async Task<Tuple<bool, string>> CreateTaskHeader(TaskHeader taskHeader, string accessToken)
+        {
+            if (taskHeader.Id != Guid.Empty)
+                return new Tuple<bool, string>(false, $"TaskHead.Id: '{taskHeader.Id}' is not an empty guid.");
+
+            TaskGroupHeader taskGroupHeader =
+                    _unitOfWork.TaskGroupHeaders.SingleOrDefault(c => c.Id == taskHeader.TaskGroupHeaderId, true);
+
+            if(taskGroupHeader == null)
+                return new Tuple<bool, string>(false, $"TaskHead.TaskGroupHeaderId: '{taskHeader.TaskGroupHeaderId}' is not valid.");
+
+            if(!await CanAccessTaskGroupHeaderAsync(taskGroupHeader.Id, accessToken))
+                return new Tuple<bool, string>(false, $"TaskHead.TaskGroupHeaderId: Can't access '{taskHeader.TaskGroupHeaderId}'.");
+
+            var dateCheck = await TaskDatesOkayAsync(taskHeader);
+
+            if (!dateCheck.Item1)
+                return new Tuple<bool, string>(false, dateCheck.Item2);
+
+            if (!await SetNewTaskSequenceNoAsync(taskHeader, accessToken))
+                return new Tuple<bool, string>(false, $"Unable to set task sequence number.");
+
+            _unitOfWork.TaskHeaders.Add(taskHeader);
+
+            _unitOfWork.Complete();
+
+            return new Tuple<bool, string>(true, $"Created okay");
+        }
+
+        public async Task<bool> GetCustomFieldLinks(IList<CustomFieldGroupLnk> CustomFieldGroupLinks, string origlinkType, Guid origlinkId, string linkType, Guid linkId, string accessToken)
+        {
+            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.CUSTOMFIELD, $"CustomFieldGroupLink/GetLinks/{origlinkType}/{origlinkId}");
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var customFieldGroupLnkList = response.ContentAsType<CustomFieldGroupLnkList>();
+
+                foreach (var customLnk in customFieldGroupLnkList.CustomFieldGroupLinks)
+                {
+                    var customFieldGroupLnk = new CustomFieldGroupLnk();
+
+                    customFieldGroupLnk.CustomFieldGroupHeaderId = customLnk.CustomFieldGroupHeaderId;
+                    customFieldGroupLnk.LinkId = linkId;
+                    customFieldGroupLnk.LinkType = linkType;
+                    
+                    CustomFieldGroupLinks.Add(customFieldGroupLnk);
+                }
+            }
+
+            return true;
         }
 
         private async Task<List<Guid>> GetUserTeamsAsync(string accessToken)

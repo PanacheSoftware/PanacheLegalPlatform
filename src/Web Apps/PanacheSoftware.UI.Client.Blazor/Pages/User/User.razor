@@ -385,7 +385,7 @@
 
     private async Task CreateTeamSelectList()
     {
-        var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.TEAM, $"Team/");
+        var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.TEAM, $"Team");
         Dictionary<string, string> TeamListDictionary = new Dictionary<string, string>();
 
         if (response.StatusCode == System.Net.HttpStatusCode.OK)

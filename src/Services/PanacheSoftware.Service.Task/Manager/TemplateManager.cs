@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Newtonsoft.Json;
+using PanacheSoftware.Core.Domain.API.CustomField;
 using PanacheSoftware.Core.Domain.API.File;
 using PanacheSoftware.Core.Domain.API.Task.Template;
 using PanacheSoftware.Core.Domain.File;
@@ -34,7 +35,7 @@ namespace PanacheSoftware.Service.Task.Manager
             _taskManager = taskManager;   
         }
 
-        public async Task<TemplateHeadList> GetTemplateHeadListAsync(string accessToken)
+        public async Task<TemplateHeadList> GetTemplateHeadListAsync()
         {
             //var userTeams = await GetUserTeamsAsync(accessToken);
 
@@ -69,9 +70,16 @@ namespace PanacheSoftware.Service.Task.Manager
 
             templateHeader.TemplateDetail.TotalDays = (taskGroupSummary.CompletionDate - taskGroupSummary.StartDate).Days;
 
-            templateHeader.TemplateGroupHeaders = new List<TemplateGroupHeader>();
+            //templateHeader.TemplateGroupHeaders = new List<TemplateGroupHeader>();
 
-            var taskFileLinks = new List<Tuple<int, int, FileHead>>();
+            _unitOfWork.TemplateHeaders.Add(templateHeader);
+
+            _unitOfWork.Complete();
+
+            var taskFileLinks = new List<FileHead>();
+            var customFieldLinks = new List<CustomFieldGroupLnk>();
+
+            await _taskManager.GetCustomFieldLinks(customFieldLinks, LinkTypes.TaskGroup, TaskGroupHeaderId, LinkTypes.Template, templateHeader.Id, accessToken);
 
             foreach (var taskGroupHeader in taskGroupSummary.ChildTaskGroups)
             {
@@ -88,7 +96,15 @@ namespace PanacheSoftware.Service.Task.Manager
                 templateGroupHeader.TemplateGroupDetail.DaysOffset = (taskGroupHeader.StartDate - taskGroupSummary.StartDate).Days;
                 templateGroupHeader.TemplateGroupDetail.TotalDays = (taskGroupHeader.CompletionDate - taskGroupHeader.StartDate).Days;
 
-                templateGroupHeader.TemplateItemHeaders = new List<TemplateItemHeader>();
+                templateGroupHeader.TemplateHeaderId = templateHeader.Id;
+
+                _unitOfWork.TemplateGroupHeaders.Add(templateGroupHeader);
+
+                _unitOfWork.Complete();
+
+                await _taskManager.GetCustomFieldLinks(customFieldLinks, LinkTypes.TaskGroup, taskGroupHeader.Id, LinkTypes.Template, templateGroupHeader.Id, accessToken);
+
+                //templateGroupHeader.TemplateItemHeaders = new List<TemplateItemHeader>();
 
                 foreach (var taskItemHeader in taskGroupHeader.ChildTasks)
                 {
@@ -103,6 +119,14 @@ namespace PanacheSoftware.Service.Task.Manager
                     templateItemHeader.SequenceNumber = taskItemHeader.SequenceNumber;
                     templateItemHeader.TemplateItemDetail.DaysOffset = (taskItemHeader.StartDate - taskGroupHeader.StartDate).Days;
                     templateItemHeader.TemplateItemDetail.TotalDays = (taskItemHeader.CompletionDate - taskItemHeader.StartDate).Days;
+
+                    templateItemHeader.TemplateGroupHeaderId = templateGroupHeader.Id;
+
+                    _unitOfWork.TemplateItemHeaders.Add(templateItemHeader);
+
+                    _unitOfWork.Complete();
+
+                    await _taskManager.GetCustomFieldLinks(customFieldLinks, LinkTypes.Task, taskItemHeader.Id, LinkTypes.Template, templateItemHeader.Id, accessToken);
 
                     var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FILE, $"File/Link/GetFilesForLink/{NodeTypes.Task}/{taskItemHeader.Id}");
 
@@ -132,63 +156,64 @@ namespace PanacheSoftware.Service.Task.Manager
                                 {
                                     fileHeadToCreate.FileDetail.FileExtension = fileHead.FileDetail.FileExtension;
                                     fileHeadToCreate.FileDetail.FileType = fileHead.FileDetail.FileType;
-                                    fileVer.Content = fileVer.Content;
-                                    fileVer.UntrustedName = fileVer.UntrustedName;
+                                    fileVer.Content = latestFileVerion.Content;
+                                    fileVer.UntrustedName = latestFileVerion.UntrustedName;
                                     fileVer.UploadDate = DateTime.Today;
-                                    fileVer.Size = fileVer.Size;
+                                    fileVer.Size = latestFileVerion.Size;
                                     fileVer.VersionNumber = 0;
                                 }
+
+                                fileHeadToCreate.FileVersions.Add(fileVer);
+
+                                fileHeadToCreate.FileLinks.Add(new FileLnk()
+                                {
+                                    LinkId = templateItemHeader.Id,
+                                    LinkType = LinkTypes.Template,
+                                    FileHeaderId = fileHeadToCreate.Id
+                                });
                             }
 
-                            taskFileLinks.Add(Tuple.Create(templateGroupHeader.SequenceNumber, templateItemHeader.SequenceNumber, fileHeadToCreate));
+                            taskFileLinks.Add(fileHeadToCreate);
                         }
                     }
-
-                    templateGroupHeader.TemplateItemHeaders.Add(templateItemHeader);
                 }
-
-                templateHeader.TemplateGroupHeaders.Add(templateGroupHeader);
             }
             
-            _unitOfWork.TemplateHeaders.Add(templateHeader);
-
-            _unitOfWork.Complete();
-
             foreach (var fileToCreate in taskFileLinks)
             {
-                var templateGroup = templateHeader.TemplateGroupHeaders.Where(tg => tg.SequenceNumber == fileToCreate.Item1).FirstOrDefault();
+                HttpContent contentPost = new StringContent(JsonConvert.SerializeObject(fileToCreate), Encoding.UTF8, "application/json");
 
-                if(templateGroup != null)
+                try
                 {
-                    var templateItem = templateGroup.TemplateItemHeaders.Where(ti => ti.SequenceNumber == fileToCreate.Item2).FirstOrDefault();
+                    var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Post, APITypes.FILE, $"File", contentPost);
 
-                    if(templateItem != null)
+                    if (response.StatusCode != System.Net.HttpStatusCode.Created)
                     {
-                        var fileHeadToCreate = fileToCreate.Item3;
-
-                        fileHeadToCreate.FileLinks.Add(new FileLnk()
-                        {
-                            LinkId = templateItem.Id,
-                            LinkType = LinkTypes.Template,
-                            FileHeaderId = fileHeadToCreate.Id
-                        });
-
-                        HttpContent contentPost = new StringContent(JsonConvert.SerializeObject(fileHeadToCreate), Encoding.UTF8, "application/json");
-
-                        try
-                        {
-                            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Post, APITypes.FILE, $"File", contentPost);
-
-                            if (response.StatusCode != System.Net.HttpStatusCode.Created)
-                            {
-                                return new Tuple<Guid, string>(Guid.Empty, $"Error creating file for template: {fileToCreate.Item1}, {fileToCreate.Item2}");
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            return new Tuple<Guid, string>(Guid.Empty, $"Error creating file for template: {fileToCreate.Item1}, {fileToCreate.Item2}");
-                        }
+                        return new Tuple<Guid, string>(Guid.Empty, $"Error creating file for template: {fileToCreate.FileLinks.FirstOrDefault().LinkId}");
                     }
+                }
+                catch (Exception ex)
+                {
+                    return new Tuple<Guid, string>(Guid.Empty, $"Error creating file for template: {fileToCreate.FileLinks.FirstOrDefault().LinkId}");
+                }
+            }
+
+            foreach (var customFieldGroupLink in customFieldLinks)
+            {
+                HttpContent contentPost = new StringContent(JsonConvert.SerializeObject(customFieldGroupLink), Encoding.UTF8, "application/json");
+
+                try
+                {
+                    var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Post, APITypes.CUSTOMFIELD, $"CustomFieldGroupLink", contentPost);
+
+                    if (response.StatusCode != System.Net.HttpStatusCode.Created)
+                    {
+                        return new Tuple<Guid, string>(Guid.Empty, $"Error creating custom filed group link for template: {customFieldGroupLink.LinkId}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return new Tuple<Guid, string>(Guid.Empty, $"Error creating custom filed group link for template: {customFieldGroupLink.LinkId}");
                 }
             }
 
