@@ -14,13 +14,15 @@ namespace PanacheSoftware.Core.Domain.API.Task.Template
         {
             Status = StatusTypes.Open;
             TemplateItemDetail = new TemplateItemDet();
-        }
+            ShortName = String.Empty;
+    }
 
         public Guid Id { get; set; }
         public Guid TemplateGroupHeaderId { get; set; }
 
         public string Description { get; set; }
         public string Title { get; set; }
+        public string ShortName { get; set; }
 
         public string TaskType { get; set; }
 

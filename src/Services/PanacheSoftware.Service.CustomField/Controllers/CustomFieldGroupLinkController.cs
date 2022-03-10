@@ -81,6 +81,9 @@ namespace PanacheSoftware.Service.CustomField.Controllers
                                     return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"Link already exists."));
                             }
 
+                            if(_unitOfWork.CustomFieldGroupLinks.CustomFieldGroupLinkExists(customFieldGroupLnk.LinkId, customFieldGroupLnk.LinkType, customFieldGroupLnk.CustomFieldGroupHeaderId))
+                                return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"Link already exists."));
+
                             var customFieldGroupLink = _mapper.Map<CustomFieldGroupLink>(customFieldGroupLnk);
 
                             _unitOfWork.CustomFieldGroupLinks.Add(customFieldGroupLink);

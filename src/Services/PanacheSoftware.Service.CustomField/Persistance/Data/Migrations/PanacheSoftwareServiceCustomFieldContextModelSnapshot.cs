@@ -21,334 +21,338 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Data.Migrations
                 .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("PanacheSoftware.Core.Domain.CustomField.CustomFieldGroupDetail", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd();
 
-                    b.Property<Guid>("CreatedBy");
+                b.Property<Guid>("CreatedBy");
 
-                    b.Property<DateTime>("CreatedDate");
+                b.Property<DateTime>("CreatedDate");
 
-                    b.Property<Guid>("CustomFieldGroupHeaderId");
+                b.Property<Guid>("CustomFieldGroupHeaderId");
 
-                    b.Property<string>("FieldGroupTag")
-                        .HasColumnType("nvarchar(1000)");
+                b.Property<string>("FieldGroupTag")
+                    .HasColumnType("nvarchar(1000)");
 
-                    b.Property<string>("FieldGroupType")
-                        .HasColumnType("nvarchar(1000)");
+                b.Property<string>("FieldGroupType")
+                    .HasColumnType("nvarchar(1000)");
 
-                    b.Property<Guid>("LastUpdateBy");
+                b.Property<Guid>("LastUpdateBy");
 
-                    b.Property<DateTime>("LastUpdateDate");
+                b.Property<DateTime>("LastUpdateDate");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(25)");
+                b.Property<string>("Status")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(25)");
 
-                    b.Property<Guid>("TenantId");
+                b.Property<Guid>("TenantId");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("CustomFieldGroupHeaderId")
-                        .IsUnique();
+                b.HasIndex("CustomFieldGroupHeaderId")
+                    .IsUnique();
 
-                    b.ToTable("CustomFieldGroupDetail");
-                });
+                b.ToTable("CustomFieldGroupDetail");
+            });
 
             modelBuilder.Entity("PanacheSoftware.Core.Domain.CustomField.CustomFieldGroupHeader", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd();
 
-                    b.Property<Guid>("CreatedBy");
+                b.Property<Guid>("CreatedBy");
 
-                    b.Property<DateTime>("CreatedDate");
+                b.Property<DateTime>("CreatedDate");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(4000)");
+                b.Property<string>("Description")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(4000)");
 
-                    b.Property<Guid>("LastUpdateBy");
+                b.Property<Guid>("LastUpdateBy");
 
-                    b.Property<DateTime>("LastUpdateDate");
+                b.Property<DateTime>("LastUpdateDate");
 
-                    b.Property<string>("LongName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(1000)");
+                b.Property<string>("LongName")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(1000)");
 
-                    b.Property<string>("ShortName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(1000)");
+                b.Property<string>("ShortName")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(1000)");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(25)");
+                b.Property<string>("Status")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(25)");
 
-                    b.Property<Guid>("TenantId");
+                b.Property<Guid>("TenantId");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("CustomFieldGroupHeader");
-                });
+                b.ToTable("CustomFieldGroupHeader");
+            });
 
             modelBuilder.Entity("PanacheSoftware.Core.Domain.CustomField.CustomFieldGroupLink", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd();
 
-                    b.Property<Guid>("CreatedBy");
+                b.Property<Guid>("CreatedBy");
 
-                    b.Property<DateTime>("CreatedDate");
+                b.Property<DateTime>("CreatedDate");
 
-                    b.Property<Guid>("CustomFieldGroupHeaderId");
+                b.Property<Guid>("CustomFieldGroupHeaderId");
 
-                    b.Property<Guid>("LastUpdateBy");
+                b.Property<Guid>("LastUpdateBy");
 
-                    b.Property<DateTime>("LastUpdateDate");
+                b.Property<DateTime>("LastUpdateDate");
 
-                    b.Property<Guid>("LinkId");
+                b.Property<Guid>("LinkId");
 
-                    b.Property<string>("LinkType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(1000)");
+                b.Property<string>("LinkType")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(1000)");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(25)");
+                b.Property<string>("Status")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(25)");
 
-                    b.Property<Guid>("TenantId");
+                b.Property<Guid>("TenantId");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("CustomFieldGroupHeaderId");
+                b.HasIndex("CustomFieldGroupHeaderId");
 
-                    b.ToTable("CustomFieldGroupLink");
-                });
+                b.ToTable("CustomFieldGroupLink");
+            });
 
             modelBuilder.Entity("PanacheSoftware.Core.Domain.CustomField.CustomFieldHeader", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd();
 
-                    b.Property<Guid>("CreatedBy");
+                b.Property<Guid>("CreatedBy");
 
-                    b.Property<DateTime>("CreatedDate");
+                b.Property<DateTime>("CreatedDate");
 
-                    b.Property<Guid>("CustomFieldGroupHeaderId");
+                b.Property<Guid>("CustomFieldGroupHeaderId");
 
-                    b.Property<string>("CustomFieldType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(1000)");
+                b.Property<string>("CustomFieldType")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(1000)");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(4000)");
+                b.Property<string>("Description")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(4000)");
 
-                    b.Property<bool>("GDPR")
-                        .HasColumnType("bit");
+                b.Property<bool>("GDPR")
+                    .HasColumnType("bit");
 
-                    b.Property<bool>("History")
-                        .HasColumnType("bit");
+                b.Property<bool>("History")
+                    .HasColumnType("bit");
 
-                    b.Property<Guid>("LastUpdateBy");
+                b.Property<Guid>("LastUpdateBy");
 
-                    b.Property<DateTime>("LastUpdateDate");
+                b.Property<DateTime>("LastUpdateDate");
 
-                    b.Property<bool>("Mandatory")
-                        .HasColumnType("bit");
+                b.Property<bool>("Mandatory")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(1000)");
+                b.Property<string>("Name")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(1000)");
 
-                    b.Property<int>("SequenceNo")
-                        .HasColumnType("int");
+                b.Property<int>("SequenceNo")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(25)");
+                b.Property<string>("ShortName")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(1000)");
 
-                    b.Property<Guid>("TenantId");
+                b.Property<string>("Status")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(25)");
 
-                    b.HasKey("Id");
+                b.Property<Guid>("TenantId");
 
-                    b.HasIndex("CustomFieldGroupHeaderId");
+                b.HasKey("Id");
 
-                    b.ToTable("CustomFieldHeader");
-                });
+                b.HasIndex("CustomFieldGroupHeaderId");
+
+                b.ToTable("CustomFieldHeader");
+            });
 
             modelBuilder.Entity("PanacheSoftware.Core.Domain.CustomField.CustomFieldTag", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd();
 
-                    b.Property<Guid>("CreatedBy");
+                b.Property<Guid>("CreatedBy");
 
-                    b.Property<DateTime>("CreatedDate");
+                b.Property<DateTime>("CreatedDate");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(4000)");
+                b.Property<string>("Description")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(4000)");
 
-                    b.Property<Guid>("LastUpdateBy");
+                b.Property<Guid>("LastUpdateBy");
 
-                    b.Property<DateTime>("LastUpdateDate");
+                b.Property<DateTime>("LastUpdateDate");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(1000)");
+                b.Property<string>("Name")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(1000)");
 
-                    b.Property<string>("Status")
-                        .HasColumnType("nvarchar(25)");
+                b.Property<string>("Status")
+                    .HasColumnType("nvarchar(25)");
 
-                    b.Property<Guid>("TenantId");
+                b.Property<Guid>("TenantId");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("CustomFieldTag");
-                });
+                b.ToTable("CustomFieldTag");
+            });
 
             modelBuilder.Entity("PanacheSoftware.Core.Domain.CustomField.CustomFieldValue", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd();
 
-                    b.Property<Guid>("CreatedBy");
+                b.Property<Guid>("CreatedBy");
 
-                    b.Property<DateTime>("CreatedDate");
+                b.Property<DateTime>("CreatedDate");
 
-                    b.Property<Guid>("CustomFieldHeaderId");
+                b.Property<Guid>("CustomFieldHeaderId");
 
-                    b.Property<string>("FieldValue")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(4000)");
+                b.Property<string>("FieldValue")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(4000)");
 
-                    b.Property<Guid>("LastUpdateBy");
+                b.Property<Guid>("LastUpdateBy");
 
-                    b.Property<DateTime>("LastUpdateDate");
+                b.Property<DateTime>("LastUpdateDate");
 
-                    b.Property<Guid>("LinkId");
+                b.Property<Guid>("LinkId");
 
-                    b.Property<string>("LinkType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(1000)");
+                b.Property<string>("LinkType")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(1000)");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(25)");
+                b.Property<string>("Status")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(25)");
 
-                    b.Property<Guid>("TenantId");
+                b.Property<Guid>("TenantId");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("CustomFieldHeaderId");
+                b.HasIndex("CustomFieldHeaderId");
 
-                    b.ToTable("CustomFieldValue");
-                });
+                b.ToTable("CustomFieldValue");
+            });
 
             modelBuilder.Entity("PanacheSoftware.Core.Domain.CustomField.CustomFieldValueHistory", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd();
 
-                    b.Property<Guid>("CreatedBy");
+                b.Property<Guid>("CreatedBy");
 
-                    b.Property<DateTime>("CreatedDate");
+                b.Property<DateTime>("CreatedDate");
 
-                    b.Property<Guid>("CustomFieldValueId");
+                b.Property<Guid>("CustomFieldValueId");
 
-                    b.Property<string>("FieldValue")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(4000)");
+                b.Property<string>("FieldValue")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(4000)");
 
-                    b.Property<Guid>("LastUpdateBy");
+                b.Property<Guid>("LastUpdateBy");
 
-                    b.Property<DateTime>("LastUpdateDate");
+                b.Property<DateTime>("LastUpdateDate");
 
-                    b.Property<DateTime>("OriginalCreationDate");
+                b.Property<DateTime>("OriginalCreationDate");
 
-                    b.Property<int>("SequenceNo")
-                        .HasColumnType("int");
+                b.Property<int>("SequenceNo")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(25)");
+                b.Property<string>("Status")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(25)");
 
-                    b.Property<Guid>("TenantId");
+                b.Property<Guid>("TenantId");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("CustomFieldValueId");
+                b.HasIndex("CustomFieldValueId");
 
-                    b.ToTable("CustomFieldValueHistory");
-                });
+                b.ToTable("CustomFieldValueHistory");
+            });
 
             modelBuilder.Entity("PanacheSoftware.Core.Domain.CustomField.CustomFieldGroupDetail", b =>
-                {
-                    b.HasOne("PanacheSoftware.Core.Domain.CustomField.CustomFieldGroupHeader", "CustomFieldGroupHeader")
-                        .WithOne("CustomFieldGroupDetail")
-                        .HasForeignKey("PanacheSoftware.Core.Domain.CustomField.CustomFieldGroupDetail", "CustomFieldGroupHeaderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("PanacheSoftware.Core.Domain.CustomField.CustomFieldGroupHeader", "CustomFieldGroupHeader")
+                    .WithOne("CustomFieldGroupDetail")
+                    .HasForeignKey("PanacheSoftware.Core.Domain.CustomField.CustomFieldGroupDetail", "CustomFieldGroupHeaderId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("CustomFieldGroupHeader");
-                });
+                b.Navigation("CustomFieldGroupHeader");
+            });
 
             modelBuilder.Entity("PanacheSoftware.Core.Domain.CustomField.CustomFieldGroupLink", b =>
-                {
-                    b.HasOne("PanacheSoftware.Core.Domain.CustomField.CustomFieldGroupHeader", "CustomFieldGroupHeader")
-                        .WithMany()
-                        .HasForeignKey("CustomFieldGroupHeaderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("PanacheSoftware.Core.Domain.CustomField.CustomFieldGroupHeader", "CustomFieldGroupHeader")
+                    .WithMany()
+                    .HasForeignKey("CustomFieldGroupHeaderId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("CustomFieldGroupHeader");
-                });
+                b.Navigation("CustomFieldGroupHeader");
+            });
 
             modelBuilder.Entity("PanacheSoftware.Core.Domain.CustomField.CustomFieldHeader", b =>
-                {
-                    b.HasOne("PanacheSoftware.Core.Domain.CustomField.CustomFieldGroupHeader", "CustomFieldGroupHeader")
-                        .WithMany("CustomFieldHeaders")
-                        .HasForeignKey("CustomFieldGroupHeaderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("PanacheSoftware.Core.Domain.CustomField.CustomFieldGroupHeader", "CustomFieldGroupHeader")
+                    .WithMany("CustomFieldHeaders")
+                    .HasForeignKey("CustomFieldGroupHeaderId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("CustomFieldGroupHeader");
-                });
+                b.Navigation("CustomFieldGroupHeader");
+            });
 
             modelBuilder.Entity("PanacheSoftware.Core.Domain.CustomField.CustomFieldValue", b =>
-                {
-                    b.HasOne("PanacheSoftware.Core.Domain.CustomField.CustomFieldHeader", "CustomFieldHeader")
-                        .WithMany()
-                        .HasForeignKey("CustomFieldHeaderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("PanacheSoftware.Core.Domain.CustomField.CustomFieldHeader", "CustomFieldHeader")
+                    .WithMany()
+                    .HasForeignKey("CustomFieldHeaderId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("CustomFieldHeader");
-                });
+                b.Navigation("CustomFieldHeader");
+            });
 
             modelBuilder.Entity("PanacheSoftware.Core.Domain.CustomField.CustomFieldValueHistory", b =>
-                {
-                    b.HasOne("PanacheSoftware.Core.Domain.CustomField.CustomFieldValue", "CustomFieldValue")
-                        .WithMany("CustomFieldValueHistorys")
-                        .HasForeignKey("CustomFieldValueId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("PanacheSoftware.Core.Domain.CustomField.CustomFieldValue", "CustomFieldValue")
+                    .WithMany("CustomFieldValueHistorys")
+                    .HasForeignKey("CustomFieldValueId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("CustomFieldValue");
-                });
+                b.Navigation("CustomFieldValue");
+            });
 
             modelBuilder.Entity("PanacheSoftware.Core.Domain.CustomField.CustomFieldGroupHeader", b =>
-                {
-                    b.Navigation("CustomFieldGroupDetail");
+            {
+                b.Navigation("CustomFieldGroupDetail");
 
-                    b.Navigation("CustomFieldHeaders");
-                });
+                b.Navigation("CustomFieldHeaders");
+            });
 
             modelBuilder.Entity("PanacheSoftware.Core.Domain.CustomField.CustomFieldValue", b =>
-                {
-                    b.Navigation("CustomFieldValueHistorys");
-                });
+            {
+                b.Navigation("CustomFieldValueHistorys");
+            });
 #pragma warning restore 612, 618
         }
     }

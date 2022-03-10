@@ -11,6 +11,7 @@ namespace PanacheSoftware.Core.Domain.CustomField
     {
         public Guid CustomFieldGroupHeaderId { get; set; }
         public virtual CustomFieldGroupHeader CustomFieldGroupHeader { get; set; }
+        public string ShortName { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
 

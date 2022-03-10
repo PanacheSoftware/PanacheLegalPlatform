@@ -6,6 +6,7 @@ using PanacheSoftware.Core.Domain.API.File;
 using PanacheSoftware.Core.Domain.API.Task;
 using PanacheSoftware.Core.Domain.API.Team;
 using PanacheSoftware.Core.Domain.Task;
+using PanacheSoftware.Core.Helper;
 using PanacheSoftware.Core.Types;
 using PanacheSoftware.Http;
 using PanacheSoftware.Service.Task.Core;
@@ -657,6 +658,39 @@ namespace PanacheSoftware.Service.Task.Manager
             if (!await SetNewTaskGroupSequenceNoAsync(taskGroupHeader, accessToken))
                 return new Tuple<bool, string>(false, $"Unable to set task sequence number.");
 
+            List<string> taskGroupHeadDuplicates = new List<string>();
+            List<string> taskHeadDuplicates = new List<string>();
+
+            SetTaskHeaderShortNames(taskGroupHeader);
+
+            foreach (var childTaskGroupHeader in taskGroupHeader.ChildTaskGroups)
+            {
+                SetTaskHeaderShortNames(childTaskGroupHeader);
+            }
+
+            TaskGroupHead parentTaskGroupHead = null;
+
+            if (taskGroupHeader.ParentTaskGroupId.HasValue)
+            {
+                var parentTaskGroupHeader = await _unitOfWork.TaskGroupHeaders.GetTaskGroupHeaderWithRelationsAsync(taskGroupHeader.ParentTaskGroupId.Value, true, accessToken);
+
+                if(parentTaskGroupHeader != null)
+                    parentTaskGroupHead = _mapper.Map<TaskGroupHead>(parentTaskGroupHeader);
+            }
+
+            if (parentTaskGroupHead != null)
+            {
+                parentTaskGroupHead.ChildTaskGroups.Add(_mapper.Map<TaskGroupHead>(taskGroupHeader));
+                ValidateTaskShortNames(parentTaskGroupHead, taskGroupHeadDuplicates, taskHeadDuplicates);
+            }
+            else
+            {
+                ValidateTaskShortNames(_mapper.Map<TaskGroupHead>(taskGroupHeader), taskGroupHeadDuplicates, taskHeadDuplicates);
+            }
+
+            if(taskGroupHeadDuplicates.Any() || taskHeadDuplicates.Any())
+                return new Tuple<bool, string>(false, $"Duplicate ShortNames found. Task Groups: '{string.Join(",", taskGroupHeadDuplicates)}', Tasks: '{string.Join(",", taskHeadDuplicates)}'");
+
             taskGroupHeader.OriginalCompletionDate = taskGroupHeader.CompletionDate;
             taskGroupHeader.CompletedOnDate = DateTime.Parse("01/01/1900");
             taskGroupHeader.Completed = false;
@@ -671,13 +705,24 @@ namespace PanacheSoftware.Service.Task.Manager
             return new Tuple<bool, string>(true, $"Created okay");
         }
 
+        public void ValidateTaskShortNames(TaskGroupHead taskGroupHead, List<string> taskGroupHeadDuplicates, List<string> taskHeadDuplicates)
+        {
+            taskGroupHeadDuplicates.AddRange(DuplicateTaskGroupHeadShortNames(taskGroupHead));
+            taskHeadDuplicates.AddRange(DuplicateTaskHeadShortNames(taskGroupHead));
+
+            foreach (var childTaskGroupHead in taskGroupHead.ChildTaskGroups)
+            {
+                ValidateTaskShortNames(childTaskGroupHead, taskGroupHeadDuplicates, taskHeadDuplicates);
+            }
+        }
+
         public async Task<Tuple<bool, string>> CreateTaskHeader(TaskHeader taskHeader, string accessToken)
         {
             if (taskHeader.Id != Guid.Empty)
                 return new Tuple<bool, string>(false, $"TaskHead.Id: '{taskHeader.Id}' is not an empty guid.");
 
             TaskGroupHeader taskGroupHeader =
-                    _unitOfWork.TaskGroupHeaders.SingleOrDefault(c => c.Id == taskHeader.TaskGroupHeaderId, true);
+                    await _unitOfWork.TaskGroupHeaders.GetTaskGroupHeaderWithRelationsAsync(taskHeader.TaskGroupHeaderId, true, accessToken);
 
             if(taskGroupHeader == null)
                 return new Tuple<bool, string>(false, $"TaskHead.TaskGroupHeaderId: '{taskHeader.TaskGroupHeaderId}' is not valid.");
@@ -692,6 +737,11 @@ namespace PanacheSoftware.Service.Task.Manager
 
             if (!await SetNewTaskSequenceNoAsync(taskHeader, accessToken))
                 return new Tuple<bool, string>(false, $"Unable to set task sequence number.");
+
+            taskHeader.ShortName = SetTaskHeaderShortName(taskHeader, taskGroupHeader);
+
+            if(DuplicateTaskHeadShortName((List<TaskHeader>)taskGroupHeader.ChildTasks, taskHeader.ShortName))
+                return new Tuple<bool, string>(false, $"Duplicate ShortName.");
 
             _unitOfWork.TaskHeaders.Add(taskHeader);
 
@@ -757,6 +807,94 @@ namespace PanacheSoftware.Service.Task.Manager
 
         //    return userTeams;
         //}
+
+        public void SetTaskHeaderShortNames(TaskGroupHeader taskGroupHeader)
+        {
+            foreach (var childTask in taskGroupHeader.ChildTasks)
+            {
+                if (string.IsNullOrWhiteSpace(childTask.ShortName))
+                {
+                    childTask.ShortName = SetTaskHeaderShortName(childTask, taskGroupHeader);
+                }
+            }
+        }
+
+        public string SetTaskHeaderShortName(TaskHeader taskHeader, TaskGroupHeader taskGroupHeader)
+        {
+            var newShortName = taskHeader.ShortName;
+
+            if (string.IsNullOrWhiteSpace(taskHeader.ShortName))
+            {
+                for (int i = 0; i <= 999; i++)
+                {
+                    newShortName = Naming.CreateFieldShortName(taskHeader.Title, i);
+
+                    if (!DuplicateTaskHeadShortName((List<TaskHeader>)taskGroupHeader.ChildTasks, newShortName))
+                        break;
+
+                    if (i == 999)
+                        newShortName = string.Empty;
+                }
+            }
+
+            return newShortName;
+        }
+
+        public bool DuplicateTaskHeadShortName(IList<TaskHeader> taskHeaders, string shortname)
+        {
+            var foundShortName = taskHeaders.FirstOrDefault(c => c.ShortName == shortname);
+
+            return foundShortName != null;
+        }
+
+        public async Task<bool> TaskGroupHeadShortNameExists(Guid parentTaskGroupHeaderId, string shortName, string accessToken)
+        {
+            var parentTaskGroupHead = await _unitOfWork.TaskGroupHeaders.GetTaskGroupHeaderWithRelationsAsync(parentTaskGroupHeaderId, true, accessToken);
+
+            if (parentTaskGroupHead == null)
+                return false;
+
+            var foundShortName = parentTaskGroupHead.ChildTaskGroups.FirstOrDefault(c => c.ShortName == shortName);
+
+            return foundShortName != default;
+        }
+
+        public bool BlankShortNames(IList<TaskHead> taskHeads)
+        {
+            var blankShortNames = taskHeads.FirstOrDefault(c => c.ShortName == string.Empty);
+
+            return blankShortNames != default;
+        }
+
+        public IList<string> DuplicateTaskHeadShortNames(TaskGroupHead taskGroupHead)
+        {
+            var duplicateShortNames = new List<string>();
+            var groupedByShortName = taskGroupHead.ChildTasks.GroupBy(x => x.ShortName);
+            var duplicates = groupedByShortName.Where(item => item.Count() > 1);
+
+            foreach (var duplicate in duplicates)
+            {
+                if (duplicate.Count() > 0)
+                    duplicateShortNames.Add(duplicate.Key);
+            }
+
+            return duplicateShortNames;
+        }
+
+        public IList<string> DuplicateTaskGroupHeadShortNames(TaskGroupHead taskGroupHead)
+        {
+            var duplicateShortNames = new List<string>();
+            var groupedByShortName = taskGroupHead.ChildTaskGroups.GroupBy(x => x.ShortName);
+            var duplicates = groupedByShortName.Where(item => item.Count() > 1);
+
+            foreach (var duplicate in duplicates)
+            {
+                if (duplicate.Count() > 0)
+                    duplicateShortNames.Add(duplicate.Key);
+            }
+
+            return duplicateShortNames;
+        }
     }
 
     public class RunningTotals

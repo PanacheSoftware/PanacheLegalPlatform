@@ -211,6 +211,7 @@ namespace PanacheSoftware.Core.Types
         public const string CustomFieldService = "PanacheSoftware.Service.CustomField";
         public const string FileService = "PanacheSoftware.Service.File";
         public const string APIGateway = "PanacheSoftware.API.Gateway";
+        public const string AutomationService = "PanacheSoftware.Service.Automation";
     }
 
     public struct PanacheSoftwareClaims

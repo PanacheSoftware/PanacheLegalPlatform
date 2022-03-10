@@ -8,6 +8,7 @@ using PanacheSoftware.Core.Domain.API.CustomField;
 using PanacheSoftware.Core.Domain.API.Error;
 using PanacheSoftware.Core.Domain.CustomField;
 using PanacheSoftware.Service.CustomField.Core;
+using PanacheSoftware.Service.CustomField.Manager;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,11 +23,13 @@ namespace PanacheSoftware.Service.CustomField.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly ICustomFieldManager _customFieldManager;
 
-        public CustomFieldController(IUnitOfWork unitOfWork, IMapper mapper)
+        public CustomFieldController(IUnitOfWork unitOfWork, IMapper mapper, ICustomFieldManager customFieldManager)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _customFieldManager = customFieldManager;
         }
 
         [HttpGet("{id}")]
@@ -73,23 +76,38 @@ namespace PanacheSoftware.Service.CustomField.Controllers
 
                         if (customFieldGroupHeader != null)
                         {
+                            var customFieldGroupHead = _mapper.Map<CustomFieldGroupHead>(customFieldGroupHeader);
                             //if (customFieldGroupHeader.CustomFieldHeaders.All(ch => ch.Name != customFieldHead.Name))
                             //{
-                                var sequenceNo = 0; 
+                            var sequenceNo = 0; 
 
-                                var maxCustomFieldHead = customFieldGroupHeader.CustomFieldHeaders.OrderByDescending(cf => cf.SequenceNo).FirstOrDefault();
+                            var maxCustomFieldHead = customFieldGroupHeader.CustomFieldHeaders.OrderByDescending(cf => cf.SequenceNo).FirstOrDefault();
 
-                                if (maxCustomFieldHead != default)
-                                    sequenceNo = maxCustomFieldHead.SequenceNo + 1;
+                            if (maxCustomFieldHead != default)
+                                sequenceNo = maxCustomFieldHead.SequenceNo + 1;
 
-                                var customFieldHeader = _mapper.Map<CustomFieldHeader>(customFieldHead);
+                            customFieldHead.SequenceNo = sequenceNo;
 
-                                _unitOfWork.CustomFieldHeaders.Add(customFieldHeader);
+                            customFieldHead.ShortName = _customFieldManager.SetCustomFieldShortName(customFieldHead, customFieldGroupHead);
 
-                                _unitOfWork.Complete();
+                            if(string.IsNullOrWhiteSpace(customFieldHead.ShortName))
+                                return StatusCode(StatusCodes.Status400BadRequest,
+                                    new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                        $"CustomFieldHeader.ShortName: ShortName error, cannot be blank."));
 
-                                return Created(new Uri($"{Request.Path}/{customFieldHeader.Id}", UriKind.Relative),
-                                    _mapper.Map<CustomFieldHead>(customFieldHeader));
+                            if (_customFieldManager.DuplicateFieldShortName(customFieldGroupHead.CustomFieldHeaders, customFieldHead.ShortName))
+                                return StatusCode(StatusCodes.Status400BadRequest,
+                                    new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                        $"CustomFieldHeader.ShortName: '{customFieldHead.ShortName}' Duplicate ShortName"));
+
+                            var customFieldHeader = _mapper.Map<CustomFieldHeader>(customFieldHead);
+
+                            _unitOfWork.CustomFieldHeaders.Add(customFieldHeader);
+
+                            _unitOfWork.Complete();
+
+                            return Created(new Uri($"{Request.Path}/{customFieldHeader.Id}", UriKind.Relative),
+                                _mapper.Map<CustomFieldHead>(customFieldHeader));
                             //}
 
                             //return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"CustomFieldHead.Name: '{customFieldHead.Name}' already exists."));
@@ -148,6 +166,19 @@ namespace PanacheSoftware.Service.CustomField.Controllers
                                 {
                                     return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"CustomFieldHead.SequenceNo: '{customFieldHeader.SequenceNo}' is already in use."));
                                 }
+                            }
+
+                            if(customFieldHead.ShortName != customFieldHeader.ShortName)
+                            {
+                                if (string.IsNullOrWhiteSpace(customFieldHead.ShortName))
+                                    return StatusCode(StatusCodes.Status400BadRequest,
+                                        new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                            $"CustomFieldHeader.ShortName: ShortName error, cannot be blank."));
+
+                                if (_customFieldManager.DuplicateFieldShortName(_mapper.Map<CustomFieldGroupHead>(customFieldGroupHeader).CustomFieldHeaders, customFieldHead.ShortName))
+                                    return StatusCode(StatusCodes.Status400BadRequest,
+                                        new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                            $"CustomFieldHeader.ShortName: ShortName is a duplicate."));
                             }
 
                             _mapper.Map(customFieldHead, customFieldHeader);

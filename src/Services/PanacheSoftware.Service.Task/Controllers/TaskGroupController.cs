@@ -215,6 +215,11 @@ namespace PanacheSoftware.Service.Task.Controllers
                                         new APIErrorMessage(StatusCodes.Status400BadRequest,
                                         dateCheck.Item2));
 
+                                if (taskGroupHead.ShortName != taskGroupHeader.ShortName)
+                                    return StatusCode(StatusCodes.Status400BadRequest,
+                                        new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                            $"TaskGroupHeader.ShortName: '{taskGroupHeader.ShortName}' can't be changed."));
+
                                 _mapper.Map(taskGroupHead, taskGroupHeader);
 
                                 if (!await _taskManager.TaskGroupParentOkayAsync(taskGroupHeader, accessToken))

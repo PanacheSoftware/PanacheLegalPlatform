@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using PanacheSoftware.Core.Domain.API.Automation;
 using PanacheSoftware.Core.Domain.API.File;
 using PanacheSoftware.Core.Domain.Identity.API;
 using PanacheSoftware.Core.Types;
@@ -29,6 +30,9 @@ namespace PanacheSoftware.UI.Client.Blazor.Pages.File
         [BindProperty(SupportsGet = true)]
         public string VersionId { get; set; }
 
+        [BindProperty(SupportsGet = true)]
+        public bool Automated { get; set; }
+
         public DownloadModel(TokenProvider tokenProvider, IAPIHelper apiHelper)
         {
             _tokenProvider = tokenProvider;
@@ -45,26 +49,40 @@ namespace PanacheSoftware.UI.Client.Blazor.Pages.File
                 {
                     if (parsedId != Guid.Empty)
                     {
-                        //var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FILE, $"File/Version/{parsedId}");
-                        var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FILE, $"File/{parsedId}");
-
-                        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                        if(!Automated)
                         {
-                            var fileHeader = response.ContentAsType<FileHead>();
+                            //var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FILE, $"File/Version/{parsedId}");
+                            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FILE, $"File/{parsedId}");
 
-                            if (Guid.TryParse(VersionId, out Guid versionId))
+                            if (response.StatusCode == System.Net.HttpStatusCode.OK)
                             {
-                                var foundFileVersion = fileHeader.FileVersions.OrderByDescending(v => v.VersionNumber).FirstOrDefault();
+                                var fileHeader = response.ContentAsType<FileHead>();
 
-                                if (versionId != Guid.Empty)
+                                if (Guid.TryParse(VersionId, out Guid versionId))
                                 {
-                                    foundFileVersion = fileHeader.FileVersions.FirstOrDefault(v => v.Id == versionId);
-                                }
+                                    var foundFileVersion = fileHeader.FileVersions.OrderByDescending(v => v.VersionNumber).FirstOrDefault();
 
-                                if (foundFileVersion != null)
-                                {
-                                    return File(foundFileVersion.Content, fileHeader.FileDetail.FileType, foundFileVersion.TrustedName);
+                                    if (versionId != Guid.Empty)
+                                    {
+                                        foundFileVersion = fileHeader.FileVersions.FirstOrDefault(v => v.Id == versionId);
+                                    }
+
+                                    if (foundFileVersion != null)
+                                    {
+                                        return File(foundFileVersion.Content, fileHeader.FileDetail.FileType, foundFileVersion.TrustedName);
+                                    }
                                 }
+                            }
+                        }
+                        else
+                        {
+                            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.AUTOMATION, $"Document/{parsedId}");
+
+                            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                            {
+                                var autoDoc = response.ContentAsType<AutoDoc>();
+
+                                return File(autoDoc.Content, autoDoc.FileType, autoDoc.TrustedName);
                             }
                         }
                     }

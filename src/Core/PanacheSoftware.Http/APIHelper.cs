@@ -192,6 +192,10 @@ namespace PanacheSoftware.Http
                     return bool.Parse(panacheSoftwareConfiguration.CallMethod.APICallsSecure)
                         ? panacheSoftwareConfiguration.Url.CustomFieldServiceURLSecure
                         : panacheSoftwareConfiguration.Url.CustomFieldServiceURL;
+                case APITypes.AUTOMATION:
+                    return bool.Parse(panacheSoftwareConfiguration.CallMethod.APICallsSecure)
+                        ? panacheSoftwareConfiguration.Url.AutomationServiceURLSecure
+                        : panacheSoftwareConfiguration.Url.AutomationServiceURL;
             }
 
             return string.Empty;
@@ -248,6 +252,7 @@ namespace PanacheSoftware.Http
             apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.CLIENT, true), string.Empty));
             apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.CUSTOMFIELD, true), string.Empty));
             apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.FILE, true), string.Empty));
+            apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.AUTOMATION, true), string.Empty));
 
             return await ProcessAPIConfig(accessToken, apiList, GetBaseURL(APITypes.GATEWAY));
         }

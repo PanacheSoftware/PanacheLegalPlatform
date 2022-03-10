@@ -88,6 +88,7 @@ namespace PanacheSoftware.UI.Client.Blazor
                     options.Scope.Add(PanacheSoftwareScopeNames.FileService);
                     options.Scope.Add(PanacheSoftwareScopeNames.APIGateway);
                     options.Scope.Add(PanacheSoftwareScopeNames.CustomFieldService);
+                    options.Scope.Add(PanacheSoftwareScopeNames.AutomationService);
 
                     options.ClaimActions.MapUniqueJsonKey("tenantid", "tenantid");
                 });

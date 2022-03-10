@@ -25,7 +25,7 @@
                             <Validation>
                                 <Field>
                                     <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10223)</FieldLabel>
-                                    <TextEdit @bind-Text="taskGroupHead.ShortName">
+                                    <TextEdit @bind-Text="taskGroupHead.ShortName" ReadOnly=@readOnlyShortName>
                                         <Feedback>
                                             <ValidationError />
                                         </Feedback>
@@ -160,10 +160,12 @@
     bool SavingTaskGroupHead = false;
     PLAlert plAlert { get; set; }
     CustomFieldGroupLink customFieldGroupLink;
+    bool readOnlyShortName = false;
 
     protected override async Task OnInitializedAsync()
     {
-
+        if (taskGroupHead.Id != Guid.Empty)
+            readOnlyShortName = true;
     }
 
     public void ResetTaskGroup(TaskGroupHead taskGroupHeadReset)
@@ -172,6 +174,7 @@
             return;
 
         taskGroupHead = taskGroupHeadReset;
+        readOnlyShortName = false;
         StateHasChanged();
     }
 
@@ -228,7 +231,10 @@
     private void ShowTaskGroupForm()
     {
         if (CreationForm)
+        {
+            readOnlyShortName = false;
             taskGroupHead = resetTaskGroupHead;
+        }
 
         taskGroupForm.Show();
     }
@@ -248,17 +254,26 @@
 
         plAlert.ShowAlert(saveResult.Item1, saveResult.Item2);
 
+        var test1 = string.Empty;
+
         if (saveResult.Item1)
         {
+            readOnlyShortName = true;
+            var test = string.Empty;
+
+            //This is a HACK, taskGroupHead is being reset at some point during the custom field group saving and
+            //I can't track it down so temporarily fix this by backing up the value.
+            var taskGroupHeadBak = taskGroupHead;
+
             await customFieldGroupLink.SaveFieldGroup(taskGroupHead.Id);
 
             if(taskGroupId == Guid.Empty)
             {
-                await TaskGroupCreated.InvokeAsync(taskGroupHead);
+                await TaskGroupCreated.InvokeAsync(taskGroupHeadBak);
             }
             else
             {
-                await TaskGroupUpdated.InvokeAsync(taskGroupHead);
+                await TaskGroupUpdated.InvokeAsync(taskGroupHeadBak);
             }
 
             if (resetTaskGroupHead != default)

@@ -10,5 +10,12 @@ namespace PanacheSoftware.Service.CustomField.Manager
     {
         Tuple<CustomFieldVal, string> CreateCustomFieldValue(CustomFieldVal customFieldVal);
         void CheckForAndCreateHistory(Guid customFieldValueId, string historicValue, DateTime historicLastUpdate);
+        bool CustomFieldGroupShortNameExists(string shortName);
+        void SetCustomFieldShortNames(CustomFieldGroupHead customFieldGroupHead);
+        //string CreateFieldShortName(string longName, int counter = 0);
+        IList<string> DuplicateShortNames(CustomFieldGroupHead customFieldGroupHead);
+        bool DuplicateFieldShortName(IList<CustomFieldHead> customFieldHeads, string shortname);
+        string SetCustomFieldShortName(CustomFieldHead customFieldHead, CustomFieldGroupHead customFieldGroupHead);
+        bool BlankShortNames(IList<CustomFieldHead> customFieldHeads);
     }
 }

@@ -39,6 +39,36 @@
       "name": "FILE_UPLOAD_EXT",
       "status": "N",
       "userSettings": []
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "description": "AzureAD Tenant",
+      "value": "00000000-0000-0000-0000-000000000000",
+      "defaultValue": "00000000-0000-0000-0000-000000000000",
+      "settingType": "SYSTEM",
+      "name": "AZURE_AD_TENANT",
+      "status": "N",
+      "userSettings": []
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "description": "AzureAD Client ID",
+      "value": "00000000-0000-0000-0000-000000000000",
+      "defaultValue": "00000000-0000-0000-0000-000000000000",
+      "settingType": "SYSTEM",
+      "name": "AZURE_AD_CLIENT_ID",
+      "status": "N",
+      "userSettings": []
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "description": "AzureAD Client Secret",
+      "value": "00000000-0000-0000-0000-000000000000",
+      "defaultValue": "00000000-0000-0000-0000-000000000000",
+      "settingType": "SYSTEM",
+      "name": "AZURE_AD_CLIENT_SECRET",
+      "status": "N",
+      "userSettings": []
     }
   ]
 }

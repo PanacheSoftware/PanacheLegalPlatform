@@ -35,6 +35,11 @@ else
         <Icon Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.File" IconSize="IconSize.Large" />
         break;
 }
+    &nbsp;
+    @if(fileHead.FileDetail.Automated)
+    {
+        <Icon Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.Robot" IconSize="IconSize.Large" />
+    }
 
 @code {
 
@@ -57,7 +62,7 @@ else
         if (fileHead == default)
             return string.Empty;
 
-        return $"/File/Download/{fileHead.Id}/{Guid.Empty}";
+        return $"/File/Download/{fileHead.Id}/{Guid.Empty}/{fileHead.FileDetail.Automated}";
     }
 
     void FileUploadedAction(Tuple<bool, FileHead, FileVer> fileUploadResult)

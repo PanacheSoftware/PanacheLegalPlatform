@@ -18,6 +18,7 @@ namespace PanacheSoftware.Service.Task.Persistance.EntityConfiguration
             builder.Property(d => d.TenantId).IsRequired();
             builder.Property(d => d.Id).ValueGeneratedOnAdd();
             builder.Property(d => d.Status).IsRequired();
+            builder.Property(d => d.ShortName).IsRequired();
 
             builder.HasOne(c => c.TaskGroupHeader)
                 .WithMany(h => h.ChildTasks)

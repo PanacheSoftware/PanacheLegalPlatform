@@ -13,5 +13,6 @@ namespace PanacheSoftware.Core.Domain.File
         public string Description { get; set; }
         public string FileType { get; set; }
         public string FileExtension { get; set; }
+        public bool Automated { get; set; }
     }
 }

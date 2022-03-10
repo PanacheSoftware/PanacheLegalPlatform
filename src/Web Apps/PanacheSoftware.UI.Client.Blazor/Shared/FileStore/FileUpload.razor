@@ -45,6 +45,11 @@
                 </Column>
             </Row>
             <Row>
+                <Column ColumnSize="ColumnSize.Is4">
+                    <Check TValue="bool" @bind-Checked="@fileUploadModel.FileHeader.FileDetail.Automated">@LanguageHelper.GetTitle(langQueryList, 10230)</Check>
+                </Column>
+            </Row>
+            <Row>
                 <Column ColumnSize="ColumnSize.Is6">
                     <FileEdit Changed="@OnFileUpload" />
                 </Column>

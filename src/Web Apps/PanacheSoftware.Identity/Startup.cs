@@ -81,6 +81,7 @@ namespace PanacheSoftware.Identity
                     options.Events.RaiseInformationEvents = true;
                     options.Events.RaiseFailureEvents = true;
                     options.Events.RaiseSuccessEvents = true;
+                    options.InputLengthRestrictions.Scope = 1000;
                 })
                 .AddConfigurationStore(options =>
                 {

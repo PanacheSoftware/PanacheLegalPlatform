@@ -2,7 +2,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PanacheSoftware.Service.Task.Persistance.Context;
 
@@ -15,31 +14,36 @@ namespace PanacheSoftware.Service.Task.Persistance.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "0.1.1")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn)
-                .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("Relational:MaxIdentifierLength", 64)
+                .HasAnnotation("ProductVersion", "5.0.11");
 
             modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.TaskDetail", b =>
             {
                 b.Property<Guid>("Id")
-                    .ValueGeneratedOnAdd();
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("char(36)");
 
-                b.Property<Guid>("CreatedBy");
+                b.Property<Guid>("CreatedBy")
+                    .HasColumnType("char(36)");
 
-                b.Property<DateTime>("CreatedDate");
+                b.Property<DateTime>("CreatedDate")
+                    .HasColumnType("datetime(6)");
 
-                b.Property<Guid>("LastUpdateBy");
+                b.Property<Guid>("LastUpdateBy")
+                    .HasColumnType("char(36)");
 
-                b.Property<DateTime>("LastUpdateDate");
+                b.Property<DateTime>("LastUpdateDate")
+                    .HasColumnType("datetime(6)");
 
                 b.Property<string>("Status")
                     .IsRequired()
-                    .HasColumnType("nvarchar(25)");
+                    .HasColumnType("longtext");
 
-                b.Property<Guid>("TaskHeaderId");
+                b.Property<Guid>("TaskHeaderId")
+                    .HasColumnType("char(36)");
 
-                b.Property<Guid>("TenantId");
+                b.Property<Guid>("TenantId")
+                    .HasColumnType("char(36)");
 
                 b.HasKey("Id");
 
@@ -52,23 +56,30 @@ namespace PanacheSoftware.Service.Task.Persistance.Data.Migrations
             modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.TaskGroupDetail", b =>
             {
                 b.Property<Guid>("Id")
-                    .ValueGeneratedOnAdd();
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("char(36)");
 
-                b.Property<Guid>("CreatedBy");
+                b.Property<Guid>("CreatedBy")
+                    .HasColumnType("char(36)");
 
-                b.Property<DateTime>("CreatedDate");
+                b.Property<DateTime>("CreatedDate")
+                    .HasColumnType("datetime(6)");
 
-                b.Property<Guid>("LastUpdateBy");
+                b.Property<Guid>("LastUpdateBy")
+                    .HasColumnType("char(36)");
 
-                b.Property<DateTime>("LastUpdateDate");
+                b.Property<DateTime>("LastUpdateDate")
+                    .HasColumnType("datetime(6)");
 
                 b.Property<string>("Status")
                     .IsRequired()
-                    .HasColumnType("nvarchar(25)");
+                    .HasColumnType("longtext");
 
-                b.Property<Guid>("TaskGroupHeaderId");
+                b.Property<Guid>("TaskGroupHeaderId")
+                    .HasColumnType("char(36)");
 
-                b.Property<Guid>("TenantId");
+                b.Property<Guid>("TenantId")
+                    .HasColumnType("char(36)");
 
                 b.HasKey("Id");
 
@@ -81,55 +92,70 @@ namespace PanacheSoftware.Service.Task.Persistance.Data.Migrations
             modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.TaskGroupHeader", b =>
             {
                 b.Property<Guid>("Id")
-                    .ValueGeneratedOnAdd();
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("char(36)");
 
-                b.Property<Guid>("ClientHeaderId");
+                b.Property<Guid>("ClientHeaderId")
+                    .HasColumnType("char(36)");
 
                 b.Property<bool>("Completed")
-                    .HasColumnType("bit");
+                    .HasColumnType("tinyint(1)");
 
-                b.Property<DateTime>("CompletedOnDate");
+                b.Property<DateTime>("CompletedOnDate")
+                    .HasColumnType("datetime(6)");
 
-                b.Property<DateTime>("CompletionDate");
+                b.Property<DateTime>("CompletionDate")
+                    .HasColumnType("datetime(6)");
 
-                b.Property<Guid>("CreatedBy");
+                b.Property<Guid>("CreatedBy")
+                    .HasColumnType("char(36)");
 
-                b.Property<DateTime>("CreatedDate");
+                b.Property<DateTime>("CreatedDate")
+                    .HasColumnType("datetime(6)");
 
                 b.Property<string>("Description")
-                    .HasColumnType("nvarchar(4000)");
+                    .HasColumnType("longtext");
 
-                b.Property<Guid>("LastUpdateBy");
+                b.Property<Guid>("LastUpdateBy")
+                    .HasColumnType("char(36)");
 
-                b.Property<DateTime>("LastUpdateDate");
+                b.Property<DateTime>("LastUpdateDate")
+                    .HasColumnType("datetime(6)");
 
                 b.Property<string>("LongName")
-                    .HasColumnType("nvarchar(1000)");
+                    .HasColumnType("longtext");
 
-                b.Property<Guid>("MainUserId");
+                b.Property<Guid>("MainUserId")
+                    .HasColumnType("char(36)");
 
-                b.Property<DateTime>("OriginalCompletionDate");
+                b.Property<DateTime>("OriginalCompletionDate")
+                    .HasColumnType("datetime(6)");
 
-                b.Property<DateTime>("OriginalStartDate");
+                b.Property<DateTime>("OriginalStartDate")
+                    .HasColumnType("datetime(6)");
 
-                b.Property<Guid?>("ParentTaskGroupId");
+                b.Property<Guid?>("ParentTaskGroupId")
+                    .HasColumnType("char(36)");
 
                 b.Property<int>("SequenceNumber")
                     .HasColumnType("int");
 
                 b.Property<string>("ShortName")
                     .IsRequired()
-                    .HasColumnType("nvarchar(1000)");
+                    .HasColumnType("longtext");
 
-                b.Property<DateTime>("StartDate");
+                b.Property<DateTime>("StartDate")
+                    .HasColumnType("datetime(6)");
 
                 b.Property<string>("Status")
                     .IsRequired()
-                    .HasColumnType("nvarchar(25)");
+                    .HasColumnType("longtext");
 
-                b.Property<Guid>("TeamHeaderId");
+                b.Property<Guid>("TeamHeaderId")
+                    .HasColumnType("char(36)");
 
-                b.Property<Guid>("TenantId");
+                b.Property<Guid>("TenantId")
+                    .HasColumnType("char(36)");
 
                 b.HasKey("Id");
 
@@ -141,50 +167,67 @@ namespace PanacheSoftware.Service.Task.Persistance.Data.Migrations
             modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.TaskHeader", b =>
             {
                 b.Property<Guid>("Id")
-                    .ValueGeneratedOnAdd();
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("char(36)");
 
                 b.Property<bool>("Completed")
-                    .HasColumnType("bit");
+                    .HasColumnType("tinyint(1)");
 
-                b.Property<DateTime>("CompletedOnDate");
+                b.Property<DateTime>("CompletedOnDate")
+                    .HasColumnType("datetime(6)");
 
-                b.Property<DateTime>("CompletionDate");
+                b.Property<DateTime>("CompletionDate")
+                    .HasColumnType("datetime(6)");
 
-                b.Property<Guid>("CreatedBy");
+                b.Property<Guid>("CreatedBy")
+                    .HasColumnType("char(36)");
 
-                b.Property<DateTime>("CreatedDate");
+                b.Property<DateTime>("CreatedDate")
+                    .HasColumnType("datetime(6)");
 
                 b.Property<string>("Description")
-                    .HasColumnType("nvarchar(4000)");
+                    .HasColumnType("longtext");
 
-                b.Property<Guid>("LastUpdateBy");
+                b.Property<Guid>("LastUpdateBy")
+                    .HasColumnType("char(36)");
 
-                b.Property<DateTime>("LastUpdateDate");
+                b.Property<DateTime>("LastUpdateDate")
+                    .HasColumnType("datetime(6)");
 
-                b.Property<Guid>("MainUserId");
+                b.Property<Guid>("MainUserId")
+                    .HasColumnType("char(36)");
 
-                b.Property<DateTime>("OriginalCompletionDate");
+                b.Property<DateTime>("OriginalCompletionDate")
+                    .HasColumnType("datetime(6)");
 
-                b.Property<DateTime>("OriginalStartDate");
+                b.Property<DateTime>("OriginalStartDate")
+                    .HasColumnType("datetime(6)");
 
                 b.Property<int>("SequenceNumber")
                     .HasColumnType("int");
 
-                b.Property<DateTime>("StartDate");
+                b.Property<DateTime>("StartDate")
+                    .HasColumnType("datetime(6)");
+
+                b.Property<string>("ShortName")
+                    .IsRequired()
+                    .HasColumnType("longtext");
 
                 b.Property<string>("Status")
                     .IsRequired()
-                    .HasColumnType("nvarchar(25)");
+                    .HasColumnType("longtext");
 
-                b.Property<Guid>("TaskGroupHeaderId");
+                b.Property<Guid>("TaskGroupHeaderId")
+                    .HasColumnType("char(36)");
 
                 b.Property<string>("TaskType")
-                    .HasColumnType("nvarchar(1000)");
+                    .HasColumnType("longtext");
 
-                b.Property<Guid>("TenantId");
+                b.Property<Guid>("TenantId")
+                    .HasColumnType("char(36)");
 
                 b.Property<string>("Title")
-                    .HasColumnType("nvarchar(1000)");
+                    .HasColumnType("longtext");
 
                 b.HasKey("Id");
 
@@ -196,26 +239,33 @@ namespace PanacheSoftware.Service.Task.Persistance.Data.Migrations
             modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.Template.TemplateDetail", b =>
             {
                 b.Property<Guid>("Id")
-                    .ValueGeneratedOnAdd();
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("char(36)");
 
-                b.Property<Guid>("CreatedBy");
+                b.Property<Guid>("CreatedBy")
+                    .HasColumnType("char(36)");
 
-                b.Property<DateTime>("CreatedDate");
+                b.Property<DateTime>("CreatedDate")
+                    .HasColumnType("datetime(6)");
 
                 b.Property<string>("Description")
-                    .HasColumnType("nvarchar(4000)");
+                    .HasColumnType("longtext");
 
-                b.Property<Guid>("LastUpdateBy");
+                b.Property<Guid>("LastUpdateBy")
+                    .HasColumnType("char(36)");
 
-                b.Property<DateTime>("LastUpdateDate");
+                b.Property<DateTime>("LastUpdateDate")
+                    .HasColumnType("datetime(6)");
 
                 b.Property<string>("Status")
                     .IsRequired()
-                    .HasColumnType("nvarchar(25)");
+                    .HasColumnType("longtext");
 
-                b.Property<Guid>("TemplateHeaderId");
+                b.Property<Guid>("TemplateHeaderId")
+                    .HasColumnType("char(36)");
 
-                b.Property<Guid>("TenantId");
+                b.Property<Guid>("TenantId")
+                    .HasColumnType("char(36)");
 
                 b.Property<int>("TotalDays")
                     .HasColumnType("int");
@@ -231,29 +281,36 @@ namespace PanacheSoftware.Service.Task.Persistance.Data.Migrations
             modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.Template.TemplateGroupDetail", b =>
             {
                 b.Property<Guid>("Id")
-                    .ValueGeneratedOnAdd();
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("char(36)");
 
-                b.Property<Guid>("CreatedBy");
+                b.Property<Guid>("CreatedBy")
+                    .HasColumnType("char(36)");
 
-                b.Property<DateTime>("CreatedDate");
+                b.Property<DateTime>("CreatedDate")
+                    .HasColumnType("datetime(6)");
 
-                b.Property<Guid>("LastUpdateBy");
+                b.Property<int>("DaysOffset")
+                    .HasColumnType("int");
 
-                b.Property<DateTime>("LastUpdateDate");
+                b.Property<Guid>("LastUpdateBy")
+                    .HasColumnType("char(36)");
+
+                b.Property<DateTime>("LastUpdateDate")
+                    .HasColumnType("datetime(6)");
 
                 b.Property<string>("Status")
                     .IsRequired()
-                    .HasColumnType("nvarchar(25)");
+                    .HasColumnType("longtext");
 
-                b.Property<Guid>("TemplateGroupHeaderId");
+                b.Property<Guid>("TemplateGroupHeaderId")
+                    .HasColumnType("char(36)");
 
-                b.Property<Guid>("TenantId");
+                b.Property<Guid>("TenantId")
+                    .HasColumnType("char(36)");
 
                 b.Property<int>("TotalDays")
                     .HasColumnType("int");
-
-                b.Property<int>("DaysOffset")
-                        .HasColumnType("int");
 
                 b.HasKey("Id");
 
@@ -266,36 +323,43 @@ namespace PanacheSoftware.Service.Task.Persistance.Data.Migrations
             modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.Template.TemplateGroupHeader", b =>
             {
                 b.Property<Guid>("Id")
-                    .ValueGeneratedOnAdd();
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("char(36)");
 
-                b.Property<Guid>("CreatedBy");
+                b.Property<Guid>("CreatedBy")
+                    .HasColumnType("char(36)");
 
-                b.Property<DateTime>("CreatedDate");
+                b.Property<DateTime>("CreatedDate")
+                    .HasColumnType("datetime(6)");
 
                 b.Property<string>("Description")
-                    .HasColumnType("nvarchar(4000)");
+                    .HasColumnType("longtext");
 
-                b.Property<Guid>("LastUpdateBy");
+                b.Property<Guid>("LastUpdateBy")
+                    .HasColumnType("char(36)");
 
-                b.Property<DateTime>("LastUpdateDate");
+                b.Property<DateTime>("LastUpdateDate")
+                    .HasColumnType("datetime(6)");
 
                 b.Property<string>("LongName")
-                    .HasColumnType("nvarchar(1000)");
+                    .HasColumnType("longtext");
 
                 b.Property<int>("SequenceNumber")
                     .HasColumnType("int");
 
                 b.Property<string>("ShortName")
                     .IsRequired()
-                    .HasColumnType("nvarchar(1000)");
+                    .HasColumnType("longtext");
 
                 b.Property<string>("Status")
                     .IsRequired()
-                    .HasColumnType("nvarchar(25)");
+                    .HasColumnType("longtext");
 
-                b.Property<Guid>("TemplateHeaderId");
+                b.Property<Guid>("TemplateHeaderId")
+                    .HasColumnType("char(36)");
 
-                b.Property<Guid>("TenantId");
+                b.Property<Guid>("TenantId")
+                    .HasColumnType("char(36)");
 
                 b.HasKey("Id");
 
@@ -307,31 +371,37 @@ namespace PanacheSoftware.Service.Task.Persistance.Data.Migrations
             modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.Template.TemplateHeader", b =>
             {
                 b.Property<Guid>("Id")
-                    .ValueGeneratedOnAdd();
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("char(36)");
 
-                b.Property<Guid>("CreatedBy");
+                b.Property<Guid>("CreatedBy")
+                    .HasColumnType("char(36)");
 
-                b.Property<DateTime>("CreatedDate");
+                b.Property<DateTime>("CreatedDate")
+                    .HasColumnType("datetime(6)");
 
                 b.Property<string>("Description")
-                    .HasColumnType("nvarchar(4000)");
+                    .HasColumnType("longtext");
 
-                b.Property<Guid>("LastUpdateBy");
+                b.Property<Guid>("LastUpdateBy")
+                    .HasColumnType("char(36)");
 
-                b.Property<DateTime>("LastUpdateDate");
+                b.Property<DateTime>("LastUpdateDate")
+                    .HasColumnType("datetime(6)");
 
                 b.Property<string>("LongName")
-                    .HasColumnType("nvarchar(1000)");
+                    .HasColumnType("longtext");
 
                 b.Property<string>("ShortName")
                     .IsRequired()
-                    .HasColumnType("nvarchar(1000)");
+                    .HasColumnType("longtext");
 
                 b.Property<string>("Status")
                     .IsRequired()
-                    .HasColumnType("nvarchar(25)");
+                    .HasColumnType("longtext");
 
-                b.Property<Guid>("TenantId");
+                b.Property<Guid>("TenantId")
+                    .HasColumnType("char(36)");
 
                 b.HasKey("Id");
 
@@ -341,29 +411,36 @@ namespace PanacheSoftware.Service.Task.Persistance.Data.Migrations
             modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.Template.TemplateItemDetail", b =>
             {
                 b.Property<Guid>("Id")
-                    .ValueGeneratedOnAdd();
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("char(36)");
 
-                b.Property<Guid>("CreatedBy");
+                b.Property<Guid>("CreatedBy")
+                    .HasColumnType("char(36)");
 
-                b.Property<DateTime>("CreatedDate");
+                b.Property<DateTime>("CreatedDate")
+                    .HasColumnType("datetime(6)");
 
-                b.Property<Guid>("LastUpdateBy");
+                b.Property<int>("DaysOffset")
+                    .HasColumnType("int");
 
-                b.Property<DateTime>("LastUpdateDate");
+                b.Property<Guid>("LastUpdateBy")
+                    .HasColumnType("char(36)");
+
+                b.Property<DateTime>("LastUpdateDate")
+                    .HasColumnType("datetime(6)");
 
                 b.Property<string>("Status")
                     .IsRequired()
-                    .HasColumnType("nvarchar(25)");
+                    .HasColumnType("longtext");
 
-                b.Property<Guid>("TemplateItemHeaderId");
+                b.Property<Guid>("TemplateItemHeaderId")
+                    .HasColumnType("char(36)");
 
-                b.Property<Guid>("TenantId");
+                b.Property<Guid>("TenantId")
+                    .HasColumnType("char(36)");
 
                 b.Property<int>("TotalDays")
                     .HasColumnType("int");
-
-                b.Property<int>("DaysOffset")
-                        .HasColumnType("int");
 
                 b.HasKey("Id");
 
@@ -376,35 +453,46 @@ namespace PanacheSoftware.Service.Task.Persistance.Data.Migrations
             modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.Template.TemplateItemHeader", b =>
             {
                 b.Property<Guid>("Id")
-                    .ValueGeneratedOnAdd();
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("char(36)");
 
-                b.Property<Guid>("CreatedBy");
+                b.Property<Guid>("CreatedBy")
+                    .HasColumnType("char(36)");
 
-                b.Property<DateTime>("CreatedDate");
+                b.Property<DateTime>("CreatedDate")
+                    .HasColumnType("datetime(6)");
 
                 b.Property<string>("Description")
-                    .HasColumnType("nvarchar(4000)");
+                    .HasColumnType("longtext");
 
-                b.Property<Guid>("LastUpdateBy");
+                b.Property<Guid>("LastUpdateBy")
+                    .HasColumnType("char(36)");
 
-                b.Property<DateTime>("LastUpdateDate");
+                b.Property<DateTime>("LastUpdateDate")
+                    .HasColumnType("datetime(6)");
 
                 b.Property<int>("SequenceNumber")
                     .HasColumnType("int");
 
+                b.Property<string>("ShortName")
+                    .IsRequired()
+                    .HasColumnType("longtext");
+
                 b.Property<string>("Status")
                     .IsRequired()
-                    .HasColumnType("nvarchar(25)");
+                    .HasColumnType("longtext");
 
                 b.Property<string>("TaskType")
-                    .HasColumnType("nvarchar(1000)");
+                    .HasColumnType("longtext");
 
-                b.Property<Guid>("TemplateGroupHeaderId");
+                b.Property<Guid>("TemplateGroupHeaderId")
+                    .HasColumnType("char(36)");
 
-                b.Property<Guid>("TenantId");
+                b.Property<Guid>("TenantId")
+                    .HasColumnType("char(36)");
 
                 b.Property<string>("Title")
-                    .HasColumnType("nvarchar(1000)");
+                    .HasColumnType("longtext");
 
                 b.HasKey("Id");
 

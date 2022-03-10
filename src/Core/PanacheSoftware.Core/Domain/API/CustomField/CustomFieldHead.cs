@@ -18,11 +18,13 @@ namespace PanacheSoftware.Core.Domain.API.CustomField
             CustomFieldType = CustomFieldTypes.StringField;
             GDPR = false;
             History = false;
+            ShortName = string.Empty;
         }
 
         public Guid Id { get; set; }
         public Guid CustomFieldGroupHeaderId { get; set; }
 
+        public string ShortName { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
 

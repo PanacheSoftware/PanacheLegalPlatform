@@ -158,6 +158,11 @@
                                             <SelectList TItem="SelectListModel" TValue="string" Data="@StatusSelectListValues" TextField="@((item)=>item.DescriptionField)" ValueField="@((item)=>item.ValueField)" SelectedValue="@((string)( context.CellValue ))" SelectedValueChanged="@(e => { context.CellValue = e; })" />
                                         </EditTemplate>
                                     </DataGridColumn>
+                                    <DataGridColumn TItem="CustomFieldHead" Field="@nameof(CustomFieldHead.ShortName)" Caption="@LanguageHelper.GetTitle(langQueryList, 11011)" Editable="true">
+                                        <EditTemplate>
+                                            <TextEdit Text="@context.Item.ShortName" ReadOnly="true" />                                           
+                                        </EditTemplate>
+                                    </DataGridColumn>
                                 </DataGridColumns>
                             </DataGrid>
                         }
@@ -232,6 +237,7 @@
         textCodes.Add(11007);
         textCodes.Add(11008);
         textCodes.Add(11009);
+        textCodes.Add(11011);
         textCodes.Add(10200);
         textCodes.Add(10201);
         textCodes.Add(10204);
@@ -339,6 +345,13 @@
 
                         if (!customFieldHeadResponse.Item1)
                             return customFieldHeadResponse;
+                    }
+
+                    response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.CUSTOMFIELD, $"CustomFieldGroup/{Id}");
+
+                    if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        customFieldGroupHead = response.ContentAsType<CustomFieldGroupHead>();
                     }
                 }
             }

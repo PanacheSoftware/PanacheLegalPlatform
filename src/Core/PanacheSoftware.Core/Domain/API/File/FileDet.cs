@@ -15,6 +15,7 @@ namespace PanacheSoftware.Core.Domain.API.File
             Description = string.Empty;
             FileType = string.Empty;
             FileExtension = string.Empty;
+            Automated = false;
         }
 
         public Guid Id { get; set; }
@@ -28,5 +29,6 @@ namespace PanacheSoftware.Core.Domain.API.File
         public string FileType { get; set; }
         public string FileExtension { get; set; }
         public string Status { get; set; }
+        public bool Automated { get; set; }
     }
 }

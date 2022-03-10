@@ -19,6 +19,7 @@ namespace PanacheSoftware.Core.Domain.API.Task
             TaskDetail = new TaskDet();
             TaskType = NodeTypes.Task;
             Completed = false;
+            ShortName = String.Empty;
         }
 
         public Guid Id { get; set; }
@@ -31,6 +32,8 @@ namespace PanacheSoftware.Core.Domain.API.Task
         public DateTime OriginalStartDate { get; set; }
         [Required]
         public string Status { get; set; }
+
+        public string ShortName { get; set; }
 
         public string Description { get; set; }
         [Required]

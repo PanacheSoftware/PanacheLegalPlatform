@@ -8,6 +8,7 @@ using PanacheSoftware.Core.Domain.API.CustomField;
 using PanacheSoftware.Core.Domain.API.Error;
 using PanacheSoftware.Core.Domain.CustomField;
 using PanacheSoftware.Service.CustomField.Core;
+using PanacheSoftware.Service.CustomField.Manager;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,11 +23,13 @@ namespace PanacheSoftware.Service.CustomField.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly ICustomFieldManager _customFieldManager;
 
-        public CustomFieldGroupController(IUnitOfWork unitOfWork, IMapper mapper)
+        public CustomFieldGroupController(IUnitOfWork unitOfWork, IMapper mapper, ICustomFieldManager customFieldManager)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _customFieldManager = customFieldManager;
         }
 
         [HttpGet]
@@ -98,6 +101,25 @@ namespace PanacheSoftware.Service.CustomField.Controllers
 
                     if (customFieldGroupHead.Id == Guid.Empty)
                     {
+                        if(_customFieldManager.CustomFieldGroupShortNameExists(customFieldGroupHead.ShortName))
+                            return StatusCode(StatusCodes.Status400BadRequest,
+                                new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                    $"CustomFieldGroupHead.ShortName: '{customFieldGroupHead.ShortName}' already exists."));
+
+                        _customFieldManager.SetCustomFieldShortNames(customFieldGroupHead);
+
+                        if(_customFieldManager.BlankShortNames(customFieldGroupHead.CustomFieldHeaders))
+                            return StatusCode(StatusCodes.Status400BadRequest,
+                                new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                    $"CustomFieldGroupHead.CustomFieldHeaders: Error setting Field ShortNames, cannot be blank."));
+
+                        var duplicateShortNames = _customFieldManager.DuplicateShortNames(customFieldGroupHead);
+
+                        if(duplicateShortNames.Count > 0)
+                            return StatusCode(StatusCodes.Status400BadRequest,
+                                new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                    $"CustomFieldGroupHead.CustomFieldHeaders: Duplicate ShortNames exist - {string.Join(",", duplicateShortNames)}"));
+
                         var customFieldGroupHeader = _mapper.Map<CustomFieldGroupHeader>(customFieldGroupHead);
 
                         _unitOfWork.CustomFieldGroupHeaders.Add(customFieldGroupHeader);

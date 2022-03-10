@@ -137,5 +137,35 @@ namespace PanacheSoftware.Service.File.Controllers
 
             return BadRequest(new APIErrorMessage(StatusCodes.Status400BadRequest, "One or more validation errors occurred.", ModelState));
         }
+
+        [Route("[action]/{fileId}")]
+        [HttpGet]
+        public async Task<IActionResult> GetFileLatestVersion(string fileId)
+        {
+            try
+            {
+                if (Guid.TryParse(fileId, out Guid parsedId))
+                {
+                    var fileHeader = await _unitOfWork.FileHeaders.GetFileHeaderWithRelationsAsync(parsedId, true);
+
+                    if (fileHeader == null)
+                        return NotFound();
+
+                    var foundFileVersion = fileHeader.FileVersions.OrderByDescending(v => v.VersionNumber).FirstOrDefault();
+
+                    if (foundFileVersion != null)
+                        return Ok(_mapper.Map<FileVer>(foundFileVersion));
+
+                    return NotFound();
+                }
+
+                return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"fileId: '{fileId}' is not a valid guid."));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
+            }
+        }
     }
 }

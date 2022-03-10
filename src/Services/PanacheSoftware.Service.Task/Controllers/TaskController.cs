@@ -189,6 +189,11 @@ namespace PanacheSoftware.Service.Task.Controllers
                                     taskHead.OriginalCompletionDate = taskHeader.OriginalCompletionDate;
                                     taskHead.OriginalStartDate = taskHeader.OriginalStartDate;
 
+                                    if (taskHead.ShortName != taskHeader.ShortName)
+                                        return StatusCode(StatusCodes.Status400BadRequest,
+                                            new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                                $"TaskHeader.ShortName: '{taskHeader.ShortName}' can't be changed."));
+
                                     //Make sure the start and completion dates don't fall outside of the group headers dates
                                     var dateCheck = await _taskManager.TaskDatesOkayAsync(_mapper.Map<TaskHeader>(taskHead));
 

@@ -68,7 +68,7 @@
                                         <Validation>
                                             <Field>
                                                 <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10223)</FieldLabel>
-                                                <TextEdit @bind-Text="taskGroupHead.ShortName">
+                                                <TextEdit @bind-Text="taskGroupHead.ShortName" ReadOnly=@readOnlyShortName>
                                                     <Feedback>
                                                         <ValidationError />
                                                     </Feedback>
@@ -245,6 +245,7 @@
     Guid TemplateId { get; set; }
     bool DisableFields = false;
     TemplateHeadList templateHeadList { get; set; }
+    bool readOnlyShortName = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -309,6 +310,7 @@
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 taskGroupHead = response.ContentAsType<TaskGroupHead>();
+                readOnlyShortName = true;
             }
         }
     }
@@ -338,6 +340,7 @@
 
         if (saveResult.Item1)
         {
+            readOnlyShortName = true;
             await customFieldGroupLink.SaveFieldGroup(taskGroupHead.Id);
         }
 
