@@ -1,6 +1,6 @@
 ﻿@if (includeAlert)
 {
-    <Alert Color="(Color)alertModel.AlertType" @bind-Visible="@alertModel.ShowAlert" Dismisable="true" @ref="alert">
+    <Alert Color="@ColorHelper.GetAlertColor(alertModel.AlertType)" @bind-Visible="@alertModel.ShowAlert" Dismisable="true" @ref="alert">
         <AlertMessage>
             @alertModel.AlertMessage
         </AlertMessage>
@@ -27,15 +27,20 @@
     private PLSnackBar plSnackBar { get; set; }
     private Alert alert { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         alertModel = new AlertModel();
     }
 
+    //protected override async Task OnInitializedAsync()
+    //{
+    //    alertModel = new AlertModel();
+    //}
+
     public void ShowAlert(bool success, string message)
     {
         alertModel.ShowAlert = true;
-        alertModel.AlertType = success ? (int)Color.Success : (int)Color.Danger;
+        alertModel.AlertType = success ? "Success" : "Danger";
         alertModel.AlertMessage = message;
 
         if (includeSnackBar)

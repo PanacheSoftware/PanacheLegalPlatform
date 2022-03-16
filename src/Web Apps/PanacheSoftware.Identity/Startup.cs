@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using AutoMapper;
-using IdentityServer4.Services;
+using Duende.IdentityServer.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -61,7 +61,7 @@ namespace PanacheSoftware.Identity
                 {
                     options.EnableEndpointRouting = false;
                 })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
+                //.SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
                 //.AddRazorPagesOptions(options =>
                 //{
                 //    options.AllowAreas = false;
@@ -120,14 +120,14 @@ namespace PanacheSoftware.Identity
 
             services.AddAutoMapper(System.Reflection.Assembly.Load("PanacheSoftware.Core"));
 
-            if (Environment.IsDevelopment())
-            {
-                builder.AddDeveloperSigningCredential();
-            }
-            else
-            {
-                throw new Exception("need to configure key material");
-            }
+            //if (Environment.IsDevelopment())
+            //{
+            //    builder.AddDeveloperSigningCredential();
+            //}
+            //else
+            //{
+            //    throw new Exception("need to configure key material");
+            //}
 
             services.AddAuthentication();
 

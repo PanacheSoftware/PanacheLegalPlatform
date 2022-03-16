@@ -208,7 +208,7 @@ namespace PanacheSoftware.Service.Task.Controllers
                                 taskGroupHead.OriginalCompletionDate = taskGroupHeader.OriginalCompletionDate;
                                 taskGroupHead.OriginalStartDate = taskGroupHeader.OriginalStartDate;
 
-                                var dateCheck = await _taskManager.TaskGroupDatesOkayAsync(_mapper.Map<TaskGroupHeader>(taskGroupHead), accessToken);
+                                var dateCheck = _taskManager.TaskGroupDatesOkay(_mapper.Map<TaskGroupHeader>(taskGroupHead), accessToken);
 
                                 if (!dateCheck.Item1)
                                     return StatusCode(StatusCodes.Status400BadRequest,
@@ -284,7 +284,7 @@ namespace PanacheSoftware.Service.Task.Controllers
 
                                         taskGroupHeader.CompletedOnDate = convertedDateTime;
 
-                                        var dateCheck = await _taskManager.TaskGroupDatesOkayAsync(taskGroupHeader, accessToken);
+                                        var dateCheck = _taskManager.TaskGroupDatesOkay(taskGroupHeader, accessToken);
 
                                         if (!dateCheck.Item1)
                                             return StatusCode(StatusCodes.Status400BadRequest,

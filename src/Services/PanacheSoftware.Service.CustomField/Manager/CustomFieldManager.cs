@@ -48,7 +48,7 @@ namespace PanacheSoftware.Service.CustomField.Manager
             return new Tuple<CustomFieldVal, string>(_mapper.Map<CustomFieldVal>(customFieldValue), string.Empty);
         }
 
-        public async void CheckForAndCreateHistory(Guid customFieldValueId, string historicValue, DateTime historicLastUpdate)
+        public void CheckForAndCreateHistory(Guid customFieldValueId, string historicValue, DateTime historicLastUpdate)
         {
             if (customFieldValueId == Guid.Empty)
                 return;

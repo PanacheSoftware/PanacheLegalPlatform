@@ -41,7 +41,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PanacheSoftware.Service.Cus
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PanacheSoftware.UI.Client.Blazor", "Web Apps\PanacheSoftware.UI.Client.Blazor\PanacheSoftware.UI.Client.Blazor.csproj", "{7A8F87AA-8B0E-4471-A272-F549D3798434}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PanacheSoftware.Service.Automation", "Services\PanacheSoftware.Service.Automation\PanacheSoftware.Service.Automation.csproj", "{2744DB03-1E1E-4388-BD63-00C8411FB5B1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PanacheSoftware.Service.Automation", "Services\PanacheSoftware.Service.Automation\PanacheSoftware.Service.Automation.csproj", "{2744DB03-1E1E-4388-BD63-00C8411FB5B1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

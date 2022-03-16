@@ -110,8 +110,8 @@
     public TaskHead taskHead { get; set; }
 
     AlertModel alertModel = new AlertModel();
-    Snackbar successSnackBar;
-    Snackbar errorSnackBar;
+    //Snackbar successSnackBar;
+    //Snackbar errorSnackBar;
 
     private TaskItemEdit taskHeadEdit { get; set; }
 
@@ -131,7 +131,7 @@
 
     private CustomFieldGroupEdit customFieldGroupEdit;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         //completeDate = taskHead.CompletionDate;
     }
@@ -182,7 +182,7 @@
 
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
             {
-                return new Tuple<bool, string>(false, await MyFoundationService.GetErrorFromResponse(response));
+                return new Tuple<bool, string>(false, MyFoundationService.GetErrorFromResponse(response));
             }
 
             return new Tuple<bool, string>(true, $"Task {taskHead.Title} completed");

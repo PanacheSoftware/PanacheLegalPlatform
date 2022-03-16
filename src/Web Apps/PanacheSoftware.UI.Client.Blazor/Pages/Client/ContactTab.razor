@@ -202,7 +202,7 @@
     [Parameter]
     public EventCallback<int> OnMainContactChange { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         CreateSelectListModels();
     }
@@ -219,7 +219,7 @@
         AddressTypeSelectListValues = addressTypes.GetAddressTypesDictionary().Select(s => new SelectListModel { ValueField = s.Key, DescriptionField = s.Value });
     }
 
-    private async Task ContactFormSubmit()
+    private void ContactFormSubmit()
     {
         var test = string.Empty;
     }

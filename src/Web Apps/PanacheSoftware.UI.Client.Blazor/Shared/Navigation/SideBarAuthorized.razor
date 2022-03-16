@@ -28,7 +28,7 @@
     //RenderFragment customIcon =@<img src="/img/user.jpg" style="width:32px; height: 32px" />;
     RenderFragment customIcon =@<img src="/img/PS-Green-Trans.png" style="width:42px; height: 42px" />
     ;
-    Sidebar sidebar;
+    //Sidebar sidebar;
     LangQueryList langQueryList { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -97,8 +97,8 @@
         langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, UserAppCache.LanguageCode, textCodes.ToArray());
     }
 
-    void ToggleSidebar()
-    {
-        sidebar.Toggle();
-    }
+    //void ToggleSidebar()
+    //{
+    //    sidebar.Toggle();
+    //}
 }

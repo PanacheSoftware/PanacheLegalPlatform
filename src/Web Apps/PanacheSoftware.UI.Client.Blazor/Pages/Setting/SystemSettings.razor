@@ -39,8 +39,8 @@
                           ShowPageSizes="true"
                           Editable="true"
                           EditMode="DataGridEditMode.Form"
-                          RowInserted="@OnRowInsertedAsync"
-                          RowUpdated="OnRowUpdatedAsync">
+                          RowInserted="@OnRowInserted"
+                          RowUpdated="OnRowUpdated">
                     <EmptyTemplate>No records...</EmptyTemplate>
                     <DataGridColumns>
                         <DataGridCommandColumn TItem="TenSetting" Width="170px">
@@ -84,12 +84,12 @@
     PageProgressBar pageProgressBar;
     bool loadingPage = true;
 
-    protected async Task OnRowInsertedAsync(SavedRowItem<TenSetting, Dictionary<string, object>> e)
+    protected void OnRowInserted(SavedRowItem<TenSetting, Dictionary<string, object>> e)
     {
         //await GetSettings();
     }
 
-    protected async Task OnRowUpdatedAsync(SavedRowItem<TenSetting, Dictionary<string, object>> e)
+    protected void OnRowUpdated(SavedRowItem<TenSetting, Dictionary<string, object>> e)
     {
         //await GetSettings();
     }

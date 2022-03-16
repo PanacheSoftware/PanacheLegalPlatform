@@ -73,7 +73,7 @@ namespace PanacheSoftware.UI.Client.Blazor.Data
             return await modelHelper.ProcessPatchWithMessage(existingObject, updatedObject, objectId, accessToken, apiType, urlPrefix);
         }
 
-        public async Task<string> GetErrorFromResponse(HttpResponseMessage httpResponseMessage)
+        public string GetErrorFromResponse(HttpResponseMessage httpResponseMessage)
         {
             if (httpResponseMessage.IsSuccessStatusCode)
                 return string.Empty;

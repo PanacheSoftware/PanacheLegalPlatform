@@ -298,7 +298,7 @@
 
                     if (response.StatusCode != System.Net.HttpStatusCode.Created)
                     {
-                        return new Tuple<bool, string>(false, await MyFoundationService.GetErrorFromResponse(response));
+                        return new Tuple<bool, string>(false, MyFoundationService.GetErrorFromResponse(response));
                     }
 
                     fileUploadModel.FileHeader.FileVersions.Add(response.ContentAsType<FileVer>());
@@ -340,7 +340,7 @@
 
                     if (response.StatusCode != System.Net.HttpStatusCode.Created)
                     {
-                        return new Tuple<bool, string>(false, await MyFoundationService.GetErrorFromResponse(response));
+                        return new Tuple<bool, string>(false, MyFoundationService.GetErrorFromResponse(response));
                     }
 
                     fileUploadModel.FileHeader = response.ContentAsType<FileHead>();

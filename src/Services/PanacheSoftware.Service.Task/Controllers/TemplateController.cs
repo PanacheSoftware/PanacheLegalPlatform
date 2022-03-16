@@ -37,11 +37,11 @@ namespace PanacheSoftware.Service.Task.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> Get()
+        public IActionResult Get()
         {
             try
             {
-                TemplateHeadList templateHeadList = await _templateManager.GetTemplateHeadListAsync();
+                TemplateHeadList templateHeadList = _templateManager.GetTemplateHeadList();
 
                 if (templateHeadList.TemplateHeaders.Any())
                     return Ok(templateHeadList);
@@ -69,11 +69,11 @@ namespace PanacheSoftware.Service.Task.Controllers
 
                 if (Guid.TryParse(id, out Guid parsedId))
                 {
-                    templateHeader = await _unitOfWork.TemplateHeaders.GetTemplateHeaderWithRelationsAsync(parsedId, false, accessToken);
+                    templateHeader = _unitOfWork.TemplateHeaders.GetTemplateHeaderWithRelations(parsedId, false, accessToken);
                 }
                 else
                 {
-                    templateHeader = await _unitOfWork.TemplateHeaders.GetTemplateHeaderWithRelationsAsync(id, false, accessToken);
+                    templateHeader = _unitOfWork.TemplateHeaders.GetTemplateHeaderWithRelations(id, false, accessToken);
                 }
 
                 if (templateHeader != null)
@@ -130,7 +130,7 @@ namespace PanacheSoftware.Service.Task.Controllers
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
         [ProducesResponseType(401)]
-        public async Task<IActionResult> Patch(string id, [FromBody]JsonPatchDocument<TemplateHead> templateHeadPatch)
+        public IActionResult Patch(string id, [FromBody]JsonPatchDocument<TemplateHead> templateHeadPatch)
         {
             if (ModelState.IsValid)
             {
@@ -192,7 +192,7 @@ namespace PanacheSoftware.Service.Task.Controllers
                                 new APIErrorMessage(StatusCodes.Status400BadRequest,
                                     $"{creationResult.Item2}"));
 
-                        var templateHeader = await _unitOfWork.TemplateHeaders.GetTemplateHeaderWithRelationsAsync(creationResult.Item1, false, accessToken);
+                        var templateHeader = _unitOfWork.TemplateHeaders.GetTemplateHeaderWithRelations(creationResult.Item1, false, accessToken);
 
                         if(templateHeader == null)
                             return StatusCode(StatusCodes.Status400BadRequest,
@@ -241,7 +241,7 @@ namespace PanacheSoftware.Service.Task.Controllers
                                 new APIErrorMessage(StatusCodes.Status400BadRequest,
                                     $"{creationResult.Item2}"));
 
-                        var templateHeader = await _unitOfWork.TemplateHeaders.GetTemplateHeaderWithRelationsAsync(creationResult.Item1, false, accessToken);
+                        var templateHeader = _unitOfWork.TemplateHeaders.GetTemplateHeaderWithRelations(creationResult.Item1, false, accessToken);
 
                         if (templateHeader == null)
                             return StatusCode(StatusCodes.Status400BadRequest,

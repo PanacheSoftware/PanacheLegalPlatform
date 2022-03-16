@@ -228,9 +228,9 @@ namespace PanacheSoftware.Http
 
                 if(gatewayConfig != null)
                 {
-                    if(gatewayConfig.routes != null)
+                    if(gatewayConfig.Routes != null)
                     {
-                        if(gatewayConfig.routes.Count > 0)
+                        if(gatewayConfig.Routes.Count > 0)
                         {
                             return true;
                         }
@@ -275,11 +275,11 @@ namespace PanacheSoftware.Http
                 return false;
 
             var OcelotConfiguration = new Root();
-            OcelotConfiguration.routes = new List<Route>();
+            OcelotConfiguration.Routes = new List<Route>();
 
-            OcelotConfiguration.globalConfiguration = new GlobalConfiguration()
+            OcelotConfiguration.GlobalConfiguration = new GlobalConfiguration()
             {
-                baseUrl = GatewayURI
+                BaseUrl = GatewayURI
             };
 
             foreach (var apiDetail in apiList.APIListDetails)
@@ -287,8 +287,10 @@ namespace PanacheSoftware.Http
                 var routes = await GenerateRoutes(apiDetail);
 
                 if(routes.Count > 0)
-                    OcelotConfiguration.routes.AddRange(routes);
+                    OcelotConfiguration.Routes.AddRange(routes);
             }
+
+            var JsonString = JsonConvert.SerializeObject(OcelotConfiguration);
 
             HttpContent contentPost = new StringContent(JsonConvert.SerializeObject(OcelotConfiguration), Encoding.UTF8, "application/json");
 
@@ -309,31 +311,31 @@ namespace PanacheSoftware.Http
             {
                 var route = new Route();
 
-                route.downstreamPathTemplate = path.Key;
-                route.upstreamPathTemplate = path.Key;
-                route.upstreamHttpMethod = new List<string>();
+                route.DownstreamPathTemplate = path.Key;
+                route.UpstreamPathTemplate = path.Key;
+                route.UpstreamHttpMethod = new List<string>();
 
                 foreach (var operation in path.Value.Operations)
                 {
-                    route.upstreamHttpMethod.Add(operation.Key.ToString());
+                    route.UpstreamHttpMethod.Add(operation.Key.ToString());
                 }
 
-                route.downstreamScheme = apiListDetail.HttpPart;
+                route.DownstreamScheme = apiListDetail.HttpPart;
 
-                route.authenticationOptions = new AuthenticationOptions()
+                route.AuthenticationOptions = new AuthenticationOptions()
                 {
-                    authenticationProviderKey = "GatewayKey"
+                    AuthenticationProviderKey = "GatewayKey"
                 };
 
-                route.downstreamHostAndPorts = new List<DownstreamHostAndPort>();
+                route.DownstreamHostAndPorts = new List<DownstreamHostAndPort>();
 
-                route.downstreamHostAndPorts.Add(new DownstreamHostAndPort()
+                route.DownstreamHostAndPorts.Add(new DownstreamHostAndPort()
                 {
-                    host = apiListDetail.HostPart,
-                    port = apiListDetail.PortPart
+                    Host = apiListDetail.HostPart,
+                    Port = apiListDetail.PortPart
                 });
 
-                route.routeIsCaseSensitive = true;
+                route.RouteIsCaseSensitive = true;
 
                 routes.Add(route);
             }

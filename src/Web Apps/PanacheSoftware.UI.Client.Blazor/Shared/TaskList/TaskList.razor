@@ -307,7 +307,7 @@ else
 
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
             {
-                return new Tuple<bool, string>(false, await MyFoundationService.GetErrorFromResponse(response));
+                return new Tuple<bool, string>(false, MyFoundationService.GetErrorFromResponse(response));
             }
 
             return new Tuple<bool, string>(true, $"Task {ParentTaskGroupHead.LongName} completed");

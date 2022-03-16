@@ -16,7 +16,7 @@ namespace PanacheSoftware.Service.Task.Persistance.Repositories.Template
     {
         private readonly IUserProvider _userProvider;
         private readonly IAPIHelper _apiHelper;
-        private List<Guid> _userTeams;
+        //private List<Guid> _userTeams;
 
         public TemplateHeaderRepository(PanacheSoftwareServiceTaskContext context, IUserProvider userProvider, IAPIHelper apiHelper) : base(context)
         {
@@ -29,12 +29,12 @@ namespace PanacheSoftware.Service.Task.Persistance.Repositories.Template
             get { return Context as PanacheSoftwareServiceTaskContext; }
         }
 
-        public async Task<TemplateHeader> GetTemplateHeaderWithRelationsAsync(string templateHeaderShortName, bool readOnly, string accessToken)
+        public TemplateHeader GetTemplateHeaderWithRelations(string templateHeaderShortName, bool readOnly, string accessToken)
         {
-            return await GetTemplateHeaderWithRelationsAsync(TemplateHeaderNameToId(templateHeaderShortName), readOnly, accessToken);
+            return GetTemplateHeaderWithRelations(TemplateHeaderNameToId(templateHeaderShortName), readOnly, accessToken);
         }
 
-        public async Task<TemplateHeader> GetTemplateHeaderWithRelationsAsync(Guid templateHeaderId, bool readOnly, string accessToken)
+        public TemplateHeader GetTemplateHeaderWithRelations(Guid templateHeaderId, bool readOnly, string accessToken)
         {
             if (readOnly)
                 return PanacheSoftwareServiceTaskContext.TemplateHeaders

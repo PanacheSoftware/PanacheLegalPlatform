@@ -13,12 +13,12 @@ namespace PanacheSoftware.Core.Domain.UI
             ShowAlert = false;
             AlertMessage = string.Empty;
             AlertDescription = string.Empty;
-            AlertType = 0;
+            AlertType = "Info";
         }
 
         public bool ShowAlert { get; set; }
         public string AlertMessage { get; set; }
         public string AlertDescription { get; set; }
-        public int AlertType { get; set; }
+        public string AlertType { get; set; }
     }
 }

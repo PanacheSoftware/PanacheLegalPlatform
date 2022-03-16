@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using IdentityServer4.AccessTokenValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PanacheSoftware.Core.Domain.Configuration;
 using PanacheSoftware.Core.Types;
@@ -57,24 +58,38 @@ namespace PanacheSoftware.Service.Task
 
             services.AddAuthorization();
 
-            services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
-                .AddIdentityServerAuthentication(options =>
-                {
-                    // base-address of your identityserver
-                    options.Authority = bool.Parse(panacheSoftwareConfiguration.CallMethod.UICallsSecure) ? panacheSoftwareConfiguration.Url.IdentityServerURLSecure : panacheSoftwareConfiguration.Url.IdentityServerURL;
+            //services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
+            //    .AddIdentityServerAuthentication(options =>
+            //    {
+            //        // base-address of your identityserver
+            //        options.Authority = bool.Parse(panacheSoftwareConfiguration.CallMethod.UICallsSecure) ? panacheSoftwareConfiguration.Url.IdentityServerURLSecure : panacheSoftwareConfiguration.Url.IdentityServerURL;
 
-                    // name of the API resource
-                    options.ApiName = PanacheSoftwareScopeNames.TaskService;
-                    options.ApiSecret = panacheSoftwareConfiguration.Secret.TaskServiceSecret;
-                    options.RequireHttpsMetadata = false;
-                    //options.EnableCaching = true;
-                });
+            //        // name of the API resource
+            //        options.ApiName = PanacheSoftwareScopeNames.TaskService;
+            //        options.ApiSecret = panacheSoftwareConfiguration.Secret.TaskServiceSecret;
+            //        options.RequireHttpsMetadata = false;
+            //        //options.EnableCaching = true;
+            //    });
+
+            Action<JwtBearerOptions> jwtOptions = o =>
+            {
+                o.Authority = bool.Parse(panacheSoftwareConfiguration.CallMethod.UICallsSecure) ? panacheSoftwareConfiguration.Url.IdentityServerURLSecure : panacheSoftwareConfiguration.Url.IdentityServerURL;
+                o.Audience = PanacheSoftwareScopeNames.TaskService;
+                o.RequireHttpsMetadata = false;
+                o.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateAudience = true,
+                };
+            };
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(jwtOptions);
 
             services.AddMvc(options =>
             {
                 options.EnableEndpointRouting = false;
-            })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            });
+                //.SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<ITaskGroupDetailRepository, TaskGroupDetailRepository>();

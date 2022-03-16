@@ -29,20 +29,30 @@
                                 @switch (customFieldHeaderRowField.customFieldHeader.CustomFieldType)
                                 {
                                     case CustomFieldTypes.DateTimeField:
-                                        <DateEdit TValue="DateTime" @bind-Date="@customFieldHeaderRowField.customFieldValue.DateTimeValue" InputMode="DateInputMode.Date" ReadOnly="@ReadOnly"></DateEdit>
+                                        <DateEdit TValue="DateTime" @bind-Date="@customFieldHeaderRowField.customFieldValue.DateTimeValue" InputMode="DateInputMode.Date" ReadOnly="@ReadOnly">
+                                            <FieldHelp>@customFieldHeaderRowField.customFieldHeader.Description</FieldHelp>
+                                        </DateEdit>
                                         break;
                                     case CustomFieldTypes.IntField:
-                                        <NumericEdit @bind-Value="@customFieldHeaderRowField.customFieldValue.IntValue" ReadOnly="@ReadOnly"></NumericEdit>
+                                        <NumericEdit @bind-Value="@customFieldHeaderRowField.customFieldValue.IntValue" ReadOnly="@ReadOnly">
+                                            <FieldHelp>@customFieldHeaderRowField.customFieldHeader.Description</FieldHelp>
+                                        </NumericEdit>
                                         break;
                                     case CustomFieldTypes.DoubleField:
-                                        <NumericEdit @bind-Value="@customFieldHeaderRowField.customFieldValue.DoubleValue" ReadOnly="@ReadOnly"></NumericEdit>
+                                        <NumericEdit @bind-Value="@customFieldHeaderRowField.customFieldValue.DoubleValue" ReadOnly="@ReadOnly">
+                                            <FieldHelp>@customFieldHeaderRowField.customFieldHeader.Description</FieldHelp>
+                                        </NumericEdit>
                                         break;
                                     case CustomFieldTypes.BoolField:
-                                        <Check TValue="bool" @bind-Checked="@customFieldHeaderRowField.customFieldValue.BoolValue" ReadOnly="@ReadOnly">@customFieldHeaderRowField.customFieldHeader.Name</Check>
+                                        <Check TValue="bool" @bind-Checked="@customFieldHeaderRowField.customFieldValue.BoolValue" ReadOnly="@ReadOnly">@customFieldHeaderRowField.customFieldHeader.Name
+                                            <FieldHelp>@customFieldHeaderRowField.customFieldHeader.Description</FieldHelp>
+                                        </Check>
                                         break;
                                     case CustomFieldTypes.StringField:
                                     default:
-                                        <TextEdit @bind-Text="@customFieldHeaderRowField.customFieldValue.StringValue" ReadOnly="@ReadOnly"></TextEdit>
+                                        <TextEdit @bind-Text="@customFieldHeaderRowField.customFieldValue.StringValue" ReadOnly="@ReadOnly">
+                                            <FieldHelp>@customFieldHeaderRowField.customFieldHeader.Description</FieldHelp>
+                                        </TextEdit>
                                         break;
                                 }
                             </Field>
@@ -85,7 +95,7 @@
     int fieldRowMax = 2;
     List<CustomFieldHeaderRow> CustomFieldRows = new List<CustomFieldHeaderRow>();
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         CustomFieldRows = GetRows();
     }
@@ -141,7 +151,7 @@
 
                             if (response.StatusCode != System.Net.HttpStatusCode.Created)
                             {
-                                return new Tuple<bool, string>(false, await MyFoundationService.GetErrorFromResponse(response));
+                                return new Tuple<bool, string>(false, MyFoundationService.GetErrorFromResponse(response));
                             }
 
                             customField.customFieldValue = Mapper.Map<CustomFieldValMultiType>(response.ContentAsType<CustomFieldVal>());

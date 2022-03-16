@@ -34,7 +34,7 @@
             <Column>
                 <Card Margin="Margin.Is4.OnY" Shadow="Shadow.Default">
                     <CardHeader>
-                        <CardTitle>@GetBreadCrumbTitle()</CardTitle><Button To="@($"taskgroup/{taskGroupSummary.Id}")" Type="ButtonType.Link" Color="Color.Primary" Float="Float.Right"><Icon Name="@("fa-edit")" /></Button>
+                        <CardTitle>@GetBreadCrumbTitle()</CardTitle><Button To="@($"taskgroup/{taskGroupSummary.Id}")" Type="ButtonType.Link" Color="Color.Primary" Float="Float.End"><Icon Name="@("fa-edit")" /></Button>
                     </CardHeader>
                     <CardBody>
                         <Row>
@@ -185,6 +185,8 @@
         textCodes.Add(10225);
         textCodes.Add(10229);
         textCodes.Add(10230);
+        textCodes.Add(10231);
+        textCodes.Add(10232);
         textCodes.Add(10302);
         textCodes.Add(10306);
         textCodes.Add(10900);
@@ -311,7 +313,7 @@
         }
     }
 
-    private async Task ParentTaskCompleted()
+    private void ParentTaskCompleted()
     {
         uriHelper.NavigateTo(uriHelper.Uri, forceLoad: true);
     }

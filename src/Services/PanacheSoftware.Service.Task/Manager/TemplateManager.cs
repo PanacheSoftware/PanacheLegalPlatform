@@ -35,7 +35,7 @@ namespace PanacheSoftware.Service.Task.Manager
             _taskManager = taskManager;   
         }
 
-        public async Task<TemplateHeadList> GetTemplateHeadListAsync()
+        public TemplateHeadList GetTemplateHeadList()
         {
             //var userTeams = await GetUserTeamsAsync(accessToken);
 
@@ -192,7 +192,7 @@ namespace PanacheSoftware.Service.Task.Manager
                         return new Tuple<Guid, string>(Guid.Empty, $"Error creating file for template: {fileToCreate.FileLinks.FirstOrDefault().LinkId}");
                     }
                 }
-                catch (Exception ex)
+                catch
                 {
                     return new Tuple<Guid, string>(Guid.Empty, $"Error creating file for template: {fileToCreate.FileLinks.FirstOrDefault().LinkId}");
                 }
@@ -211,7 +211,7 @@ namespace PanacheSoftware.Service.Task.Manager
                         return new Tuple<Guid, string>(Guid.Empty, $"Error creating custom filed group link for template: {customFieldGroupLink.LinkId}");
                     }
                 }
-                catch (Exception ex)
+                catch
                 {
                     return new Tuple<Guid, string>(Guid.Empty, $"Error creating custom filed group link for template: {customFieldGroupLink.LinkId}");
                 }

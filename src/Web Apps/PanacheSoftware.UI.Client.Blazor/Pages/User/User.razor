@@ -477,7 +477,7 @@
             return new Tuple<bool, string>(true, $"User {foundUserModel.Email} saved");
         }
 
-        return new Tuple<bool, string>(false, await MyFoundationService.GetErrorFromResponse(response));
+        return new Tuple<bool, string>(false, MyFoundationService.GetErrorFromResponse(response));
     }
 
     private async Task<Tuple<bool, string>> CreateOrUpdateUserTeamJoins()
@@ -512,7 +512,7 @@
 
                             if (response.StatusCode != System.Net.HttpStatusCode.Created)
                             {
-                                return new Tuple<bool, string>(false, await MyFoundationService.GetErrorFromResponse(response));
+                                return new Tuple<bool, string>(false, MyFoundationService.GetErrorFromResponse(response));
                             }
                         }
                         catch (Exception ex)
@@ -528,7 +528,7 @@
             return new Tuple<bool, string>(false, $"No User Team Join List");
         }
 
-        return new Tuple<bool, string>(false, await MyFoundationService.GetErrorFromResponse(response));
+        return new Tuple<bool, string>(false, MyFoundationService.GetErrorFromResponse(response));
     }
 
     private async Task OnImageUpload(FileChangedEventArgs e)
@@ -546,7 +546,7 @@
             using (var bufferedStream = new BufferedStream(file.OpenReadStream(long.MaxValue), OneMb))
             using (var ms = new MemoryStream())
             {
-                int readCount = 0;
+                //int readCount = 0;
                 int readBytes;
                 while ((readBytes = await bufferedStream.ReadAsync(buffer, 0, OneMb)) > 0)
                 {

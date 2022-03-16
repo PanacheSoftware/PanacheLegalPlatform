@@ -126,7 +126,7 @@ namespace PanacheSoftware.Service.Task.Persistance.Repositories.Task
                 .Where(t => t.Id == taskGroupHeaderId).ToList();
         }
 
-        public async Task<List<TaskGroupHeader>> GetChildTaskGroupHeadersAsync(Guid taskGroupHeaderId, bool includeChildTasks, bool readOnly)
+        public List<TaskGroupHeader> GetChildTaskGroupHeaders(Guid taskGroupHeaderId, bool includeChildTasks, bool readOnly)
         {
             if(readOnly)
             {
@@ -142,7 +142,7 @@ namespace PanacheSoftware.Service.Task.Persistance.Repositories.Task
             return PanacheSoftwareServiceTaskContext.TaskGroupHeaders.Where(t => t.ParentTaskGroupId == taskGroupHeaderId).ToList();
         }
 
-        public async Task<List<TaskHeader>> GetChildTaskHeadersAsync(Guid taskGroupHeaderId, bool readOnly)
+        public List<TaskHeader> GetChildTaskHeaders(Guid taskGroupHeaderId, bool readOnly)
         {
             if(readOnly)
                 return PanacheSoftwareServiceTaskContext.TaskHeaders.Where(t => t.TaskGroupHeaderId == taskGroupHeaderId).AsNoTracking().ToList();

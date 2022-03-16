@@ -162,7 +162,7 @@
     CustomFieldGroupLink customFieldGroupLink;
     bool readOnlyShortName = false;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         if (taskGroupHead.Id != Guid.Empty)
             readOnlyShortName = true;
@@ -337,7 +337,7 @@
 
                     if (response.StatusCode != System.Net.HttpStatusCode.Created)
                     {
-                        return new Tuple<bool, string>(false, await MyFoundationService.GetErrorFromResponse(response));
+                        return new Tuple<bool, string>(false, MyFoundationService.GetErrorFromResponse(response));
                     }
 
                     taskGroupHead = response.ContentAsType<TaskGroupHead>();

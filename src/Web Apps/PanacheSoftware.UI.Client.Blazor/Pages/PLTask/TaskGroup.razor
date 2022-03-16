@@ -58,7 +58,7 @@
                             <CardTitle>@GetBreadCrumbTitle()</CardTitle>
                             @if(taskGroupHead.Id != Guid.Empty)
                             {
-                                <Button To="@($"taskview/{taskGroupHead.Id}")" Type="ButtonType.Link" Color="Color.Primary" Float="Float.Right"><Icon Name="@("fa-tasks")" /></Button>
+                                <Button To="@($"taskview/{taskGroupHead.Id}")" Type="ButtonType.Link" Color="Color.Primary" Float="Float.End"><Icon Name="@("fa-tasks")" /></Button>
                             }
                         </CardHeader>
                         <CardBody>
@@ -397,7 +397,7 @@
 
                     if (response.StatusCode != System.Net.HttpStatusCode.Created)
                     {
-                        return new Tuple<bool, string>(false, await MyFoundationService.GetErrorFromResponse(response));
+                        return new Tuple<bool, string>(false, MyFoundationService.GetErrorFromResponse(response));
                     }
 
                     taskGroupHead = response.ContentAsType<TaskGroupHead>();

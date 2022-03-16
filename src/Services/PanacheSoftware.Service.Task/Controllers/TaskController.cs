@@ -195,7 +195,7 @@ namespace PanacheSoftware.Service.Task.Controllers
                                                 $"TaskHeader.ShortName: '{taskHeader.ShortName}' can't be changed."));
 
                                     //Make sure the start and completion dates don't fall outside of the group headers dates
-                                    var dateCheck = await _taskManager.TaskDatesOkayAsync(_mapper.Map<TaskHeader>(taskHead));
+                                    var dateCheck = _taskManager.TaskDatesOkay(_mapper.Map<TaskHeader>(taskHead));
 
                                     if (!dateCheck.Item1)
                                         return StatusCode(StatusCodes.Status400BadRequest,
@@ -259,7 +259,7 @@ namespace PanacheSoftware.Service.Task.Controllers
 
                                 taskHeader.CompletedOnDate = convertedDateTime;
 
-                                var dateCheck = await _taskManager.TaskDatesOkayAsync(taskHeader);
+                                var dateCheck = _taskManager.TaskDatesOkay(taskHeader);
 
                                 if (!dateCheck.Item1)
                                     return StatusCode(StatusCodes.Status400BadRequest,

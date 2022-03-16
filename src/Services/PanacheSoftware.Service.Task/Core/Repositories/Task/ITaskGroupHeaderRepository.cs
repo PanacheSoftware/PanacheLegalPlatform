@@ -16,7 +16,7 @@ namespace PanacheSoftware.Service.Task.Core.Repositories
         List<TaskGroupHeader> GetTaskGroupTree(string taskGroupShortName);
         List<TaskGroupHeader> GetTaskGroupTree(Guid taskGroupHeaderId);
         Task<List<TaskGroupHeader>> GetMainTaskGroupsAsync(bool includeChildren, string accessToken);
-        Task<List<TaskGroupHeader>> GetChildTaskGroupHeadersAsync(Guid taskGroupHeaderId, bool includeChildTasks, bool readOnly);
-        Task<List<TaskHeader>> GetChildTaskHeadersAsync(Guid taskGroupHeaderId, bool readOnly);
+        List<TaskGroupHeader> GetChildTaskGroupHeaders(Guid taskGroupHeaderId, bool includeChildTasks, bool readOnly);
+        List<TaskHeader> GetChildTaskHeaders(Guid taskGroupHeaderId, bool readOnly);
     }
 }

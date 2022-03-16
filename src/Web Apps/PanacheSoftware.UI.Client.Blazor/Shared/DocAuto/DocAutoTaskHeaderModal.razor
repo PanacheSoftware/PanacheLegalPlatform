@@ -1,0 +1,68 @@
+﻿@attribute [Authorize]
+@inject UserAppCache UserAppCache
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@using PanacheSoftware.Core.Domain.API.Task
+@using PanacheSoftware.Core.Domain.API.Team
+@using PanacheSoftware.Core.Domain.Identity.API;
+
+@if (taskGroupHead != null)
+{
+    <Modal @ref="taskGroupHeadForm">
+        <ModalContent Centered="true" Size="ModalSize.Large">
+            <ModalHeader>
+                <ModalTitle>
+                    <Icon Name="IconName.Edit" />
+                    @LanguageHelper.GetTitle(langQueryList, 10231)
+                </ModalTitle>
+                <CloseButton />
+            </ModalHeader>
+            <ModalBody>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is6">
+                        <Validation>
+                            <Field>
+                                <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10900)</FieldLabel>
+                                <TextEdit >
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </Field>
+                        </Validation>
+                    </Column>
+                </Row>
+            </ModalBody>
+            <ModalFooter>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12">
+                        <Button Color="Color.Secondary" Clicked="@HideDocAutoTaskGroupHeaderInfo">@LanguageHelper.GetTitle(langQueryList, 10942)</Button>
+                    </Column>
+                </Row>
+            </ModalFooter>
+        </ModalContent>
+    </Modal>
+
+    <Button Color="Color.Primary" Clicked="@ShowDocAutoTaskGroupHeaderInfo" Float="Float.End"><Icon Name="@("fa-edit")" /><Icon Name="IconName.InfoCircle"/></Button>
+}
+
+@code {
+    [CascadingParameter]
+    LangQueryList langQueryList { get; set; }
+
+    [Parameter]
+    public TaskGroupHead taskGroupHead { get; set; }
+
+    private Modal taskGroupHeadForm;
+
+    private void ShowDocAutoTaskGroupHeaderInfo()
+    {
+        taskGroupHeadForm.Show();
+    }
+
+    private void HideDocAutoTaskGroupHeaderInfo()
+    {
+        taskGroupHeadForm.Hide();
+    }
+}

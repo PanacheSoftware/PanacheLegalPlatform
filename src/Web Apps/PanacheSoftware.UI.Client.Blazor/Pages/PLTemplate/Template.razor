@@ -37,7 +37,7 @@
                             <CardTitle>@GetBreadCrumbTitle()</CardTitle>
                             @if(templateHeadModel.TemplateHeader.Id != Guid.Empty)
                             {
-                                <Button To="@($"templateview/{templateHeadModel.TemplateHeader.Id}")" Type="ButtonType.Link" Color="Color.Primary" Float="Float.Right"><Icon Name="IconName.List" /></Button>
+                                <Button To="@($"templateview/{templateHeadModel.TemplateHeader.Id}")" Type="ButtonType.Link" Color="Color.Primary" Float="Float.End"><Icon Name="IconName.List" /></Button>
                             }
                         </CardHeader>
                         <CardBody>
@@ -348,7 +348,7 @@
 
                     if (response.StatusCode != System.Net.HttpStatusCode.Created)
                     {
-                        return new Tuple<bool, string>(false, await MyFoundationService.GetErrorFromResponse(response));
+                        return new Tuple<bool, string>(false, MyFoundationService.GetErrorFromResponse(response));
                     }
 
                     templateHeadModel.TemplateHeader = response.ContentAsType<TemplateHead>();

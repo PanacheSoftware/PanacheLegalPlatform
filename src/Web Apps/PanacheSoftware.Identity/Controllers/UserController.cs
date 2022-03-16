@@ -14,7 +14,7 @@ using PanacheSoftware.Core.Domain.Identity;
 using PanacheSoftware.Core.Domain.Identity.API;
 using PanacheSoftware.Http;
 using PanacheSoftware.Identity.Manager;
-using static IdentityServer4.IdentityServerConstants;
+using static Duende.IdentityServer.IdentityServerConstants;
 
 namespace PanacheSoftware.Identity.Controllers
 {

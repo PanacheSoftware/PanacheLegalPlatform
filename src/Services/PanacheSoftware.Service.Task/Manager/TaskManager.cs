@@ -359,7 +359,7 @@ namespace PanacheSoftware.Service.Task.Manager
             return false;
         }
 
-        public async Task<Tuple<bool, string>> TaskGroupDatesOkayAsync(TaskGroupHeader taskGroupHeader, string accessToken)
+        public Tuple<bool, string> TaskGroupDatesOkay(TaskGroupHeader taskGroupHeader, string accessToken)
         {
             var returnMessage = string.Empty;
 
@@ -392,8 +392,8 @@ namespace PanacheSoftware.Service.Task.Manager
 
             if (taskGroupHeader.Id != Guid.Empty)
             {
-                var childTaskHeaders = await _unitOfWork.TaskGroupHeaders.GetChildTaskHeadersAsync(taskGroupHeader.Id, true);
-                var childTaskGroupHeaders = await _unitOfWork.TaskGroupHeaders.GetChildTaskGroupHeadersAsync(taskGroupHeader.Id, false, true);
+                var childTaskHeaders = _unitOfWork.TaskGroupHeaders.GetChildTaskHeaders(taskGroupHeader.Id, true);
+                var childTaskGroupHeaders = _unitOfWork.TaskGroupHeaders.GetChildTaskGroupHeaders(taskGroupHeader.Id, false, true);
 
                 foreach (var childTask in childTaskHeaders)
                 {
@@ -445,7 +445,7 @@ namespace PanacheSoftware.Service.Task.Manager
             return new Tuple<bool, string>(string.IsNullOrWhiteSpace(returnMessage), returnMessage);
         }
 
-        public async Task<Tuple<bool, string>> TaskDatesOkayAsync(TaskHeader taskHeader)
+        public Tuple<bool, string> TaskDatesOkay(TaskHeader taskHeader)
         {
             var returnMessage = string.Empty;
 
@@ -480,7 +480,7 @@ namespace PanacheSoftware.Service.Task.Manager
         {
             var returnResult = new Tuple<Guid, string>(Guid.Empty, string.Empty);
 
-            var templateHeader = await _unitOfWork.TemplateHeaders.GetTemplateHeaderWithRelationsAsync(TemplateId, true, accessToken);
+            var templateHeader = _unitOfWork.TemplateHeaders.GetTemplateHeaderWithRelations(TemplateId, true, accessToken);
 
             if (templateHeader == null)
                 return new Tuple<Guid, string>(Guid.Empty, $"Id: {TemplateId}, Is not a template");
@@ -605,7 +605,7 @@ namespace PanacheSoftware.Service.Task.Manager
                         return new Tuple<Guid, string>(Guid.Empty, $"Error creating file for Task Item: {fileToCreate.FileLinks.FirstOrDefault().LinkId}");
                     }
                 }
-                catch (Exception ex)
+                catch
                 {
                     return new Tuple<Guid, string>(Guid.Empty, $"Error creating file for Task Item: {fileToCreate.FileLinks.FirstOrDefault().LinkId}");
                 }
@@ -624,7 +624,7 @@ namespace PanacheSoftware.Service.Task.Manager
                         return new Tuple<Guid, string>(Guid.Empty, $"Error creating custom filed group link for template: {customFieldGroupLink.LinkId}");
                     }
                 }
-                catch (Exception ex)
+                catch
                 {
                     return new Tuple<Guid, string>(Guid.Empty, $"Error creating custom filed group link for template: {customFieldGroupLink.LinkId}");
                 }
@@ -650,7 +650,7 @@ namespace PanacheSoftware.Service.Task.Manager
             if (!await TaskGroupParentOkayAsync(taskGroupHeader, accessToken))
                 return new Tuple<bool, string>(false, $"TaskGroupHead.ParentTaskGroupId: '{taskGroupHeader.ParentTaskGroupId}' is invalid.");
 
-            var dateCheck = await TaskGroupDatesOkayAsync(taskGroupHeader, accessToken);
+            var dateCheck = TaskGroupDatesOkay(taskGroupHeader, accessToken);
 
             if (!dateCheck.Item1)
                 return new Tuple<bool, string>(false, dateCheck.Item2);
@@ -730,7 +730,7 @@ namespace PanacheSoftware.Service.Task.Manager
             if(!await CanAccessTaskGroupHeaderAsync(taskGroupHeader.Id, accessToken))
                 return new Tuple<bool, string>(false, $"TaskHead.TaskGroupHeaderId: Can't access '{taskHeader.TaskGroupHeaderId}'.");
 
-            var dateCheck = await TaskDatesOkayAsync(taskHeader);
+            var dateCheck = TaskDatesOkay(taskHeader);
 
             if (!dateCheck.Item1)
                 return new Tuple<bool, string>(false, dateCheck.Item2);

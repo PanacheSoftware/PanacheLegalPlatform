@@ -632,6 +632,26 @@
     },
     {
       "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10231,
+      "description": "General titles",
+      "text": "Info",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10232,
+      "description": "General titles",
+      "text": "Close",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
       "textCode": 10300,
       "description": "Client Screens",
       "text": "Clients",

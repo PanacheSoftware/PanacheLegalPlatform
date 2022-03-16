@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <Deterministic>False</Deterministic>
     <AssemblyVersion>0.1.*</AssemblyVersion>
     <FileVersion>0.1.0.0</FileVersion>
@@ -11,9 +11,10 @@
 
   <ItemGroup>
     <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="3.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.3" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
-    <PackageReference Include="Ocelot" Version="17.0.1" />
-    <PackageReference Include="Ocelot.Administration" Version="17.0.1" />
+    <PackageReference Include="Ocelot" Version="18.0.0" />
+    <PackageReference Include="Ocelot.Administration" Version="18.0.0" />
   </ItemGroup>
 
   <ItemGroup>

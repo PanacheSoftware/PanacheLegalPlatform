@@ -73,11 +73,11 @@ namespace PanacheSoftware.Core.Domain.Ocelot
     {
         public AuthenticationOptions()
         {
-            allowedScopes = new List<object>();
+            AllowedScopes = new List<object>();
         }
 
-        public string authenticationProviderKey { get; set; }
-        public List<object> allowedScopes { get; set; }
+        public string AuthenticationProviderKey { get; set; }
+        public List<object> AllowedScopes { get; set; }
     }
 
     //public class HttpHandlerOptions
@@ -91,8 +91,8 @@ namespace PanacheSoftware.Core.Domain.Ocelot
 
     public class DownstreamHostAndPort
     {
-        public string host { get; set; }
-        public int port { get; set; }
+        public string Host { get; set; }
+        public int Port { get; set; }
     }
 
     //public class SecurityOptions
@@ -103,9 +103,9 @@ namespace PanacheSoftware.Core.Domain.Ocelot
 
     public class Route
     {
-        public string downstreamPathTemplate { get; set; } //Used
-        public string upstreamPathTemplate { get; set; } //Used
-        public List<string> upstreamHttpMethod { get; set; } //Used
+        public string DownstreamPathTemplate { get; set; } //Used
+        public string UpstreamPathTemplate { get; set; } //Used
+        public List<string> UpstreamHttpMethod { get; set; } //Used
         //public object downstreamHttpMethod { get; set; }
         //public AddHeadersToRequest addHeadersToRequest { get; set; }
         //public UpstreamHeaderTransform upstreamHeaderTransform { get; set; }
@@ -116,16 +116,16 @@ namespace PanacheSoftware.Core.Domain.Ocelot
         //public ChangeDownstreamPathTemplate changeDownstreamPathTemplate { get; set; }
         //public object requestIdKey { get; set; }
         //public FileCacheOptions fileCacheOptions { get; set; }
-        public bool routeIsCaseSensitive { get; set; } //Used
+        public bool RouteIsCaseSensitive { get; set; } //Used
         //public object serviceName { get; set; }
         //public object serviceNamespace { get; set; }
-        public string downstreamScheme { get; set; } //Used
+        public string DownstreamScheme { get; set; } //Used
         //public QoSOptions qoSOptions { get; set; }
         //public LoadBalancerOptions loadBalancerOptions { get; set; }
         //public RateLimitOptions rateLimitOptions { get; set; }
-        public AuthenticationOptions authenticationOptions { get; set; } //Used
+        public AuthenticationOptions AuthenticationOptions { get; set; } //Used
         //public HttpHandlerOptions httpHandlerOptions { get; set; }
-        public List<DownstreamHostAndPort> downstreamHostAndPorts { get; set; } //Used
+        public List<DownstreamHostAndPort> DownstreamHostAndPorts { get; set; } //Used
         //public object upstreamHost { get; set; }
         //public object key { get; set; }
         //public List<object> delegatingHandlers { get; set; }
@@ -154,7 +154,7 @@ namespace PanacheSoftware.Core.Domain.Ocelot
         //public ServiceDiscoveryProvider serviceDiscoveryProvider { get; set; }
         //public RateLimitOptions rateLimitOptions { get; set; }
         //public QoSOptions qoSOptions { get; set; }
-        public string baseUrl { get; set; }
+        public string BaseUrl { get; set; }
         //public LoadBalancerOptions loadBalancerOptions { get; set; }
         //public object downstreamScheme { get; set; }
         //public HttpHandlerOptions httpHandlerOptions { get; set; }
@@ -165,15 +165,15 @@ namespace PanacheSoftware.Core.Domain.Ocelot
     {
         public Root()
         {
-            routes = new List<Route>();
+            Routes = new List<Route>();
             //dynamicRoutes = new List<object>();
             //aggregates = new List<object>();
         }
 
-        public List<Route> routes { get; set; }
+        public List<Route> Routes { get; set; }
         //public List<object> dynamicRoutes { get; set; }
         //public List<object> aggregates { get; set; }
-        public GlobalConfiguration globalConfiguration { get; set; }
+        public GlobalConfiguration GlobalConfiguration { get; set; }
     }
 
 

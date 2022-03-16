@@ -207,7 +207,7 @@
             linkId = updatedId;
 
             await SaveFieldGroupLinks();
-            return plAlert.alertModel.AlertType == (int)Color.Danger ? false : true;
+            return plAlert.alertModel.AlertType == "Danger" ? false : true;
         }
 
         return false;
@@ -276,7 +276,7 @@
 
                             if (response.StatusCode != System.Net.HttpStatusCode.Created)
                             {
-                                return new Tuple<bool, string>(false, await MyFoundationService.GetErrorFromResponse(response));
+                                return new Tuple<bool, string>(false, MyFoundationService.GetErrorFromResponse(response));
                             }
 
                             customFieldGroupLnkList.CustomFieldGroupLinks[i] = response.ContentAsType<CustomFieldGroupLnk>();

@@ -370,7 +370,7 @@
 
                     if (response.StatusCode != System.Net.HttpStatusCode.Created)
                     {
-                        return new Tuple<bool, string>(false, await MyFoundationService.GetErrorFromResponse(response));
+                        return new Tuple<bool, string>(false, MyFoundationService.GetErrorFromResponse(response));
                     }
 
                     languageHead = response.ContentAsType<LangHead>();
@@ -420,7 +420,7 @@
 
                     if (response.StatusCode != System.Net.HttpStatusCode.Created)
                     {
-                        return new Tuple<bool, string>(false, await MyFoundationService.GetErrorFromResponse(response));
+                        return new Tuple<bool, string>(false, MyFoundationService.GetErrorFromResponse(response));
                     }
                 }
                 catch (Exception ex)

@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static IdentityServer4.IdentityServerConstants;
+using static Duende.IdentityServer.IdentityServerConstants;
 
 namespace PanacheSoftware.Identity.Controllers
 {
@@ -17,7 +17,7 @@ namespace PanacheSoftware.Identity.Controllers
         [Produces("application/json")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> GetAsync()
+        public IActionResult Get()
         {
             return NotFound();
         }

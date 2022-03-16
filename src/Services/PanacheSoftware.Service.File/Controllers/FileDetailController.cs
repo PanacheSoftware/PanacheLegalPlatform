@@ -33,7 +33,7 @@ namespace PanacheSoftware.Service.File.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> Get(string id)
+        public IActionResult Get(string id)
         {
             try
             {
@@ -42,8 +42,8 @@ namespace PanacheSoftware.Service.File.Controllers
                     FileDetail fileDetail = null;
 
                     //Treat 'id' as a fileHeaderId and if not found as a fileDetailId
-                    fileDetail = await _unitOfWork.FileDetails.GetFileDetailWithRelationsAsync(parsedId, true) 
-                                 ?? await _unitOfWork.FileDetails.GetDetailWithRelationsAsync(parsedId, true);
+                    fileDetail = _unitOfWork.FileDetails.GetFileDetailWithRelations(parsedId, true) 
+                                 ?? _unitOfWork.FileDetails.GetDetailWithRelations(parsedId, true);
 
                     if (fileDetail != null)
                         return Ok(_mapper.Map<FileDet>(fileDetail));

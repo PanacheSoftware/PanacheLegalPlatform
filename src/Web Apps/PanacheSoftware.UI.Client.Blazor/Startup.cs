@@ -98,7 +98,7 @@ namespace PanacheSoftware.UI.Client.Blazor
             services
               .AddBlazorise(options =>
               {
-                  options.ChangeTextOnKeyPress = true; // optional
+                  //options.ChangeTextOnKeyPress = true; // optional
               })
               .AddBootstrapProviders()
               .AddFontAwesomeIcons();

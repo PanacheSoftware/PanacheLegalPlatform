@@ -359,7 +359,7 @@
 
                     if (response.StatusCode != System.Net.HttpStatusCode.Created)
                     {
-                        return new Tuple<bool, string>(false, await MyFoundationService.GetErrorFromResponse(response));
+                        return new Tuple<bool, string>(false, MyFoundationService.GetErrorFromResponse(response));
                     }
 
                     clientHead = response.ContentAsType<ClientHead>();
@@ -421,7 +421,7 @@
 
                     if (response.StatusCode != System.Net.HttpStatusCode.Created)
                     {
-                        return new Tuple<bool, string>(false, await MyFoundationService.GetErrorFromResponse(response));
+                        return new Tuple<bool, string>(false, MyFoundationService.GetErrorFromResponse(response));
                     }
                 }
                 catch (Exception ex)
@@ -469,7 +469,7 @@
 
                     if (response.StatusCode != System.Net.HttpStatusCode.Created)
                     {
-                        return new Tuple<bool, string>(false, await MyFoundationService.GetErrorFromResponse(response));
+                        return new Tuple<bool, string>(false, MyFoundationService.GetErrorFromResponse(response));
                     }
                 }
                 catch (Exception ex)
@@ -499,7 +499,7 @@
             using (var bufferedStream = new BufferedStream(file.OpenReadStream(long.MaxValue), OneMb))
             using (var ms = new MemoryStream())
             {
-                int readCount = 0;
+                //int readCount = 0;
                 int readBytes;
                 while ((readBytes = await bufferedStream.ReadAsync(buffer, 0, OneMb)) > 0)
                 {

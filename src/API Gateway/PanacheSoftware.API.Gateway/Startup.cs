@@ -1,23 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Ocelot.Administration;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 using PanacheSoftware.Core.Domain.Configuration;
 using PanacheSoftware.Core.Types;
+using System;
 
 namespace PanacheSoftware.API.Gateway
 {
@@ -70,7 +64,8 @@ namespace PanacheSoftware.API.Gateway
                 };
             };
 
-            services.AddAuthentication()
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                //.AddJwtBearer(jwtOptions);
                 .AddIdentityServerAuthentication(authenticationProviderKey, options);
 
             services.AddControllers();

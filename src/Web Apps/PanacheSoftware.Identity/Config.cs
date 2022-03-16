@@ -1,11 +1,11 @@
 ﻿using IdentityModel;
-using IdentityServer4;
-using IdentityServer4.Models;
+using Duende.IdentityServer;
+using Duende.IdentityServer.Models;
 using PanacheSoftware.Core.Types;
 using System.Collections.Generic;
 using PanacheSoftware.Core.Domain.Configuration;
 using PanacheSoftware.Http;
-using static IdentityServer4.IdentityServerConstants;
+using static Duende.IdentityServer.IdentityServerConstants;
 
 namespace PanacheSoftware.Identity
 {

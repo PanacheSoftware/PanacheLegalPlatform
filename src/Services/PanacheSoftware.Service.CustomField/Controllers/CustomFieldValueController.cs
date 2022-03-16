@@ -36,7 +36,7 @@ namespace PanacheSoftware.Service.CustomField.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> Get(string id)
+        public IActionResult Get(string id)
         {
             try
             {
@@ -61,7 +61,7 @@ namespace PanacheSoftware.Service.CustomField.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] CustomFieldVal customFieldVal)
+        public IActionResult Post([FromBody] CustomFieldVal customFieldVal)
         {
             if (ModelState.IsValid)
             {              
