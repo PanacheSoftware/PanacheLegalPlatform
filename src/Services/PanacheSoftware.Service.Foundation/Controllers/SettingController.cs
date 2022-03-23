@@ -114,7 +114,7 @@ namespace PanacheSoftware.Service.Foundation.Controllers
 
                             _unitOfWork.Complete();
 
-                            return Created(new Uri($"{Request.Path}/{tenantSetting.Id}", UriKind.Absolute),
+                            return Created(new Uri($"{Request.Path}/{tenantSetting.Id}", UriKind.Relative),
                                 _mapper.Map<TenSetting>(tenantSetting));
                         }
 
@@ -163,8 +163,7 @@ namespace PanacheSoftware.Service.Foundation.Controllers
 
                             _unitOfWork.Complete();
 
-                            return CreatedAtRoute("Get", new {id = _mapper.Map<TenSetting>(tenantSetting).Id},
-                                _mapper.Map<TenSetting>(tenantSetting));
+                            return Ok();
                         }
 
                         return NotFound();
@@ -190,7 +189,7 @@ namespace PanacheSoftware.Service.Foundation.Controllers
             {
                 UsrSettingList usrSettingList = new UsrSettingList();
 
-                var userId = User.FindFirstValue("sub");
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
                 foreach (var currentUserSetting in _unitOfWork.UserSettings.GetUserSettings(Guid.Parse(userId)))
                 {
@@ -215,7 +214,7 @@ namespace PanacheSoftware.Service.Foundation.Controllers
             try
             {
                 UserSetting userSetting;
-                var userId = User.FindFirstValue("sub");
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
                 if (Guid.TryParse(id, out Guid foundId))
                 {
@@ -249,7 +248,7 @@ namespace PanacheSoftware.Service.Foundation.Controllers
                 {
                     if (usrSetting.Id == Guid.Empty && usrSetting.SettingHeaderId != Guid.Empty)
                     {
-                        var userId = User.FindFirstValue("sub");
+                        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
                         var foundSettingHeader = _unitOfWork.SettingHeaders.GetSettingHeader(usrSetting.SettingHeaderId,
                             settingType: SettingTypes.USER, includeUser: false);
@@ -269,7 +268,7 @@ namespace PanacheSoftware.Service.Foundation.Controllers
 
                             _unitOfWork.Complete();
 
-                            return Created(new Uri($"{Request.Scheme}://{Request.Host}{Request.Path}/{userSetting.Id}", UriKind.Relative),
+                            return Created(new Uri($"{Request.Path}/{userSetting.Id}", UriKind.Relative),
                                 _mapper.Map<UsrSetting>(userSetting));
                         }
 
@@ -302,7 +301,7 @@ namespace PanacheSoftware.Service.Foundation.Controllers
                 {
                     if (Guid.TryParse(id, out Guid parsedId))
                     {
-                        var userId = User.FindFirstValue("sub");
+                        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
                         UserSetting userSetting = _unitOfWork.UserSettings.Get(parsedId);
 

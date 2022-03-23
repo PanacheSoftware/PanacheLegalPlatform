@@ -34,14 +34,21 @@ namespace PanacheSoftware.UI.Client.Blazor.Data
 
         public async Task<SettingHead> GetSystemSetting(string accessToken, string settingName)
         {
-            var response = await MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FOUNDATION, $"Setting/{settingName}");
+            return await apiHelper.GetSystemSetting(accessToken, settingName);
 
-            if (response.StatusCode == System.Net.HttpStatusCode.OK)
-            {
-                return response.ContentAsType<SettingHead>();
-            }
+            //var response = await MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FOUNDATION, $"Setting/{settingName}");
 
-            return null;
+            //if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            //{
+            //    return response.ContentAsType<SettingHead>();
+            //}
+
+            //return null;
+        }
+
+        public async Task<UsrSetting> GetUsrSetting(string accessToken, string settingName)
+        {
+            return await apiHelper.GetUserSetting(accessToken, settingName);
         }
 
         public async Task<LangQueryList> GetLanguageInfo(string accessToken, string languageCode, long[] textCodes)

@@ -27,6 +27,8 @@ namespace PanacheSoftware.Core.Domain.API.CustomField
         public string FieldValue { get; set; }
         public string Status { get; set; }
 
+        public string ShortName { get; set; }
+
         public List<CustomFieldValHistr> CustomFieldValueHistorys { get; set; }
 
         //public string StringValue { get => GetStringValue(); set => SetStringValue(value); }

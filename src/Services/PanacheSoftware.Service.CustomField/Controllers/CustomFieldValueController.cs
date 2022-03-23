@@ -167,7 +167,9 @@ namespace PanacheSoftware.Service.CustomField.Controllers
 
                     foreach (var customFieldValue in customFieldValues)
                     {
-                        customFieldValList.CustomFieldValues.Add(_mapper.Map<CustomFieldVal>(customFieldValue));
+                        var customFieldVal = _mapper.Map<CustomFieldVal>(customFieldValue);
+                        customFieldVal.ShortName = customFieldValue.CustomFieldHeader.ShortName;
+                        customFieldValList.CustomFieldValues.Add(customFieldVal);
                     }
 
                     return Ok(customFieldValList);

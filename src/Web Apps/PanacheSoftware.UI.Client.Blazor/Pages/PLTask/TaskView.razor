@@ -34,7 +34,7 @@
             <Column>
                 <Card Margin="Margin.Is4.OnY" Shadow="Shadow.Default">
                     <CardHeader>
-                        <CardTitle>@GetBreadCrumbTitle()</CardTitle><Button To="@($"taskgroup/{taskGroupSummary.Id}")" Type="ButtonType.Link" Color="Color.Primary" Float="Float.End"><Icon Name="@("fa-edit")" /></Button>
+                        <CardTitle>@GetBreadCrumbTitle()</CardTitle><Button To="@($"taskgroup/{taskGroupSummary.Id}")" Type="ButtonType.Link" Color="Color.Primary" Float="Float.End"><Icon Name="@("fa-edit")" /></Button><CascadingValue Value="langQueryList"><CascadingValue Value="userListModel"><CascadingValue Value="clientSummary"><DocAutoTaskHeaderModal taskGroupHead=@parentTaskGroupHead /></CascadingValue></CascadingValue></CascadingValue>
                     </CardHeader>
                     <CardBody>
                         <Row>
@@ -141,6 +141,7 @@
     int percentageComplete = 0;
     List<string> taskGroupTitles = new List<string>();
     bool allowTaskAdd = true;
+    TaskGroupHead parentTaskGroupHead;
 
     GanttView ganttView;
 
@@ -148,6 +149,7 @@
     {
         await GetLanguageList();
         await GetTaskSummary();
+        await GetTaskGroupHead();
         allowTaskAdd = !taskGroupSummary.Completed;
         GetTaskGroupTitles();
         loadingPage = false;
@@ -177,6 +179,8 @@
         textCodes.Add(10200);
         textCodes.Add(10201);
         textCodes.Add(10206);
+        textCodes.Add(10210);
+        textCodes.Add(10211);
         textCodes.Add(10218);
         textCodes.Add(10221);
         textCodes.Add(10222);
@@ -257,6 +261,21 @@
 
                     gcGanttModel = GanttHelper.GenerateGoogleChartsGanttModel(taskGroupSummary);
                 }
+            }
+        }
+    }
+
+    private async Task GetTaskGroupHead()
+    {
+        parentTaskGroupHead = new TaskGroupHead();
+
+        if (!string.IsNullOrWhiteSpace(Id))
+        {
+            var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.TASK, $"TaskGroup/{Id}");
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                parentTaskGroupHead = response.ContentAsType<TaskGroupHead>();
             }
         }
     }

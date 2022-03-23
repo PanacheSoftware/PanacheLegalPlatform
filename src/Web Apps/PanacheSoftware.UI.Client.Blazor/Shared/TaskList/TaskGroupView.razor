@@ -20,6 +20,7 @@
                 {
                     <Badge Color="Color.Primary" Class="float-right">@LanguageHelper.GetTitle(langQueryList, 10928)</Badge>
                 }
+                <CascadingValue Value="langQueryList"><CascadingValue Value="userListModel"><DocAutoTaskHeaderModal taskGroupHead=@taskGroupHead /></CascadingValue></CascadingValue>
             </Heading>
         </CollapseHeader>
         <CollapseBody>
@@ -38,7 +39,11 @@
             {
                 <Row>
                     <Column ColumnSize="ColumnSize.Is12">
-                        <TaskItemView taskHead="@taskHead" TaskCompleted="@TaskCompleted" TaskUpdated="@TaskUpdated" TaskCreated="@TaskCreated"/>
+                        <CascadingValue Value="langQueryList">
+                            <CascadingValue Value="userListModel">
+                                <TaskItemView taskHead="@taskHead" TaskCompleted="@TaskCompleted" TaskUpdated="@TaskUpdated" TaskCreated="@TaskCreated"/>
+                            </CascadingValue>
+                        </CascadingValue>
                     </Column>
                 </Row>
             }
@@ -98,6 +103,9 @@
 
     [CascadingParameter]
     UserListModel userListModel { get; set; }
+
+    [CascadingParameter]
+    TaskGroupSummary taskGroupSummary { get; set; }
 
     [Parameter]
     public TaskGroupHead taskGroupHead { get; set; }

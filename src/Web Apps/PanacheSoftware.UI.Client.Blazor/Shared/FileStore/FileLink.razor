@@ -62,7 +62,7 @@ else
         if (fileHead == default)
             return string.Empty;
 
-        return $"/File/Download/{fileHead.Id}/{Guid.Empty}/{fileHead.FileDetail.Automated}";
+        return $"/File/Download/{fileHead.Id}/{Guid.Empty}/{fileHead.FileDetail.Automated}/{linkId}/{linkType}";
     }
 
     void FileUploadedAction(Tuple<bool, FileHead, FileVer> fileUploadResult)

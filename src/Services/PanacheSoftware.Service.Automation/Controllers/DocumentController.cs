@@ -63,5 +63,36 @@ namespace PanacheSoftware.Service.Automation.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
             }
         }
+
+        [Route("[action]/{fileId}/{linkId}/{linkType}")]
+        [HttpGet]
+        [Produces("application/json")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> AutomateFromLink(string fileId, string linkId, string linkType)
+        {
+            try
+            {
+                if (Guid.TryParse(fileId, out Guid parsedId) && Guid.TryParse(linkId, out Guid parsedLinkId))
+                {
+                    var accessToken = await HttpContext.GetTokenAsync("access_token");
+
+                    var autoDoc = new AutoDoc();
+                    autoDoc.FileHeaderId = parsedId;
+                    
+                    await _documentManager.AutomateDocumentFromLink(autoDoc, accessToken, parsedLinkId, linkType);
+
+                    return Ok(autoDoc);
+                }
+
+                return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"fileId: '{fileId}' is not a valid guid."));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
+            }
+        }
     }
 }

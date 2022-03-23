@@ -1,0 +1,210 @@
+﻿@attribute [Authorize]
+@inject UserAppCache UserAppCache
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@using PanacheSoftware.Core.Domain.API.Client
+@using PanacheSoftware.Core.Domain.API.CustomField
+@using PanacheSoftware.Core.Domain.API.Task
+@using PanacheSoftware.Core.Domain.API.Team
+@using PanacheSoftware.Core.Domain.Identity.API;
+@using PanacheSoftware.Core.Domain.API.Automation;
+@using PanacheSoftware.Core.Domain.UI;
+
+@if (ShowInfo)
+{
+    <Modal @ref="customFieldGroupForm">
+        <ModalContent Centered="true" Size="ModalSize.Large">
+            <ModalHeader>
+                <ModalTitle>
+                    <Icon Name="IconName.Edit" />
+                    @LanguageHelper.GetTitle(langQueryList, 10231)
+                </ModalTitle>
+                <CloseButton />
+            </ModalHeader>
+            <ModalBody>
+
+                @foreach (var customFieldTagDetail in customFieldTags.DocAutoCustomFieldTags)
+                {
+                    <Row>
+                    <Column ColumnSize="ColumnSize.Is12">
+                        <Addons>
+                            <Addon AddonType="AddonType.Start">
+                                <AddonLabel>@customFieldTagDetail.FieldName</AddonLabel>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <TextEdit @bind-Text="@customFieldTagDetail.Tag" ReadOnly/>
+                            </Addon>
+                        </Addons>
+                    </Column>
+                </Row>
+                }
+
+            </ModalBody>
+            <ModalFooter>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12">
+                        <Button Color="Color.Secondary" Clicked="@HideDocAutoCustomFieldGroupInfo">@LanguageHelper.GetTitle(langQueryList, 10942)</Button>
+                    </Column>
+                </Row>
+            </ModalFooter>
+        </ModalContent>
+    </Modal>
+
+    <Button Color="Color.Primary" Clicked="@ShowDocAutoCustomFieldGroupInfo" Float="Float.End" Margin="Margin.Is1.FromStart.Is1.FromEnd"><Icon Name="IconName.InfoCircle"/></Button>
+}
+
+@code {
+    [CascadingParameter]
+    LangQueryList langQueryList { get; set; }
+
+    [Parameter]
+    public CustomFieldGroupHead customFieldGroupHead { get; set; }
+
+    [Parameter]
+    public List<CustomFieldHeaderRow> CustomFieldRows { get; set; }
+
+    [Parameter]
+    public string LinkType { get; set; }
+
+    [Parameter]
+    public Guid LinkId { get; set; }
+
+    private string taskGroupShortName = string.Empty;
+    private string taskItemShortName = string.Empty;
+
+    private DocAutoCustomFieldTagList customFieldTags = new DocAutoCustomFieldTagList();
+
+    private Modal customFieldGroupForm;
+
+    string StartTag = string.Empty;
+    string EndTag = string.Empty;
+
+    private bool ShowInfo = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ShowInfo = await ShowDocAutoInfo();
+        if (ShowInfo)
+        {
+            await GetStartAndEndTags();
+            await GetTaskDetails();
+            CreateTags();
+        }
+    }
+
+    private async Task<bool> ShowDocAutoInfo()
+    {
+        var docAutoSetting = await MyFoundationService.GetUsrSetting(TokenProvider.AccessToken, "DOC_AUTO_INFO");
+
+        if(docAutoSetting != null)
+        {
+            return docAutoSetting.Value == "True" ? true : false;
+        }
+
+        return false;
+    }
+
+    private async Task GetTaskDetails()
+    {
+        TaskGroupHead taskGroupHead = null;
+        TaskHead taskHead = null;
+
+        if(LinkType == LinkTypes.TaskGroup)
+        {
+            taskGroupHead = await GetTaskGroupHead(LinkId);
+        }
+        else if(LinkType == LinkTypes.Task)
+        {
+            taskHead = await GetTaskHead(LinkId);
+            if (taskHead != null)
+                taskGroupHead = await GetTaskGroupHead(taskHead.TaskGroupHeaderId);
+        }
+
+        if (taskGroupHead != null)
+            taskGroupShortName = taskGroupHead.ShortName;
+
+        if (taskHead != null)
+            taskItemShortName = taskHead.ShortName;
+    }
+
+    private async Task<TaskGroupHead> GetTaskGroupHead(Guid taskGroupHeadId)
+    {
+        var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.TASK, $"TaskGroup/{taskGroupHeadId}");
+
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            return response.ContentAsType<TaskGroupHead>();
+        }
+
+        return null;
+    }
+
+    private async Task<TaskHead> GetTaskHead(Guid taskHeadId)
+    {
+        var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.TASK, $"Task/{taskHeadId}");
+
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            return response.ContentAsType<TaskHead>();
+        }
+
+        return null;
+    }
+
+    private void CreateTags()
+    {
+        foreach (var customFieldRow in CustomFieldRows)
+        {
+            foreach (var customField in customFieldRow.CustomFieldHeaderRowFields)
+            {
+                var customFieldGroupTagModel = GetBaseTag();
+                customFieldGroupTagModel.CustomFieldGroup = new CustFieldGrp(customFieldGroupHead.ShortName, customField.customFieldHeader.ShortName);
+
+                var docAutoCustomFieldTag = new DocAutoCustomFieldTag()
+                {
+                    FieldName = customField.customFieldHeader.Name,
+                    Tag = CreateTag(System.Text.Json.JsonSerializer.Serialize<AutoDocTag>(customFieldGroupTagModel))
+                };
+
+                customFieldTags.DocAutoCustomFieldTags.Add(docAutoCustomFieldTag);
+            }
+        }    
+    }
+
+    private async Task GetStartAndEndTags()
+    {
+        var startTagSetting = await MyFoundationService.GetSystemSetting(TokenProvider.AccessToken, "DOC_AUTO_START_TAG");
+        StartTag = startTagSetting.Value;
+        var endTagSetting = await MyFoundationService.GetSystemSetting(TokenProvider.AccessToken, "DOC_AUTO_END_TAG");
+        EndTag = EndTag = endTagSetting.Value;
+    }
+
+    private void ShowDocAutoCustomFieldGroupInfo()
+    {
+        customFieldGroupForm.Show();
+    }
+
+    private void HideDocAutoCustomFieldGroupInfo()
+    {
+        customFieldGroupForm.Hide();
+    }
+
+    private string CreateTag(string tagValue)
+    {
+        return $"{StartTag}{tagValue}{EndTag}";
+    }
+
+    private AutoDocTag GetBaseTag()
+    {
+        var autoDocTag = new AutoDocTag();
+
+        if(!string.IsNullOrWhiteSpace(taskGroupShortName))
+            autoDocTag.TaskGroup = taskGroupShortName;
+
+        if(!string.IsNullOrWhiteSpace(taskItemShortName))
+            autoDocTag.TaskItem = taskItemShortName;     
+
+        return autoDocTag;
+    }
+}

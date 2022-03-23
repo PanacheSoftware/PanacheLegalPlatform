@@ -9,7 +9,9 @@
 {
     <Card Margin="Margin.Is4.OnY">
         <CardHeader>
-            <CardTitle>@customFieldGroupValuesModel.customFieldGroupHeader.LongName</CardTitle>
+            <CardTitle>@customFieldGroupValuesModel.customFieldGroupHeader.LongName
+                <CascadingValue Value="langQueryList"><DocAutoCustomFieldGroupModal customFieldGroupHead=@customFieldGroupValuesModel.customFieldGroupHeader CustomFieldRows=@CustomFieldRows LinkType=@customFieldGroupValuesModel.LinkType LinkId=@customFieldGroupValuesModel.LinkId /></CascadingValue>
+            </CardTitle>
         </CardHeader>
         <CardBody>
 
@@ -47,6 +49,12 @@
                                         <Check TValue="bool" @bind-Checked="@customFieldHeaderRowField.customFieldValue.BoolValue" ReadOnly="@ReadOnly">@customFieldHeaderRowField.customFieldHeader.Name
                                             <FieldHelp>@customFieldHeaderRowField.customFieldHeader.Description</FieldHelp>
                                         </Check>
+                                        break;
+                                    case CustomFieldTypes.ClauseField:
+                                    case CustomFieldTypes.MemoField:
+                                        <MemoEdit @bind-Text="@customFieldHeaderRowField.customFieldValue.StringValue" ReadOnly="@ReadOnly" Rows="5">
+                                            <FieldHelp>@customFieldHeaderRowField.customFieldHeader.Description</FieldHelp>
+                                        </MemoEdit>
                                         break;
                                     case CustomFieldTypes.StringField:
                                     default:

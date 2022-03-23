@@ -59,16 +59,20 @@ namespace PanacheSoftware.Core.Types
         public const string DoubleField = "double";
         public const string DateTimeField = "datetime";
         public const string BoolField = "bool";
+        public const string MemoField = "memo";
+        public const string ClauseField = "clause";
 
         public IDictionary<string, string> GetCustomFieldTypesDictionary()
         {
             Dictionary<string, string> CustomFieldTypesDictionary = new Dictionary<string, string>();
 
-            CustomFieldTypesDictionary.Add(StringField, "String");
-            CustomFieldTypesDictionary.Add(IntField, "Int");
-            CustomFieldTypesDictionary.Add(DoubleField, "Double");
-            CustomFieldTypesDictionary.Add(DateTimeField, "DateTime");
-            CustomFieldTypesDictionary.Add(BoolField, "Bool");
+            CustomFieldTypesDictionary.Add(StringField, "Text");
+            CustomFieldTypesDictionary.Add(IntField, "Whole Number");
+            CustomFieldTypesDictionary.Add(DoubleField, "Amount");
+            CustomFieldTypesDictionary.Add(DateTimeField, "Date");
+            CustomFieldTypesDictionary.Add(BoolField, "Checkbox");
+            CustomFieldTypesDictionary.Add(MemoField, "Memo");
+            CustomFieldTypesDictionary.Add(ClauseField, "Clause");
 
             return CustomFieldTypesDictionary;
         }
@@ -92,11 +96,11 @@ namespace PanacheSoftware.Core.Types
         {
             Dictionary<string, string> ContactTitlesDictionary = new Dictionary<string, string>();
 
-            ContactTitlesDictionary.Add(Mr, Mr);
-            ContactTitlesDictionary.Add(Mrs, Mrs);
-            ContactTitlesDictionary.Add(Ms, Ms);
-            ContactTitlesDictionary.Add(Miss, Miss);
             ContactTitlesDictionary.Add(Mx, Mx);
+            ContactTitlesDictionary.Add(Mrs, Mrs);
+            ContactTitlesDictionary.Add(Mr, Mr);           
+            ContactTitlesDictionary.Add(Ms, Ms);
+            ContactTitlesDictionary.Add(Miss, Miss);           
             ContactTitlesDictionary.Add(NA, NA);
 
             return ContactTitlesDictionary;

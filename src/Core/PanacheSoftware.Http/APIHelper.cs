@@ -90,6 +90,18 @@ namespace PanacheSoftware.Http
             return null;
         }
 
+        public async Task<UsrSetting> GetUserSetting(string accessToken, string settingName)
+        {
+            var response = await MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FOUNDATION, $"Setting/UserSetting/{settingName}");
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                return response.ContentAsType<UsrSetting>();
+            }
+
+            return null;
+        }
+
         public async Task<List<Guid>> GetTeamsForUserId(string accessToken, string userId)
         {
             var userTeams = new List<Guid>();

@@ -36,6 +36,14 @@
                                     </Field>
                                 </Column>
                             </Row>
+                            <Row>
+                                <Column ColumnSize="ColumnSize.Is12">
+                                    <Field>
+                                        <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10605)</FieldLabel>
+                                        <SelectList TItem="SelectListModel" TValue="string" Data="@TrueFalseSelectListValues" TextField="@((item) => item.DescriptionField)" ValueField="@((item) => item.ValueField)" SelectedValue="@docAutomationSetting.Value" SelectedValueChanged="@DocAutoValueChangedHandler" />
+                                    </Field>
+                                </Column>
+                            </Row>
                         </CardBody>
                     </Card>
                 </Column>
@@ -65,10 +73,12 @@
 @code {
     LangQueryList langQueryList { get; set; }
     UsrSetting userLanguageSetting { get; set; }
+    UsrSetting docAutomationSetting { get; set; }
     PageProgressBar pageProgressBar;
     bool loadingPage = true;
     IEnumerable<SelectListModel> StatusSelectListValues { get; set; }
     IEnumerable<SelectListModel> LanguageCodeSelectListValues { get; set; }
+    IEnumerable<SelectListModel> TrueFalseSelectListValues { get; set; }
     PLAlert plAlert { get; set; }
     bool SavingUserSetting = false;
 
@@ -76,7 +86,8 @@
     {
         await GetLanguageList();
         await CreateSelectListModels();
-        userLanguageSetting = await GetUserSetting("USER_LANGUAGE");
+        userLanguageSetting = await MyFoundationService.GetUsrSetting(TokenProvider.AccessToken, "USER_LANGUAGE");//GetUserSetting("USER_LANGUAGE");
+        docAutomationSetting = await MyFoundationService.GetUsrSetting(TokenProvider.AccessToken, "DOC_AUTO_INFO");
         loadingPage = false;
         pageProgressBar.ChangeVisibility(loadingPage);
     }
@@ -90,6 +101,7 @@
         textCodes.Add(10501);
         textCodes.Add(10600);
         textCodes.Add(10601);
+        textCodes.Add(10605);
 
         langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, UserAppCache.LanguageCode, textCodes.ToArray());
     }
@@ -97,11 +109,17 @@
     private async Task CreateSelectListModels()
     {
         await CreateLanguageCodeSelectList();
+        CreateTrueFalseSelectList();
     }
 
     private void LanguageListValueChangedHandler(string newValue)
     {
         userLanguageSetting.Value = newValue;
+    }
+
+    private void DocAutoValueChangedHandler(string newValue)
+    {
+        docAutomationSetting.Value = newValue;
     }
 
     private async Task SubmitForm()
@@ -110,7 +128,10 @@
         var saveResult = await SaveUserLanguageSettingAsync();
 
         if (saveResult.Item1)
+        {
             UserAppCache.SetLanguageCode(await MyFoundationService.GetLanguageCode(TokenProvider.AccessToken));
+            saveResult = await SaveDocAutoSettingAsync();
+        }
 
         plAlert.ShowAlert(saveResult.Item1, saveResult.Item2);
         SavingUserSetting = false;
@@ -122,7 +143,7 @@
         {
             if (userLanguageSetting.Id != Guid.Empty)
             {
-                var foundUserLanguageSetting = await GetUserSetting("USER_LANGUAGE");
+                var foundUserLanguageSetting = await MyFoundationService.GetUsrSetting(TokenProvider.AccessToken, "USER_LANGUAGE");//await GetUserSetting("USER_LANGUAGE");
 
                 if (foundUserLanguageSetting != null)
                 {
@@ -160,6 +181,50 @@
         return new Tuple<bool, string>(false, $"No user setting to save");
     }
 
+    private async Task<Tuple<bool, string>> SaveDocAutoSettingAsync()
+    {
+        if (docAutomationSetting != null)
+        {
+            if (docAutomationSetting.Id != Guid.Empty)
+            {
+                var foundDocAutoSetting = await MyFoundationService.GetUsrSetting(TokenProvider.AccessToken, "DOC_AUTO_INFO");
+
+                if (foundDocAutoSetting != null)
+                {
+                    var processPatchResult = await MyFoundationService.ProcessPatch(foundDocAutoSetting, docAutomationSetting, foundDocAutoSetting.Id, TokenProvider.AccessToken, APITypes.FOUNDATION, "Setting/UserSetting");
+                    if (!processPatchResult.Item1)
+                    {
+                        return processPatchResult;
+                    }
+                }
+            }
+            else
+            {
+                HttpContent contentPost = new StringContent(JsonConvert.SerializeObject(docAutomationSetting), Encoding.UTF8, "application/json");
+
+                try
+                {
+                    var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Post, APITypes.FOUNDATION, $"Setting/UserSetting", contentPost);//_apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.TEAM, $"Team", contentPost);
+
+                    if (response.StatusCode != System.Net.HttpStatusCode.Created)
+                    {
+                        return new Tuple<bool, string>(false, MyFoundationService.GetErrorFromResponse(response));
+                    }
+
+                    docAutomationSetting = response.ContentAsType<UsrSetting>();
+                }
+                catch (Exception ex)
+                {
+                    return new Tuple<bool, string>(false, $"Error calling API: {ex.Message}");
+                }
+            }
+
+            return new Tuple<bool, string>(true, $"Doc Auto settings saved");
+        }
+
+        return new Tuple<bool, string>(false, $"No Doc Auto setting to save");
+    }
+
     private async Task CreateLanguageCodeSelectList()
     {
         var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.FOUNDATION, $"Language/Code");
@@ -177,6 +242,14 @@
         }
 
         LanguageCodeSelectListValues = LanguageCodeDictionary.Select(s => new SelectListModel { ValueField = s.Key, DescriptionField = s.Value });
+    }
+
+    private void CreateTrueFalseSelectList()
+    {
+        Dictionary<string, string> TrueFalseDictionary = new Dictionary<string, string>();
+        TrueFalseDictionary.Add("True", "True");
+        TrueFalseDictionary.Add("False", "False");
+        TrueFalseSelectListValues = TrueFalseDictionary.Select(s => new SelectListModel { ValueField = s.Key, DescriptionField = s.Value });
     }
 
     private async Task<UsrSetting> GetUserSetting(string userSettingName)

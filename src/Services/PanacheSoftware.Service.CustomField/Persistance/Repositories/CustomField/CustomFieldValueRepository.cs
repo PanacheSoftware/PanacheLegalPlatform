@@ -27,11 +27,13 @@ namespace PanacheSoftware.Service.CustomField.Persistance.Repositories.CustomFie
             if(readOnly)
                 return await PanacheSoftwareServiceCustomFieldContext.CustomFieldValues
                     .Include(v => v.CustomFieldValueHistorys)
+                    .Include(h => h.CustomFieldHeader)
                     .AsNoTracking()
                     .Where(v => v.LinkId == linkId).ToListAsync();
 
             return await PanacheSoftwareServiceCustomFieldContext.CustomFieldValues
                 .Include(v => v.CustomFieldValueHistorys)
+                .Include(h => h.CustomFieldHeader)
                 .Where(v => v.LinkId == linkId).ToListAsync();
         }
 

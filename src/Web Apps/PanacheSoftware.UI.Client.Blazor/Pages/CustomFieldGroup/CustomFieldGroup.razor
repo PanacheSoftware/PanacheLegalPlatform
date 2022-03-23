@@ -137,6 +137,11 @@
                                         <EditTemplate>
                                             <SelectList TItem="SelectListModel" TValue="string" Data="@CustomFieldTypeSelectListValues" TextField="@((item)=>item.DescriptionField)" ValueField="@((item)=>item.ValueField)" SelectedValue="@((string)( context.CellValue ))" SelectedValueChanged="@(e => { context.CellValue = e; })" />
                                         </EditTemplate>
+                                        <DisplayTemplate>
+                                            @{
+                                                @CustomFieldTypeSelectListValues.FirstOrDefault(cf => cf.ValueField == context.CustomFieldType).DescriptionField
+                                            }
+                                        </DisplayTemplate>
                                     </DataGridColumn>
                                     <DataGridCheckColumn TItem="CustomFieldHead" Field="@nameof(CustomFieldHead.Mandatory)" Caption="@LanguageHelper.GetTitle(langQueryList, 10226)" Editable="true" Filterable="false">
                                         <DisplayTemplate>

@@ -33,6 +33,12 @@ namespace PanacheSoftware.UI.Client.Blazor.Pages.File
         [BindProperty(SupportsGet = true)]
         public bool Automated { get; set; }
 
+        [BindProperty(SupportsGet = true)]
+        public string LinkId { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public string LinkType { get; set; }
+
         public DownloadModel(TokenProvider tokenProvider, IAPIHelper apiHelper)
         {
             _tokenProvider = tokenProvider;
@@ -76,7 +82,7 @@ namespace PanacheSoftware.UI.Client.Blazor.Pages.File
                         }
                         else
                         {
-                            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.AUTOMATION, $"Document/{parsedId}");
+                            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.AUTOMATION, $"Document/AutomateFromLink/{parsedId}/{LinkId}/{LinkType}");
 
                             if (response.StatusCode == System.Net.HttpStatusCode.OK)
                             {
@@ -84,6 +90,15 @@ namespace PanacheSoftware.UI.Client.Blazor.Pages.File
 
                                 return File(autoDoc.Content, autoDoc.FileType, autoDoc.TrustedName);
                             }
+
+                            //var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.AUTOMATION, $"Document/{parsedId}");
+
+                            //if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                            //{
+                            //    var autoDoc = response.ContentAsType<AutoDoc>();
+
+                            //    return File(autoDoc.Content, autoDoc.FileType, autoDoc.TrustedName);
+                            //}
                         }
                     }
                 }

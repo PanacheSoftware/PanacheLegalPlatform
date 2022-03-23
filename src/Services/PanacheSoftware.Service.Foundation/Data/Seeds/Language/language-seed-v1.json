@@ -932,6 +932,16 @@
     },
     {
       "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10605,
+      "description": "Setting Screens",
+      "text": "Document Automation Info",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
       "textCode": 10700,
       "description": "Language Screens",
       "text": "Language",
