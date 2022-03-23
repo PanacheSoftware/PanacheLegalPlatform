@@ -17,11 +17,63 @@
 
             @foreach (var customFieldRow in CustomFieldRows)
             {
-                <Row>
+                <Row Margin="Margin.Is3.FromBottom">
 
                     @foreach (var customFieldHeaderRowField in customFieldRow.CustomFieldHeaderRowFields)
                     {
                         <Column ColumnSize="ColumnSize.Is6">
+                            <Text>@if (customFieldHeaderRowField.customFieldHeader.CustomFieldType != CustomFieldTypes.BoolField) { @customFieldHeaderRowField.customFieldHeader.Name }</Text>
+                            @if (customFieldHeaderRowField.customFieldHeader.CustomFieldType != CustomFieldTypes.BoolField)
+                            {                            
+                                <br />
+                                <Addons>
+                                    <Addon AddonType="AddonType.Body">
+                                        @switch (customFieldHeaderRowField.customFieldHeader.CustomFieldType)
+                                        {
+                                            case CustomFieldTypes.DateTimeField:
+                                                <DateEdit TValue="DateTime" @bind-Date="@customFieldHeaderRowField.customFieldValue.DateTimeValue" InputMode="DateInputMode.Date" ReadOnly="@ReadOnly">
+                                                </DateEdit>
+                                                break;
+                                            case CustomFieldTypes.IntField:
+                                                <NumericEdit @bind-Value="@customFieldHeaderRowField.customFieldValue.IntValue" ReadOnly="@ReadOnly">
+                                                </NumericEdit>
+                                                break;
+                                            case CustomFieldTypes.DoubleField:
+                                                <NumericEdit @bind-Value="@customFieldHeaderRowField.customFieldValue.DoubleValue" ReadOnly="@ReadOnly">
+                                                </NumericEdit>
+                                                break;
+                                            case CustomFieldTypes.ClauseField:
+                                            case CustomFieldTypes.MemoField:
+                                                <MemoEdit @bind-Text="@customFieldHeaderRowField.customFieldValue.StringValue" ReadOnly="@ReadOnly" Rows="5">
+                                                </MemoEdit>
+                                                break;
+                                            case CustomFieldTypes.StringField:
+                                            default:
+                                                <TextEdit @bind-Text="@customFieldHeaderRowField.customFieldValue.StringValue" ReadOnly="@ReadOnly">
+                                                </TextEdit>
+                                                break;
+                                        }
+                                    </Addon>
+                                    
+                                    <CascadingValue Value="langQueryList">
+                                        <CustomFieldGroupValueHistory customFieldHeaderRowField=@customFieldHeaderRowField />
+                                    </CascadingValue>
+                                </Addons>
+                            }
+                            else
+                            {
+                                <Check TValue="bool" @bind-Checked="@customFieldHeaderRowField.customFieldValue.BoolValue" ReadOnly="@ReadOnly">@customFieldHeaderRowField.customFieldHeader.Name
+                                </Check>
+                            }
+                            <Text TextWeight="TextWeight.Light">@customFieldHeaderRowField.customFieldHeader.Description</Text>
+                        </Column>
+
+
+
+
+
+
+         @*               <Column ColumnSize="ColumnSize.Is6">
                             <Field>
                                 @if (customFieldHeaderRowField.customFieldHeader.CustomFieldType != CustomFieldTypes.BoolField)
                                 {
@@ -64,9 +116,25 @@
                                         break;
                                 }
                             </Field>
-                        </Column>
+                        </Column>*@
                     }
                 </Row>
+                @*<Row>
+                    <Column ColumnSize="ColumnSize.Is6">
+                        <Text>The field name</Text>
+                        <br />
+                        <Addons>
+                            <Addon AddonType="AddonType.Body">
+                                <TextEdit Placeholder="">
+                                </TextEdit>
+                            </Addon>
+                            <Addon AddonType="AddonType.End">
+                                <AddonLabel><Icon Name="IconName.History" IconSize="IconSize.Default" /></AddonLabel>
+                            </Addon>
+                        </Addons>
+                        <Text TextWeight="TextWeight.Light">The field description thats super long so we'll see what happens to this if it overflows the length of the field itself. I don't know if this is long enough so we'll see.</Text>
+                    </Column>
+                </Row>*@
             }
 
             @if (!ReadOnly)

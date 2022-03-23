@@ -1,0 +1,109 @@
+﻿@attribute [Authorize]
+@inject UserAppCache UserAppCache
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@using PanacheSoftware.Core.Domain.API.File
+@using PanacheSoftware.Core.Domain.API.CustomField
+
+@if (customFieldHeaderRowField != null)
+{
+    <Modal @ref="customFieldValueHistory">
+        <ModalContent Centered="true" Size="ModalSize.Large">
+            <ModalHeader>
+                <ModalTitle>
+                    <Icon Name="IconName.History" />
+                    @customFieldHeaderRowField.customFieldHeader.Name
+                </ModalTitle>
+                <CloseButton />
+            </ModalHeader>
+            <ModalBody>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12">
+                        <DataGrid TItem="CustomFieldValHistr"
+                                  Data="@customFieldHeaderRowField.customFieldValue.CustomFieldValueHistorys"
+                                  Filterable="true"
+                                  FilterMethod="DataGridFilterMethod.StartsWith"
+                                  PageSize="10"
+                                  Striped="true"
+                                  Bordered="true"
+                                  Hoverable="true"
+                                  Responsive="true"
+                                  ShowPager="true"
+                                  PagerPosition="DataGridPagerPosition.Bottom"
+                                  ShowPageSizes="true">
+                            <EmptyTemplate>No records...</EmptyTemplate>
+                            <DataGridColumns>
+                                <DataGridColumn TItem="CustomFieldValHistr" Field="@nameof(CustomFieldValHistr.SequenceNo)" Caption="@LanguageHelper.GetTitle(langQueryList, 10936)" />
+                                <DataGridColumn TItem="CustomFieldValHistr" Field="@nameof(CustomFieldValHistr.FieldValue)" Caption="@LanguageHelper.GetTitle(langQueryList, 10234)">
+                                    <DisplayTemplate>
+                                        @{
+                                            var customFieldValMultiType = new CustomFieldValMultiType() { StringValue = @context.FieldValue };
+
+                                            @switch (customFieldHeaderRowField.customFieldHeader.CustomFieldType)
+                                            {
+                                                case CustomFieldTypes.DateTimeField:
+                                                    @customFieldValMultiType.DateTimeValue.ToShortDateString()
+                                                    break;
+                                                case CustomFieldTypes.IntField:
+                                                    @customFieldValMultiType.IntValue
+                                                    break;
+                                                case CustomFieldTypes.DoubleField:
+                                                    @customFieldValMultiType.DoubleValue
+                                                    break;
+                                                case CustomFieldTypes.BoolField:
+                                                    @customFieldValMultiType.BoolValue
+                                                    break;
+                                                case CustomFieldTypes.ClauseField:
+                                                case CustomFieldTypes.MemoField:
+                                                case CustomFieldTypes.StringField:
+                                                default:
+                                                    @customFieldValMultiType.StringValue
+                                                    break;
+                                            }
+                                        }
+                                    </DisplayTemplate>
+                                </DataGridColumn>
+                                <DataGridColumn TItem="CustomFieldValHistr" Field="@nameof(CustomFieldValHistr.OriginalCreationDate)" Caption="@LanguageHelper.GetTitle(langQueryList, 10233)" DisplayFormat="{0:dd/MM/yyyy}" />
+                            </DataGridColumns>
+                        </DataGrid>
+                    </Column>
+                </Row>
+            </ModalBody>
+            <ModalFooter>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12">
+                        <Button Color="Color.Secondary" Clicked="@HideFieldValueHistory">@LanguageHelper.GetTitle(langQueryList, 10942)</Button>
+                    </Column>
+                </Row>
+            </ModalFooter>
+        </ModalContent>
+    </Modal>
+
+    @if(customFieldHeaderRowField.customFieldValue.CustomFieldValueHistorys.Any())
+    {
+        <Addon AddonType="AddonType.End">
+            <Button Clicked="@ShowFieldValueHistory" Color="Color.Secondary"><Icon Name="IconName.History" IconSize="IconSize.Default" /></Button>
+        </Addon>
+    }
+}
+
+@code {
+    [CascadingParameter]
+    LangQueryList langQueryList { get; set; }
+
+    [Parameter]
+    public CustomFieldHeaderRowField customFieldHeaderRowField { get; set; }
+
+    private Modal customFieldValueHistory;
+
+    private void ShowFieldValueHistory()
+    {
+        customFieldValueHistory.Show();
+    }
+
+    private void HideFieldValueHistory()
+    {
+        customFieldValueHistory.Hide();
+    }
+}
