@@ -572,6 +572,7 @@ namespace PanacheSoftware.Service.Task.Manager
                                     fileHeadToCreate.FileDetail.FileType = fileHead.FileDetail.FileType;
                                     fileVer.Content = latestFileVerion.Content;
                                     fileVer.UntrustedName = latestFileVerion.UntrustedName;
+                                    fileVer.TrustedName = latestFileVerion.TrustedName;
                                     fileVer.UploadDate = DateTime.Today;
                                     fileVer.Size = latestFileVerion.Size;
                                     fileVer.VersionNumber = 0;
