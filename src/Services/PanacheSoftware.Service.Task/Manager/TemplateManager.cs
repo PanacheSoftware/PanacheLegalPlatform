@@ -108,6 +108,8 @@ namespace PanacheSoftware.Service.Task.Manager
 
                 foreach (var taskItemHeader in taskGroupHeader.ChildTasks)
                 {
+                    var taskHeader = _unitOfWork.TaskHeaders.GetTaskHeader(taskItemHeader.Id, true);
+
                     var templateItemHeader = new TemplateItemHeader();
 
                     templateItemHeader.Description = taskItemHeader.Description;
@@ -119,7 +121,7 @@ namespace PanacheSoftware.Service.Task.Manager
                     templateItemHeader.SequenceNumber = taskItemHeader.SequenceNumber;
                     templateItemHeader.TemplateItemDetail.DaysOffset = (taskItemHeader.StartDate - taskGroupHeader.StartDate).Days;
                     templateItemHeader.TemplateItemDetail.TotalDays = (taskItemHeader.CompletionDate - taskItemHeader.StartDate).Days;
-
+                    templateItemHeader.ShortName = taskHeader.ShortName;
                     templateItemHeader.TemplateGroupHeaderId = templateGroupHeader.Id;
 
                     _unitOfWork.TemplateItemHeaders.Add(templateItemHeader);
@@ -144,6 +146,7 @@ namespace PanacheSoftware.Service.Task.Manager
                             {
                                 fileHeadToCreate.FileDetail.FileTitle = fileHead.FileDetail.FileTitle;
                                 fileHeadToCreate.FileDetail.Description = fileHead.FileDetail.Description;
+                                fileHeadToCreate.FileDetail.Automated = fileHead.FileDetail.Automated;
 
                                 if (!string.IsNullOrWhiteSpace(latestFileVerion.URI))
                                 {

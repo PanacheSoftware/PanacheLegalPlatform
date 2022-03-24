@@ -531,7 +531,7 @@ namespace PanacheSoftware.Service.Task.Manager
                     childTaskItemHead.CompletionDate = childTaskItemHead.StartDate.AddDays(templateItemHeader.TemplateItemDetail.TotalDays);
                     childTaskItemHead.TaskGroupHeaderId = childTaskGroupHeader.Id;
                     childTaskItemHead.MainUserId = childTaskGroupHeader.MainUserId;
-
+                    childTaskItemHead.ShortName = childTaskGroupHeader.ShortName;
                     var childTaskItemHeader = _mapper.Map<TaskHeader>(childTaskItemHead);
 
                     var childTaskItemCreation = await CreateTaskHeader(childTaskItemHeader, accessToken);
@@ -557,6 +557,7 @@ namespace PanacheSoftware.Service.Task.Manager
                             {
                                 fileHeadToCreate.FileDetail.FileTitle = fileHead.FileDetail.FileTitle;
                                 fileHeadToCreate.FileDetail.Description = fileHead.FileDetail.Description;
+                                fileHeadToCreate.FileDetail.Automated = fileHead.FileDetail.Automated;
 
                                 if (!string.IsNullOrWhiteSpace(latestFileVerion.URI))
                                 {
