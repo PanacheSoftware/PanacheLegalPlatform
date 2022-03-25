@@ -18,11 +18,13 @@ namespace PanacheSoftware.Core.Domain.Ocelot
 
     public class APIListDetail
     {
-        public APIListDetail(string BaseURI, string GetPart, string swaggerVer = "v1")
+        public APIListDetail(string BaseURI, string GetPart, string swaggerVer = "v1", string apiName = "")
         {
             APIBaseURI = new Uri(BaseURI);
             SwaggerVersion = swaggerVer;
             APIGetPart = string.IsNullOrWhiteSpace(GetPart) ? $"/swagger/{SwaggerVersion}/swagger.json" : GetPart;
+            APIName = apiName;
+            SwaggerLink = $"{APIBaseURI.AbsoluteUri}swagger";
         }
 
         public Uri APIBaseURI { get; }
@@ -31,6 +33,8 @@ namespace PanacheSoftware.Core.Domain.Ocelot
         public string HttpPart { get => APIBaseURI.Scheme; }
         public string HostPart { get => APIBaseURI.Host; }
         public int PortPart { get => APIBaseURI.Port; }
+        public string APIName { get; }
+        public string SwaggerLink { get; }
         
     }
 }

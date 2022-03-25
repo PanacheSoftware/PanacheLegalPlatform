@@ -322,6 +322,16 @@
     },
     {
       "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10130,
+      "description": "Menu Heading",
+      "text": "API Access",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
       "textCode": 10200,
       "description": "General titles",
       "text": "Description",
@@ -665,6 +675,56 @@
       "textCode": 10234,
       "description": "General titles",
       "text": "Value",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10235,
+      "description": "General titles",
+      "text": "Users API Token",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10236,
+      "description": "General titles",
+      "text": "API Locations",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10237,
+      "description": "General titles",
+      "text": "API Name",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10238,
+      "description": "General titles",
+      "text": "API Base URI",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10239,
+      "description": "General titles",
+      "text": "API Swagger",
       "dateFrom": "2020-02-17",
       "dateTo": "2119-02-17",
       "languageItems": [],

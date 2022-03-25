@@ -33,5 +33,7 @@ namespace PanacheSoftware.Http
         Task<bool> ProcessAPIConfig(string accessToken, APIList apiList, string GatewayURI);
         Task<bool> CheckGatewayConfig(string accessToken);
         Task<bool> CreateBaseGatewayConfig(string accessToken);
+
+        APIList GetAPIList();
     }
 }

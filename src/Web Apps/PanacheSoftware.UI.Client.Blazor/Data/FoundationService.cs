@@ -103,5 +103,10 @@ namespace PanacheSoftware.UI.Client.Blazor.Data
 
             return false;
         }
+
+        public APIList GetAPIList()
+        {
+            return apiHelper.GetAPIList();
+        }
     }
 }

@@ -255,18 +255,36 @@ namespace PanacheSoftware.Http
 
         public async Task<bool> CreateBaseGatewayConfig(string accessToken)
         {
-            var apiList = new APIList();
+            //var apiList = new APIList();
 
-            apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.FOUNDATION, true), string.Empty));
-            apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.TEAM, true), string.Empty));
-            apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.IDENTITY, true), string.Empty));
-            apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.TASK, true), string.Empty));
-            apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.CLIENT, true), string.Empty));
-            apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.CUSTOMFIELD, true), string.Empty));
-            apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.FILE, true), string.Empty));
-            apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.AUTOMATION, true), string.Empty));
+            //apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.FOUNDATION, true), string.Empty));
+            //apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.TEAM, true), string.Empty));
+            //apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.IDENTITY, true), string.Empty));
+            //apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.TASK, true), string.Empty));
+            //apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.CLIENT, true), string.Empty));
+            //apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.CUSTOMFIELD, true), string.Empty));
+            //apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.FILE, true), string.Empty));
+            //apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.AUTOMATION, true), string.Empty));
+
+            var apiList = GetAPIList();
 
             return await ProcessAPIConfig(accessToken, apiList, GetBaseURL(APITypes.GATEWAY));
+        }
+
+        public APIList GetAPIList()
+        {
+            var apiList = new APIList();
+
+            apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.FOUNDATION, true), string.Empty, apiName: APITypes.FOUNDATION));
+            apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.TEAM, true), string.Empty, apiName: APITypes.TEAM));
+            apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.IDENTITY, true), string.Empty, apiName: APITypes.IDENTITY));
+            apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.TASK, true), string.Empty, apiName: APITypes.TASK));
+            apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.CLIENT, true), string.Empty, apiName: APITypes.CLIENT));
+            apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.CUSTOMFIELD, true), string.Empty, apiName: APITypes.CUSTOMFIELD));
+            apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.FILE, true), string.Empty, apiName: APITypes.FILE));
+            apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.AUTOMATION, true), string.Empty, apiName: APITypes.AUTOMATION));
+
+            return apiList;
         }
 
         private async Task<OpenApiDocument> GetOpenAPIDocument(Uri APIBaseURI, string URIGetPart)
