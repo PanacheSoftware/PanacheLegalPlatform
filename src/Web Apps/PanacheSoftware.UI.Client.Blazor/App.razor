@@ -1,0 +1,89 @@
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@inject UserAppCache UserAppCache
+
+<CascadingAuthenticationState>
+    <Blazorise.ThemeProvider Theme="@theme">
+        <Router AppAssembly="@typeof(Program).Assembly">
+            <Found Context="routeData">
+                <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+            </Found>
+            <NotFound>
+                <LayoutView Layout="@typeof(MainLayout)">
+                    <p>Sorry, there's nothing at this address.</p>
+                </LayoutView>
+            </NotFound>
+        </Router>
+    </Blazorise.ThemeProvider>
+</CascadingAuthenticationState>
+
+@code {
+    [Parameter]
+    public InitialApplicationState InitialState { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        TokenProvider.AccessToken = InitialState.AccessToken;
+        TokenProvider.RefreshToken = InitialState.RefreshToken;
+
+        UserAppCache.SetLanguageCode(await MyFoundationService.GetLanguageCode(TokenProvider.AccessToken));
+
+        await CheckGateway();
+
+        //return base.OnInitializedAsync();
+    }
+
+    private async Task CheckGateway()
+    {
+        await MyFoundationService.CheckBaseGatewayConfig(TokenProvider.AccessToken);    
+    }
+
+    private Theme theme = new Theme
+    {
+        BackgroundOptions = new ThemeBackgroundOptions
+        {
+            Dark = "#2A445A"
+        },
+
+        BarOptions = new ThemeBarOptions
+        {
+            VerticalWidth = "260px",
+            DarkColors = new ThemeBarColorOptions
+            {
+                BackgroundColor = "#2A445A",
+                Color = "#FFFFFF",
+
+                DropdownColorOptions = new ThemeBarDropdownColorOptions
+                {
+                    BackgroundColor = "#2A445A"
+                },
+
+                ItemColorOptions = new ThemeBarItemColorOptions
+                {
+                    ActiveBackgroundColor = "#133A5A",
+                    ActiveColor = "#CBDB2A",
+                    HoverBackgroundColor = "#3B4D5C",
+                    HoverColor = "#CBDB2A"
+                },
+
+                BrandColorOptions = new ThemeBarBrandColorOptions
+                {
+                    BackgroundColor = "#2A445A"
+                }
+            }
+        },
+
+        //BackgroundOptions = new ThemeBackgroundOptions
+        //{
+        //    Dark = "#2A445A"
+        //},
+
+        //////theme settings
+        //ColorOptions = new ThemeColorOptions
+        //{
+        //    Secondary = "#CBDB2A"
+        //}
+
+
+    };
+}

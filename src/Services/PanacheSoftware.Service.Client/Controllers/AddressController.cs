@@ -120,8 +120,7 @@ namespace PanacheSoftware.Service.Client.Controllers
 
                             _unitOfWork.Complete();
 
-                            return CreatedAtRoute("Get", new {id = _mapper.Map<ClientAddr>(clientAddress).Id},
-                                _mapper.Map<ClientAddr>(clientAddress));
+                            return Ok();
                         }
 
                         return NotFound();

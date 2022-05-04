@@ -19,9 +19,10 @@ using System.IO;
 using System;
 using System.Collections.Generic;
 using Swashbuckle.AspNetCore.Swagger;
-using IdentityServer4.AccessTokenValidation;
 using PanacheSoftware.Service.Client.Manager;
 using PanacheSoftware.Core.Domain.Configuration;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 namespace PanacheSoftware.Service.Client
 {
@@ -55,23 +56,37 @@ namespace PanacheSoftware.Service.Client
             services.AddMvc(options =>
                 {
                     options.EnableEndpointRouting = false;
-                })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+                });
+                //.SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
             services.AddAuthorization();
 
-            services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
-                .AddIdentityServerAuthentication(options =>
-                {
-                    // base-address of your identityserver
-                    options.Authority = bool.Parse(panacheSoftwareConfiguration.CallMethod.UICallsSecure) ? panacheSoftwareConfiguration.Url.IdentityServerURLSecure : panacheSoftwareConfiguration.Url.IdentityServerURL;
+            //services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
+            //    .AddIdentityServerAuthentication(options =>
+            //    {
+            //        // base-address of your identityserver
+            //        options.Authority = bool.Parse(panacheSoftwareConfiguration.CallMethod.UICallsSecure) ? panacheSoftwareConfiguration.Url.IdentityServerURLSecure : panacheSoftwareConfiguration.Url.IdentityServerURL;
 
-                    // name of the API resource
-                    options.ApiName = PanacheSoftwareScopeNames.ClientService;
-                    options.ApiSecret = panacheSoftwareConfiguration.Secret.ClientServiceSecret;
-                    options.RequireHttpsMetadata = false;
-                    //options.EnableCaching = true;
-                });
+            //        // name of the API resource
+            //        options.ApiName = PanacheSoftwareScopeNames.ClientService;
+            //        options.ApiSecret = panacheSoftwareConfiguration.Secret.ClientServiceSecret;
+            //        options.RequireHttpsMetadata = false;
+            //        //options.EnableCaching = true;
+            //    });
+
+            Action<JwtBearerOptions> jwtOptions = o =>
+            {
+                o.Authority = bool.Parse(panacheSoftwareConfiguration.CallMethod.UICallsSecure) ? panacheSoftwareConfiguration.Url.IdentityServerURLSecure : panacheSoftwareConfiguration.Url.IdentityServerURL;
+                o.Audience = PanacheSoftwareScopeNames.ClientService;
+                o.RequireHttpsMetadata = false;
+                o.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateAudience = true,
+                };
+            };
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(jwtOptions);
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddTransient<IClientHeaderRepository, ClientHeaderRepository>();

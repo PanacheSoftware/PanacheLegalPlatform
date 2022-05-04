@@ -1,0 +1,324 @@
+﻿@attribute [Authorize]
+@inject UserAppCache UserAppCache
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@using PanacheSoftware.Core.Domain.API.Task
+@using PanacheSoftware.Core.Domain.Identity.API;
+@using PanacheSoftware.Core.Domain.API.Team
+
+
+@if (TaskGroupHeaders != null && loadingTaskList != true)
+{
+    <CascadingValue Value="@StatusSelectListValues" Name="StatusSelectListValues">
+        <CascadingValue Value="@TeamSelectListValues" Name="TeamSelectListValues">
+            <CascadingValue Value="@UserSelectListValues" Name="UserSelectListValues">
+                <Row Margin="Margin.Is4.OnY">
+                    <Column ColumnSize="ColumnSize.Is12">
+                        <Accordion>
+                            @foreach (TaskGroupHead taskGroup in TaskGroupHeaders)
+                            {
+                                <TaskGroupView taskGroupHead="taskGroup" TaskGroupUpdated="@TGUpdated" TaskGroupCompleted="TGCompleted" TaskGroupTaskItemCompleted="@TGTaskItemCompleted" TaskGroupTaskItemCreated="@TGTaskItemCreated" TaskGroupTaskItemUpdated="@TGTaskItemUpdated"/>
+                            }
+                        </Accordion>
+                    </Column>
+                </Row>
+                @if (showAddTaskGroup)
+                {
+                    @if (!TaskGroupHeaders.Where(tg => tg.Completed == false).Any())
+                    {
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is6">
+                                <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10913)</FieldLabel>
+                                <Addons>
+                                    <Addon AddonType="AddonType.Body">
+                                        <DateEdit TValue="DateTime" @bind-Date="@ParentTaskGroupHead.CompletionDate" InputMode="DateInputMode.Date">
+                                        </DateEdit>
+                                    </Addon>
+                                    <Addon AddonType="AddonType.End">
+                                        <Button Color="Color.Primary" Clicked="@CompleteTaskGroup" Loading="@completeTaskGroup">@LanguageHelper.GetTitle(langQueryList, 10921)</Button>
+                                    </Addon>
+                                </Addons>
+                            </Column>
+                        </Row>
+                    }
+                    <Row Margin="Margin.Is4.OnY">
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <TaskGroupEdit ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10917)" taskGroupHead="@TaskGroupHeadCreateTemplate" TaskGroupCreated="@TaskGroupHeadCreated" resetTaskGroupHead="GetBlankTaskGroupHeadTemplate()" CreationForm="true" TaskGroupUpdated="@TGUpdated" @ref="@addNewTaskGroupEdit" CustomFieldGroupChange="@CustomFieldGroupsChanged" />
+                        </Column>
+                    </Row>
+                }
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12">
+                        <PLAlert includeSnackBar="true" includeAlert="true" @ref="plAlert" />
+                    </Column>
+                </Row>
+            </CascadingValue>
+        </CascadingValue>
+    </CascadingValue>
+}
+else
+{
+    foreach (var taskGroupTitle in TaskGroupTitles)
+    {
+        <Row Margin="Margin.Is4.OnY">
+            <Column ColumnSize="ColumnSize.Is12">
+                <Accordion>
+                    <Collapse Visible="@false">
+                        <CollapseHeader>
+                            @taskGroupTitle
+                            <br />
+                            <SpinKit Type="SpinKitType.Chase" Size="20px" />
+                        </CollapseHeader>
+                    </Collapse>
+                </Accordion>
+            </Column>
+        </Row>
+    }
+}
+
+@code {
+    [CascadingParameter]
+    LangQueryList langQueryList { get; set; }
+
+    [Parameter]
+    public Guid TaskId { get; set; }
+
+    [Parameter]
+    public Guid ParentTaskGroupId { get; set; }
+
+    [Parameter]
+    public IList<string> TaskGroupTitles { get; set; }
+
+    [Parameter]
+    public bool showAddTaskGroup { get; set; }
+
+    [Parameter]
+    public EventCallback<Task> TaskGroupUpdated { get; set; }
+
+    [Parameter]
+    public EventCallback<Task> TaskGroupCompleted { get; set; }
+
+    [Parameter]
+    public EventCallback<Task> TaskGroupTaskItemCompleted { get; set; }
+
+    [Parameter]
+    public EventCallback<Task> TaskGroupTaskItemUpdated { get; set; }
+
+    [Parameter]
+    public EventCallback<Task> ParentTaskCompleted { get; set; }
+
+    private TaskGroupHead TaskGroupHeadCreateTemplate { get; set; }
+
+    private List<TaskGroupHead> TaskGroupHeaders { get; set; }
+
+    IEnumerable<SelectListModel> StatusSelectListValues { get; set; }
+    IEnumerable<SelectListModel> TeamSelectListValues { get; set; }
+    IEnumerable<SelectListModel> UserSelectListValues { get; set; }
+
+    private bool loadingTaskList = true;
+
+    private TaskGroupEdit addNewTaskGroupEdit { get; set; }
+
+    private TaskGroupHead ParentTaskGroupHead { get; set; }
+
+    private bool completeTaskGroup = false;
+
+    PLAlert plAlert { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CreateSelectListModels();
+        await GetTaskGroups();
+        loadingTaskList = false;
+    }
+
+    private async Task GetTaskGroups()
+    {
+        TaskGroupHeaders = new List<TaskGroupHead>();
+
+        if (ParentTaskGroupId != Guid.Empty)
+        {
+            var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.TASK, $"TaskGroup/{ParentTaskGroupId}");
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                ParentTaskGroupHead = response.ContentAsType<TaskGroupHead>();
+
+                foreach (var childTaskGroup in ParentTaskGroupHead.ChildTaskGroups)
+                {
+                    TaskGroupHeaders.Add(childTaskGroup);
+                }
+
+                TaskGroupHeadCreateTemplate = GetBlankTaskGroupHeadTemplate();
+            }
+        }
+    }
+
+    public void ParentTaskComplete()
+    {
+        showAddTaskGroup = false;
+        StateHasChanged();
+    }
+
+    void TaskGroupHeadCreated(TaskGroupHead taskGroupHead)
+    {
+        TaskGroupHeaders.Add(taskGroupHead);
+        TaskGroupUpdated.InvokeAsync();
+        StateHasChanged();
+    }
+
+    private TaskGroupHead GetBlankTaskGroupHeadTemplate()
+    {
+        if (ParentTaskGroupHead == null)
+            return null;
+
+        return new TaskGroupHead()
+        {
+            Id = Guid.Empty,
+            ParentTaskGroupId = ParentTaskGroupHead.Id,
+            StartDate = ParentTaskGroupHead.StartDate,
+            CompletionDate = ParentTaskGroupHead.CompletionDate,
+            MainUserId = ParentTaskGroupHead.MainUserId,
+            TeamHeaderId = ParentTaskGroupHead.TeamHeaderId
+        };
+    }
+
+    private async Task CreateSelectListModels()
+    {
+        StatusTypes statusTypes = new StatusTypes();
+        StatusSelectListValues = statusTypes.GetStatusTypesDictionary().Select(s => new SelectListModel { ValueField = s.Key, DescriptionField = s.Value });
+        await CreateTeamSelectList();
+        await CreateUserSelectList();
+    }
+
+    private async Task CreateTeamSelectList()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        var userName = string.Empty;
+
+
+        if (user.Identity.IsAuthenticated)
+            userName = user.FindFirst("sub").Value;
+
+        var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.TEAM, $"UserTeam/GetTeamsForUser/{userName}");
+
+        Dictionary<string, string> TeamListDictionary = new Dictionary<string, string>();
+        TeamListDictionary.Add(Guid.Empty.ToString(), "None");
+
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var teamList = response.ContentAsType<TeamList>();
+
+            foreach (var teamHeader in teamList.TeamHeaders.OrderBy(h => h.ShortName))
+            {
+                TeamListDictionary.Add(teamHeader.Id.ToString(), teamHeader.ShortName);
+            }
+        }
+
+        TeamSelectListValues = TeamListDictionary.Select(s => new SelectListModel { ValueField = s.Key, DescriptionField = s.Value });
+    }
+
+    private async Task CreateUserSelectList()
+    {
+        var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.IDENTITY, $"User");
+
+        Dictionary<string, string> UserListDictionary = new Dictionary<string, string>();
+        UserListDictionary.Add(Guid.Empty.ToString(), "None");
+
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var userList = response.ContentAsType<UserListModel>();
+
+            foreach (var userModel in userList.Users.OrderBy(h => h.FullName))
+            {
+                UserListDictionary.Add(userModel.Id.ToString(), userModel.FullName);
+            }
+        }
+
+        UserSelectListValues = UserListDictionary.Select(s => new SelectListModel { ValueField = s.Key, DescriptionField = s.Value });
+    }
+
+
+
+    void TGUpdated(TaskGroupHead taskgroupHead)
+    {
+        int existingIndex = TaskGroupHeaders.FindIndex(tg => tg.Id == taskgroupHead.Id);
+
+        if (existingIndex < 0)
+            return;
+
+        TaskGroupHeaders[existingIndex] = taskgroupHead;
+
+        TaskGroupUpdated.InvokeAsync();
+
+        //TaskGroupComplete?.Invoke(taskGroupHead);
+
+        //StateHasChanged();
+
+        //TaskGroupChange.InvokeAsync();
+    }
+
+    void TGTaskItemCompleted(TaskGroupHead taskgroupHead)
+    {
+        TaskGroupCompleted.InvokeAsync();
+    }
+
+    void TGTaskItemUpdated(TaskGroupHead taskgroupHead)
+    {
+        TaskGroupCompleted.InvokeAsync();
+    }
+
+    void TGCompleted(TaskGroupHead taskgroupHead)
+    {
+        TaskGroupCompleted.InvokeAsync();
+    }
+
+    void TGTaskItemCreated(TaskGroupHead taskgroupHead)
+    {
+        TaskGroupUpdated.InvokeAsync();
+    }
+
+    private async Task CompleteTaskGroup()
+    {
+        completeTaskGroup = true;
+
+        var completeResult = await SetCompletetionDateAsync();
+
+        plAlert.ShowAlert(completeResult.Item1, completeResult.Item2);
+
+        if (completeResult.Item1)
+        {
+            ParentTaskGroupHead.Completed = true;
+            await ParentTaskCompleted.InvokeAsync();
+            ParentTaskComplete();
+            StateHasChanged();
+        }
+
+        completeTaskGroup = false;
+    }
+
+    private async Task<Tuple<bool, string>> SetCompletetionDateAsync()
+    {
+        if (ParentTaskGroupHead != null)
+        {
+            var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Post, APITypes.TASK, $"TaskGroup/Complete/{ParentTaskGroupHead.Id}/{ParentTaskGroupHead.CompletionDate.ToString("yyyyMMddHHmmss")}");
+
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                return new Tuple<bool, string>(false, MyFoundationService.GetErrorFromResponse(response));
+            }
+
+            return new Tuple<bool, string>(true, $"Task {ParentTaskGroupHead.LongName} completed");
+        }
+
+        return new Tuple<bool, string>(false, $"No task group to complete");
+    }
+
+    void CustomFieldGroupsChanged()
+    {
+        
+    }
+
+}

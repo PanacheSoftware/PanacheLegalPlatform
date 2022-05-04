@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Globalization;
+using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -112,28 +114,52 @@ namespace PanacheSoftware.Service.Task.Controllers
                     {
                         var taskGroupHeader = _mapper.Map<TaskGroupHeader>(taskGroupHead);
 
-                        if (!await _taskManager.TaskGroupTeamOkayAsync(taskGroupHeader, accessToken))
+                        //if(taskGroupHeader.ChildTaskGroups.Any())
+                        //    return StatusCode(StatusCodes.Status400BadRequest,
+                        //        new APIErrorMessage(StatusCodes.Status400BadRequest,
+                        //        $"Cannot create child task groups when creating parent"));
+
+                        //if (taskGroupHeader.ChildTasks.Any())
+                        //    return StatusCode(StatusCodes.Status400BadRequest,
+                        //        new APIErrorMessage(StatusCodes.Status400BadRequest,
+                        //        $"Cannot create child tasks when creating task group"));
+
+                        //if (!await _taskManager.TaskGroupTeamOkayAsync(taskGroupHeader, accessToken))
+                        //    return StatusCode(StatusCodes.Status400BadRequest,
+                        //        new APIErrorMessage(StatusCodes.Status400BadRequest,
+                        //            $"TaskGroupHead.Id: Can't access '{taskGroupHead.Id}'."));
+
+                        //if (!await _taskManager.TaskGroupParentOkayAsync(taskGroupHeader, accessToken))
+                        //    return StatusCode(StatusCodes.Status400BadRequest,
+                        //        new APIErrorMessage(StatusCodes.Status400BadRequest,
+                        //            $"TaskGroupHead.ParentTaskGroupId: '{taskGroupHead.ParentTaskGroupId}' is invalid."));
+
+                        //var dateCheck = await _taskManager.TaskGroupDatesOkayAsync(taskGroupHeader, accessToken);
+
+                        //if(!dateCheck.Item1)
+                        //    return StatusCode(StatusCodes.Status400BadRequest, 
+                        //        new APIErrorMessage(StatusCodes.Status400BadRequest,
+                        //        dateCheck.Item2));
+
+                        //if (!await _taskManager.SetNewTaskGroupSequenceNoAsync(taskGroupHeader, accessToken))
+                        //    return StatusCode(StatusCodes.Status400BadRequest,
+                        //        new APIErrorMessage(StatusCodes.Status400BadRequest,
+                        //            $"Unable to set task sequence number."));
+
+                        //taskGroupHeader.OriginalCompletionDate = taskGroupHeader.CompletionDate;
+                        //taskGroupHeader.CompletedOnDate = DateTime.Parse("01/01/1900");
+                        //taskGroupHeader.Completed = false;
+
+                        var taskGroupHeaderCreation = await _taskManager.CreateTaskGroupHeader(taskGroupHeader, accessToken);
+
+                        if(!taskGroupHeaderCreation.Item1)
                             return StatusCode(StatusCodes.Status400BadRequest,
                                 new APIErrorMessage(StatusCodes.Status400BadRequest,
-                                    $"TaskGroupHead.Id: Can't access '{taskGroupHead.Id}'."));
+                                taskGroupHeaderCreation.Item2));
 
-                        if (!await _taskManager.TaskGroupParentOkayAsync(taskGroupHeader, accessToken))
-                            return StatusCode(StatusCodes.Status400BadRequest,
-                                new APIErrorMessage(StatusCodes.Status400BadRequest,
-                                    $"TaskGroupHead.ParentTaskGroupId: '{taskGroupHead.ParentTaskGroupId}' is invalid."));
+                        //_unitOfWork.TaskGroupHeaders.Add(taskGroupHeader);
 
-                        if (!await _taskManager.SetNewTaskGroupSequenceNoAsync(taskGroupHeader, accessToken))
-                            return StatusCode(StatusCodes.Status400BadRequest,
-                                new APIErrorMessage(StatusCodes.Status400BadRequest,
-                                    $"Unable to set task sequence number."));
-
-                        taskGroupHeader.OriginalCompletionDate = taskGroupHeader.CompletionDate;
-                        taskGroupHeader.CompletedOnDate = DateTime.Parse("01/01/1900");
-                        taskGroupHeader.Completed = false;
-
-                        _unitOfWork.TaskGroupHeaders.Add(taskGroupHeader);
-
-                        _unitOfWork.Complete();
+                        //_unitOfWork.Complete();
 
                         return Created(new Uri($"{Request.Path}/{taskGroupHeader.Id}", UriKind.Relative),
                             _mapper.Map<TaskGroupHead>(taskGroupHeader));
@@ -182,25 +208,17 @@ namespace PanacheSoftware.Service.Task.Controllers
                                 taskGroupHead.OriginalCompletionDate = taskGroupHeader.OriginalCompletionDate;
                                 taskGroupHead.OriginalStartDate = taskGroupHeader.OriginalStartDate;
 
-                                if (taskGroupHeader.ParentTaskGroupId != null)
-                                {
-                                    TaskGroupHeader parentTaskGroupHeader =
-                                        _unitOfWork.TaskGroupHeaders.SingleOrDefault(
-                                            c => c.Id == taskGroupHeader.ParentTaskGroupId, true);
+                                var dateCheck = _taskManager.TaskGroupDatesOkay(_mapper.Map<TaskGroupHeader>(taskGroupHead), accessToken);
 
-                                    if (parentTaskGroupHeader != null)
-                                    {
-                                        //Make sure the start and completion dates don't fall outside of the group headers dates
-                                        taskGroupHead.StartDate =
-                                            (taskGroupHead.StartDate < parentTaskGroupHeader.StartDate)
-                                                ? parentTaskGroupHeader.StartDate
-                                                : taskGroupHead.StartDate;
-                                        taskGroupHead.CompletionDate =
-                                            (taskGroupHead.CompletionDate > parentTaskGroupHeader.CompletionDate)
-                                                ? parentTaskGroupHeader.CompletionDate
-                                                : taskGroupHead.CompletionDate;
-                                    }
-                                }
+                                if (!dateCheck.Item1)
+                                    return StatusCode(StatusCodes.Status400BadRequest,
+                                        new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                        dateCheck.Item2));
+
+                                if (taskGroupHead.ShortName != taskGroupHeader.ShortName)
+                                    return StatusCode(StatusCodes.Status400BadRequest,
+                                        new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                            $"TaskGroupHeader.ShortName: '{taskGroupHeader.ShortName}' can't be changed."));
 
                                 _mapper.Map(taskGroupHead, taskGroupHeader);
 
@@ -211,8 +229,7 @@ namespace PanacheSoftware.Service.Task.Controllers
 
                                 _unitOfWork.Complete();
 
-                                return CreatedAtRoute("Get", new {id = _mapper.Map<TaskGroupHead>(taskGroupHeader).Id},
-                                    _mapper.Map<TaskGroupHead>(taskGroupHeader));
+                                return Ok();
                             }
 
                             return StatusCode(StatusCodes.Status400BadRequest,
@@ -235,9 +252,9 @@ namespace PanacheSoftware.Service.Task.Controllers
             return BadRequest(new APIErrorMessage(StatusCodes.Status400BadRequest, "One or more validation errors occurred.", ModelState));
         }
 
-        [Route("[action]/{id}")]
+        [Route("[action]/{id}/{completionDate}")]
         [HttpPost]
-        public async Task<IActionResult> Complete(string id)
+        public async Task<IActionResult> Complete(string id, string completionDate)
         {
             try
             {
@@ -262,14 +279,17 @@ namespace PanacheSoftware.Service.Task.Controllers
                                     {
                                         taskGroupHeader.Completed = true;
 
-                                        if (DateTime.Today <= taskGroupHeader.StartDate)
-                                        {
-                                            taskGroupHeader.CompletedOnDate = taskGroupHeader.CompletionDate;
-                                        }
-                                        else
-                                        {
-                                            taskGroupHeader.CompletedOnDate = DateTime.Today;
-                                        }
+                                        var dateTimeFormatString = "yyyyMMddHHmmss";
+                                        DateTime.TryParseExact(string.IsNullOrWhiteSpace(completionDate) ? "19000101000000" : completionDate, dateTimeFormatString, null, DateTimeStyles.None, out DateTime convertedDateTime);
+
+                                        taskGroupHeader.CompletedOnDate = convertedDateTime;
+
+                                        var dateCheck = _taskManager.TaskGroupDatesOkay(taskGroupHeader, accessToken);
+
+                                        if (!dateCheck.Item1)
+                                            return StatusCode(StatusCodes.Status400BadRequest,
+                                                new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                                dateCheck.Item2));
 
                                         _unitOfWork.Complete();
 
@@ -376,6 +396,55 @@ namespace PanacheSoftware.Service.Task.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
             }
+        }
+
+        [Route("[action]/{id}")]
+        [HttpPost]
+        public async Task<IActionResult> CreateTaskFromTemplate([FromBody] TaskGroupHead taskGroupHead, string id)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var accessToken = await HttpContext.GetTokenAsync("access_token");
+
+                    if (taskGroupHead.Id == Guid.Empty)
+                    {
+                        if (!Guid.TryParse(id, out Guid templateId))
+                            return StatusCode(StatusCodes.Status400BadRequest,
+                                new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                    $"Id: is not a valid guid."));
+
+                        var creationResult = await _taskManager.CreateTaskFromTemplate(taskGroupHead, templateId, accessToken);
+
+                        if (creationResult.Item1 == Guid.Empty)
+                            return StatusCode(StatusCodes.Status400BadRequest,
+                                new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                    $"{creationResult.Item2}"));
+
+                        var taskGroupHeader = await _unitOfWork.TaskGroupHeaders.GetTaskGroupHeaderWithRelationsAsync(creationResult.Item1, true, accessToken);
+
+                        if (taskGroupHeader == null)
+                            return StatusCode(StatusCodes.Status400BadRequest,
+                                new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                    $"Error retrieving Task Group Header: {creationResult.Item1}"));
+
+                        return Created(new Uri($"{Request.Path}/{taskGroupHeader.Id}", UriKind.Relative),
+                            _mapper.Map<TaskGroupHead>(taskGroupHeader));
+                    }
+
+                    return StatusCode(StatusCodes.Status400BadRequest,
+                        new APIErrorMessage(StatusCodes.Status400BadRequest,
+                            $"TaskGroupHead.Id: '{taskGroupHead.Id}' is not an empty guid."));
+                }
+                catch (Exception e)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError,
+                        new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
+                }
+            }
+
+            return BadRequest(new APIErrorMessage(StatusCodes.Status400BadRequest, "One or more validation errors occurred.", ModelState));
         }
 
         //[Route("[action]/{id}")]

@@ -1,0 +1,20 @@
+﻿<BarItem>
+    <BarDropdown>
+        <BarDropdownToggle>
+            <BarIcon IconName="@("fa-sitemap")" Class="fa-fw"/>
+            @LanguageHelper.GetTitle(langQueryList, 10108)
+        </BarDropdownToggle>
+        <BarDropdownMenu>
+            <BarDropdownItem To="team/teams">
+                @LanguageHelper.GetTitle(langQueryList, 10109)
+            </BarDropdownItem>
+            <BarDropdownItem To="team/">
+                @LanguageHelper.GetTitle(langQueryList, 10110)
+            </BarDropdownItem>
+        </BarDropdownMenu>
+    </BarDropdown>
+</BarItem>
+
+@code {
+    [CascadingParameter(Name = "langQueryList")] LangQueryList langQueryList { get; set; }
+}

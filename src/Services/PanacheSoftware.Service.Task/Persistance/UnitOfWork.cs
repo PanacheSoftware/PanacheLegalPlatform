@@ -4,6 +4,7 @@ using PanacheSoftware.Service.Task.Core;
 using PanacheSoftware.Service.Task.Core.Repositories;
 using PanacheSoftware.Service.Task.Persistance.Context;
 using PanacheSoftware.Service.Task.Persistance.Repositories.Task;
+using PanacheSoftware.Service.Task.Persistance.Repositories.Template;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,11 +20,25 @@ namespace PanacheSoftware.Service.Task.Persistance
             TaskGroupDetails = new TaskGroupDetailRepository((PanacheSoftwareServiceTaskContext)_context, TaskGroupHeaders);
             TaskHeaders = new TaskHeaderRepository((PanacheSoftwareServiceTaskContext)_context, TaskGroupHeaders);
             TaskDetails = new TaskDetailRepository((PanacheSoftwareServiceTaskContext)_context);
+
+            TemplateHeaders = new TemplateHeaderRepository((PanacheSoftwareServiceTaskContext)_context, userProvider, apiHelper);
+            TemplateDetails = new TemplateDetailRepository((PanacheSoftwareServiceTaskContext)_context);
+            TemplateGroupHeaders = new TemplateGroupHeaderRepository((PanacheSoftwareServiceTaskContext)_context);
+            TemplateGroupDetails = new TemplateGroupDetailRepository((PanacheSoftwareServiceTaskContext)_context);
+            TemplateItemHeaders = new TemplateItemHeaderRepository((PanacheSoftwareServiceTaskContext)_context);
+            TemplateItemDetails = new TemplateItemDetailRepository((PanacheSoftwareServiceTaskContext)_context);
         }
 
         public ITaskGroupHeaderRepository TaskGroupHeaders { get; private set; }
         public ITaskGroupDetailRepository TaskGroupDetails { get; private set; }
         public ITaskHeaderRepository TaskHeaders { get; private set; }
         public ITaskDetailRepository TaskDetails { get; private set; }
+
+        public ITemplateHeaderRepository TemplateHeaders { get; private set; }
+        public ITemplateDetailRepository TemplateDetails { get; private set; }
+        public ITemplateGroupHeaderRepository TemplateGroupHeaders { get; private set; }
+        public ITemplateGroupDetailRepository TemplateGroupDetails { get; private set; }
+        public ITemplateItemHeaderRepository TemplateItemHeaders { get; private set; }
+        public ITemplateItemDetailRepository TemplateItemDetails { get; private set; }
     }
 }

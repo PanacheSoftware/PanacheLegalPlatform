@@ -1,0 +1,53 @@
+﻿@page "/token"
+@attribute [Authorize]
+@inject UserAppCache UserAppCache
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+
+<Breadcrumb>
+    <BreadcrumbItem>
+        <BreadcrumbLink To="dashboard">@LanguageHelper.GetTitle(langQueryList, 10121)</BreadcrumbLink>
+    </BreadcrumbItem>
+    <BreadcrumbItem Active="true">
+        <BreadcrumbLink>Token</BreadcrumbLink>
+    </BreadcrumbItem>
+</Breadcrumb>
+
+<Row>
+    <Column>
+        <Card Margin="Margin.Is4.OnY" Shadow="Shadow.Default">
+            <CardBody>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12">
+                        <Field>
+                            <MemoEdit @bind-Text="@tokenText" Rows="5" ReadOnly=true>
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </MemoEdit>
+                        </Field>
+                    </Column>
+                </Row>
+            </CardBody>
+        </Card>
+    </Column>
+</Row>
+
+@code {
+    LangQueryList langQueryList { get; set; }
+    string tokenText = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetLanguageList();
+        tokenText = TokenProvider.AccessToken;
+    }
+
+    private async Task GetLanguageList()
+    {
+        var textCodes = new List<long>();
+        textCodes.Add(10121);
+        
+        langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, UserAppCache.LanguageCode, textCodes.ToArray());
+    }
+}

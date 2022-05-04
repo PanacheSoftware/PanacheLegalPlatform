@@ -1,0 +1,119 @@
+﻿@page "/apiaccess"
+@attribute [Authorize]
+@inject UserAppCache UserAppCache
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+
+<PageProgressBar @ref="@pageProgressBar" pageProgressColor="Color.Warning" pageProgressVisible="@loadingPage" />
+
+@if (!loadingPage)
+{
+    <Breadcrumb>
+        <BreadcrumbItem>
+            <BreadcrumbLink To="dashboard">@LanguageHelper.GetTitle(langQueryList, 10121)</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbItem Active="true">
+            <BreadcrumbLink>@LanguageHelper.GetTitle(langQueryList, 10130)</BreadcrumbLink>
+        </BreadcrumbItem>
+    </Breadcrumb>
+
+    <Row>
+        <Column>
+            <Card Margin="Margin.Is4.OnY" Shadow="Shadow.Default">
+                <CardHeader>
+                    <CardTitle>@LanguageHelper.GetTitle(langQueryList, 10235)</CardTitle>
+                </CardHeader>
+                <CardBody>
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Field>
+                                <MemoEdit @bind-Text="@tokenText" Rows="5" ReadOnly=true>
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </MemoEdit>
+                            </Field>
+                        </Column>
+                    </Row>
+                </CardBody>
+            </Card>
+        </Column>
+    </Row>
+
+    @if (apiList != null)
+    {
+        <Row>
+            <Column>
+                <Card Margin="Margin.Is4.OnY" Shadow="Shadow.Default">
+                    <CardHeader>
+                        <CardTitle>@LanguageHelper.GetTitle(langQueryList, 10236)</CardTitle>
+                    </CardHeader>
+                    <CardBody>
+                        <DataGrid TItem="APIListDetail"
+                          Data="@apiList.APIListDetails"
+                          Filterable="true"
+                          FilterMethod="DataGridFilterMethod.StartsWith"
+                          PageSize="25"
+                          Striped="true"
+                          Bordered="true"
+                          Hoverable="true"
+                          Responsive="true"
+                          ShowPager="true"
+                          PagerPosition="DataGridPagerPosition.Bottom"
+                          ShowPageSizes="true"> 
+                            <EmptyTemplate>No records...</EmptyTemplate>
+                            <DataGridColumns>
+                                <DataGridColumn TItem="APIListDetail" Field="@nameof(APIListDetail.APIName)" Caption="@LanguageHelper.GetTitle(langQueryList, 10237)" />
+                                <DataGridColumn TItem="APIListDetail" Field="@nameof(APIListDetail.APIBaseURI)" Caption="@LanguageHelper.GetTitle(langQueryList, 10238)">
+                                    <DisplayTemplate>
+                                        <Blazorise.Link To="@context.APIBaseURI.AbsoluteUri" Target="Target.Blank">
+                                            @context.APIBaseURI
+                                        </Blazorise.Link>
+                                    </DisplayTemplate>
+                                </DataGridColumn>
+                                <DataGridColumn TItem="APIListDetail" Field="@nameof(APIListDetail.SwaggerLink)" Caption="@LanguageHelper.GetTitle(langQueryList, 10239)">
+                                    <DisplayTemplate>
+                                        <Blazorise.Link To="@context.SwaggerLink" Target="Target.Blank">
+                                            @context.SwaggerLink
+                                        </Blazorise.Link>
+                                    </DisplayTemplate>
+                                </DataGridColumn>
+                            </DataGridColumns>
+                        </DataGrid>
+                    </CardBody>
+                </Card>
+            </Column>
+        </Row>
+    }
+}
+
+@code {
+    LangQueryList langQueryList { get; set; }
+    string tokenText = string.Empty;
+    APIList apiList { get; set; }
+    bool loadingPage = true;
+    PageProgressBar pageProgressBar;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetLanguageList();
+        tokenText = TokenProvider.AccessToken;
+        apiList = MyFoundationService.GetAPIList();
+        loadingPage = false;
+        pageProgressBar.ChangeVisibility(loadingPage);
+    }
+
+    private async Task GetLanguageList()
+    {
+        var textCodes = new List<long>();
+        textCodes.Add(10121);
+        textCodes.Add(10130);
+        textCodes.Add(10235);
+        textCodes.Add(10236);
+        textCodes.Add(10237);
+        textCodes.Add(10238);
+        textCodes.Add(10239);
+
+        langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, UserAppCache.LanguageCode, textCodes.ToArray());
+    }
+}

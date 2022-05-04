@@ -17,6 +17,7 @@ namespace PanacheSoftware.Core.Domain.API.Client
         public Guid Id { get; set; }
         public Guid ClientHeaderId { get; set; }
         [DataType(DataType.Url, ErrorMessage = "Must be a valid URL")]
+        [RegularExpression(@"[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)", ErrorMessage = "Not a valid url")]
         [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string url { get; set; }
         [DisplayFormat(ConvertEmptyStringToNull = false)]

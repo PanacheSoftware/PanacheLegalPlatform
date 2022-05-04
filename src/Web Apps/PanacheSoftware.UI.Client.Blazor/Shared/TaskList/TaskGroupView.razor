@@ -1,0 +1,277 @@
+﻿@attribute [Authorize]
+@inject UserAppCache UserAppCache
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@using PanacheSoftware.Core.Domain.API.Task
+@using PanacheSoftware.Core.Domain.Identity.API;
+
+@if (taskGroupHead != null)
+{
+    <Collapse Visible="@taskGroupExpanded" Shadow="Shadow.Default">
+        <CollapseHeader>
+            <Heading Size="HeadingSize.Is5">
+                <Button Clicked="@(() => taskGroupExpanded = !taskGroupExpanded)">@taskGroupHead.LongName</Button>
+                @if (taskGroupHead.Completed)
+                {
+                    <Badge Color="Color.Success" Class="float-right">@LanguageHelper.GetTitle(langQueryList, 10921)</Badge>
+                }
+                else
+                {
+                    <Badge Color="Color.Primary" Class="float-right">@LanguageHelper.GetTitle(langQueryList, 10928)</Badge>
+                }
+                <CascadingValue Value="langQueryList"><CascadingValue Value="userListModel"><DocAutoTaskHeaderModal taskGroupHead=@taskGroupHead /></CascadingValue></CascadingValue>
+            </Heading>
+        </CollapseHeader>
+        <CollapseBody>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <Paragraph><strong>@LanguageHelper.GetTitle(langQueryList, 10943):</strong> <Blazorise.Link To="@($"user/{taskGroupHead.MainUserId}")">@GetUserNameForUserId(taskGroupHead.MainUserId)</Blazorise.Link></Paragraph>
+                </Column>
+            </Row>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <Paragraph>@taskGroupHead.Description</Paragraph>
+                </Column>
+            </Row>
+
+            @foreach (var taskHead in taskGroupHead.ChildTasks)
+            {
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12">
+                        <CascadingValue Value="langQueryList">
+                            <CascadingValue Value="userListModel">
+                                <TaskItemView taskHead="@taskHead" TaskCompleted="@TaskCompleted" TaskUpdated="@TaskUpdated" TaskCreated="@TaskCreated"/>
+                            </CascadingValue>
+                        </CascadingValue>
+                    </Column>
+                </Row>
+            }
+
+            <Row>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <CustomFieldGroupEdit @ref="customFieldGroupEdit" linkId="@taskGroupHead.Id" linkType="@LinkTypes.TaskGroup" ReadOnly="@taskGroupHead.Completed" MainParent=false/>
+                </Column>
+            </Row>
+
+            @if (!taskGroupHead.Completed && !taskGroupHead.ChildTasks.Where(ct => ct.Completed == false).Any())
+            {
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is6">
+                        <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10913)</FieldLabel>
+                        <Addons>
+                            <Addon AddonType="AddonType.Body">
+                                <DateEdit TValue="DateTime" @bind-Date="@taskGroupHead.CompletionDate" InputMode="DateInputMode.Date">
+                                </DateEdit>
+                            </Addon>
+                            <Addon AddonType="AddonType.End">
+                                <Button Color="Color.Primary" Clicked="@CompleteTaskGroup" Loading="@completeTaskGroup">@LanguageHelper.GetTitle(langQueryList, 10921)</Button>
+                            </Addon>
+                        </Addons>
+                    </Column>
+                </Row>
+            }
+
+            @if (!taskGroupHead.Completed)
+            {
+                <Row Margin="Margin.Is4.OnY">
+                    <Column ColumnSize="ColumnSize.Is12">
+                        <TaskItemEdit ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10930)" taskHead="@taskHeadCreateTemplate" TaskItemCreated="@TaskItemCreated" resetTaskHead="GetBlankTaskHeadTemplate()" CreationForm="true" @ref="@taskEdit" />
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is4.OnY">
+                    <Column ColumnSize="ColumnSize.Is12">
+                        <TaskGroupEdit ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10931)" taskGroupHead="@taskGroupHead" TaskGroupUpdated="@TGUpdated" @ref="@taskGroupEdit" CustomFieldGroupChange="@CustomFieldGroupsChanged" />
+                    </Column>
+                </Row>
+            }
+
+            <Row>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <PLAlert includeSnackBar="true" includeAlert="true" @ref="plAlert" />
+                </Column>
+            </Row>
+
+        </CollapseBody>
+    </Collapse>
+}
+
+@code {
+
+    [CascadingParameter]
+    LangQueryList langQueryList { get; set; }
+
+    [CascadingParameter]
+    UserListModel userListModel { get; set; }
+
+    [CascadingParameter]
+    TaskGroupSummary taskGroupSummary { get; set; }
+
+    [Parameter]
+    public TaskGroupHead taskGroupHead { get; set; }
+
+    private TaskHead taskHeadCreateTemplate { get; set; }
+
+    private bool taskGroupExpanded = false;
+
+    private TaskGroupEdit taskGroupEdit { get; set; }
+
+    private TaskItemEdit taskEdit { get; set; }
+
+    private bool completeTaskGroup = false;
+
+    PLAlert plAlert { get; set; }
+
+    [Parameter]
+    public EventCallback<TaskGroupHead> TaskGroupCompleted { get; set; }
+
+    [Parameter]
+    public EventCallback<TaskGroupHead> TaskGroupUpdated { get; set; }
+
+    [Parameter]
+    public EventCallback<TaskGroupHead> TaskGroupCreated { get; set; }
+
+    [Parameter]
+    public EventCallback<TaskGroupHead> TaskGroupTaskItemCompleted { get; set; }
+
+    [Parameter]
+    public EventCallback<TaskGroupHead> TaskGroupTaskItemCreated { get; set; }
+
+    [Parameter]
+    public EventCallback<TaskGroupHead> TaskGroupTaskItemUpdated { get; set; }
+
+    private CustomFieldGroupEdit customFieldGroupEdit;
+
+    protected override void OnInitialized()
+    {
+        taskHeadCreateTemplate = GetBlankTaskHeadTemplate();
+    }
+
+    void TaskGroupHeadCreated(TaskGroupHead taskGroupHead)
+    {
+        if (taskGroupHead.Id == Guid.Empty)
+            return;
+
+        StateHasChanged();
+    }
+
+    private TaskHead GetBlankTaskHeadTemplate()
+    {
+        if (taskGroupHead == null)
+            return null;
+
+        return new TaskHead()
+        {
+            Id = Guid.Empty,
+            TaskGroupHeaderId = taskGroupHead.Id,
+            StartDate = taskGroupHead.StartDate,
+            CompletionDate = taskGroupHead.CompletionDate,
+            MainUserId = taskGroupHead.MainUserId
+        };
+    }
+
+    private async Task TaskItemCreated(TaskHead taskHead)
+    {
+        taskGroupHead.ChildTasks.Add(taskHead);
+        //taskEdit.ResetTask(GetBlankTaskHeadTemplate());
+        await TaskGroupUpdated.InvokeAsync(taskGroupHead);
+        //StateHasChanged();
+    }
+
+    private async Task TaskItemUpdated(TaskHead taskHead)
+    {
+        taskGroupHead.ChildTasks.Add(taskHead);
+        //taskEdit.ResetTask(GetBlankTaskHeadTemplate());
+        await TaskGroupUpdated.InvokeAsync(taskGroupHead);
+        //StateHasChanged();
+    }
+
+    private async Task TGUpdated(TaskGroupHead tgHead)
+    {
+        await TaskGroupUpdated.InvokeAsync(tgHead);
+    }
+
+    private string GetUserNameForUserId(Guid userId)
+    {
+        if (userListModel != default)
+        {
+            return userListModel.Users.Where(u => u.Id == userId).FirstOrDefault().FullName;
+        }
+
+        return string.Empty;
+    }
+
+    private async Task CompleteTaskGroup()
+    {
+        completeTaskGroup = true;
+
+        var completeResult = await SetCompletetionDateAsync();
+
+        plAlert.ShowAlert(completeResult.Item1, completeResult.Item2);
+
+        if (completeResult.Item1)
+        {
+            taskGroupHead.Completed = true;
+            await TaskGroupCompleted.InvokeAsync(taskGroupHead);
+            StateHasChanged();
+        }
+
+        completeTaskGroup = false;
+    }
+
+    private async Task<Tuple<bool, string>> SetCompletetionDateAsync()
+    {
+        if (taskGroupHead != null)
+        {
+            var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Post, APITypes.TASK, $"TaskGroup/Complete/{taskGroupHead.Id}/{taskGroupHead.CompletionDate.ToString("yyyyMMddHHmmss")}");
+
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                return new Tuple<bool, string>(false, MyFoundationService.GetErrorFromResponse(response));
+            }
+
+            return new Tuple<bool, string>(true, $"Task {taskGroupHead.LongName} completed");
+        }
+
+        return new Tuple<bool, string>(false, $"No task group to complete");
+    }
+
+
+    void TaskCompleted(TaskHead taskHead)
+    {
+        int existingIndex = taskGroupHead.ChildTasks.FindIndex(ct => ct.Id == taskHead.Id);
+
+        if (existingIndex < 0)
+            return;
+
+        taskGroupHead.ChildTasks[existingIndex] = taskHead;
+
+        TaskGroupTaskItemCompleted.InvokeAsync(taskGroupHead);
+
+        StateHasChanged();
+    }
+
+    void TaskCreated(TaskHead taskHead)
+    {
+        TaskGroupTaskItemCreated.InvokeAsync(taskGroupHead);
+    }
+
+    void TaskUpdated(TaskHead taskHead)
+    {
+        int existingIndex = taskGroupHead.ChildTasks.FindIndex(ct => ct.Id == taskHead.Id);
+
+        if (existingIndex < 0)
+            return;
+
+        taskGroupHead.ChildTasks[existingIndex] = taskHead;
+
+        TaskGroupTaskItemUpdated.InvokeAsync(taskGroupHead);
+
+        StateHasChanged();
+    }
+
+    void CustomFieldGroupsChanged()
+    {
+        customFieldGroupEdit.UpdateCustomFieldGroups();
+    }
+}

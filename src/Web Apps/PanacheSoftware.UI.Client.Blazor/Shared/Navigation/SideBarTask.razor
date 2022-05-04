@@ -1,0 +1,20 @@
+﻿<BarItem>
+    <BarDropdown>
+        <BarDropdownToggle>
+            <BarIcon IconName="@("fa-tasks")" Class="fa-fw"/>
+            @LanguageHelper.GetTitle(langQueryList, 10111)
+        </BarDropdownToggle>
+        <BarDropdownMenu>
+            <BarDropdownItem To="task/tasks">
+                @LanguageHelper.GetTitle(langQueryList, 10112)
+            </BarDropdownItem>
+            <BarDropdownItem To="/taskgroup">
+                @LanguageHelper.GetTitle(langQueryList, 10113)
+            </BarDropdownItem>
+        </BarDropdownMenu>
+    </BarDropdown>
+</BarItem>
+
+@code {
+    [CascadingParameter(Name = "langQueryList")] LangQueryList langQueryList { get; set; }
+}

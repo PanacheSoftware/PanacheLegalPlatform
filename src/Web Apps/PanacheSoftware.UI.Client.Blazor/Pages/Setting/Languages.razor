@@ -1,0 +1,258 @@
+﻿@page "/languages"
+@attribute [Authorize]
+@inject UserAppCache UserAppCache
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@using PanacheSoftware.Core.Domain.API.Language;
+
+<PageProgressBar @ref="@pageProgressBar" pageProgressColor="Color.Warning" pageProgressVisible="@loadingPage" />
+
+@if (!loadingPage)
+{
+    <Breadcrumb>
+        <BreadcrumbItem>
+            <BreadcrumbLink To="dashboard">@LanguageHelper.GetTitle(langQueryList, 10121)</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbItem Active="true">
+            <BreadcrumbLink>@LanguageHelper.GetTitle(langQueryList, 10119)</BreadcrumbLink>
+        </BreadcrumbItem>
+    </Breadcrumb>
+
+    <Card Margin="Margin.Is4.OnY">
+        <CardHeader>
+            <CardTitle>@LanguageHelper.GetTitle(langQueryList, 10712)</CardTitle>
+        </CardHeader>
+        <CardBody>
+            @if (languageList != null)
+            {
+                <DataGrid TItem="LangHead"
+                          Data="@languageList.LanguageHeaders"
+                          Filterable="true"
+                          FilterMethod="DataGridFilterMethod.StartsWith"
+                          PageSize="25"
+                          Striped="true"
+                          Bordered="true"
+                          Hoverable="true"
+                          Responsive="true"
+                          ShowPager="true"
+                          PagerPosition="DataGridPagerPosition.Bottom"
+                          ShowPageSizes="true">
+                    <DataGridColumn TItem="LangHead" Field="@nameof(LangHead.Id)" Caption="" Width="10px" Filterable="false" Sortable="false">
+                        <DisplayTemplate>
+                            <Button To="@($"textcode/{context.Id}")" Type="ButtonType.Link" Color="Color.Primary"><Icon Name="@("fa-edit")" /></Button>
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn TItem="LangHead" Field="@nameof(LangHead.TextCode)" Caption="@LanguageHelper.GetTitle(langQueryList, 10702)" />
+                    <DataGridColumn TItem="LangHead" Field="@nameof(LangHead.Text)" Caption="@LanguageHelper.GetTitle(langQueryList, 10703)" />
+                    <DataGridColumn TItem="LangHead" Field="@nameof(LangHead.Description)" Caption="@LanguageHelper.GetTitle(langQueryList, 10200)" />
+                    <DataGridColumn TItem="LangHead" Field="@nameof(LangHead.Status)" Caption="@LanguageHelper.GetTitle(langQueryList, 10201)" />
+                    <DataGridColumn TItem="LangHead" Field="@nameof(LangHead.DateFrom)" Caption="@LanguageHelper.GetTitle(langQueryList, 10202)" DisplayFormat="{0:dd/MM/yyyy}" />
+                    <DataGridColumn TItem="LangHead" Field="@nameof(LangHead.DateTo)" Caption="@LanguageHelper.GetTitle(langQueryList, 10203)" DisplayFormat="{0:dd/MM/yyyy}" />
+                </DataGrid>
+                <Button To="textcode" Color="Color.Success" Type="ButtonType.Link">@LanguageHelper.GetTitle(langQueryList, 10204)</Button>
+            }
+            else
+            {
+                <p>Loading...</p>
+            }
+        </CardBody>
+    </Card>
+
+    <Card Margin="Margin.Is4.OnY">
+        <CardHeader>
+            <CardTitle>@LanguageHelper.GetTitle(langQueryList, 10712)</CardTitle>
+        </CardHeader>
+        <CardBody>
+            @if (languageList != null)
+            {
+                <DataGrid TItem="LangCode"
+                          Data="@langCodeList.LanguageCodes"
+                          Filterable="true"
+                          FilterMethod="DataGridFilterMethod.StartsWith"
+                          PageSize="25"
+                          Striped="true"
+                          Bordered="true"
+                          Hoverable="true"
+                          Responsive="true"
+                          ShowPager="true"
+                          PagerPosition="DataGridPagerPosition.Bottom"
+                          ShowPageSizes="true"
+                          Editable="true"
+                          EditMode="DataGridEditMode.Form"
+                          RowInserted="@OnRowInsertedAsync"
+                          RowUpdated="@OnRowUpdatedAsync">
+                    <EmptyTemplate>No records...</EmptyTemplate>
+                    <DataGridColumns>
+                        <DataGridCommandColumn TItem="LangCode" Width="170px">
+                            <NewCommandTemplate>
+                                <Button Color="Color.Success" Clicked="@context.Clicked">New</Button>
+                            </NewCommandTemplate>
+                            <EditCommandTemplate>
+                                <Button Color="Color.Primary" Clicked="@context.Clicked">Edit</Button>
+                            </EditCommandTemplate>
+                            <SaveCommandTemplate>
+                                <Button Color="Color.Primary" Clicked="@context.Clicked">Save</Button>
+                            </SaveCommandTemplate>
+                            <DeleteCommandTemplate>
+                                @*<Button Color="Color.Danger" Clicked="@context.Clicked">Delete</Button>*@
+                            </DeleteCommandTemplate>
+                            <CancelCommandTemplate>
+                                <Button Color="Color.Secondary" Clicked="@context.Clicked">Cancel</Button>
+                            </CancelCommandTemplate>
+                            <ClearFilterCommandTemplate>
+                                <Button Color="Color.Warning" Clicked="@context.Clicked">Clear Filter</Button>
+                            </ClearFilterCommandTemplate>
+                        </DataGridCommandColumn>
+                        <DataGridColumn TItem="LangCode" Field="@nameof(LangCode.LanguageCodeId)" Caption="@LanguageHelper.GetTitle(langQueryList, 10707)" Editable="true" />
+                        <DataGridColumn TItem="LangCode" Field="@nameof(LangCode.Description)" Caption="@LanguageHelper.GetTitle(langQueryList, 10200)" Editable="true" />
+                        <DataGridDateColumn TItem="LangCode" Field="@nameof(LangCode.DateFrom)" DisplayFormat="{0:dd.MM.yyyy}" Caption="@LanguageHelper.GetTitle(langQueryList, 10202)" Editable="true" />
+                        <DataGridDateColumn TItem="LangCode" Field="@nameof(LangCode.DateTo)" DisplayFormat="{0:dd.MM.yyyy}" Caption="@LanguageHelper.GetTitle(langQueryList, 10203)" Editable="true" />
+                        <DataGridColumn TItem="LangCode" Field="@nameof(LangCode.Status)" Caption="@LanguageHelper.GetTitle(langQueryList, 10201)" Editable="true">
+                            <EditTemplate>
+                                <SelectList TItem="SelectListModel" TValue="string" Data="@StatusSelectListValues" TextField="@((item)=>item.DescriptionField)" ValueField="@((item)=>item.ValueField)" SelectedValue="@((string)( context.CellValue ))" SelectedValueChanged="@(e => { context.CellValue = e; })" />
+                            </EditTemplate>
+                        </DataGridColumn>
+
+                    </DataGridColumns>
+                </DataGrid>
+            }
+            else
+            {
+                <p>Loading...</p>
+            }
+        </CardBody>
+    </Card>
+}
+
+@code {
+    LangQueryList langQueryList { get; set; }
+    LangList languageList { get; set; }
+    LangCodeList langCodeList { get; set; }
+    PageProgressBar pageProgressBar;
+    bool loadingPage = true;
+    IEnumerable<SelectListModel> StatusSelectListValues { get; set; }
+
+    protected async Task OnRowInsertedAsync(SavedRowItem<LangCode, Dictionary<string, object>> e)
+    {
+        await CreateOrUpdateLanguageCodeAsync(e.Item);
+    }
+
+    protected async Task OnRowUpdatedAsync(SavedRowItem<LangCode, Dictionary<string, object>> e)
+    {
+        await CreateOrUpdateLanguageCodeAsync(e.Item);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        CreateSelectListModels();
+        await GetLanguageList();
+        await GetLanguageTexts();
+        await GetLanguageCodes();
+        loadingPage = false;
+        pageProgressBar.ChangeVisibility(loadingPage);
+    }
+
+    private async Task GetLanguageList()
+    {
+        var textCodes = new List<long>();
+        textCodes.Add(10121);
+        textCodes.Add(10119);
+        textCodes.Add(10712);
+        textCodes.Add(10702);
+        textCodes.Add(10703);
+        textCodes.Add(10200);
+        textCodes.Add(10201);
+        textCodes.Add(10202);
+        textCodes.Add(10203);
+        textCodes.Add(10204);
+        textCodes.Add(10713);
+        textCodes.Add(10707);
+
+        langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, UserAppCache.LanguageCode, textCodes.ToArray());
+    }
+
+    private void CreateSelectListModels()
+    {
+        StatusTypes statusTypes = new StatusTypes();
+        StatusSelectListValues = statusTypes.GetStatusTypesDictionary().Select(s => new SelectListModel { ValueField = s.Key, DescriptionField = s.Value });
+    }
+
+    private async Task GetLanguageTexts()
+    {
+
+        var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.FOUNDATION, $"Language");
+
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            languageList = response.ContentAsType<LangList>();
+        }
+        else
+        {
+            languageList = new LangList();
+        }
+    }
+
+    private async Task GetLanguageCodes()
+    {
+        var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.FOUNDATION, $"Language/Code");
+
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            langCodeList = response.ContentAsType<LangCodeList>();
+        }
+        else
+        {
+            langCodeList = new LangCodeList();
+        }
+    }
+
+    private async Task<Tuple<bool, string>> CreateOrUpdateLanguageCodeAsync(LangCode langCode)
+    {
+        if (langCode != null)
+        {
+            if (langCode.Id != Guid.Empty)
+            {
+                var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.FOUNDATION, $"Language/Code/{langCode.Id}");//_apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.FOUNDATION, $"Language/Code/{langCode.Id}");
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    var foundLangCode = response.ContentAsType<LangCode>();
+
+                    if (foundLangCode != null)
+                    {
+                        var processPatchResult = await MyFoundationService.ProcessPatch(foundLangCode, langCode, foundLangCode.Id, TokenProvider.AccessToken, APITypes.FOUNDATION, "Language/Code");
+
+                        if (!processPatchResult.Item1)
+                        {
+                            return processPatchResult;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                HttpContent contentPost = new StringContent(JsonConvert.SerializeObject(langCode), Encoding.UTF8, "application/json");
+
+                try
+                {
+                    var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Post, APITypes.FOUNDATION, $"Language/Code", contentPost);//_apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.FOUNDATION, $"Language/Code", contentPost);
+
+                    if (response.StatusCode != System.Net.HttpStatusCode.Created)
+                    {
+                        return new Tuple<bool, string>(false, MyFoundationService.GetErrorFromResponse(response));
+                    }
+
+                    langCode = response.ContentAsType<LangCode>();
+                }
+                catch (Exception ex)
+                {
+                    return new Tuple<bool, string>(false, $"Error calling API: {ex.Message}");
+                }
+            }
+
+            return new Tuple<bool, string>(true, $"Language Code {langCode.LanguageCodeId} saved");
+        }
+
+        return new Tuple<bool, string>(false, $"No Language Code to save");
+    }
+}

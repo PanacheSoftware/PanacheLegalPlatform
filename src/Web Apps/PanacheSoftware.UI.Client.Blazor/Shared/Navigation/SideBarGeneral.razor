@@ -1,0 +1,11 @@
+﻿<BarLabel Style="color: #FFFFFF">@LanguageHelper.GetTitle(langQueryList, 10103)</BarLabel>
+<SideBarDashboard />
+<SideBarClient />
+<SideBarTeam />
+<SideBarTask />
+<SideBarTemplate />
+<SideBarCustomField />
+
+@code {
+    [CascadingParameter(Name = "langQueryList")] LangQueryList langQueryList { get; set; }
+}

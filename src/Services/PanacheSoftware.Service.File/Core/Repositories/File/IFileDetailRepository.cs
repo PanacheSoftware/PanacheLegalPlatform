@@ -9,8 +9,8 @@ namespace PanacheSoftware.Service.File.Core.Repositories
 {
     public interface IFileDetailRepository : IPanacheSoftwareRepository<FileDetail>
     {
-        Task<FileDetail> GetFileDetailWithRelationsAsync(Guid fileHeaderId, bool readOnly);
-        Task<FileDetail> GetDetailWithRelationsAsync(Guid fileDetailId, bool readOnly);
+        FileDetail GetFileDetailWithRelations(Guid fileHeaderId, bool readOnly);
+        FileDetail GetDetailWithRelations(Guid fileDetailId, bool readOnly);
         Task<IEnumerable<FileDetail>> GetFileDetailsWithRelationsAsync(bool readOnly);
     }
 }

@@ -1,0 +1,415 @@
+﻿@page "/team/{id?}"
+@attribute [Authorize]
+@inject UserAppCache UserAppCache
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@*@inject IMapper mapper*@
+@inject IJSRuntime JS;
+@using PanacheSoftware.Core.Domain.API.Team
+
+<PageProgressBar @ref="@pageProgressBar" pageProgressColor="Color.Warning" pageProgressVisible="@loadingPage" />
+
+@if (!loadingPage)
+{
+    <Breadcrumb>
+        <BreadcrumbItem>
+            <BreadcrumbLink To="dashboard">@LanguageHelper.GetTitle(langQueryList, 10121)</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbItem>
+            <BreadcrumbLink To="team/teams">@LanguageHelper.GetTitle(langQueryList, 10108)</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbItem Active="true">
+            <BreadcrumbLink>@GetBreadCrumbTitle()</BreadcrumbLink>
+        </BreadcrumbItem>
+    </Breadcrumb>
+
+    @if (teamHead != null)
+    {
+        <Form>
+            <Row>
+                <Column>
+                    <Card Margin="Margin.Is4.OnY">
+                        <CardHeader>
+                            <CardTitle>@LanguageHelper.GetTitle(langQueryList, 10409)</CardTitle>
+                        </CardHeader>
+                        <CardBody>
+                            <Validations Mode="ValidationMode.Auto" Model="@teamHead">
+                                <Row>
+                                    <Column ColumnSize="ColumnSize.Is6">
+                                        <Validation>
+                                            <Field>
+                                                <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10400)</FieldLabel>
+                                                <TextEdit @bind-Text="teamHead.ShortName">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        </Validation>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is6">
+                                        <Validation>
+                                            <Field>
+                                                <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10401)</FieldLabel>
+                                                <TextEdit @bind-Text="teamHead.LongName">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        </Validation>
+                                    </Column>
+                                </Row>
+                                <Row>
+                                    <Column ColumnSize="ColumnSize.Is12">
+                                        <Validation>
+                                            <Field>
+                                                <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10200)</FieldLabel>
+                                                <MemoEdit @bind-Text="@teamHead.Description" Rows="5">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </MemoEdit>
+                                            </Field>
+                                        </Validation>
+                                    </Column>
+                                </Row>
+                                <Row>
+                                    <Column ColumnSize="ColumnSize.Is6">
+                                        <Validation>
+                                            <Field>
+                                                <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10202)</FieldLabel>
+                                                <DateEdit TValue="DateTime" @bind-Date="@teamHead.DateFrom" InputMode="DateInputMode.Date">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </DateEdit>
+                                            </Field>
+                                        </Validation>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is6">
+                                        <Validation>
+                                            <Field>
+                                                <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10203)</FieldLabel>
+                                                <DateEdit TValue="DateTime" @bind-Date="@teamHead.DateTo" InputMode="DateInputMode.Date">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </DateEdit>
+                                            </Field>
+                                        </Validation>
+                                    </Column>
+                                </Row>
+                                <Row>
+                                    <Column ColumnSize="ColumnSize.Is6">
+                                        <Field>
+                                            <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10402)</FieldLabel>
+                                            <SelectList TItem="SelectListModel" TValue="string" Data="@TeamSelectListValues" TextField="@((item) => item.DescriptionField)" ValueField="@((item) => item.ValueField)" SelectedValue="@GetParentTeam()" SelectedValueChanged="@TeamListValueChangedHandler" />
+                                        </Field>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is6">
+                                        <Field>
+                                            <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10201)</FieldLabel>
+                                            <SelectList TItem="SelectListModel" TValue="string" Data="@StatusSelectListValues" TextField="@((item) => item.DescriptionField)" ValueField="@((item) => item.ValueField)" SelectedValue="@teamHead.Status" SelectedValueChanged="@StatusListValueChangedHandler" />
+                                        </Field>
+                                    </Column>
+                                </Row>
+                            </Validations>
+                        </CardBody>
+                    </Card>
+                </Column>
+            </Row>
+        </Form>
+        <Row>
+            <Column>
+                <Card Margin="Margin.Is4.OnY">
+                    <CardHeader>
+                        <CardTitle>@LanguageHelper.GetTitle(langQueryList, 10405)</CardTitle>
+                    </CardHeader>
+                    <CardBody>
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is12">
+                                <div id="chart_div" class="card shadow m-5" style="height: 400px;"></div>
+                            </Column>
+                        </Row>
+                    </CardBody>
+                </Card>
+            </Column>
+        </Row>
+        <Row>
+            <Column>
+                <Card Margin="Margin.Is4.OnY">
+                    <CardBody>
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is12">
+                                <PLAlert includeSnackBar="true" includeAlert="true" @ref="plAlert" />
+                            </Column>
+                        </Row>
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is4">
+                                @if (teamHead.Id == Guid.Empty)
+                                {
+                                    <Button Type="ButtonType.Submit" Color="Color.Primary" PreventDefaultOnSubmit="true" Clicked="@SubmitForm" Loading="@SavingTeam">@LanguageHelper.GetTitle(langQueryList, 10403)</Button>
+                                }
+                                else
+                                {
+                                    <Button Type="ButtonType.Submit" Color="Color.Primary" PreventDefaultOnSubmit="true" Clicked="@SubmitForm" Loading="@SavingTeam">@LanguageHelper.GetTitle(langQueryList, 10404)</Button>
+                                }
+                            </Column>
+                        </Row>
+                    </CardBody>
+                </Card>
+            </Column>
+        </Row>
+    }
+}
+
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    LangQueryList langQueryList { get; set; }
+    TeamHead teamHead { get; set; }
+    IEnumerable<SelectListModel> StatusSelectListValues { get; set; }
+    IEnumerable<SelectListModel> TeamSelectListValues { get; set; }
+    PLAlert plAlert { get; set; }
+    bool SavingTeam = false;
+    PageProgressBar pageProgressBar;
+    bool loadingPage = true;
+    string ChartDatasource = string.Empty;
+    TeamChart teamChart = new TeamChart();
+
+    private void DrawChart()
+    {
+        if (teamChart.TeamNodes.Count > 0)
+        {
+            string[] nodeIds = teamChart.TeamNodes.Select(t => t.Id.ToString()).ToArray();
+            string[] nodeNames = teamChart.TeamNodes.Select(t => t.TeamName).ToArray();
+            string[] nodeParents = teamChart.TeamNodes.Select(t => t.ParentId.ToString()).ToArray();
+            string currentNode = teamHead.Id.ToString();
+            JS.InvokeVoidAsync("createOrgChart", new { nodeIds, nodeNames, nodeParents, currentNode });
+        }
+
+        //JsRuntime.InvokeVoidAsync("createNewChart", new { xs, ys });
+        //JS.InvokeVoidAsync("createOrgChart");
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        DrawChart();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetTeam();
+        await CreateSelectListModels();
+        await GetLanguageList();
+        await GetTeamStructure();
+        loadingPage = false;
+        pageProgressBar.ChangeVisibility(loadingPage);
+
+    }
+
+    private async Task GetLanguageList()
+    {
+        var textCodes = new List<long>();
+        textCodes.Add(10121);
+        textCodes.Add(10108);
+        textCodes.Add(10400);
+        textCodes.Add(10401);
+        textCodes.Add(10202);
+        textCodes.Add(10203);
+        textCodes.Add(10200);
+        textCodes.Add(10402);
+        textCodes.Add(10201);
+        textCodes.Add(10405);
+        textCodes.Add(10403);
+        textCodes.Add(10404);
+        textCodes.Add(10409);
+        textCodes.Add(10500);
+        textCodes.Add(10501);
+
+        langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, UserAppCache.LanguageCode, textCodes.ToArray());
+    }
+
+    private async Task CreateSelectListModels()
+    {
+        StatusTypes statusTypes = new StatusTypes();
+        StatusSelectListValues = statusTypes.GetStatusTypesDictionary().Select(s => new SelectListModel { ValueField = s.Key, DescriptionField = s.Value });
+        await CreateTeamSelectList();
+    }
+
+    private async Task GetTeam()
+    {
+        teamHead = new TeamHead();
+        teamHead.Id = Guid.Empty;
+
+        if (!string.IsNullOrWhiteSpace(Id))
+        {
+            var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.TEAM, $"Team/{Id}");
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                teamHead = response.ContentAsType<TeamHead>();
+            }
+        }
+    }
+
+    private async Task SubmitForm()
+    {
+        SavingTeam = true;
+        var saveResult = await SaveTeamAsync();
+
+        plAlert.ShowAlert(saveResult.Item1, saveResult.Item2);
+        await CreateTeamSelectList();
+        await GetTeamStructure(true);
+        SavingTeam = false;
+    }
+
+    private async Task<Tuple<bool, string>> SaveTeamAsync()
+    {
+        if (teamHead != null)
+        {
+            if (teamHead.ParentTeamId == Guid.Empty)
+                teamHead.ParentTeamId = null;
+
+            if (teamHead.Id != Guid.Empty)
+            {
+                var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.TEAM, $"Team/{teamHead.Id}");//_apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.TEAM, $"Team/{teamHead.Id}");
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    var foundTeamHead = response.ContentAsType<TeamHead>();
+
+                    if (foundTeamHead != null)
+                    {
+                        var processPatchResult = await MyFoundationService.ProcessPatch(foundTeamHead, teamHead, foundTeamHead.Id, TokenProvider.AccessToken, APITypes.TEAM, "Team");
+                        if (!processPatchResult.Item1)
+                        {
+                            return processPatchResult;
+                        }
+
+                        response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.TEAM, $"Team/Detail/{teamHead.TeamDetail.Id}");//_apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Get, APITypes.TEAM, $"Team/Detail/{teamHead.TeamDetail.Id}");
+
+                        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                        {
+                            var foundTeamDet = response.ContentAsType<TeamDet>();
+
+                            if (foundTeamDet != null)
+                            {
+                                processPatchResult = await MyFoundationService.ProcessPatch(foundTeamDet, teamHead.TeamDetail, foundTeamDet.Id, TokenProvider.AccessToken, APITypes.TEAM, "Team/Detail");
+                                if (!processPatchResult.Item1)
+                                {
+                                    return processPatchResult;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                HttpContent contentPost = new StringContent(JsonConvert.SerializeObject(teamHead), Encoding.UTF8, "application/json");
+
+                try
+                {
+                    var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Post, APITypes.TEAM, $"Team", contentPost);//_apiHelper.MakeAPICallAsync(apiAccessToken, HttpMethod.Post, APITypes.TEAM, $"Team", contentPost);
+
+                    if (response.StatusCode != System.Net.HttpStatusCode.Created)
+                    {
+                        return new Tuple<bool, string>(false, MyFoundationService.GetErrorFromResponse(response));
+                    }
+
+                    teamHead = response.ContentAsType<TeamHead>();
+                }
+                catch (Exception ex)
+                {
+                    return new Tuple<bool, string>(false, $"Error calling API: {ex.Message}");
+                }
+            }
+
+            return new Tuple<bool, string>(true, $"Team {teamHead.ShortName} saved");
+        }
+
+        return new Tuple<bool, string>(false, $"No team to save");
+    }
+
+    private void StatusListValueChangedHandler(string newValue)
+    {
+        teamHead.Status = newValue;
+    }
+
+    private void TeamListValueChangedHandler(string newValue)
+    {
+        if (Guid.TryParse(newValue, out Guid newId))
+        {
+            teamHead.ParentTeamId = newId;
+        }
+        else
+        {
+            teamHead.ParentTeamId = null;
+        }
+    }
+
+    private string GetBreadCrumbTitle()
+    {
+        if (teamHead == null)
+            return string.Empty;
+
+        if (teamHead.Id == Guid.Empty)
+            return "New Team";
+
+        return teamHead.ShortName;
+    }
+
+    private async Task CreateTeamSelectList()
+    {
+        var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.TEAM, $"Team/GetValidParents/{teamHead.Id}");
+
+        Dictionary<string, string> TeamListDictionary = new Dictionary<string, string>();
+        TeamListDictionary.Add("", "None");
+
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            TeamList teamList = response.ContentAsType<TeamList>();
+
+            foreach (var teamHeader in teamList.TeamHeaders.OrderBy(h => h.ShortName))
+            {
+                TeamListDictionary.Add(teamHeader.Id.ToString(), teamHeader.ShortName);
+            }
+        }
+
+        TeamSelectListValues = TeamListDictionary.Select(s => new SelectListModel { ValueField = s.Key, DescriptionField = s.Value });
+    }
+
+    private async Task GetTeamStructure(bool drawChart = false)
+    {
+        var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.TEAM, $"Team/GetTeamTree/{teamHead.Id}");
+
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            teamChart = response.ContentAsType<TeamChart>();
+
+            //TeamChart teamStruct = response.ContentAsType<TeamChart>();
+
+
+
+            //TeamChartModel teamChartModel = mapper.Map<TeamChartModel>(teamStruct);
+
+            //ChartDatasource = JsonConvert.SerializeObject(teamChartModel);
+            if (drawChart)
+                DrawChart();
+        }
+    }
+
+    private string GetParentTeam()
+    {
+        if (teamHead == default)
+            return string.Empty;
+
+        if (teamHead.ParentTeamId == null)
+            return string.Empty;
+
+        return teamHead.ParentTeamId.ToString();
+    }
+}

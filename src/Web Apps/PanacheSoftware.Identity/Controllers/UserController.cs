@@ -14,7 +14,7 @@ using PanacheSoftware.Core.Domain.Identity;
 using PanacheSoftware.Core.Domain.Identity.API;
 using PanacheSoftware.Http;
 using PanacheSoftware.Identity.Manager;
-using static IdentityServer4.IdentityServerConstants;
+using static Duende.IdentityServer.IdentityServerConstants;
 
 namespace PanacheSoftware.Identity.Controllers
 {
@@ -110,13 +110,15 @@ namespace PanacheSoftware.Identity.Controllers
             {
                 if (createUserModel.Id == Guid.Empty)
                 {
+                    var test = Url.ToString();
+
                     var userModel = _mapper.Map<UserModel>(createUserModel);
 
                     var result = await _applicationUserManager.CreateUserAsync(userModel, ModelState, createUserModel.Password, createUserModel.PasswordConfirm, Guid.Parse(_userProvider.GetTenantId()));
 
                     if (result.Succeeded)
                     {
-                        return Created(new Uri($"{Request.Path}/{userModel.Id}", UriKind.Absolute), userModel);
+                        return Created(new Uri($"{Request.Scheme}://{Request.Host}{Request.Path}/{userModel.Id}", UriKind.Absolute), userModel);
                     }
                 }
             }

@@ -67,14 +67,6 @@ gulp.task('copy-customscrollbar', function (done) {
 	done();
 });
 
-gulp.task('copy-gantt', function (done) {
-	gulp.src('./node_modules/dhtmlx-gantt/codebase/dhtmlxgantt.css')
-		.pipe(gulp.dest('./wwwroot/css/dhtmlx-gantt'));
-	gulp.src('./node_modules/dhtmlx-gantt/codebase/dhtmlxgantt.js')
-		.pipe(gulp.dest('./wwwroot/js/dhtmlx-gantt'));
-	done();
-});
-
 gulp.task('copy-jquery', function (done) {
 	gulp.src('./node_modules/jquery/dist/jquery.js')
 		.pipe(gulp.dest('./wwwroot/js'));
@@ -114,6 +106,6 @@ gulp.task('sass', function () {
 	//done();
 });
 
-gulp.task('build', gulp.series('copy-bootstrap-flatly', 'copy-chartjs', 'copy-d3', 'copy-datepicker', 'copy-datatables', 'copy-customscrollbar', 'copy-gantt', 'copy-jquery', 'copy-popper', 'copy-orgchart', 'copy-fontawesome', 'sass'));
+gulp.task('build', gulp.series('copy-bootstrap-flatly', 'copy-chartjs', 'copy-d3', 'copy-datepicker', 'copy-datatables', 'copy-customscrollbar', 'copy-jquery', 'copy-popper', 'copy-orgchart', 'copy-fontawesome', 'sass'));
 
 gulp.task('default', gulp.series('build'));

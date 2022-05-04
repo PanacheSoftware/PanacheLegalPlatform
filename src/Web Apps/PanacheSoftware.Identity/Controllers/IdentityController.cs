@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using static IdentityServer4.IdentityServerConstants;
+using static Duende.IdentityServer.IdentityServerConstants;
 
 namespace PanacheSoftware.Identity.Controllers
 {

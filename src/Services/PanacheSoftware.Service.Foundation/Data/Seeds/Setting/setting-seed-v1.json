@@ -39,6 +39,66 @@
       "name": "FILE_UPLOAD_EXT",
       "status": "N",
       "userSettings": []
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "description": "AzureAD Tenant",
+      "value": "00000000-0000-0000-0000-000000000000",
+      "defaultValue": "00000000-0000-0000-0000-000000000000",
+      "settingType": "SYSTEM",
+      "name": "AZURE_AD_TENANT",
+      "status": "N",
+      "userSettings": []
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "description": "AzureAD Client ID",
+      "value": "00000000-0000-0000-0000-000000000000",
+      "defaultValue": "00000000-0000-0000-0000-000000000000",
+      "settingType": "SYSTEM",
+      "name": "AZURE_AD_CLIENT_ID",
+      "status": "N",
+      "userSettings": []
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "description": "AzureAD Client Secret",
+      "value": "00000000-0000-0000-0000-000000000000",
+      "defaultValue": "00000000-0000-0000-0000-000000000000",
+      "settingType": "SYSTEM",
+      "name": "AZURE_AD_CLIENT_SECRET",
+      "status": "N",
+      "userSettings": []
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "description": "Doc Automation Start Tag",
+      "value": "{{$",
+      "defaultValue": "{{$",
+      "settingType": "SYSTEM",
+      "name": "DOC_AUTO_START_TAG",
+      "status": "N",
+      "userSettings": []
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "description": "Doc Automation End Tag",
+      "value": "$}}",
+      "defaultValue": "$}}",
+      "settingType": "SYSTEM",
+      "name": "DOC_AUTO_END_TAG",
+      "status": "N",
+      "userSettings": []
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "description": "Show Doc Automation Info",
+      "value": "True",
+      "defaultValue": "True",
+      "settingType": "USER",
+      "name": "DOC_AUTO_INFO",
+      "status": "N",
+      "userSettings": []
     }
   ]
 }

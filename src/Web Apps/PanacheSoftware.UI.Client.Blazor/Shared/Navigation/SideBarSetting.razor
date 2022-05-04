@@ -1,0 +1,26 @@
+﻿<BarItem>
+    <BarDropdown>
+        <BarDropdownToggle>
+            <BarIcon IconName="@("fa-tools")" Class="fa-fw"/>
+            @LanguageHelper.GetTitle(langQueryList, 10118)
+        </BarDropdownToggle>
+        <BarDropdownMenu>
+            <BarDropdownItem To="systemsettings">
+                @LanguageHelper.GetTitle(langQueryList, 10123)
+            </BarDropdownItem>
+            <BarDropdownItem To="languages/">
+                @LanguageHelper.GetTitle(langQueryList, 10119)
+            </BarDropdownItem>
+            <BarDropdownItem To="usersettings">
+                @LanguageHelper.GetTitle(langQueryList, 10122)
+            </BarDropdownItem>
+            <BarDropdownItem To="apiaccess/">
+                @LanguageHelper.GetTitle(langQueryList, 10130)
+            </BarDropdownItem>
+        </BarDropdownMenu>
+    </BarDropdown>
+</BarItem>
+
+@code {
+    [CascadingParameter(Name = "langQueryList")] LangQueryList langQueryList { get; set; }
+}

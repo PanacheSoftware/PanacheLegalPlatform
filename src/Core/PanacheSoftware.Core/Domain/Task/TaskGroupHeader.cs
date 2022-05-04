@@ -10,8 +10,8 @@ namespace PanacheSoftware.Core.Domain.Task
         public TaskGroupHeader()
         {
             TaskGroupDetail = new TaskGroupDetail();
-            ChildTaskGroups = new HashSet<TaskGroupHeader>();
-            ChildTasks = new HashSet<TaskHeader>();
+            ChildTaskGroups = new List<TaskGroupHeader>();
+            ChildTasks = new List<TaskHeader>();
         }
 
         public string ShortName { get; set; }
@@ -25,8 +25,8 @@ namespace PanacheSoftware.Core.Domain.Task
         public virtual TaskGroupHeader ParentTaskGroup { get; set; }
 
         public virtual TaskGroupDetail TaskGroupDetail { get; set; }
-        public virtual ICollection<TaskGroupHeader> ChildTaskGroups { get; set; }
-        public virtual ICollection<TaskHeader> ChildTasks { get; set; }
+        public virtual IList<TaskGroupHeader> ChildTaskGroups { get; set; }
+        public virtual IList<TaskHeader> ChildTasks { get; set; }
         public int SequenceNumber { get; set; }
 
         public DateTime CompletionDate { get; set; }

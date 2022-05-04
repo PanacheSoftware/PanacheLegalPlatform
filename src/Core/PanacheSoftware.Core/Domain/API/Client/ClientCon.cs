@@ -15,6 +15,11 @@ namespace PanacheSoftware.Core.Domain.API.Client
             Status = StatusTypes.Open;
             Title = ContactTitles.NA;
             MainContact = false;
+            FirstName = string.Empty;
+            MiddleName = string.Empty;
+            LastName = string.Empty;
+            Email = string.Empty;
+            Phone = string.Empty;
         }
 
         public Guid Id { get; set; }
@@ -30,9 +35,10 @@ namespace PanacheSoftware.Core.Domain.API.Client
         [Required]
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
-        [Required, DataType(DataType.EmailAddress, ErrorMessage = "Must be a valid Email address")]
+        [Required]
+        [EmailAddress(ErrorMessage = "Must be a valid Email address")]
         public string Email { get; set; }
-        [DataType(DataType.PhoneNumber, ErrorMessage = "Must be a valid Phone number")]
+        [Phone(ErrorMessage = "Must be a valid Phone number")]
         public string Phone { get; set; }
         [Required, DataType(DataType.DateTime, ErrorMessage = "Must be a valid DateTime")]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]

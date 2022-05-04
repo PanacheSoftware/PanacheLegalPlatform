@@ -1,0 +1,18 @@
+﻿<Select SelectedValue="CurrentValue">
+    @foreach (var selectItem in ValueList)
+    {
+        <SelectItem Value="selectItem.Key">@selectItem.Value</SelectItem>
+    }
+</Select>
+
+
+@code {
+    [Parameter]
+    public IDictionary<string, string> ValueList { get; set; }
+
+    [Parameter]
+    public string CurrentValue { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnValueChanged { get; set; }
+}

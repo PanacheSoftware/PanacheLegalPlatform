@@ -21,7 +21,7 @@ namespace PanacheSoftware.Service.File.Persistance.Repositories.File
             get { return Context as PanacheSoftwareServiceFileContext; }
         }
 
-        public async Task<FileDetail> GetDetailWithRelationsAsync(Guid fileDetailId, bool readOnly)
+        public FileDetail GetDetailWithRelations(Guid fileDetailId, bool readOnly)
         {
             if (readOnly)
                 return PanacheSoftwareServiceFileContext.FileDetails
@@ -45,7 +45,7 @@ namespace PanacheSoftware.Service.File.Persistance.Repositories.File
                     .Include(d => d.FileHeader).ToListAsync();
         }
 
-        public async Task<FileDetail> GetFileDetailWithRelationsAsync(Guid fileHeaderId, bool readOnly)
+        public FileDetail GetFileDetailWithRelations(Guid fileHeaderId, bool readOnly)
         {
             if (readOnly)
                 return PanacheSoftwareServiceFileContext.FileDetails

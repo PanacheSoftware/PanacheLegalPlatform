@@ -1,0 +1,102 @@
+﻿@page "/template/templates"
+@attribute [Authorize]
+@inject UserAppCache UserAppCache
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@using PanacheSoftware.Core.Domain.API.Task.Template;
+
+<PageProgressBar @ref="@pageProgressBar" pageProgressColor="Color.Warning" pageProgressVisible="@loadingPage" />
+
+@if (!loadingPage)
+{
+    <Breadcrumb>
+        <BreadcrumbItem>
+            <BreadcrumbLink To="dashboard">@LanguageHelper.GetTitle(langQueryList, 10121)</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbItem Active="true">
+            <BreadcrumbLink>@LanguageHelper.GetTitle(langQueryList, 10127)</BreadcrumbLink>
+        </BreadcrumbItem>
+    </Breadcrumb>
+
+    <Card Margin="Margin.Is4.OnY"  Shadow="Shadow.Default">
+        <CardHeader>
+            <CardTitle>@LanguageHelper.GetTitle(langQueryList, 10127)</CardTitle>
+        </CardHeader>
+        <CardBody>
+            @if (templateHeadList != null)
+            {
+                <DataGrid TItem="TemplateHead"
+                          Data="@templateHeadList.TemplateHeaders"
+                          Filterable="true"
+                          FilterMethod="DataGridFilterMethod.StartsWith"
+                          PageSize="25"
+                          Striped="true"
+                          Bordered="true"
+                          Hoverable="true"
+                          Responsive="true"
+                          ShowPager="true"
+                          PagerPosition="DataGridPagerPosition.Bottom"
+                          ShowPageSizes="true">
+                    <EmptyTemplate>No records...</EmptyTemplate>
+                    <DataGridColumns>
+                        <DataGridColumn TItem="TemplateHead" Field="@nameof(TemplateHead.Id)" Caption="" Width="10px" Filterable="false" Sortable="false">
+                            <DisplayTemplate>
+                                <Button To="@($"templateview/{context.Id}")" Type="ButtonType.Link" Color="Color.Primary"><Icon Name="IconName.List" /></Button>
+                            </DisplayTemplate>
+                        </DataGridColumn>
+                        <DataGridColumn TItem="TemplateHead" Field="@nameof(TemplateHead.ShortName)" Caption="@LanguageHelper.GetTitle(langQueryList, 10944)" />
+                        <DataGridColumn TItem="TemplateHead" Field="@nameof(TemplateHead.LongName)" Caption="@LanguageHelper.GetTitle(langQueryList, 10945)" />
+                        <DataGridColumn TItem="TemplateHead" Field="@nameof(TemplateHead.Description)" Caption="@LanguageHelper.GetTitle(langQueryList, 10200)" />
+                    </DataGridColumns>
+                </DataGrid>
+                <Button To="template" Color="Color.Success" Type="ButtonType.Link">@LanguageHelper.GetTitle(langQueryList, 10204)</Button>
+            }
+            else
+            {
+                <p>Loading...</p>
+            }
+        </CardBody>
+    </Card>
+}
+
+@code {
+    LangQueryList langQueryList { get; set; }
+    TemplateHeadList templateHeadList { get; set; }
+    PageProgressBar pageProgressBar;
+    bool loadingPage = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetLanguageList();
+        await GetTemplates();
+        loadingPage = false;
+        pageProgressBar.ChangeVisibility(loadingPage);
+    }
+
+    private async Task GetLanguageList()
+    {
+        var textCodes = new List<long>();
+        textCodes.Add(10121);
+        textCodes.Add(10127);
+        textCodes.Add(10944);
+        textCodes.Add(10945);
+        textCodes.Add(10200);
+        textCodes.Add(10204);
+
+        langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, UserAppCache.LanguageCode, textCodes.ToArray());
+    }
+
+    private async Task GetTemplates()
+    {
+        var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.TASK, $"Template");
+
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            templateHeadList = response.ContentAsType<TemplateHeadList>();
+        }
+        else
+        {
+            templateHeadList = new TemplateHeadList();
+        }
+    }
+}

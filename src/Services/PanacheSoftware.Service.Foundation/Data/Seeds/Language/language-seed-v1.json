@@ -262,6 +262,76 @@
     },
     {
       "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10124,
+      "description": "Menu Heading",
+      "text": "Custom Field Groups",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10125,
+      "description": "Menu Heading",
+      "text": "View Custom Field Groups",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10126,
+      "description": "Menu Heading",
+      "text": "Create Custom Field Group",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10127,
+      "description": "Menu Heading",
+      "text": "Templates",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10128,
+      "description": "Menu Heading",
+      "text": "Template",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10129,
+      "description": "Menu Heading",
+      "text": "Create Template",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10130,
+      "description": "Menu Heading",
+      "text": "API Access",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
       "textCode": 10200,
       "description": "General titles",
       "text": "Description",
@@ -522,6 +592,146 @@
     },
     {
       "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10226,
+      "description": "General titles",
+      "text": "Mandatory",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10227,
+      "description": "General titles",
+      "text": "History",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10228,
+      "description": "General titles",
+      "text": "GDPR",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10229,
+      "description": "General titles",
+      "text": "Save",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10230,
+      "description": "General titles",
+      "text": "Automated",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10231,
+      "description": "General titles",
+      "text": "Info",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10232,
+      "description": "General titles",
+      "text": "Close",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10233,
+      "description": "General titles",
+      "text": "Creation Date",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10234,
+      "description": "General titles",
+      "text": "Value",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10235,
+      "description": "General titles",
+      "text": "Users API Token",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10236,
+      "description": "General titles",
+      "text": "API Locations",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10237,
+      "description": "General titles",
+      "text": "API Name",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10238,
+      "description": "General titles",
+      "text": "API Base URI",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10239,
+      "description": "General titles",
+      "text": "API Swagger",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
       "textCode": 10300,
       "description": "Client Screens",
       "text": "Clients",
@@ -722,6 +932,16 @@
     },
     {
       "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10409,
+      "description": "Team Screens",
+      "text": "Edit Team",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
       "textCode": 10500,
       "description": "Message Boxes",
       "text": "Error on save.",
@@ -785,6 +1005,16 @@
       "textCode": 10604,
       "description": "Setting Screens",
       "text": "Update System Setting",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10605,
+      "description": "Setting Screens",
+      "text": "Document Automation Info",
       "dateFrom": "2020-02-17",
       "dateTo": "2119-02-17",
       "languageItems": [],
@@ -1435,6 +1665,206 @@
       "textCode": 10943,
       "description": "Task Screens",
       "text": "Assigned User",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10944,
+      "description": "Task Screens",
+      "text": "Template ID",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 10945,
+      "description": "Task Screens",
+      "text": "Template Name",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 11000,
+      "description": "Custom Field Group Screens",
+      "text": "Custom Field Group ID",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 11001,
+      "description": "Custom Field Group Screens",
+      "text": "Custom Field Group",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 11002,
+      "description": "Custom Field Group Screens",
+      "text": "Field Name",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 11003,
+      "description": "Custom Field Group Screens",
+      "text": "Field Type",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 11004,
+      "description": "Custom Field Group Screens",
+      "text": "Add Field",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 11005,
+      "description": "Custom Field Group Screens",
+      "text": "Edit Custom Fields",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 11006,
+      "description": "Custom Field Group Screens",
+      "text": "Custom Field Group Name",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 11007,
+      "description": "Custom Field Group Screens",
+      "text": "Custom Field Group Title",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 11008,
+      "description": "Custom Field Group Screens",
+      "text": "Create Custom Field Group",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 11009,
+      "description": "Custom Field Group Screens",
+      "text": "Update Custom Field Group",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 11010,
+      "description": "Custom Field Group Screens",
+      "text": "Add Custom Field Group",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 11011,
+      "description": "Custom Field Group Screens",
+      "text": "Short Name",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 11100,
+      "description": "Template Screens",
+      "text": "Template",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 11101,
+      "description": "Template Screens",
+      "text": "Based on task",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 11102,
+      "description": "Template Screens",
+      "text": "Task main description",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 11103,
+      "description": "Template Screens",
+      "text": "Task length (days)",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 11104,
+      "description": "Template Screens",
+      "text": "Create Template",
+      "dateFrom": "2020-02-17",
+      "dateTo": "2119-02-17",
+      "languageItems": [],
+      "status": "N"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "textCode": 11105,
+      "description": "Template Screens",
+      "text": "Update Template",
       "dateFrom": "2020-02-17",
       "dateTo": "2119-02-17",
       "languageItems": [],

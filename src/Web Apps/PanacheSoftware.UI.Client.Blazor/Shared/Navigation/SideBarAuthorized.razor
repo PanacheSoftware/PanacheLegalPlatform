@@ -1,0 +1,105 @@
+﻿@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@inject UserAppCache UserAppCache
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@using IdentityModel;
+
+<CascadingValue Value="@langQueryList" Name="langQueryList">
+    <BarBrand>
+        <BarItem>
+            <BarLink To="" Style="color: #CBDB2A">
+                <BarIcon IconName="customIcon" />
+                @LanguageHelper.GetTitle(langQueryList, 10000)
+            </BarLink>
+        </BarItem>
+    </BarBrand>
+    <BarMenu>
+        <BarStart>
+            <SideBarMenu />
+        </BarStart>
+        <BarEnd>
+            <SideBarFooter />
+        </BarEnd>
+    </BarMenu>
+</CascadingValue>
+
+@code {
+    //RenderFragment customIcon =@<img src="/img/user.jpg" style="width:32px; height: 32px" />;
+    RenderFragment customIcon =@<img src="/img/PS-Green-Trans.png" style="width:42px; height: 42px" />
+    ;
+    //Sidebar sidebar;
+    LangQueryList langQueryList { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        UserAppCache.OnChange += LanguageCodeChanged;
+
+        if (!string.IsNullOrWhiteSpace(TokenProvider.AccessToken))
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            if (authState != null)
+            {
+                if (!await MyFoundationService.PerformAuthCheck(TokenProvider.AccessToken, authState.User.FindFirst(JwtClaimTypes.Subject).Value))
+                {
+                    NavigationManager.NavigateTo("/Logout", true);
+                }
+            }
+        }
+
+        UserAppCache.SetLanguageCode(await MyFoundationService.GetLanguageCode(TokenProvider.AccessToken));
+        await GetLanguageList();
+    }
+
+    public void Dispose()
+    {
+        UserAppCache.OnChange -= LanguageCodeChanged;
+    }
+
+    private async void LanguageCodeChanged()
+    {
+        await GetLanguageList();
+        //StateHasChanged();
+    }
+
+    private async Task GetLanguageList()
+    {
+        var textCodes = new List<long>();
+        textCodes.Add(10000);
+        textCodes.Add(10100);
+        textCodes.Add(10102);
+        textCodes.Add(10103);
+        textCodes.Add(10104);
+        textCodes.Add(10105);
+        textCodes.Add(10106);
+        textCodes.Add(10107);
+        textCodes.Add(10108);
+        textCodes.Add(10109);
+        textCodes.Add(10110);
+        textCodes.Add(10111);
+        textCodes.Add(10112);
+        textCodes.Add(10113);
+        textCodes.Add(10114);
+        textCodes.Add(10115);
+        textCodes.Add(10116);
+        textCodes.Add(10117);
+        textCodes.Add(10118);
+        textCodes.Add(10119);
+        textCodes.Add(10122);
+        textCodes.Add(10123);
+        textCodes.Add(10124);
+        textCodes.Add(10125);
+        textCodes.Add(10126);
+        textCodes.Add(10127);
+        textCodes.Add(10128);
+        textCodes.Add(10129);
+        textCodes.Add(10130);
+
+        langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, UserAppCache.LanguageCode, textCodes.ToArray());
+    }
+
+    //void ToggleSidebar()
+    //{
+    //    sidebar.Toggle();
+    //}
+}

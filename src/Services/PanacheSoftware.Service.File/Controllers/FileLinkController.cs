@@ -115,8 +115,7 @@ namespace PanacheSoftware.Service.File.Controllers
 
                             _unitOfWork.Complete();
 
-                            return CreatedAtRoute("Get", new {id = _mapper.Map<FileLnk>(fileLink).Id},
-                                _mapper.Map<FileLnk>(fileLink));
+                            return Ok();
                         }
 
                         return NotFound();

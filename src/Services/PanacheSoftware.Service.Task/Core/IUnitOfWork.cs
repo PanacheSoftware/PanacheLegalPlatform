@@ -13,5 +13,12 @@ namespace PanacheSoftware.Service.Task.Core
         ITaskGroupDetailRepository TaskGroupDetails { get; }
         ITaskHeaderRepository TaskHeaders { get; }
         ITaskDetailRepository TaskDetails { get; }
+
+        ITemplateDetailRepository TemplateDetails { get; }
+        ITemplateGroupDetailRepository TemplateGroupDetails { get; }
+        ITemplateGroupHeaderRepository TemplateGroupHeaders { get; }
+        ITemplateHeaderRepository TemplateHeaders { get; }
+        ITemplateItemDetailRepository TemplateItemDetails { get; }
+        ITemplateItemHeaderRepository TemplateItemHeaders { get; }
     }
 }

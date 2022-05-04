@@ -1,0 +1,253 @@
+﻿@attribute [Authorize]
+@using PanacheSoftware.Core.Domain.API.Client;
+
+
+@if (clientContact != null)
+{
+    <TabPanel Name="@tabName" Margin="Margin.Is2">
+        <Form>
+            <Column ColumnSize="ColumnSize.Is12">
+                <Validations Mode="ValidationMode.Auto" Model="@clientContact">
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is3">
+                            <Field>
+                                <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10206)</FieldLabel>
+                                <SelectList TItem="SelectListModel" TValue="string" Data="@TitleSelectListValues" TextField="@((item)=>item.DescriptionField)" ValueField="@((item)=>item.ValueField)" SelectedValue="@clientContact.Title" SelectedValueChanged="@TitleListValueChangedHandler" />
+                            </Field>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is3">
+                            <Validation>
+                                <Field>
+                                    <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10207)</FieldLabel>
+                                    <TextEdit @bind-Text="clientContact.FirstName">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </TextEdit>
+                                </Field>
+                            </Validation>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is3">
+                            <Validation>
+                                <Field>
+                                    <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10208)</FieldLabel>
+                                    <TextEdit @bind-Text="clientContact.MiddleName">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </TextEdit>
+                                </Field>
+                            </Validation>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is3">
+                            <Validation>
+                                <Field>
+                                    <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10209)</FieldLabel>
+                                    <TextEdit @bind-Text="clientContact.LastName">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </TextEdit>
+                                </Field>
+                            </Validation>
+                        </Column>
+                    </Row>
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is6">
+                            <Validation>
+                                <Field>
+                                    <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10210)</FieldLabel>
+                                    <TextEdit @bind-Text="clientContact.Email" Role="TextRole.Email">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </TextEdit>
+                                </Field>
+                            </Validation>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is6">
+                            <Validation>
+                                <Field>
+                                    <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10211)</FieldLabel>
+                                    <TextEdit @bind-Text="clientContact.Phone">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </TextEdit>
+                                </Field>
+                            </Validation>
+                        </Column>
+                    </Row>
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is4">
+                            <Validation>
+                                <Field>
+                                    <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10202)</FieldLabel>
+                                    <DateEdit TValue="DateTime" @bind-Date="@clientContact.DateFrom" InputMode="DateInputMode.Date">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </DateEdit>
+                                </Field>
+                            </Validation>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is4">
+                            <Validation>
+                                <Field>
+                                    <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10203)</FieldLabel>
+                                    <DateEdit TValue="DateTime" @bind-Date="@clientContact.DateTo" InputMode="DateInputMode.Date">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </DateEdit>
+                                </Field>
+                            </Validation>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is4">
+                            <Field>
+                                <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10201)</FieldLabel>
+                                <SelectList TItem="SelectListModel" TValue="string" Data="@StatusSelectListValues" TextField="@((item)=>item.DescriptionField)" ValueField="@((item)=>item.ValueField)" SelectedValue="@clientContact.Status" SelectedValueChanged="@StatusListValueChangedHandler" />
+                            </Field>
+                        </Column>
+                    </Row>
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is4">
+                            <Check TValue="bool" Checked="@clientContact.MainContact" CheckedChanged="@MainContactChanged">@LanguageHelper.GetTitle(langQueryList, 10306)</Check>
+                        </Column>
+                    </Row>
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is4">
+                            &nbsp;
+                        </Column>
+                    </Row>
+                </Validations>
+                <Row>
+                    @if (clientContact.ClientAddresses != null)
+                    {
+                        <DataGrid TItem="ClientAddr"
+                                  Data="@clientContact.ClientAddresses"
+                                  Filterable="true"
+                                  FilterMethod="DataGridFilterMethod.StartsWith"
+                                  PageSize="25"
+                                  Striped="true"
+                                  Bordered="true"
+                                  Hoverable="true"
+                                  Responsive="true"
+                                  ShowPager="true"
+                                  PagerPosition="DataGridPagerPosition.Bottom"
+                                  ShowPageSizes="true"
+                                  Editable="true"
+                                  EditMode="DataGridEditMode.Form"
+                                  NewItemDefaultSetter="@OnAddressNewItemDefaultSetter">
+                            <EmptyTemplate>No records...</EmptyTemplate>
+                            <DataGridColumns>
+                                <DataGridCommandColumn TItem="ClientAddr" Width="170px">
+                                    <NewCommandTemplate>
+                                        <Button Color="Color.Success" Clicked="@context.Clicked">New</Button>
+                                    </NewCommandTemplate>
+                                    <EditCommandTemplate>
+                                        <Button Color="Color.Primary" Clicked="@context.Clicked">Edit</Button>
+                                    </EditCommandTemplate>
+                                    <SaveCommandTemplate>
+                                        <Button Color="Color.Primary" Clicked="@context.Clicked">Apply</Button>
+                                    </SaveCommandTemplate>
+                                    <DeleteCommandTemplate>
+                                        @*<Button Color="Color.Danger" Clicked="@context.Clicked">Delete</Button>*@
+                                    </DeleteCommandTemplate>
+                                    <CancelCommandTemplate>
+                                        <Button Color="Color.Secondary" Clicked="@context.Clicked">Cancel</Button>
+                                    </CancelCommandTemplate>
+                                    <ClearFilterCommandTemplate>
+                                        <Button Color="Color.Warning" Clicked="@context.Clicked">Clear Filter</Button>
+                                    </ClearFilterCommandTemplate>
+                                </DataGridCommandColumn>
+                                <DataGridColumn TItem="ClientAddr" Field="@nameof(ClientAddr.AddressType)" Caption="@LanguageHelper.GetTitle(langQueryList, 10212)" Editable="true">
+                                    <EditTemplate>
+                                        <SelectList TItem="SelectListModel" TValue="string" Data="@AddressTypeSelectListValues" TextField="@((item)=>item.DescriptionField)" ValueField="@((item)=>item.ValueField)" SelectedValue="@((string)( context.CellValue ))" SelectedValueChanged="@(e => { context.CellValue = e; })" />
+                                    </EditTemplate>
+                                </DataGridColumn>
+                                <DataGridColumn TItem="ClientAddr" Field="@nameof(ClientAddr.AddressLine1)" Caption="@LanguageHelper.GetTitle(langQueryList, 10213)" Editable="true" />
+                                <DataGridColumn TItem="ClientAddr" Field="@nameof(ClientAddr.AddressLine2)" Caption="@LanguageHelper.GetTitle(langQueryList, 10214)" Editable="true" />
+                                <DataGridColumn TItem="ClientAddr" Field="@nameof(ClientAddr.Region)" Caption="@LanguageHelper.GetTitle(langQueryList, 10215)" Editable="true" />
+                                <DataGridColumn TItem="ClientAddr" Field="@nameof(ClientAddr.PostalCode)" Caption="@LanguageHelper.GetTitle(langQueryList, 10216)" Editable="true" />
+                                <DataGridColumn TItem="ClientAddr" Field="@nameof(ClientAddr.Country)" Caption="@LanguageHelper.GetTitle(langQueryList, 10217)" Editable="true" />
+                                <DataGridColumn TItem="ClientAddr" Field="@nameof(ClientAddr.Status)" Caption="@LanguageHelper.GetTitle(langQueryList, 10201)" Editable="true">
+                                    <EditTemplate>
+                                        <SelectList TItem="SelectListModel" TValue="string" Data="@StatusSelectListValues" TextField="@((item)=>item.DescriptionField)" ValueField="@((item)=>item.ValueField)" SelectedValue="@((string)( context.CellValue ))" SelectedValueChanged="@(e => { context.CellValue = e; })" />
+                                    </EditTemplate>
+                                </DataGridColumn>
+                            </DataGridColumns>
+                        </DataGrid>
+                    }
+                    else
+                    {
+                        <p>Loading...</p>
+                    }
+                </Row>
+            </Column>
+        </Form>
+    </TabPanel>
+}
+
+@code {
+    [Parameter]
+    public ClientCon clientContact { get; set; }
+    [Parameter]
+    public string tabName { get; set; }
+    [CascadingParameter]
+    protected LangQueryList langQueryList { get; set; }
+    IEnumerable<SelectListModel> TitleSelectListValues { get; set; }
+    IEnumerable<SelectListModel> StatusSelectListValues { get; set; }
+    IEnumerable<SelectListModel> AddressTypeSelectListValues { get; set; }
+    [Parameter]
+    public EventCallback<int> OnMainContactChange { get; set; }
+
+    protected override void OnInitialized()
+    {
+        CreateSelectListModels();
+    }
+
+    private void CreateSelectListModels()
+    {
+        ContactTitles contactTitles = new ContactTitles();
+        TitleSelectListValues = contactTitles.GetContactTitlesDictionary().Select(s => new SelectListModel { ValueField = s.Key, DescriptionField = s.Value });
+
+        StatusTypes statusTypes = new StatusTypes();
+        StatusSelectListValues = statusTypes.GetStatusTypesDictionary().Select(s => new SelectListModel { ValueField = s.Key, DescriptionField = s.Value });
+
+        AddressTypes addressTypes = new AddressTypes();
+        AddressTypeSelectListValues = addressTypes.GetAddressTypesDictionary().Select(s => new SelectListModel { ValueField = s.Key, DescriptionField = s.Value });
+    }
+
+    private void ContactFormSubmit()
+    {
+        var test = string.Empty;
+    }
+
+    private async Task MainContactChanged(bool value)
+    {
+        clientContact.MainContact = value;
+        await OnMainContactChange.InvokeAsync(GetClientContactIndex());
+    }
+
+    int GetClientContactIndex()
+    {
+        return Convert.ToInt32(tabName.Substring(tabName.Length - 1, 1));
+    }
+
+    private void StatusListValueChangedHandler(string newValue)
+    {
+        clientContact.Status = newValue;
+    }
+
+    private void TitleListValueChangedHandler(string newValue)
+    {
+        clientContact.Title = newValue;
+    }
+
+    void OnAddressNewItemDefaultSetter(ClientAddr clientAddr)
+    {
+        if (AddressTypeSelectListValues.Any())
+            clientAddr.AddressType = AddressTypeSelectListValues.First().ValueField;
+    }
+}

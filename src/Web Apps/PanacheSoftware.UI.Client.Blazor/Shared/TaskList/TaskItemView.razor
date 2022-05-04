@@ -1,0 +1,212 @@
+﻿@attribute [Authorize]
+@inject UserAppCache UserAppCache
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@inject IMapper Mapper
+@using PanacheSoftware.Core.Domain.Identity.API;
+@using PanacheSoftware.Core.Domain.API.Task
+
+@if (taskHead != null)
+{
+    <Card Margin="Margin.Is4.OnY" Shadow="Shadow.Default">
+        <CardHeader>
+            <CardTitle>
+                @taskHead.Title
+                @if (taskHead.Completed)
+                {
+                    <Badge Color="Color.Success" Class="float-right">@LanguageHelper.GetTitle(langQueryList, 10921)</Badge>
+                }
+                else
+                {
+                    <Badge Color="Color.Primary" Class="float-right">@LanguageHelper.GetTitle(langQueryList, 10928)</Badge>
+                }
+                <CascadingValue Value="langQueryList"><CascadingValue Value="userListModel"><DocAutoTaskModal taskHead=@taskHead /></CascadingValue></CascadingValue>
+            </CardTitle>
+        </CardHeader>
+        <CardBody>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <Paragraph><strong>@LanguageHelper.GetTitle(langQueryList, 10943):</strong> <Blazorise.Link To="@($"user/{taskHead.MainUserId}")">@GetUserNameForUserId(taskHead.MainUserId)</Blazorise.Link></Paragraph>
+                </Column>
+            </Row>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <Paragraph>&nbsp;</Paragraph>
+                </Column>
+            </Row>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <Paragraph>@taskHead.Description</Paragraph>
+                </Column>
+            </Row>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <Paragraph>&nbsp;</Paragraph>
+                </Column>
+            </Row>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is6">
+                    <Paragraph>
+                        <strong>@LanguageHelper.GetTitle(langQueryList, 10222):</strong> @taskHead.StartDate.ToShortDateString()
+                        <br /><strong>@LanguageHelper.GetTitle(langQueryList, 10911):</strong> @taskHead.CompletionDate.ToShortDateString()
+                        @if (taskHead.Completed)
+                        {
+                            <br /><strong>@LanguageHelper.GetTitle(langQueryList, 10912):</strong>@taskHead.CompletedOnDate.ToShortDateString()
+                        }
+                    </Paragraph>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is6">
+                    <FileLinks linkId="@taskHead.Id" linkType="@LinkTypes.Task" ReadOnly="@taskHead.Completed"/>
+                </Column>
+            </Row>
+            @if (!taskHead.Completed)
+            {
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is6">
+                        <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10913)</FieldLabel>
+                        <Addons>
+                            <Addon AddonType="AddonType.Body">
+                                <DateEdit TValue="DateTime" @bind-Date="@taskHead.CompletionDate" InputMode="DateInputMode.Date">
+                                </DateEdit>
+                            </Addon>
+                            <Addon AddonType="AddonType.End">
+                                <Button Color="Color.Primary" Clicked="@CompleteTask" Loading="@completeTask">@LanguageHelper.GetTitle(langQueryList, 10921)</Button>
+                            </Addon>
+                        </Addons>
+                    </Column>
+                </Row>
+            }
+            <Row>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12">
+                        <PLAlert includeSnackBar="true" includeAlert="false" @ref="plAlert" />
+                    </Column>
+                </Row>
+            </Row>
+            @if (!taskHead.Completed)
+            {
+                <Row Margin="Margin.Is4.OnY">
+                    <Column ColumnSize="ColumnSize.Is12">
+                        <TaskItemEdit ActionButtonTitle="@LanguageHelper.GetTitle(langQueryList, 10935)" taskHead="@taskHead" TaskItemCreated="@TaskItemCreated" TaskItemUpdated="@TaskItemUpdated" CreationForm="false" @ref="@taskHeadEdit" CustomFieldGroupChange="@CustomFieldGroupsChanged" />
+                    </Column>
+                </Row>
+            }
+            <Row>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <CustomFieldGroupEdit @ref="customFieldGroupEdit" linkId="@taskHead.Id" linkType="@LinkTypes.Task" ReadOnly="@taskHead.Completed" MainParent=false/>
+                </Column>
+            </Row>
+        </CardBody>
+    </Card>
+}
+
+@code {
+    [CascadingParameter]
+    LangQueryList langQueryList { get; set; }
+
+    [CascadingParameter]
+    UserListModel userListModel { get; set; }
+
+    [Parameter]
+    public TaskHead taskHead { get; set; }
+
+    AlertModel alertModel = new AlertModel();
+    //Snackbar successSnackBar;
+    //Snackbar errorSnackBar;
+
+    private TaskItemEdit taskHeadEdit { get; set; }
+
+    private bool completeTask = false;
+
+    //private DateTime completeDate;
+    PLAlert plAlert { get; set; }
+
+    [Parameter]
+    public EventCallback<TaskHead> TaskCompleted { get; set; }
+
+    [Parameter]
+    public EventCallback<TaskHead> TaskCreated { get; set; }
+
+    [Parameter]
+    public EventCallback<TaskHead> TaskUpdated { get; set; }
+
+    private CustomFieldGroupEdit customFieldGroupEdit;
+
+    protected override void OnInitialized()
+    {
+        //completeDate = taskHead.CompletionDate;
+    }
+
+    private string GetUserNameForUserId(Guid userId)
+    {
+        if (userListModel != default)
+        {
+            return userListModel.Users.Where(u => u.Id == userId).FirstOrDefault().FullName;
+        }
+
+        return string.Empty;
+    }
+
+    private async Task TaskItemCreated(TaskHead taskHead)
+    {
+        await TaskCreated.InvokeAsync(taskHead);
+    }
+
+    private async Task TaskItemUpdated(TaskHead taskHead)
+    {
+        await TaskUpdated.InvokeAsync(taskHead);
+    }
+
+    private async Task CompleteTask()
+    {
+        completeTask = true;
+
+        var completeResult = await SetCompletetionDateAsync();
+
+        plAlert.ShowAlert(completeResult.Item1, completeResult.Item2);
+
+        if (completeResult.Item1)
+        {
+            await GetTaskItem();
+            await TaskCompleted.InvokeAsync(taskHead);
+            StateHasChanged();
+        }
+
+        completeTask = false;
+    }
+
+    private async Task<Tuple<bool, string>> SetCompletetionDateAsync()
+    {
+        if (taskHead != null)
+        {
+            var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Post, APITypes.TASK, $"Task/Complete/{taskHead.Id}/{taskHead.CompletionDate.ToString("yyyyMMddHHmmss")}");
+
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                return new Tuple<bool, string>(false, MyFoundationService.GetErrorFromResponse(response));
+            }
+
+            return new Tuple<bool, string>(true, $"Task {taskHead.Title} completed");
+        }
+
+        return new Tuple<bool, string>(false, $"No task to complete");
+    }
+
+    private async Task GetTaskItem()
+    {
+        if(taskHead != null)
+        {
+            var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.TASK, $"Task/{taskHead.Id}");
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                taskHead = response.ContentAsType<TaskHead>();
+            }
+        }
+    }
+
+    void CustomFieldGroupsChanged()
+    {
+        customFieldGroupEdit.UpdateCustomFieldGroups();
+    }
+}

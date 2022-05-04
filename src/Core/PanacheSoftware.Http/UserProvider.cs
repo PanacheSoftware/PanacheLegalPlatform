@@ -43,7 +43,7 @@ namespace PanacheSoftware.Http
             var curUsr = _accessor.HttpContext.User;
             if (curUsr.Identity != null)
             {
-                return curUsr.FindFirst("sub").Value;
+                return curUsr.FindFirst(ClaimTypes.NameIdentifier).Value;
             }
             return Guid.Empty.ToString();
         }

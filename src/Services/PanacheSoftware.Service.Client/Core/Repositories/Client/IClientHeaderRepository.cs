@@ -1,6 +1,9 @@
 ﻿using PanacheSoftware.Core.Domain.Client;
+using PanacheSoftware.Core.Domain.Core;
 using PanacheSoftware.Database.Core.Repositories;
+using PanacheSoftware.Database.Domain;
 using System;
+using System.Threading.Tasks;
 
 namespace PanacheSoftware.Service.Client.Core.Repositories
 {

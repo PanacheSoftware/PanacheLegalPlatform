@@ -12,6 +12,10 @@ using PanacheSoftware.Core.Types;
 using PanacheSoftware.Service.Client.Manager;
 using Microsoft.AspNetCore.Http;
 using PanacheSoftware.Core.Domain.API.Error;
+using PanacheSoftware.Core.Domain.Core;
+using System.Threading.Tasks;
+using PanacheSoftware.Core.Domain.API;
+using System.Collections.Generic;
 
 namespace PanacheSoftware.Service.Client.Controllers
 {
@@ -134,6 +138,9 @@ namespace PanacheSoftware.Service.Client.Controllers
                 {
                     if (clientHead.Id == Guid.Empty)
                     {
+                        if(_clientManager.ClientShortNameExists(clientHead.ShortName))
+                            return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"ClientHead.ShortName: '{clientHead.ShortName}' already exists."));
+
                         var clientHeader = _mapper.Map<ClientHeader>(clientHead);
 
                         _unitOfWork.ClientHeaders.Add(clientHeader);
@@ -177,12 +184,14 @@ namespace PanacheSoftware.Service.Client.Controllers
 
                             clientHeadPatch.ApplyTo(clientHead);
 
+                            if (_clientManager.ClientShortNameExists(clientHead.ShortName, parsedId))
+                                return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"ClientHead.ShortName: '{clientHead.ShortName}' already exists."));
+
                             _mapper.Map(clientHead, clientHeader);
 
                             _unitOfWork.Complete();
 
-                            return CreatedAtRoute("Get", new {id = _mapper.Map<ClientHead>(clientHeader).Id},
-                                _mapper.Map<ClientHead>(clientHeader));
+                            return Ok();
                         }
 
                         return NotFound();
@@ -210,6 +219,29 @@ namespace PanacheSoftware.Service.Client.Controllers
                 return Ok(clientSummary);
 
             return NotFound();
+        }
+
+        [Route("[action]")]
+        [HttpGet]
+        public async Task<IActionResult> GetPaginatedClients(int? pageNumber, string sortField, string sortOrder, int pageSize)
+        {
+            var paginationModel = new Pagination(pageNumber, sortField, sortOrder);
+
+            try
+            {
+                var clientHeaderList = await _unitOfWork.ClientHeaders.GetPaginatedListAsync(paginationModel, pageSize);
+
+                var clientHeadList = new Paginated<ClientHead>(_mapper.Map<List<ClientHeader>, List<ClientHead>>(clientHeaderList.Items), clientHeaderList.Items.Count, clientHeaderList.PageIndex, pageSize, clientHeaderList.TotalPages);
+
+                if (clientHeadList.Items.Count > 0)
+                    return Ok(clientHeadList);
+
+                return NotFound();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
+            }
         }
     }
 }

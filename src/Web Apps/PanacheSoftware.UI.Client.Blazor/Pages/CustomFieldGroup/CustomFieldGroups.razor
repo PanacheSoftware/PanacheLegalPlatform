@@ -1,0 +1,101 @@
+﻿@page "/customfieldgroup/customfieldgroups"
+@attribute [Authorize]
+@inject UserAppCache UserAppCache
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@using PanacheSoftware.Core.Domain.API.CustomField;
+
+<PageProgressBar @ref="@pageProgressBar" pageProgressColor="Color.Warning" pageProgressVisible="@loadingPage" />
+
+@if (!loadingPage)
+{
+    <Breadcrumb>
+        <BreadcrumbItem>
+            <BreadcrumbLink To="dashboard">@LanguageHelper.GetTitle(langQueryList, 10121)</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbItem Active="true">
+            <BreadcrumbLink>@LanguageHelper.GetTitle(langQueryList, 10124)</BreadcrumbLink>
+        </BreadcrumbItem>
+    </Breadcrumb>
+
+    <Card Margin="Margin.Is4.OnY"  Shadow="Shadow.Default">
+        <CardHeader>
+            <CardTitle>@LanguageHelper.GetTitle(langQueryList, 10124)</CardTitle>
+        </CardHeader>
+        <CardBody>
+            @if (customFieldGroupList != null)
+            {
+                <DataGrid TItem="CustomFieldGroupHead"
+                          Data="@customFieldGroupList.CustomFieldGroupHeaders"
+                          Filterable="true"
+                          FilterMethod="DataGridFilterMethod.StartsWith"
+                          PageSize="25"
+                          Striped="true"
+                          Bordered="true"
+                          Hoverable="true"
+                          Responsive="true"
+                          ShowPager="true"
+                          PagerPosition="DataGridPagerPosition.Bottom"
+                          ShowPageSizes="true">
+                    <DataGridColumn TItem="CustomFieldGroupHead" Field="@nameof(CustomFieldGroupHead.Id)" Caption="" Width="10px" Filterable="false" Sortable="false">
+                        <DisplayTemplate>
+                            <Button To="@($"customfieldgroup/{context.Id}")" Type="ButtonType.Link" Color="Color.Primary"><Icon Name="@("fa-edit")" /></Button>
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn TItem="CustomFieldGroupHead" Field="@nameof(CustomFieldGroupHead.ShortName)" Caption="@LanguageHelper.GetTitle(langQueryList, 11000)" />
+                    <DataGridColumn TItem="CustomFieldGroupHead" Field="@nameof(CustomFieldGroupHead.LongName)" Caption="@LanguageHelper.GetTitle(langQueryList, 11001)" />
+                    <DataGridColumn TItem="CustomFieldGroupHead" Field="@nameof(CustomFieldGroupHead.Description)" Caption="@LanguageHelper.GetTitle(langQueryList, 10200)" />
+                    <DataGridColumn TItem="CustomFieldGroupHead" Field="@nameof(CustomFieldGroupHead.Status)" Caption="@LanguageHelper.GetTitle(langQueryList, 10201)" />
+                </DataGrid>
+                <Button To="customfieldgroup" Color="Color.Success" Type="ButtonType.Link">@LanguageHelper.GetTitle(langQueryList, 10204)</Button>
+            }
+            else
+            {
+                <p>Loading...</p>
+            }
+        </CardBody>
+    </Card>
+}
+
+@code {
+    LangQueryList langQueryList { get; set; }
+    CustomFieldGroupList customFieldGroupList { get; set; }
+    PageProgressBar pageProgressBar;
+    bool loadingPage = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetLanguageList();
+        await GetTeams();
+        loadingPage = false;
+        pageProgressBar.ChangeVisibility(loadingPage);
+    }
+
+    private async Task GetLanguageList()
+    {
+        var textCodes = new List<long>();
+        textCodes.Add(10121);
+        textCodes.Add(10124);
+        textCodes.Add(11000);
+        textCodes.Add(11001);
+        textCodes.Add(10200);
+        textCodes.Add(10201);
+        textCodes.Add(10204);
+
+        langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, UserAppCache.LanguageCode, textCodes.ToArray());
+    }
+
+    private async Task GetTeams()
+    {
+        var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.CUSTOMFIELD, $"CustomFieldGroup");
+
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            customFieldGroupList = response.ContentAsType<CustomFieldGroupList>();
+        }
+        else
+        {
+            customFieldGroupList = new CustomFieldGroupList();
+        }
+    }
+}

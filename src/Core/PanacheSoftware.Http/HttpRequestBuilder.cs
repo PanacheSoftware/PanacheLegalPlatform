@@ -85,9 +85,9 @@ namespace PanacheSoftware.Http
             if (this.requestUri.StartsWith("https"))
             {
                 HttpClientHandler handler = new HttpClientHandler();
-                handler.ClientCertificates.Add(GetCertificateFromStore());
-                handler.ClientCertificateOptions = ClientCertificateOption.Manual;
-                handler.SslProtocols = SslProtocols.Tls12;
+                //handler.ClientCertificates.Add(GetCertificateFromStore());
+                //handler.ClientCertificateOptions = ClientCertificateOption.Manual;
+                //handler.SslProtocols = SslProtocols.Tls12;
                 handler.ServerCertificateCustomValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
                 client = new HttpClient(handler);
             }

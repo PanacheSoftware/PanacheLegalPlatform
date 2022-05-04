@@ -1,0 +1,108 @@
+﻿@attribute [Authorize]
+@inject UserAppCache UserAppCache
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@using PanacheSoftware.Core.Domain.API.CustomField
+
+@if (customFieldGroupValuesModelList != null)
+{
+    @if (customFieldGroupValuesModelList.CustomFieldGroupValuesModels.Count > 0)
+    {
+        @foreach (var customFieldGroupValuesModel in customFieldGroupValuesModelList.CustomFieldGroupValuesModels)
+        {
+            <CustomFieldGroupValueEdit customFieldGroupValuesModel="customFieldGroupValuesModel" ReadOnly="ReadOnly" MainParent=MainParent/>
+        }
+    }
+}
+
+@code {
+
+    [CascadingParameter]
+    LangQueryList langQueryList { get; set; }
+
+    [Parameter]
+    public Guid linkId { get; set; }
+
+    [Parameter]
+    public string linkType { get; set; }
+
+    [Parameter]
+    public bool ReadOnly { get; set; }
+
+    [Parameter]
+    public bool MainParent { get; set; }
+
+    private CustomFieldGroupValuesModelList customFieldGroupValuesModelList { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetCustomFieldGroupModelList();
+    }
+
+    private async Task GetCustomFieldGroupModelList()
+    {
+        customFieldGroupValuesModelList = new CustomFieldGroupValuesModelList();
+
+        var mainTaskGroupList = await GetCustomFieldGroupModels();
+
+        if (mainTaskGroupList.Any())
+            customFieldGroupValuesModelList.CustomFieldGroupValuesModels.AddRange(mainTaskGroupList);
+    }
+
+    public async void UpdateCustomFieldGroups()
+    {
+        await GetCustomFieldGroupModelList();
+        StateHasChanged();
+    }
+
+    private async Task<List<CustomFieldGroupValuesModel>> GetCustomFieldGroupModels()
+    {
+        var fieldGroupValueModels = new List<CustomFieldGroupValuesModel>();
+
+        var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.CUSTOMFIELD, $"CustomFieldGroupLink/GetLinks/{linkType}/{linkId}");
+
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var customFieldGroupLnkList = response.ContentAsType<CustomFieldGroupLnkList>();
+
+            foreach (var customFieldGroupLnk in customFieldGroupLnkList.CustomFieldGroupLinks)
+            {
+                var customFieldGroupValuesModel = await GetCustomFieldGroupModel(customFieldGroupLnk);
+
+                if (customFieldGroupValuesModel != null)
+                    fieldGroupValueModels.Add(customFieldGroupValuesModel);
+            }
+
+        }
+
+        return fieldGroupValueModels;
+    }
+
+    private async Task<CustomFieldGroupValuesModel> GetCustomFieldGroupModel(CustomFieldGroupLnk customFieldGroupLnk)
+    {
+        var fieldGroupValuesModel = new CustomFieldGroupValuesModel();
+
+        fieldGroupValuesModel.LinkId = customFieldGroupLnk.LinkId;
+        fieldGroupValuesModel.LinkType = customFieldGroupLnk.LinkType;
+        fieldGroupValuesModel.customFieldGroupHeader = customFieldGroupLnk.CustomFieldGroupHeader;
+
+        var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.CUSTOMFIELD, $"CustomFieldValue/GetValuesForLink/{fieldGroupValuesModel.LinkType}/{fieldGroupValuesModel.LinkId}");
+
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var customFieldValueList = response.ContentAsType<CustomFieldValList>();
+
+            foreach (var customFieldVal in customFieldValueList.CustomFieldValues)
+            {
+                var foundOpenCustomField = customFieldGroupLnk.CustomFieldGroupHeader.CustomFieldHeaders.Where(h => h.Id == customFieldVal.CustomFieldHeaderId && h.Status == StatusTypes.Open).FirstOrDefault();
+
+                if (foundOpenCustomField != default)
+                {
+                    fieldGroupValuesModel.CustomFieldValues.Add(customFieldVal);
+                }
+            }
+        }
+
+        return fieldGroupValuesModel;
+    }
+}

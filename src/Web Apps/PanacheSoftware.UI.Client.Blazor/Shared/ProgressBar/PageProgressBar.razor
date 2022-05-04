@@ -1,0 +1,22 @@
+﻿<PageProgress Color="@pageProgressColor" Visible="@pageProgressVisible" />
+
+@if (pageProgressVisible)
+{
+<Breadcrumb>
+    <BreadcrumbItem Active="true">
+        <BreadcrumbLink>Loading...</BreadcrumbLink>
+    </BreadcrumbItem>
+</Breadcrumb>
+}
+
+@code {
+    [Parameter]
+    public Color pageProgressColor { get; set; }
+    [Parameter]
+    public bool pageProgressVisible { get; set; }
+
+    public void ChangeVisibility(bool visible)
+    {
+        pageProgressVisible = visible;
+    }
+}

@@ -18,6 +18,22 @@ namespace PanacheSoftware.Core.Types
         public const string IGNORE = "IGNORE";
     }
 
+    public struct SortOrders
+    {
+        public const string Ascending = "ASC";
+        public const string Descending = "DESC";
+
+        public IDictionary<string, string> GetSortOrdersDictionary()
+        {
+            Dictionary<string, string> SortOrdersDictionary = new Dictionary<string, string>();
+
+            SortOrdersDictionary.Add(Ascending, nameof(Ascending));
+            SortOrdersDictionary.Add(Descending, nameof(Descending));
+
+            return SortOrdersDictionary;
+        }
+    }
+
     public struct StatusTypes
     {
         public const string Closed = "C";
@@ -33,6 +49,32 @@ namespace PanacheSoftware.Core.Types
             StatusTypesDictionary.Add(Draft, "Draft");
 
             return StatusTypesDictionary;
+        }
+    }
+
+    public struct CustomFieldTypes
+    {
+        public const string StringField = "string";
+        public const string IntField = "int";
+        public const string DoubleField = "double";
+        public const string DateTimeField = "datetime";
+        public const string BoolField = "bool";
+        public const string MemoField = "memo";
+        public const string ClauseField = "clause";
+
+        public IDictionary<string, string> GetCustomFieldTypesDictionary()
+        {
+            Dictionary<string, string> CustomFieldTypesDictionary = new Dictionary<string, string>();
+
+            CustomFieldTypesDictionary.Add(StringField, "Text");
+            CustomFieldTypesDictionary.Add(IntField, "Whole Number");
+            CustomFieldTypesDictionary.Add(DoubleField, "Amount");
+            CustomFieldTypesDictionary.Add(DateTimeField, "Date");
+            CustomFieldTypesDictionary.Add(BoolField, "Checkbox");
+            CustomFieldTypesDictionary.Add(MemoField, "Memo");
+            CustomFieldTypesDictionary.Add(ClauseField, "Clause");
+
+            return CustomFieldTypesDictionary;
         }
     }
 
@@ -54,11 +96,11 @@ namespace PanacheSoftware.Core.Types
         {
             Dictionary<string, string> ContactTitlesDictionary = new Dictionary<string, string>();
 
-            ContactTitlesDictionary.Add(Mr, Mr);
-            ContactTitlesDictionary.Add(Mrs, Mrs);
-            ContactTitlesDictionary.Add(Ms, Ms);
-            ContactTitlesDictionary.Add(Miss, Miss);
             ContactTitlesDictionary.Add(Mx, Mx);
+            ContactTitlesDictionary.Add(Mrs, Mrs);
+            ContactTitlesDictionary.Add(Mr, Mr);           
+            ContactTitlesDictionary.Add(Ms, Ms);
+            ContactTitlesDictionary.Add(Miss, Miss);           
             ContactTitlesDictionary.Add(NA, NA);
 
             return ContactTitlesDictionary;
@@ -118,6 +160,7 @@ namespace PanacheSoftware.Core.Types
         public const string Client = "Client";
         public const string Team = "Team";
         public const string Folder = "Folder";
+        public const string Template = "Template";
 
         public IDictionary<string, string> GetLinkTypesDictionary()
         {
@@ -128,6 +171,7 @@ namespace PanacheSoftware.Core.Types
             LinkTypesDictionary.Add(Client, Client);
             LinkTypesDictionary.Add(Team, Team);
             LinkTypesDictionary.Add(Folder, Folder);
+            LinkTypesDictionary.Add(Template, Template);
 
             return LinkTypesDictionary;
         }
@@ -168,8 +212,10 @@ namespace PanacheSoftware.Core.Types
         public const string TeamService = "PanacheSoftware.Service.Team";
         public const string FoundationService = "PanacheSoftware.Service.Foundation";
         public const string TaskService = "PanacheSoftware.Service.Task";
+        public const string CustomFieldService = "PanacheSoftware.Service.CustomField";
         public const string FileService = "PanacheSoftware.Service.File";
         public const string APIGateway = "PanacheSoftware.API.Gateway";
+        public const string AutomationService = "PanacheSoftware.Service.Automation";
     }
 
     public struct PanacheSoftwareClaims

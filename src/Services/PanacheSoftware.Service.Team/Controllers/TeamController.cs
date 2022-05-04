@@ -1,12 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using PanacheSoftware.Core.Domain.API;
 using PanacheSoftware.Core.Domain.API.Error;
 using PanacheSoftware.Core.Domain.API.Team;
+using PanacheSoftware.Core.Domain.Core;
 using PanacheSoftware.Core.Domain.Team;
 using PanacheSoftware.Service.Team.Core;
 using PanacheSoftware.Service.Team.Manager;
@@ -139,8 +143,7 @@ namespace PanacheSoftware.Service.Team.Controllers
 
                         _unitOfWork.Complete();
 
-                        return CreatedAtRoute("Get", new {id = _mapper.Map<TeamHead>(teamHeader).Id},
-                            _mapper.Map<TeamHead>(teamHeader));
+                        return Ok();
                     }
 
                     return NotFound();
@@ -187,7 +190,7 @@ namespace PanacheSoftware.Service.Team.Controllers
             try
             {
                 if (Guid.TryParse(id, out Guid parsedId))
-                {
+                {                   
                     TeamStruct teamStruct = _teamManager.GetTeamStructure(parsedId);
 
                     if (teamStruct.Id != Guid.Empty)
@@ -197,6 +200,53 @@ namespace PanacheSoftware.Service.Team.Controllers
                 }
 
                 return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"id: '{id}' is not a valid guid."));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
+            }
+        }
+
+        [Route("[action]/{id}")]
+        [HttpGet]
+        public IActionResult GetTeamTree(string id)
+        {
+            try
+            {
+                if (Guid.TryParse(id, out Guid parsedId))
+                {
+                    var teamChart = _teamManager.GetTeamTree(parsedId);
+
+                    if (teamChart.TeamNodes.Count > 0)
+                        return Ok(teamChart);
+
+                    return NotFound();
+                }
+
+                return StatusCode(StatusCodes.Status400BadRequest, new APIErrorMessage(StatusCodes.Status400BadRequest, $"id: '{id}' is not a valid guid."));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new APIErrorMessage(StatusCodes.Status500InternalServerError, e.Message));
+            }
+        }
+
+        [Route("[action]")]
+        [HttpGet]
+        public async Task<IActionResult> GetPaginatedTeams(int? pageNumber, string sortField, string sortOrder, int pageSize)
+        {
+            var paginationModel = new Pagination(pageNumber, sortField, sortOrder);
+
+            try
+            {
+                var teamHeaderList = await _unitOfWork.TeamHeaders.GetPaginatedListAsync(paginationModel, pageSize);
+
+                var teamHeadList = new Paginated<TeamHead>(_mapper.Map<List<TeamHeader>, List<TeamHead>>(teamHeaderList.Items), teamHeaderList.Items.Count, teamHeaderList.PageIndex, pageSize, teamHeaderList.TotalPages);
+
+                if (teamHeadList.Items.Count > 0)
+                    return Ok(teamHeadList);
+
+                return NotFound();
             }
             catch (Exception e)
             {

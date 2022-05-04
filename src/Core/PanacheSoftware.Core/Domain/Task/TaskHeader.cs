@@ -16,6 +16,7 @@ namespace PanacheSoftware.Core.Domain.Task
         public Guid MainUserId { get; set; }
         public virtual TaskGroupHeader TaskGroupHeader { get; set; }
 
+        public string ShortName { get; set; }
         public string Description { get; set; }
         public string Title { get; set; }
 

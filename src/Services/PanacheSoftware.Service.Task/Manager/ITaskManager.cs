@@ -1,4 +1,5 @@
-﻿using PanacheSoftware.Core.Domain.API.Task;
+﻿using PanacheSoftware.Core.Domain.API.CustomField;
+using PanacheSoftware.Core.Domain.API.Task;
 using PanacheSoftware.Core.Domain.Task;
 using System;
 using System.Collections.Generic;
@@ -20,5 +21,11 @@ namespace PanacheSoftware.Service.Task.Manager
         Task<bool> CanCompleteTaskGroupAsync(Guid taskGroupHeaderId, string accessToken);
         Task<bool> CanAccessTaskGroupHeaderAsync(Guid taskGroupHeaderId, string accessToken);
         Task<bool> TaskGroupTeamOkayAsync(TaskGroupHeader taskGroupHeader, string accessToken);
+        Tuple<bool, string> TaskGroupDatesOkay(TaskGroupHeader taskGroupHeader, string accessToken);
+        Tuple<bool, string> TaskDatesOkay(TaskHeader taskHeader);
+        Task<Tuple<Guid, string>> CreateTaskFromTemplate(TaskGroupHead taskHeader, Guid TemplateId, string accessToken);
+        Task<Tuple<bool, string>> CreateTaskGroupHeader(TaskGroupHeader taskGroupHeader, string accessToken);
+        Task<Tuple<bool, string>> CreateTaskHeader(TaskHeader taskHeader, string accessToken);
+        Task<bool> GetCustomFieldLinks(IList<CustomFieldGroupLnk> CustomFieldGroupLinks, string origlinkType, Guid origlinkId, string linkType, Guid linkId, string accessToken);
     }
 }

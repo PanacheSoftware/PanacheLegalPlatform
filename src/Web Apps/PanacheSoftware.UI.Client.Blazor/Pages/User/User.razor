@@ -1,0 +1,584 @@
+﻿@page "/user/{id?}"
+@attribute [Authorize]
+@inject UserAppCache UserAppCache
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@inject IMapper Mapper
+@using PanacheSoftware.Core.Domain.API.Client
+@using PanacheSoftware.Core.Domain.Identity.API
+@using PanacheSoftware.Core.Domain.API.Join
+@using PanacheSoftware.Core.Domain.API.Team
+@using System.IO
+
+<PageProgressBar @ref="@pageProgressBar" pageProgressColor="Color.Warning" pageProgressVisible="@loadingPage" />
+
+@if (!loadingPage)
+{
+    <Breadcrumb>
+        <BreadcrumbItem>
+            <BreadcrumbLink To="dashboard">@LanguageHelper.GetTitle(langQueryList, 10121)</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbItem>
+            <BreadcrumbLink To="user/users">@LanguageHelper.GetTitle(langQueryList, 10115)</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbItem Active="true">
+            <BreadcrumbLink>@GetBreadCrumbTitle()</BreadcrumbLink>
+        </BreadcrumbItem>
+    </Breadcrumb>
+
+    @if (userProfileModel != null)
+    {
+        <Form>
+            <Row>
+                <Column>
+                    <Card Margin="Margin.Is4.OnY">
+                        <CardHeader>
+                            <CardTitle>@LanguageHelper.GetTitle(langQueryList, 10801)</CardTitle>
+                        </CardHeader>
+                        <CardBody>
+                            <Row>
+                                <Column ColumnSize="ColumnSize.Is7">
+                                    <Validations Mode="ValidationMode.Auto" Model="@userProfileModel.userModel">
+                                        <Validation>
+                                            <Field>
+                                                <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10800)</FieldLabel>
+                                                <TextEdit @bind-Text="userProfileModel.userModel.Email" ReadOnly="@UsernameReadOnly">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        </Validation>
+                                    </Validations>
+
+                                    <Validations Mode="ValidationMode.Auto" Model="@userProfileModel">
+                                        @if (userProfileModel.userModel.Id == Guid.Empty)
+                                        {
+                                            <Field>
+                                                <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10802)</FieldLabel>
+                                                <TextEdit @bind-Text="userProfileModel.password" Role="TextRole.Password">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                            <Field>
+                                                <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10803)</FieldLabel>
+                                                <TextEdit @bind-Text="userProfileModel.passwordConfirm" Role="TextRole.Password">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        }
+                                    </Validations>
+
+                                    <Validations Mode="ValidationMode.Auto" Model="@userProfileModel.userModel">
+                                        <Validation>
+                                            <Field>
+                                                <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10804)</FieldLabel>
+                                                <TextEdit @bind-Text="userProfileModel.userModel.FullName">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        </Validation>
+                                        <Validation>
+                                            <Field>
+                                                <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10207)</FieldLabel>
+                                                <TextEdit @bind-Text="userProfileModel.userModel.FirstName">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        </Validation>
+                                        <Validation>
+                                            <Field>
+                                                <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10209)</FieldLabel>
+                                                <TextEdit @bind-Text="userProfileModel.userModel.Surname">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        </Validation>
+                                        <Validation>
+                                            <Field>
+                                                <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10202)</FieldLabel>
+                                                <DateEdit TValue="DateTime" @bind-Date="@userProfileModel.userModel.DateFrom" InputMode="DateInputMode.Date">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </DateEdit>
+                                            </Field>
+                                        </Validation>
+                                        <Validation>
+                                            <Field>
+                                                <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10203)</FieldLabel>
+                                                <DateEdit TValue="DateTime" @bind-Date="@userProfileModel.userModel.DateTo" InputMode="DateInputMode.Date">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </DateEdit>
+                                            </Field>
+                                        </Validation>
+                                    </Validations>
+                                </Column>
+                                <Column ColumnSize="ColumnSize.Is5">
+                                    <Figure Size="FigureSize.Is256x256" Class="img-fluid">
+                                        <FigureImage Source="@GetUserImage()" Rounded="true" />
+                                    </Figure>
+                                    <FileEdit Changed="@OnImageUpload" Filter=".jpg, .png, .jpeg" />
+                                </Column>
+                            </Row>
+                            <Row>
+                                <Column ColumnSize="ColumnSize.Is12">
+                                    <Validations Mode="ValidationMode.Auto" Model="@userProfileModel.userModel">
+                                        <Field>
+                                            <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10200)</FieldLabel>
+                                            <MemoEdit @bind-Text="@userProfileModel.userModel.Description" Rows="5">
+                                                <Feedback>
+                                                    <ValidationError />
+                                                </Feedback>
+                                            </MemoEdit>
+                                        </Field>
+                                    </Validations>
+                                </Column>
+                            </Row>
+                            <Row>
+                                <Column ColumnSize="ColumnSize.Is4">
+                                    <Field>
+                                        <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10201)</FieldLabel>
+                                        <SelectList TItem="SelectListModel" TValue="string" Data="@StatusSelectListValues" TextField="@((item) => item.DescriptionField)" ValueField="@((item) => item.ValueField)" SelectedValue="@userProfileModel.userModel.Status" SelectedValueChanged="@StatusListValueChangedHandler" />
+                                    </Field>
+                                </Column>
+                            </Row>
+                        </CardBody>
+                    </Card>
+                </Column>
+            </Row>
+        </Form>
+
+        <Row>
+            <Column>
+                <Card Margin="Margin.Is4.OnY">
+                    <CardHeader>
+                        <CardTitle>@LanguageHelper.GetTitle(langQueryList, 10406)</CardTitle>
+                    </CardHeader>
+                    <CardBody>
+                        @if (userProfileModel.userTeamJoins != null)
+                        {
+                            <DataGrid TItem="UserTeamJoin"
+                                      Data="@userProfileModel.userTeamJoins"
+                                      Filterable="true"
+                                      FilterMethod="DataGridFilterMethod.StartsWith"
+                                      PageSize="25"
+                                      Striped="true"
+                                      Bordered="true"
+                                      Hoverable="true"
+                                      Responsive="true"
+                                      ShowPager="true"
+                                      PagerPosition="DataGridPagerPosition.Bottom"
+                                      ShowPageSizes="true"
+                                      Editable="@TeamListEditable"
+                                      EditMode="DataGridEditMode.Form"
+                                      NewItemDefaultSetter="@OnUserTeamJoinNewItemDefaultSetter">
+                                <EmptyTemplate>No records...</EmptyTemplate>
+                                <DataGridColumns>
+                                    <DataGridCommandColumn TItem="UserTeamJoin" Width="170px">
+                                        <NewCommandTemplate>
+                                            @if (TeamListEditable)
+                                            {
+                                                <Button Color="Color.Success" Clicked="@context.Clicked">New</Button>
+                                            }
+                                        </NewCommandTemplate>
+                                        <EditCommandTemplate>
+                                            <Button Color="Color.Primary" Clicked="@context.Clicked">Edit</Button>
+                                        </EditCommandTemplate>
+                                        <SaveCommandTemplate>
+                                            <Button Color="Color.Primary" Clicked="@context.Clicked">Apply</Button>
+                                        </SaveCommandTemplate>
+                                        <DeleteCommandTemplate>
+                                            @*<Button Color="Color.Danger" Clicked="@context.Clicked">Delete</Button>*@
+                                        </DeleteCommandTemplate>
+                                        <CancelCommandTemplate>
+                                            <Button Color="Color.Secondary" Clicked="@context.Clicked">Cancel</Button>
+                                        </CancelCommandTemplate>
+                                        <ClearFilterCommandTemplate>
+                                            <Button Color="Color.Warning" Clicked="@context.Clicked">Clear Filter</Button>
+                                        </ClearFilterCommandTemplate>
+                                    </DataGridCommandColumn>
+                                    <DataGridColumn TItem="UserTeamJoin" Field="@nameof(UserTeamJoin.TeamHeaderIdString)" Caption="@LanguageHelper.GetTitle(langQueryList, 10400)" Editable="true">
+                                        <DisplayTemplate>
+                                            @{
+                                                var teamDescription = TeamSelectListValues.Where(t => t.ValueField == context.TeamHeaderIdString).FirstOrDefault().DescriptionField;
+
+                                                @($"{teamDescription}")
+                                            }
+                                        </DisplayTemplate>
+                                        <EditTemplate>
+                                            <SelectList TItem="SelectListModel" TValue="string" Data="@TeamSelectListValues" TextField="@((item)=>item.DescriptionField)" ValueField="@((item)=>item.ValueField)" SelectedValue="@((string)(context.CellValue))" SelectedValueChanged="@(e => { context.CellValue = e; })" />
+                                        </EditTemplate>
+                                    </DataGridColumn>
+                                    <DataGridDateColumn TItem="UserTeamJoin" Field="@nameof(UserTeamJoin.DateFrom)" DisplayFormat="{0:dd.MM.yyyy}" Caption="@LanguageHelper.GetTitle(langQueryList, 10202)" Editable="true" />
+                                    <DataGridDateColumn TItem="UserTeamJoin" Field="@nameof(UserTeamJoin.DateTo)" DisplayFormat="{0:dd.MM.yyyy}" Caption="@LanguageHelper.GetTitle(langQueryList, 10203)" Editable="true" />
+                                    <DataGridColumn TItem="UserTeamJoin" Field="@nameof(UserTeamJoin.Status)" Caption="@LanguageHelper.GetTitle(langQueryList, 10201)" Editable="true">
+                                        <EditTemplate>
+                                            <SelectList TItem="SelectListModel" TValue="string" Data="@StatusSelectListValues" TextField="@((item)=>item.DescriptionField)" ValueField="@((item)=>item.ValueField)" SelectedValue="@((string)( context.CellValue ))" SelectedValueChanged="@(e => { context.CellValue = e; })" />
+                                        </EditTemplate>
+                                    </DataGridColumn>
+
+                                </DataGridColumns>
+                            </DataGrid>
+                        }
+                        else
+                        {
+                            <p>Loading...</p>
+                        }
+                    </CardBody>
+                </Card>
+            </Column>
+        </Row>
+        <Row>
+            <Column>
+                <Card Margin="Margin.Is4.OnY">
+                    <CardBody>
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is12">
+                                <PLAlert includeSnackBar="true" includeAlert="true" @ref="plAlert" />
+                            </Column>
+                        </Row>
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is4">
+                                @if (userProfileModel.userModel.Id == Guid.Empty)
+                                {
+                                    <Button Type="ButtonType.Submit" Color="Color.Primary" PreventDefaultOnSubmit="true" Clicked="@SubmitForm" Loading="@SavingUser">@LanguageHelper.GetTitle(langQueryList, 10805)</Button>
+                                }
+                                else
+                                {
+                                    <Button Type="ButtonType.Submit" Color="Color.Primary" PreventDefaultOnSubmit="true" Clicked="@SubmitForm" Loading="@SavingUser">@LanguageHelper.GetTitle(langQueryList, 10806)</Button>
+                                }
+                            </Column>
+                        </Row>
+                    </CardBody>
+                </Card>
+            </Column>
+        </Row>
+    }
+}
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    LangQueryList langQueryList { get; set; }
+
+    UserProfileModel userProfileModel { get; set; }
+
+    bool UsernameReadOnly = false;
+    bool TeamListEditable = false;
+
+    IEnumerable<SelectListModel> StatusSelectListValues { get; set; }
+    IEnumerable<SelectListModel> TeamSelectListValues { get; set; }
+    PLAlert plAlert { get; set; }
+    bool SavingUser = false;
+    PageProgressBar pageProgressBar;
+    bool loadingPage = true;
+
+    string selectedTab = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CreateSelectListModels();
+        await GetLanguageList();
+        await GetUser();
+        loadingPage = false;
+        TeamListEditable = TeamSelectListValues.Any();
+        pageProgressBar.ChangeVisibility(loadingPage);
+    }
+
+    private async Task GetLanguageList()
+    {
+        var textCodes = new List<long>();
+        textCodes.Add(10121);
+        textCodes.Add(10115);
+        textCodes.Add(10500);
+        textCodes.Add(10501);
+        textCodes.Add(10801);
+        textCodes.Add(10800);
+        textCodes.Add(10802);
+        textCodes.Add(10803);
+        textCodes.Add(10804);
+        textCodes.Add(10207);
+        textCodes.Add(10209);
+        textCodes.Add(10202);
+        textCodes.Add(10203);
+        textCodes.Add(10205);
+        textCodes.Add(10221);
+        textCodes.Add(10200);
+        textCodes.Add(10201);
+        textCodes.Add(10805);
+        textCodes.Add(10806);
+        textCodes.Add(10406);
+        textCodes.Add(10400);
+        textCodes.Add(10407);
+
+        langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, UserAppCache.LanguageCode, textCodes.ToArray());
+    }
+
+    private async Task CreateSelectListModels()
+    {
+        StatusTypes statusTypes = new StatusTypes();
+        StatusSelectListValues = statusTypes.GetStatusTypesDictionary().Select(s => new SelectListModel { ValueField = s.Key, DescriptionField = s.Value });
+        await CreateTeamSelectList();
+    }
+
+    private async Task GetUser()
+    {
+        userProfileModel = new UserProfileModel();
+        userProfileModel.userModel = new UserModel();
+        userProfileModel.password = string.Empty;
+        userProfileModel.passwordConfirm = string.Empty;
+
+        if (!string.IsNullOrWhiteSpace(Id))
+        {
+            var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.IDENTITY, $"User/{Id}");
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                userProfileModel.userModel = response.ContentAsType<UserModel>();
+                UsernameReadOnly = true;
+            }
+        }
+
+        await CreateUserTeamModelList();
+    }
+
+    private string GetBreadCrumbTitle()
+    {
+        if (userProfileModel == null)
+            return string.Empty;
+
+        if (userProfileModel.userModel == null)
+            return string.Empty;
+
+        if (userProfileModel.userModel.Id == Guid.Empty)
+            return "New User";
+
+        return userProfileModel.userModel.Email;
+    }
+
+    private void StatusListValueChangedHandler(string newValue)
+    {
+        userProfileModel.userModel.Status = newValue;
+    }
+
+    private async Task SubmitForm()
+    {
+        SavingUser = true;
+        var saveResult = await SaveUser();
+
+        plAlert.ShowAlert(saveResult.Item1, saveResult.Item2);
+        SavingUser = false;
+    }
+
+    private async Task CreateTeamSelectList()
+    {
+        var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.TEAM, $"Team");
+        Dictionary<string, string> TeamListDictionary = new Dictionary<string, string>();
+
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            TeamList teamList = response.ContentAsType<TeamList>();
+
+            foreach (var teamHeader in teamList.TeamHeaders.OrderBy(h => h.ShortName))
+            {
+                TeamListDictionary.Add(teamHeader.Id.ToString(), teamHeader.ShortName);
+            }
+        }
+
+        TeamSelectListValues = TeamListDictionary.Select(s => new SelectListModel { ValueField = s.Key, DescriptionField = s.Value });
+    }
+
+    private async Task CreateUserTeamModelList()
+    {
+        var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.TEAM, $"UserTeam/GetUserTeamsForUser/{userProfileModel.userModel.Id}");//_apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.TEAM, $"UserTeam/GetUserTeamsForUser/{userProfileModel.userModel.Id}");
+
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            UserTeamJoinList userTeamJoinList = response.ContentAsType<UserTeamJoinList>();
+
+            foreach (var userTeamJoin in userTeamJoinList.UserTeamJoins)
+            {
+                var match = userProfileModel.userTeamJoins.Where(t => t.Id == userTeamJoin.Id).FirstOrDefault();
+
+                if (match == null)
+                {
+                    userProfileModel.userTeamJoins.Add(userTeamJoin);
+                }
+            }
+        }
+    }
+
+    private async Task<Tuple<bool, string>> SaveUser()
+    {
+        if (userProfileModel != null)
+        {
+            if (userProfileModel.userModel.Id == Guid.Empty)
+            {
+                var createUserModel = Mapper.Map<CreateUserModel>(userProfileModel.userModel);
+
+                createUserModel.Password = userProfileModel.password;
+                createUserModel.PasswordConfirm = userProfileModel.passwordConfirm;
+
+                string newUserContent = JsonConvert.SerializeObject(createUserModel);
+                HttpContent contentPost = new StringContent(newUserContent, Encoding.UTF8, "application/json");
+
+                var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Post, APITypes.IDENTITY, $"User", contentPost);//_apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Post, APITypes.IDENTITY, $"User", contentPost);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    userProfileModel.userModel = response.ContentAsType<UserModel>();
+
+                    return await CreateOrUpdateUserTeamJoins();
+                }
+            }
+            else
+            {
+                return await UpdateUser();
+            }
+        }
+
+        return new Tuple<bool, string>(false, $"No user to save");
+    }
+
+    private async Task<Tuple<bool, string>> UpdateUser()
+    {
+        var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.IDENTITY, $"User/{userProfileModel.userModel.Id}");//_apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.IDENTITY, $"User/{userProfileModel.userModel.Id.ToString()}");
+
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var foundUserModel = response.ContentAsType<UserModel>();
+
+            if (foundUserModel != null)
+            {
+                var processPatchResult = await MyFoundationService.ProcessPatch(foundUserModel, userProfileModel.userModel, foundUserModel.Id, TokenProvider.AccessToken, APITypes.IDENTITY, "User");
+                if (!processPatchResult.Item1)
+                {
+                    return processPatchResult;
+                }
+            }
+
+            var UpdateUserTeams = await CreateOrUpdateUserTeamJoins();
+            if (!UpdateUserTeams.Item1)
+                return UpdateUserTeams;
+
+            return new Tuple<bool, string>(true, $"User {foundUserModel.Email} saved");
+        }
+
+        return new Tuple<bool, string>(false, MyFoundationService.GetErrorFromResponse(response));
+    }
+
+    private async Task<Tuple<bool, string>> CreateOrUpdateUserTeamJoins()
+    {
+        var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.TEAM, $"UserTeam/GetUserTeamsForUser/{userProfileModel.userModel.Id.ToString()}");//_apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.TEAM, $"UserTeam/GetUserTeamsForUser/{userProfileModel.userModel.Id.ToString()}");
+
+        if (response.StatusCode == System.Net.HttpStatusCode.OK || response.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            UserTeamJoinList userTeamJoinList = response.ContentAsType<UserTeamJoinList>();
+
+            if (userTeamJoinList != null)
+            {
+                foreach (var userTeamJoin in userProfileModel.userTeamJoins)
+                {
+                    var foundUserTeamJoin = userTeamJoinList.UserTeamJoins.FirstOrDefault(utj => utj.Id == userTeamJoin.Id);
+
+                    if (foundUserTeamJoin != null)
+                    {
+                        var processPatchResult = await MyFoundationService.ProcessPatch(foundUserTeamJoin, userTeamJoin, foundUserTeamJoin.Id, TokenProvider.AccessToken, APITypes.IDENTITY, "UserTeam");
+
+                        if (!processPatchResult.Item1)
+                            return processPatchResult;
+                    }
+                    else
+                    {
+                        userTeamJoin.UserId = userProfileModel.userModel.Id;
+                        HttpContent contentPost = new StringContent(JsonConvert.SerializeObject(userTeamJoin), Encoding.UTF8, "application/json");
+
+                        try
+                        {
+                            response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Post, APITypes.TEAM, $"UserTeam", contentPost);//_apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Post, APITypes.TEAM, $"UserTeam", contentPost);
+
+                            if (response.StatusCode != System.Net.HttpStatusCode.Created)
+                            {
+                                return new Tuple<bool, string>(false, MyFoundationService.GetErrorFromResponse(response));
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            return new Tuple<bool, string>(false, $"Error calling API: {ex.Message}");
+                        }
+                    }
+                }
+
+                return new Tuple<bool, string>(true, $"User Team Joins saved");
+            }
+
+            return new Tuple<bool, string>(false, $"No User Team Join List");
+        }
+
+        return new Tuple<bool, string>(false, MyFoundationService.GetErrorFromResponse(response));
+    }
+
+    private async Task OnImageUpload(FileChangedEventArgs e)
+    {
+        try
+        {
+            var OneMb = 1024 * 1024 * 15;
+            var file = e.Files.FirstOrDefault();
+            if (file == null)
+            {
+                return;
+            }
+
+            var buffer = new byte[OneMb];
+            using (var bufferedStream = new BufferedStream(file.OpenReadStream(long.MaxValue), OneMb))
+            using (var ms = new MemoryStream())
+            {
+                //int readCount = 0;
+                int readBytes;
+                while ((readBytes = await bufferedStream.ReadAsync(buffer, 0, OneMb)) > 0)
+                {
+                    ms.Write(buffer, 0, readBytes);
+                }
+
+                userProfileModel.userModel.Base64ProfileImage = $"data:{file.Type};base64,{Convert.ToBase64String(ms.ToArray())}";
+            }
+        }
+        catch (Exception exc)
+        {
+            Console.WriteLine(exc.Message);
+        }
+        finally
+        {
+            this.StateHasChanged();
+        }
+    }
+
+    private string GetUserImage()
+    {
+
+        if (string.IsNullOrWhiteSpace(userProfileModel.userModel.Base64ProfileImage))
+            return Base64Images.PanacheSoftwareDot;
+
+        return userProfileModel.userModel.Base64ProfileImage;
+    }
+
+    void OnUserTeamJoinNewItemDefaultSetter(UserTeamJoin userTeamJoin)
+    {
+        if (TeamSelectListValues.Any())
+            userTeamJoin.TeamHeaderIdString = TeamSelectListValues.First().ValueField;
+    }
+}
+

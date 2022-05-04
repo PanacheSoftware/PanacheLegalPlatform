@@ -1,6 +1,9 @@
-﻿using System;
+﻿using PanacheSoftware.Core.Domain.Core;
+using PanacheSoftware.Database.Domain;
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace PanacheSoftware.Database.Core.Repositories
 {
@@ -19,5 +22,7 @@ namespace PanacheSoftware.Database.Core.Repositories
         void RemoveRange(IEnumerable<TEntity> entities);
 
         bool Any();
+
+        Task<PaginatedList<TEntity>> GetPaginatedListAsync(Pagination pagination, int pageSize);
     }
 }

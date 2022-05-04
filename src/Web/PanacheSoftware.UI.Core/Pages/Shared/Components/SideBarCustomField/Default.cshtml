@@ -1,0 +1,19 @@
+﻿@using PanacheSoftware.Core.Domain.API.Language
+@model LangQueryList
+
+<li class="sidebar-dropdown @Html.IsSelected(root:"CustomField", page: "", cssClass:"active", cssClassAlt:"")">
+    <a href="#">
+        <i class="far fa-file-code"></i>
+        <span class="menu-text">@Html.GetTitle(Model, 10124)</span>
+    </a>
+    <div class="sidebar-submenu" style="@Html.IsSelected(root:"CustomField", page: "", cssClass:"display: block;", cssClassAlt:"")">
+        <ul>
+            <li>
+                <a asp-page="/CustomFieldGroup/CustomFieldGroups">@Html.GetTitle(Model, 10125)</a>
+            </li>
+            <li>
+                <a asp-page="/CustomFieldGroup/Index" asp-route-Id="">@Html.GetTitle(Model, 10126)</a>
+            </li>
+        </ul>
+    </div>
+</li>

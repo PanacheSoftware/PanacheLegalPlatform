@@ -19,9 +19,12 @@ namespace PanacheSoftware.Core.Domain.API.Client
         public Guid Id { get; set; }
         [Required]
         [Display(Name = "Client ID")]
+        [RegularExpression("^[A-Z0-9]*$", ErrorMessage = "Characters A-Z or 0-9 only")]
+        [MaxLength(100, ErrorMessage = "Maximum Length 100 characters")]
         public string ShortName { get; set; }
         [Required]
         [Display(Name = "Client Name")]
+        [MaxLength(255, ErrorMessage = "Maximum Length 255 characters")]
         public string LongName { get; set; }
         [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string Description { get; set; }

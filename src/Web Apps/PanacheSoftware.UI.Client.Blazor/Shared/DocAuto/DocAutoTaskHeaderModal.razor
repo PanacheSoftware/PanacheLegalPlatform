@@ -1,0 +1,297 @@
+﻿@attribute [Authorize]
+@inject UserAppCache UserAppCache
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@using PanacheSoftware.Core.Domain.API.Client
+@using PanacheSoftware.Core.Domain.API.Task
+@using PanacheSoftware.Core.Domain.API.Team
+@using PanacheSoftware.Core.Domain.Identity.API;
+@using PanacheSoftware.Core.Domain.API.Automation;
+
+@if (ShowInfo && taskGroupHead != null)
+{
+    <Modal @ref="taskGroupHeadForm">
+        <ModalContent Centered="true" Size="ModalSize.Large">
+            <ModalHeader>
+                <ModalTitle>
+                    <Icon Name="IconName.Edit" />
+                    @LanguageHelper.GetTitle(langQueryList, 10231)
+                </ModalTitle>
+                <CloseButton />
+            </ModalHeader>
+            <ModalBody>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12">
+                        <Addons>
+                            <Addon AddonType="AddonType.Start">
+                                <AddonLabel>@LanguageHelper.GetTitle(langQueryList, 10222)</AddonLabel>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <DateEdit TValue="DateTime" @bind-Date="@taskGroupHead.StartDate" InputMode="DateInputMode.Date" ReadOnly/>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <TextEdit @bind-Text="@StartDateTag" ReadOnly></TextEdit>
+                            </Addon>
+                        </Addons>
+                    </Column>
+                </Row>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12">
+                        <Addons>
+                            <Addon AddonType="AddonType.Start">
+                                <AddonLabel>@LanguageHelper.GetTitle(langQueryList, 10911)</AddonLabel>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <DateEdit TValue="DateTime" @bind-Date="@CompletionDate" InputMode="DateInputMode.Date" ReadOnly/>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <TextEdit @bind-Text="@CompletionDateTag" ReadOnly></TextEdit>
+                            </Addon>
+                        </Addons>
+                    </Column>
+                </Row>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12">
+                        <Addons>
+                            <Addon AddonType="AddonType.Start">
+                                <AddonLabel>@LanguageHelper.GetTitle(langQueryList, 10905)</AddonLabel>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <TextEdit @bind-Text="@UserName" ReadOnly/>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <TextEdit @bind-Text="@UserNameTag" ReadOnly></TextEdit>
+                            </Addon>
+                        </Addons>
+                    </Column>
+                </Row>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12">
+                        <Addons>
+                            <Addon AddonType="AddonType.Start">
+                                <AddonLabel>@LanguageHelper.GetTitle(langQueryList, 10200)</AddonLabel>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <TextEdit @bind-Text="@taskGroupHead.Description" ReadOnly/>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <TextEdit @bind-Text="@DescriptionTag" ReadOnly></TextEdit>
+                            </Addon>
+                        </Addons>
+                    </Column>
+                </Row>
+                @if(clientSummary != null)
+                {
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Addons>
+                                <Addon AddonType="AddonType.Start">
+                                    <AddonLabel>@LanguageHelper.GetTitle(langQueryList, 10302)</AddonLabel>
+                                </Addon>
+                                <Addon AddonType="AddonType.Body">
+                                    <TextEdit @bind-Text="@clientSummary.LongName" ReadOnly/>
+                                </Addon>
+                                <Addon AddonType="AddonType.Body">
+                                    <TextEdit @bind-Text="@ClientNameTag" ReadOnly></TextEdit>
+                                </Addon>
+                            </Addons>
+                        </Column>
+                    </Row>
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Addons>
+                                <Addon AddonType="AddonType.Start">
+                                    <AddonLabel>@LanguageHelper.GetTitle(langQueryList, 10306)</AddonLabel>
+                                </Addon>
+                                <Addon AddonType="AddonType.Body">
+                                    <TextEdit @bind-Text="@clientSummary.MainContactName" ReadOnly/>
+                                </Addon>
+                                <Addon AddonType="AddonType.Body">
+                                    <TextEdit @bind-Text="@MainContactNameTag" ReadOnly></TextEdit>
+                                </Addon>
+                            </Addons>
+                        </Column>
+                    </Row>
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Addons>
+                                <Addon AddonType="AddonType.Start">
+                                    <AddonLabel>@LanguageHelper.GetTitle(langQueryList, 10210)</AddonLabel>
+                                </Addon>
+                                <Addon AddonType="AddonType.Body">
+                                    <TextEdit @bind-Text="@clientSummary.Email" ReadOnly/>
+                                </Addon>
+                                <Addon AddonType="AddonType.Body">
+                                    <TextEdit @bind-Text="@MainContactEmailTag" ReadOnly></TextEdit>
+                                </Addon>
+                            </Addons>
+                        </Column>
+                    </Row>
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Addons>
+                                <Addon AddonType="AddonType.Start">
+                                    <AddonLabel>@LanguageHelper.GetTitle(langQueryList, 10211)</AddonLabel>
+                                </Addon>
+                                <Addon AddonType="AddonType.Body">
+                                    <TextEdit @bind-Text="@clientSummary.Phone" ReadOnly/>
+                                </Addon>
+                                <Addon AddonType="AddonType.Body">
+                                    <TextEdit @bind-Text="@MainContactPhoneTag" ReadOnly></TextEdit>
+                                </Addon>
+                            </Addons>
+                        </Column>
+                    </Row>
+                }
+            </ModalBody>
+            <ModalFooter>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12">
+                        <Button Color="Color.Secondary" Clicked="@HideDocAutoTaskGroupHeaderInfo">@LanguageHelper.GetTitle(langQueryList, 10942)</Button>
+                    </Column>
+                </Row>
+            </ModalFooter>
+        </ModalContent>
+    </Modal>
+
+    <Button Color="Color.Primary" Clicked="@ShowDocAutoTaskGroupHeaderInfo" Float="Float.End" Margin="Margin.Is1.FromStart.Is1.FromEnd"><Icon Name="IconName.InfoCircle"/></Button>
+}
+
+@code {
+    [CascadingParameter]
+    LangQueryList langQueryList { get; set; }
+
+    [CascadingParameter]
+    UserListModel userListModel { get; set; }
+
+    [CascadingParameter]
+    ClientSummary clientSummary { get; set; }
+
+    string StartTag = string.Empty;
+    string EndTag = string.Empty;
+    string StartDateTag = string.Empty;
+    string UserNameTag = string.Empty;
+    string UserName = string.Empty;
+    string CompletionDateTag = string.Empty;
+    string ClientNameTag = string.Empty;
+    string MainContactNameTag = string.Empty;
+    string MainContactPhoneTag = string.Empty;
+    string MainContactEmailTag = string.Empty;
+    string DescriptionTag = string.Empty;
+    DateTime CompletionDate;
+
+    [Parameter]
+    public TaskGroupHead taskGroupHead { get; set; }
+
+    private Modal taskGroupHeadForm;
+
+    private bool ShowInfo = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ShowInfo = await ShowDocAutoInfo();
+        if (ShowInfo)
+        {
+            await GetStartAndEndTags();
+            CreateTags();
+        }
+    }
+
+    private async Task<bool> ShowDocAutoInfo()
+    {
+        var docAutoSetting = await MyFoundationService.GetUsrSetting(TokenProvider.AccessToken, "DOC_AUTO_INFO");
+
+        if(docAutoSetting != null)
+        {
+            return docAutoSetting.Value == "True" ? true : false;
+        }
+
+        return false;
+    }
+
+    private void CreateTags()
+    {
+        var DescriptionTagModel = GetBaseTag();
+        DescriptionTagModel.Description = true;
+        DescriptionTag = CreateTag(System.Text.Json.JsonSerializer.Serialize<AutoDocTag>(DescriptionTagModel));
+
+        var StartDateTagModel = GetBaseTag();
+        StartDateTagModel.StartDate = true;
+        StartDateTag = CreateTag(System.Text.Json.JsonSerializer.Serialize<AutoDocTag>(StartDateTagModel));
+
+        var UserNameTagModel = GetBaseTag();
+        UserNameTagModel.UserName = true;
+        UserNameTag = CreateTag(System.Text.Json.JsonSerializer.Serialize<AutoDocTag>(UserNameTagModel));
+        UserName = GetUserNameForUserId(taskGroupHead.MainUserId);
+
+        var CompletionDateTagModel = GetBaseTag();
+        CompletionDateTagModel.CompletionDate = true;
+        CompletionDateTag = CreateTag(System.Text.Json.JsonSerializer.Serialize<AutoDocTag>(CompletionDateTagModel));
+        CompletionDate = !taskGroupHead.Completed ? taskGroupHead.CompletionDate : taskGroupHead.CompletedOnDate;
+
+        if(clientSummary != null)
+        {
+            var ClientNameTagModel = GetBaseTag();
+            ClientNameTagModel.ClientName = true;
+            ClientNameTag = CreateTag(System.Text.Json.JsonSerializer.Serialize<AutoDocTag>(ClientNameTagModel));
+
+            var MainContactNameTagModel = GetBaseTag();
+            MainContactNameTagModel.MainContactName = true;
+            MainContactNameTag = CreateTag(System.Text.Json.JsonSerializer.Serialize<AutoDocTag>(MainContactNameTagModel));
+
+            var MainContactPhoneTagModel = GetBaseTag();
+            MainContactPhoneTagModel.MainContactPhone = true;
+            MainContactPhoneTag = CreateTag(System.Text.Json.JsonSerializer.Serialize<AutoDocTag>(MainContactPhoneTagModel));
+
+            var MainContactEmailTagModel = GetBaseTag();
+            MainContactEmailTagModel.MainContactEmail = true;
+            MainContactEmailTag = CreateTag(System.Text.Json.JsonSerializer.Serialize<AutoDocTag>(MainContactEmailTagModel));
+        }
+    }
+
+    private async Task GetStartAndEndTags()
+    {
+        var startTagSetting = await MyFoundationService.GetSystemSetting(TokenProvider.AccessToken, "DOC_AUTO_START_TAG");
+        StartTag = startTagSetting.Value;
+        var endTagSetting = await MyFoundationService.GetSystemSetting(TokenProvider.AccessToken, "DOC_AUTO_END_TAG");
+        EndTag = EndTag = endTagSetting.Value;
+    }
+
+    private void ShowDocAutoTaskGroupHeaderInfo()
+    {
+        taskGroupHeadForm.Show();
+    }
+
+    private void HideDocAutoTaskGroupHeaderInfo()
+    {
+        taskGroupHeadForm.Hide();
+    }
+
+    private string CreateTag(string tagValue)
+    {
+        return $"{StartTag}{tagValue}{EndTag}";
+    }
+
+    private AutoDocTag GetBaseTag()
+    {
+        var autoDocTag = new AutoDocTag();
+
+        if(taskGroupHead.ParentTaskGroupId != null)
+        {
+            autoDocTag.TaskGroup = taskGroupHead.ShortName;
+        }
+
+        return autoDocTag;
+    }
+
+    private string GetUserNameForUserId(Guid userId)
+    {
+        if (userListModel != default)
+        {
+            return userListModel.Users.Where(u => u.Id == userId).FirstOrDefault().FullName;
+        }
+
+        return string.Empty;
+    }
+}

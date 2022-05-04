@@ -1,0 +1,10 @@
+﻿<BarItem>
+    <BarLink To="logout">
+        <BarIcon IconName="Blazorise.Icons.FontAwesome.FontAwesomeIcons.SignOutAlt" Class="fa-fw" />
+        Logout
+    </BarLink>
+</BarItem>
+
+@code {
+    [CascadingParameter(Name = "langQueryList")] LangQueryList langQueryList { get; set; }
+}

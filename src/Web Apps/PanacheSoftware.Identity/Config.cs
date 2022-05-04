@@ -1,11 +1,11 @@
 ﻿using IdentityModel;
-using IdentityServer4;
-using IdentityServer4.Models;
+using Duende.IdentityServer;
+using Duende.IdentityServer.Models;
 using PanacheSoftware.Core.Types;
 using System.Collections.Generic;
 using PanacheSoftware.Core.Domain.Configuration;
 using PanacheSoftware.Http;
-using static IdentityServer4.IdentityServerConstants;
+using static Duende.IdentityServer.IdentityServerConstants;
 
 namespace PanacheSoftware.Identity
 {
@@ -44,7 +44,9 @@ namespace PanacheSoftware.Identity
                 new ApiResource(PanacheSoftwareScopeNames.FoundationService){ UserClaims = { "tenantid" }, ApiSecrets = { new Secret(_panacheSoftwareConfiguration.Secret.FoundationServiceSecret.Sha256()) }, Scopes = {PanacheSoftwareScopeNames.FoundationService} },
                 new ApiResource(PanacheSoftwareScopeNames.TaskService){ UserClaims = { "tenantid" }, ApiSecrets = { new Secret(_panacheSoftwareConfiguration.Secret.TaskServiceSecret.Sha256()) }, Scopes = {PanacheSoftwareScopeNames.TaskService} },
                 new ApiResource(PanacheSoftwareScopeNames.FileService){ UserClaims = { "tenantid" }, ApiSecrets = { new Secret(_panacheSoftwareConfiguration.Secret.FileServiceSecret.Sha256()) }, Scopes = {PanacheSoftwareScopeNames.FileService} },
-                new ApiResource(PanacheSoftwareScopeNames.APIGateway){ UserClaims = {"tenantid"}, ApiSecrets = { new Secret(_panacheSoftwareConfiguration.Secret.APIGatewaySecret.Sha256()) }, Scopes = {PanacheSoftwareScopeNames.APIGateway}}
+                new ApiResource(PanacheSoftwareScopeNames.APIGateway){ UserClaims = {"tenantid"}, ApiSecrets = { new Secret(_panacheSoftwareConfiguration.Secret.APIGatewaySecret.Sha256()) }, Scopes = {PanacheSoftwareScopeNames.APIGateway}},
+                new ApiResource(PanacheSoftwareScopeNames.CustomFieldService){ UserClaims = {"tenantid"}, ApiSecrets = { new Secret(_panacheSoftwareConfiguration.Secret.CustomFieldServiceSecret.Sha256()) }, Scopes = {PanacheSoftwareScopeNames.CustomFieldService}},
+                new ApiResource(PanacheSoftwareScopeNames.AutomationService){ UserClaims = {"tenantid"}, ApiSecrets = { new Secret(_panacheSoftwareConfiguration.Secret.AutomationServiceSecret.Sha256()) }, Scopes = {PanacheSoftwareScopeNames.AutomationService}}
             };
         }
 
@@ -58,7 +60,9 @@ namespace PanacheSoftware.Identity
                 new ApiScope(name: PanacheSoftwareScopeNames.FoundationService, displayName:PanacheSoftwareScopeNames.FoundationService),
                 new ApiScope(name: PanacheSoftwareScopeNames.TaskService, displayName:PanacheSoftwareScopeNames.TaskService),
                 new ApiScope(name: PanacheSoftwareScopeNames.FileService, displayName:PanacheSoftwareScopeNames.FileService),
-                new ApiScope(name: PanacheSoftwareScopeNames.APIGateway, displayName:PanacheSoftwareScopeNames.APIGateway)
+                new ApiScope(name: PanacheSoftwareScopeNames.APIGateway, displayName:PanacheSoftwareScopeNames.APIGateway),
+                new ApiScope(name: PanacheSoftwareScopeNames.CustomFieldService, displayName:PanacheSoftwareScopeNames.CustomFieldService),
+                new ApiScope(name: PanacheSoftwareScopeNames.AutomationService, displayName:PanacheSoftwareScopeNames.AutomationService)
             };
         }
 
@@ -78,16 +82,16 @@ namespace PanacheSoftware.Identity
                     //Don't show consent page
                     RequireConsent = false,
 
-                    AllowedGrantTypes = GrantTypes.Code,
+                    AllowedGrantTypes = GrantTypes.CodeAndClientCredentials,
                     ClientSecrets = { new Secret(_panacheSoftwareConfiguration.Secret.UIClientSecret.Sha256()) },
 
                     RedirectUris = { $"{UIClientURL}/signin-oidc" },
-                    FrontChannelLogoutUri = $"{UIClientURL}/signout-oidc",
+                    //FrontChannelLogoutUri = $"{UIClientURL}/signout-oidc",
                     PostLogoutRedirectUris = { $"{UIClientURL}/signout-callback-oidc" },
 
                     AlwaysIncludeUserClaimsInIdToken = true,
 
-                    AccessTokenType = AccessTokenType.Reference,
+                    AccessTokenType = AccessTokenType.Jwt,
 
                     AllowOfflineAccess = true,
                     AllowedScopes = {
@@ -102,7 +106,9 @@ namespace PanacheSoftware.Identity
                         PanacheSoftwareScopeNames.FoundationService,
                         PanacheSoftwareScopeNames.TaskService,
                         PanacheSoftwareScopeNames.FileService,
-                        PanacheSoftwareScopeNames.APIGateway
+                        PanacheSoftwareScopeNames.APIGateway,
+                        PanacheSoftwareScopeNames.CustomFieldService,
+                        PanacheSoftwareScopeNames.AutomationService
                     }
                 },
             };

@@ -1,0 +1,305 @@
+﻿@attribute [Authorize]
+@inject UserAppCache UserAppCache
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@using PanacheSoftware.Core.Domain.API.CustomField
+
+ 
+    <Card Margin="Margin.Is4.OnY">
+        <CardHeader>
+            <CardTitle>@LanguageHelper.GetTitle(langQueryList, 11001)</CardTitle>
+        </CardHeader>
+        <CardBody>
+            @if (customFieldGroupLnkList != null)
+            {
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12">
+                        @if (customFieldGroupLnkList.CustomFieldGroupLinks != null)
+                        {
+                            <DataGrid TItem="CustomFieldGroupLnk"
+                                      Data="@customFieldGroupLnkList.CustomFieldGroupLinks"
+                                      Filterable="true"
+                                      FilterMethod="DataGridFilterMethod.StartsWith"
+                                      PageSize="25"
+                                      Striped="true"
+                                      Bordered="true"
+                                      Hoverable="true"
+                                      Responsive="true"
+                                      ShowPager="true"
+                                      PagerPosition="DataGridPagerPosition.Bottom"
+                                      ShowPageSizes="true"
+                                      Editable="@CustomFieldGroupTableEditable"
+                                      EditMode="DataGridEditMode.Form"
+                                      NewItemDefaultSetter="@OnCustomFieldGroupLnkNewItemDefaultSetter">
+                                <EmptyTemplate>No records...</EmptyTemplate>
+                                <DataGridColumns>
+                                    <DataGridCommandColumn TItem="CustomFieldGroupLnk" Width="170px">
+                                        <NewCommandTemplate>
+                                            @if (CustomFieldGroupTableEditable)
+                                            {
+                                                <Button Color="Color.Success" Clicked="@context.Clicked">New</Button>
+                                            }
+                                        </NewCommandTemplate>
+                                        <EditCommandTemplate>
+                                            <Button Color="Color.Primary" Clicked="@context.Clicked">Edit</Button>
+                                        </EditCommandTemplate>
+                                        <SaveCommandTemplate>
+                                            <Button Color="Color.Primary" Clicked="@context.Clicked">Save</Button>
+                                        </SaveCommandTemplate>
+                                        <DeleteCommandTemplate>
+                                            @*<Button Color="Color.Danger" Clicked="@context.Clicked">Delete</Button>*@
+                                        </DeleteCommandTemplate>
+                                        <CancelCommandTemplate>
+                                            <Button Color="Color.Secondary" Clicked="@context.Clicked">Cancel</Button>
+                                        </CancelCommandTemplate>
+                                        <ClearFilterCommandTemplate>
+                                            <Button Color="Color.Warning" Clicked="@context.Clicked">Clear Filter</Button>
+                                        </ClearFilterCommandTemplate>
+                                    </DataGridCommandColumn>
+                                    <DataGridColumn TItem="CustomFieldGroupLnk" Field="@nameof(CustomFieldGroupLnk.CustomFieldGroupHeaderIdString)" Caption="@LanguageHelper.GetTitle(langQueryList, 11006)" Editable="true">
+                                        <DisplayTemplate>
+                                            @{
+                                                var customFieldGroupDescription = CustomFieldGroupListValues.Where(t => t.ValueField == context.CustomFieldGroupHeaderIdString).FirstOrDefault().DescriptionField;
+
+                                                @($"{customFieldGroupDescription}")
+                                            }
+                                        </DisplayTemplate>
+                                        <EditTemplate>
+                                            @{
+                                                if (context.Item.Id == Guid.Empty)
+                                                {
+                                                    <SelectList TItem="SelectListModel" TValue="string" Data="@CustomFieldGroupListValues" TextField="@((item) => item.DescriptionField)" ValueField="@((item) => item.ValueField)" SelectedValue="@((string)(context.CellValue))" SelectedValueChanged="@(e => { context.CellValue = e; })" />
+                                                }
+                                                else
+                                                {
+                                                    var customFieldGroupDescription = CustomFieldGroupListValues.Where(t => t.ValueField == context.CellValue.ToString()).FirstOrDefault().DescriptionField;
+
+                                                    <TextEdit Text="@customFieldGroupDescription" ReadOnly="true"></TextEdit>
+                                                }
+                                            }
+                                        </EditTemplate>
+                                    </DataGridColumn>
+                                    <DataGridColumn TItem="CustomFieldGroupLnk" Field="@nameof(CustomFieldGroupLnk.Status)" Caption="@LanguageHelper.GetTitle(langQueryList, 10201)" Editable="true">
+                                        <EditTemplate>
+                                            <SelectList TItem="SelectListModel" TValue="string" Data="@StatusSelectListValues" TextField="@((item)=>item.DescriptionField)" ValueField="@((item)=>item.ValueField)" SelectedValue="@((string)( context.CellValue ))" SelectedValueChanged="@(e => { context.CellValue = e; })" />
+                                        </EditTemplate>
+                                    </DataGridColumn>
+
+                                </DataGridColumns>
+                            </DataGrid>
+                        }
+                        else
+                        {
+                            <p>Loading...</p>
+                        }
+                    </Column>
+                </Row>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12">
+                        <PLAlert includeSnackBar="true" includeAlert="false" @ref="plAlert" />
+                    </Column>
+                </Row>
+                @if (showSave)
+                {
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Button Type="ButtonType.Submit" Color="Color.Primary" PreventDefaultOnSubmit="true" Clicked="@SaveFieldGroupLinks" Loading="@SavingFieldGroup">@LanguageHelper.GetTitle(langQueryList, 10229)</Button>
+                        </Column>
+                    </Row>
+                }
+            }
+            else
+            {
+                <Row>
+                    <Column>
+                        Loading....
+                    </Column>
+                </Row>
+            }
+        </CardBody>
+    </Card>
+
+
+@code {
+    [Parameter]
+    public string linkType { get; set; }
+    [Parameter]
+    public Guid linkId { get; set; }
+    [Parameter]
+    public bool showSave { get; set; }
+    LangQueryList langQueryList { get; set; }
+    CustomFieldGroupLnkList customFieldGroupLnkList { get; set; }
+    IEnumerable<SelectListModel> StatusSelectListValues { get; set; }
+    IEnumerable<SelectListModel> CustomFieldGroupListValues { get; set; }
+    bool SavingFieldGroup = false;
+    PLAlert plAlert { get; set; }
+    bool CustomFieldGroupTableEditable = false;
+
+    [Parameter]
+    public EventCallback<Task> CustomFieldGroupChange { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetLanguageList();
+        await CreateSelectListModels();
+        await GetCustomFieldGroupLink();
+        CustomFieldGroupTableEditable = CustomFieldGroupListValues.Any();
+    }
+
+    private async Task GetLanguageList()
+    {
+        var textCodes = new List<long>();
+        textCodes.Add(11001);
+        textCodes.Add(11006);
+        textCodes.Add(10201);
+        textCodes.Add(11010);
+        textCodes.Add(10229);
+
+        langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, UserAppCache.LanguageCode, textCodes.ToArray());
+    }
+
+    private async Task GetCustomFieldGroupLink()
+    {
+        customFieldGroupLnkList = new CustomFieldGroupLnkList();
+
+        if (linkId != Guid.Empty && !string.IsNullOrWhiteSpace(linkType))
+        {
+            var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.CUSTOMFIELD, $"CustomFieldGroupLink/GetLinks/{linkType}/{linkId}");
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                customFieldGroupLnkList = response.ContentAsType<CustomFieldGroupLnkList>();
+            }
+        }
+    }
+
+    private async Task CreateSelectListModels()
+    {
+        StatusTypes statusTypes = new StatusTypes();
+        StatusSelectListValues = statusTypes.GetStatusTypesDictionary().Select(s => new SelectListModel { ValueField = s.Key, DescriptionField = s.Value });
+        await CreateCustomFieldGroupSelectList();
+    }
+
+    private async Task CreateCustomFieldGroupSelectList()
+    {
+        var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.CUSTOMFIELD, $"CustomFieldGroup");
+
+        Dictionary<string, string> CustomFieldGroupListDictionary = new Dictionary<string, string>();
+        //CustomFieldGroupListDictionary.Add(Guid.Empty.ToString(), "None");
+
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var customFieldGroupList = response.ContentAsType<CustomFieldGroupList>();
+
+            foreach (var customFieldGroupHeader in customFieldGroupList.CustomFieldGroupHeaders.OrderBy(h => h.ShortName))
+            {
+                CustomFieldGroupListDictionary.Add(customFieldGroupHeader.Id.ToString(), customFieldGroupHeader.ShortName);
+            }
+        }
+
+        CustomFieldGroupListValues = CustomFieldGroupListDictionary.Select(s => new SelectListModel { ValueField = s.Key, DescriptionField = s.Value });
+    }
+
+    public async Task<bool> SaveFieldGroup(Guid updatedId = default(Guid))
+    {
+        if (updatedId != Guid.Empty)
+        {
+            linkId = updatedId;
+
+            await SaveFieldGroupLinks();
+            return plAlert.alertModel.AlertType == "Danger" ? false : true;
+        }
+
+        return false;
+    }
+
+    public void ResetCustomFieldGroupLinks()
+    {
+        HideMessages();
+        customFieldGroupLnkList.CustomFieldGroupLinks = new List<CustomFieldGroupLnk>();
+        StateHasChanged();
+    }
+
+    private void HideMessages()
+    {
+        plAlert.HideAlert();
+    }
+
+    private async Task SaveFieldGroupLinks()
+    {
+        SavingFieldGroup = true;
+        var saveResult = await SaveCustomFieldGroups();
+
+        plAlert.ShowAlert(saveResult.Item1, saveResult.Item2);
+        await CustomFieldGroupChange.InvokeAsync();
+        SavingFieldGroup = false;
+    }
+
+    private async Task<Tuple<bool, string>> SaveCustomFieldGroups()
+    {
+        if (customFieldGroupLnkList != null)
+        {
+            if (linkId != Guid.Empty)
+            {
+                for (int i = 0; i < customFieldGroupLnkList.CustomFieldGroupLinks.Count; i++)
+                {
+                    if (customFieldGroupLnkList.CustomFieldGroupLinks[i].LinkId == Guid.Empty)
+                        customFieldGroupLnkList.CustomFieldGroupLinks[i].LinkId = linkId;
+
+                    customFieldGroupLnkList.CustomFieldGroupLinks[i].LinkType = linkType;
+
+                    if(customFieldGroupLnkList.CustomFieldGroupLinks[i].Id != Guid.Empty)
+                    {
+                        var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.CUSTOMFIELD, $"CustomFieldGroupLink/{customFieldGroupLnkList.CustomFieldGroupLinks[i].Id}");
+
+                        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                        {
+                            var foundCustomFieldGroupLink = response.ContentAsType<CustomFieldGroupLnk>();
+
+                            if (foundCustomFieldGroupLink != null)
+                            {
+                                var processPatchResult = await MyFoundationService.ProcessPatch(foundCustomFieldGroupLink, customFieldGroupLnkList.CustomFieldGroupLinks[i], foundCustomFieldGroupLink.Id, TokenProvider.AccessToken, APITypes.CUSTOMFIELD, "CustomFieldGroupLink");
+                                if (!processPatchResult.Item1)
+                                {
+                                    return processPatchResult;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        HttpContent contentPost = new StringContent(JsonConvert.SerializeObject(customFieldGroupLnkList.CustomFieldGroupLinks[i]), Encoding.UTF8, "application/json");
+
+                        try
+                        {
+                            var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Post, APITypes.CUSTOMFIELD, $"CustomFieldGroupLink", contentPost);
+
+                            if (response.StatusCode != System.Net.HttpStatusCode.Created)
+                            {
+                                return new Tuple<bool, string>(false, MyFoundationService.GetErrorFromResponse(response));
+                            }
+
+                            customFieldGroupLnkList.CustomFieldGroupLinks[i] = response.ContentAsType<CustomFieldGroupLnk>();
+                        }
+                        catch (Exception ex)
+                        {
+                            return new Tuple<bool, string>(false, $"Error calling API: {ex.Message}");
+                        }
+                    }
+                }
+            }
+
+            return new Tuple<bool, string>(true, $"Custom Field Group links saved");
+        }
+
+        return new Tuple<bool, string>(false, $"No custom field group to save");
+    }
+
+    void OnCustomFieldGroupLnkNewItemDefaultSetter(CustomFieldGroupLnk customFieldGroupLnk)
+    {
+        if (CustomFieldGroupListValues.Any())
+            customFieldGroupLnk.CustomFieldGroupHeaderIdString = CustomFieldGroupListValues.First().ValueField;
+    }
+
+
+}

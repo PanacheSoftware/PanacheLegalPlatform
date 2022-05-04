@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <Deterministic>False</Deterministic>
     <AssemblyVersion>0.1.*</AssemblyVersion>
     <FileVersion>0.1.0.0</FileVersion>
@@ -9,9 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="IdentityModel" Version="4.4.0" />
-    <PackageReference Include="CompareNETObjects" Version="4.67.0" />
-    <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="5.0.0" />
+    <PackageReference Include="IdentityModel" Version="6.0.0" />
+    <PackageReference Include="CompareNETObjects" Version="4.76.0" />
+    <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="6.0.3" />
+    <PackageReference Include="Microsoft.OpenApi" Version="1.2.3" />
+    <PackageReference Include="Microsoft.OpenApi.Readers" Version="1.2.3" />
   </ItemGroup>
 
   <ItemGroup>

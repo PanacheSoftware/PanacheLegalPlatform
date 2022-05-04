@@ -1,9 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PanacheSoftware.Core.Domain.Core;
 using PanacheSoftware.Database.Core.Repositories;
+using PanacheSoftware.Database.Domain;
+using PanacheSoftware.Database.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace PanacheSoftware.Database.Repositories
 {
@@ -75,6 +79,12 @@ namespace PanacheSoftware.Database.Repositories
         public bool Any()
         {
             return _entities.Any();
+        }
+
+        public async Task<PaginatedList<TEntity>> GetPaginatedListAsync(Pagination pagination, int pageSize)
+        {
+            var foundValues = _entities.OrderByDynamic(pagination.SortField, pagination.SortOrder);
+            return await PaginatedList<TEntity>.CreateAsync(foundValues.AsNoTracking(), pagination.PageNumber, pageSize);
         }
     }
 }

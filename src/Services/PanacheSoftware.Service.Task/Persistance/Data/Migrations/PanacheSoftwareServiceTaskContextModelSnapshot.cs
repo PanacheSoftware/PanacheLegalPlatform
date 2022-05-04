@@ -2,7 +2,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PanacheSoftware.Service.Task.Persistance.Context;
 
@@ -15,217 +14,622 @@ namespace PanacheSoftware.Service.Task.Persistance.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "0.1.0")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn)
-                .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("Relational:MaxIdentifierLength", 64)
+                .HasAnnotation("ProductVersion", "5.0.11");
 
             modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.TaskDetail", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("char(36)");
 
-                    b.Property<Guid>("CreatedBy");
+                b.Property<Guid>("CreatedBy")
+                    .HasColumnType("char(36)");
 
-                    b.Property<DateTime>("CreatedDate");
+                b.Property<DateTime>("CreatedDate")
+                    .HasColumnType("datetime(6)");
 
-                    b.Property<Guid>("LastUpdateBy");
+                b.Property<Guid>("LastUpdateBy")
+                    .HasColumnType("char(36)");
 
-                    b.Property<DateTime>("LastUpdateDate");
+                b.Property<DateTime>("LastUpdateDate")
+                    .HasColumnType("datetime(6)");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(25)");
+                b.Property<string>("Status")
+                    .IsRequired()
+                    .HasColumnType("longtext");
 
-                    b.Property<Guid>("TaskHeaderId");
+                b.Property<Guid>("TaskHeaderId")
+                    .HasColumnType("char(36)");
 
-                    b.Property<Guid>("TenantId");
+                b.Property<Guid>("TenantId")
+                    .HasColumnType("char(36)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("TaskHeaderId")
-                        .IsUnique();
+                b.HasIndex("TaskHeaderId")
+                    .IsUnique();
 
-                    b.ToTable("TaskDetail");
-                });
+                b.ToTable("TaskDetail");
+            });
 
             modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.TaskGroupDetail", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("char(36)");
 
-                    b.Property<Guid>("CreatedBy");
+                b.Property<Guid>("CreatedBy")
+                    .HasColumnType("char(36)");
 
-                    b.Property<DateTime>("CreatedDate");
+                b.Property<DateTime>("CreatedDate")
+                    .HasColumnType("datetime(6)");
 
-                    b.Property<Guid>("LastUpdateBy");
+                b.Property<Guid>("LastUpdateBy")
+                    .HasColumnType("char(36)");
 
-                    b.Property<DateTime>("LastUpdateDate");
+                b.Property<DateTime>("LastUpdateDate")
+                    .HasColumnType("datetime(6)");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(25)");
+                b.Property<string>("Status")
+                    .IsRequired()
+                    .HasColumnType("longtext");
 
-                    b.Property<Guid>("TaskGroupHeaderId");
+                b.Property<Guid>("TaskGroupHeaderId")
+                    .HasColumnType("char(36)");
 
-                    b.Property<Guid>("TenantId");
+                b.Property<Guid>("TenantId")
+                    .HasColumnType("char(36)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("TaskGroupHeaderId")
-                        .IsUnique();
+                b.HasIndex("TaskGroupHeaderId")
+                    .IsUnique();
 
-                    b.ToTable("TaskGroupDetail");
-                });
+                b.ToTable("TaskGroupDetail");
+            });
 
             modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.TaskGroupHeader", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("char(36)");
 
-                    b.Property<Guid>("ClientHeaderId");
+                b.Property<Guid>("ClientHeaderId")
+                    .HasColumnType("char(36)");
 
-                    b.Property<bool>("Completed")
-                        .HasColumnType("bit");
+                b.Property<bool>("Completed")
+                    .HasColumnType("tinyint(1)");
 
-                    b.Property<DateTime>("CompletedOnDate");
+                b.Property<DateTime>("CompletedOnDate")
+                    .HasColumnType("datetime(6)");
 
-                    b.Property<DateTime>("CompletionDate");
+                b.Property<DateTime>("CompletionDate")
+                    .HasColumnType("datetime(6)");
 
-                    b.Property<Guid>("CreatedBy");
+                b.Property<Guid>("CreatedBy")
+                    .HasColumnType("char(36)");
 
-                    b.Property<DateTime>("CreatedDate");
+                b.Property<DateTime>("CreatedDate")
+                    .HasColumnType("datetime(6)");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(4000)");
+                b.Property<string>("Description")
+                    .HasColumnType("longtext");
 
-                    b.Property<Guid>("LastUpdateBy");
+                b.Property<Guid>("LastUpdateBy")
+                    .HasColumnType("char(36)");
 
-                    b.Property<DateTime>("LastUpdateDate");
+                b.Property<DateTime>("LastUpdateDate")
+                    .HasColumnType("datetime(6)");
 
-                    b.Property<string>("LongName")
-                        .HasColumnType("nvarchar(1000)");
+                b.Property<string>("LongName")
+                    .HasColumnType("longtext");
 
-                    b.Property<Guid>("MainUserId");
+                b.Property<Guid>("MainUserId")
+                    .HasColumnType("char(36)");
 
-                    b.Property<DateTime>("OriginalCompletionDate");
+                b.Property<DateTime>("OriginalCompletionDate")
+                    .HasColumnType("datetime(6)");
 
-                    b.Property<DateTime>("OriginalStartDate");
+                b.Property<DateTime>("OriginalStartDate")
+                    .HasColumnType("datetime(6)");
 
-                    b.Property<Guid?>("ParentTaskGroupId");
+                b.Property<Guid?>("ParentTaskGroupId")
+                    .HasColumnType("char(36)");
 
-                    b.Property<int>("SequenceNumber")
-                        .HasColumnType("int");
+                b.Property<int>("SequenceNumber")
+                    .HasColumnType("int");
 
-                    b.Property<string>("ShortName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(1000)");
+                b.Property<string>("ShortName")
+                    .IsRequired()
+                    .HasColumnType("longtext");
 
-                    b.Property<DateTime>("StartDate");
+                b.Property<DateTime>("StartDate")
+                    .HasColumnType("datetime(6)");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(25)");
+                b.Property<string>("Status")
+                    .IsRequired()
+                    .HasColumnType("longtext");
 
-                    b.Property<Guid>("TeamHeaderId");
+                b.Property<Guid>("TeamHeaderId")
+                    .HasColumnType("char(36)");
 
-                    b.Property<Guid>("TenantId");
+                b.Property<Guid>("TenantId")
+                    .HasColumnType("char(36)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("ParentTaskGroupId");
+                b.HasIndex("ParentTaskGroupId");
 
-                    b.ToTable("TaskGroupHeader");
-                });
+                b.ToTable("TaskGroupHeader");
+            });
 
             modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.TaskHeader", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("char(36)");
 
-                    b.Property<bool>("Completed")
-                        .HasColumnType("bit");
+                b.Property<bool>("Completed")
+                    .HasColumnType("tinyint(1)");
 
-                    b.Property<DateTime>("CompletedOnDate");
+                b.Property<DateTime>("CompletedOnDate")
+                    .HasColumnType("datetime(6)");
 
-                    b.Property<DateTime>("CompletionDate");
+                b.Property<DateTime>("CompletionDate")
+                    .HasColumnType("datetime(6)");
 
-                    b.Property<Guid>("CreatedBy");
+                b.Property<Guid>("CreatedBy")
+                    .HasColumnType("char(36)");
 
-                    b.Property<DateTime>("CreatedDate");
+                b.Property<DateTime>("CreatedDate")
+                    .HasColumnType("datetime(6)");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(4000)");
+                b.Property<string>("Description")
+                    .HasColumnType("longtext");
 
-                    b.Property<Guid>("LastUpdateBy");
+                b.Property<Guid>("LastUpdateBy")
+                    .HasColumnType("char(36)");
 
-                    b.Property<DateTime>("LastUpdateDate");
+                b.Property<DateTime>("LastUpdateDate")
+                    .HasColumnType("datetime(6)");
 
-                    b.Property<Guid>("MainUserId");
+                b.Property<Guid>("MainUserId")
+                    .HasColumnType("char(36)");
 
-                    b.Property<DateTime>("OriginalCompletionDate");
+                b.Property<DateTime>("OriginalCompletionDate")
+                    .HasColumnType("datetime(6)");
 
-                    b.Property<DateTime>("OriginalStartDate");
+                b.Property<DateTime>("OriginalStartDate")
+                    .HasColumnType("datetime(6)");
 
-                    b.Property<int>("SequenceNumber")
-                        .HasColumnType("int");
+                b.Property<int>("SequenceNumber")
+                    .HasColumnType("int");
 
-                    b.Property<DateTime>("StartDate");
+                b.Property<DateTime>("StartDate")
+                    .HasColumnType("datetime(6)");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(25)");
+                b.Property<string>("ShortName")
+                    .IsRequired()
+                    .HasColumnType("longtext");
 
-                    b.Property<Guid>("TaskGroupHeaderId");
+                b.Property<string>("Status")
+                    .IsRequired()
+                    .HasColumnType("longtext");
 
-                    b.Property<string>("TaskType")
-                        .HasColumnType("nvarchar(1000)");
+                b.Property<Guid>("TaskGroupHeaderId")
+                    .HasColumnType("char(36)");
 
-                    b.Property<Guid>("TenantId");
+                b.Property<string>("TaskType")
+                    .HasColumnType("longtext");
 
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(1000)");
+                b.Property<Guid>("TenantId")
+                    .HasColumnType("char(36)");
 
-                    b.HasKey("Id");
+                b.Property<string>("Title")
+                    .HasColumnType("longtext");
 
-                    b.HasIndex("TaskGroupHeaderId");
+                b.HasKey("Id");
 
-                    b.ToTable("TaskHeader");
-                });
+                b.HasIndex("TaskGroupHeaderId");
+
+                b.ToTable("TaskHeader");
+            });
+
+            modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.Template.TemplateDetail", b =>
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("char(36)");
+
+                b.Property<Guid>("CreatedBy")
+                    .HasColumnType("char(36)");
+
+                b.Property<DateTime>("CreatedDate")
+                    .HasColumnType("datetime(6)");
+
+                b.Property<string>("Description")
+                    .HasColumnType("longtext");
+
+                b.Property<Guid>("LastUpdateBy")
+                    .HasColumnType("char(36)");
+
+                b.Property<DateTime>("LastUpdateDate")
+                    .HasColumnType("datetime(6)");
+
+                b.Property<string>("Status")
+                    .IsRequired()
+                    .HasColumnType("longtext");
+
+                b.Property<Guid>("TemplateHeaderId")
+                    .HasColumnType("char(36)");
+
+                b.Property<Guid>("TenantId")
+                    .HasColumnType("char(36)");
+
+                b.Property<int>("TotalDays")
+                    .HasColumnType("int");
+
+                b.HasKey("Id");
+
+                b.HasIndex("TemplateHeaderId")
+                    .IsUnique();
+
+                b.ToTable("TemplateDetail");
+            });
+
+            modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.Template.TemplateGroupDetail", b =>
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("char(36)");
+
+                b.Property<Guid>("CreatedBy")
+                    .HasColumnType("char(36)");
+
+                b.Property<DateTime>("CreatedDate")
+                    .HasColumnType("datetime(6)");
+
+                b.Property<int>("DaysOffset")
+                    .HasColumnType("int");
+
+                b.Property<Guid>("LastUpdateBy")
+                    .HasColumnType("char(36)");
+
+                b.Property<DateTime>("LastUpdateDate")
+                    .HasColumnType("datetime(6)");
+
+                b.Property<string>("Status")
+                    .IsRequired()
+                    .HasColumnType("longtext");
+
+                b.Property<Guid>("TemplateGroupHeaderId")
+                    .HasColumnType("char(36)");
+
+                b.Property<Guid>("TenantId")
+                    .HasColumnType("char(36)");
+
+                b.Property<int>("TotalDays")
+                    .HasColumnType("int");
+
+                b.HasKey("Id");
+
+                b.HasIndex("TemplateGroupHeaderId")
+                    .IsUnique();
+
+                b.ToTable("TemplateGroupDetail");
+            });
+
+            modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.Template.TemplateGroupHeader", b =>
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("char(36)");
+
+                b.Property<Guid>("CreatedBy")
+                    .HasColumnType("char(36)");
+
+                b.Property<DateTime>("CreatedDate")
+                    .HasColumnType("datetime(6)");
+
+                b.Property<string>("Description")
+                    .HasColumnType("longtext");
+
+                b.Property<Guid>("LastUpdateBy")
+                    .HasColumnType("char(36)");
+
+                b.Property<DateTime>("LastUpdateDate")
+                    .HasColumnType("datetime(6)");
+
+                b.Property<string>("LongName")
+                    .HasColumnType("longtext");
+
+                b.Property<int>("SequenceNumber")
+                    .HasColumnType("int");
+
+                b.Property<string>("ShortName")
+                    .IsRequired()
+                    .HasColumnType("longtext");
+
+                b.Property<string>("Status")
+                    .IsRequired()
+                    .HasColumnType("longtext");
+
+                b.Property<Guid>("TemplateHeaderId")
+                    .HasColumnType("char(36)");
+
+                b.Property<Guid>("TenantId")
+                    .HasColumnType("char(36)");
+
+                b.HasKey("Id");
+
+                b.HasIndex("TemplateHeaderId");
+
+                b.ToTable("TemplateGroupHeader");
+            });
+
+            modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.Template.TemplateHeader", b =>
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("char(36)");
+
+                b.Property<Guid>("CreatedBy")
+                    .HasColumnType("char(36)");
+
+                b.Property<DateTime>("CreatedDate")
+                    .HasColumnType("datetime(6)");
+
+                b.Property<string>("Description")
+                    .HasColumnType("longtext");
+
+                b.Property<Guid>("LastUpdateBy")
+                    .HasColumnType("char(36)");
+
+                b.Property<DateTime>("LastUpdateDate")
+                    .HasColumnType("datetime(6)");
+
+                b.Property<string>("LongName")
+                    .HasColumnType("longtext");
+
+                b.Property<string>("ShortName")
+                    .IsRequired()
+                    .HasColumnType("longtext");
+
+                b.Property<string>("Status")
+                    .IsRequired()
+                    .HasColumnType("longtext");
+
+                b.Property<Guid>("TenantId")
+                    .HasColumnType("char(36)");
+
+                b.HasKey("Id");
+
+                b.ToTable("TemplateHeader");
+            });
+
+            modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.Template.TemplateItemDetail", b =>
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("char(36)");
+
+                b.Property<Guid>("CreatedBy")
+                    .HasColumnType("char(36)");
+
+                b.Property<DateTime>("CreatedDate")
+                    .HasColumnType("datetime(6)");
+
+                b.Property<int>("DaysOffset")
+                    .HasColumnType("int");
+
+                b.Property<Guid>("LastUpdateBy")
+                    .HasColumnType("char(36)");
+
+                b.Property<DateTime>("LastUpdateDate")
+                    .HasColumnType("datetime(6)");
+
+                b.Property<string>("Status")
+                    .IsRequired()
+                    .HasColumnType("longtext");
+
+                b.Property<Guid>("TemplateItemHeaderId")
+                    .HasColumnType("char(36)");
+
+                b.Property<Guid>("TenantId")
+                    .HasColumnType("char(36)");
+
+                b.Property<int>("TotalDays")
+                    .HasColumnType("int");
+
+                b.HasKey("Id");
+
+                b.HasIndex("TemplateItemHeaderId")
+                    .IsUnique();
+
+                b.ToTable("TemplateItemDetail");
+            });
+
+            modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.Template.TemplateItemHeader", b =>
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("char(36)");
+
+                b.Property<Guid>("CreatedBy")
+                    .HasColumnType("char(36)");
+
+                b.Property<DateTime>("CreatedDate")
+                    .HasColumnType("datetime(6)");
+
+                b.Property<string>("Description")
+                    .HasColumnType("longtext");
+
+                b.Property<Guid>("LastUpdateBy")
+                    .HasColumnType("char(36)");
+
+                b.Property<DateTime>("LastUpdateDate")
+                    .HasColumnType("datetime(6)");
+
+                b.Property<int>("SequenceNumber")
+                    .HasColumnType("int");
+
+                b.Property<string>("ShortName")
+                    .IsRequired()
+                    .HasColumnType("longtext");
+
+                b.Property<string>("Status")
+                    .IsRequired()
+                    .HasColumnType("longtext");
+
+                b.Property<string>("TaskType")
+                    .HasColumnType("longtext");
+
+                b.Property<Guid>("TemplateGroupHeaderId")
+                    .HasColumnType("char(36)");
+
+                b.Property<Guid>("TenantId")
+                    .HasColumnType("char(36)");
+
+                b.Property<string>("Title")
+                    .HasColumnType("longtext");
+
+                b.HasKey("Id");
+
+                b.HasIndex("TemplateGroupHeaderId");
+
+                b.ToTable("TemplateItemHeader");
+            });
 
             modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.TaskDetail", b =>
-                {
-                    b.HasOne("PanacheSoftware.Core.Domain.Task.TaskHeader", "TaskHeader")
-                        .WithOne("TaskDetail")
-                        .HasForeignKey("PanacheSoftware.Core.Domain.Task.TaskDetail", "TaskHeaderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+            {
+                b.HasOne("PanacheSoftware.Core.Domain.Task.TaskHeader", "TaskHeader")
+                    .WithOne("TaskDetail")
+                    .HasForeignKey("PanacheSoftware.Core.Domain.Task.TaskDetail", "TaskHeaderId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+
+                b.Navigation("TaskHeader");
+            });
 
             modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.TaskGroupDetail", b =>
-                {
-                    b.HasOne("PanacheSoftware.Core.Domain.Task.TaskGroupHeader", "TaskGroupHeader")
-                        .WithOne("TaskGroupDetail")
-                        .HasForeignKey("PanacheSoftware.Core.Domain.Task.TaskGroupDetail", "TaskGroupHeaderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+            {
+                b.HasOne("PanacheSoftware.Core.Domain.Task.TaskGroupHeader", "TaskGroupHeader")
+                    .WithOne("TaskGroupDetail")
+                    .HasForeignKey("PanacheSoftware.Core.Domain.Task.TaskGroupDetail", "TaskGroupHeaderId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+
+                b.Navigation("TaskGroupHeader");
+            });
 
             modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.TaskGroupHeader", b =>
-                {
-                    b.HasOne("PanacheSoftware.Core.Domain.Task.TaskGroupHeader", "ParentTaskGroup")
-                        .WithMany("ChildTaskGroups")
-                        .HasForeignKey("ParentTaskGroupId");
-                });
+            {
+                b.HasOne("PanacheSoftware.Core.Domain.Task.TaskGroupHeader", "ParentTaskGroup")
+                    .WithMany("ChildTaskGroups")
+                    .HasForeignKey("ParentTaskGroupId");
+
+                b.Navigation("ParentTaskGroup");
+            });
 
             modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.TaskHeader", b =>
-                {
-                    b.HasOne("PanacheSoftware.Core.Domain.Task.TaskGroupHeader", "TaskGroupHeader")
-                        .WithMany("ChildTasks")
-                        .HasForeignKey("TaskGroupHeaderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+            {
+                b.HasOne("PanacheSoftware.Core.Domain.Task.TaskGroupHeader", "TaskGroupHeader")
+                    .WithMany("ChildTasks")
+                    .HasForeignKey("TaskGroupHeaderId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+
+                b.Navigation("TaskGroupHeader");
+            });
+
+            modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.Template.TemplateDetail", b =>
+            {
+                b.HasOne("PanacheSoftware.Core.Domain.Task.Template.TemplateHeader", "TemplateHeader")
+                    .WithOne("TemplateDetail")
+                    .HasForeignKey("PanacheSoftware.Core.Domain.Task.Template.TemplateDetail", "TemplateHeaderId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+
+                b.Navigation("TemplateHeader");
+            });
+
+            modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.Template.TemplateGroupDetail", b =>
+            {
+                b.HasOne("PanacheSoftware.Core.Domain.Task.Template.TemplateGroupHeader", "TemplateGroupHeader")
+                    .WithOne("TemplateGroupDetail")
+                    .HasForeignKey("PanacheSoftware.Core.Domain.Task.Template.TemplateGroupDetail", "TemplateGroupHeaderId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+
+                b.Navigation("TemplateGroupHeader");
+            });
+
+            modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.Template.TemplateGroupHeader", b =>
+            {
+                b.HasOne("PanacheSoftware.Core.Domain.Task.Template.TemplateHeader", "TemplateHeader")
+                    .WithMany("TemplateGroupHeaders")
+                    .HasForeignKey("TemplateHeaderId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+
+                b.Navigation("TemplateHeader");
+            });
+
+            modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.Template.TemplateItemDetail", b =>
+            {
+                b.HasOne("PanacheSoftware.Core.Domain.Task.Template.TemplateItemHeader", "TemplateItemHeader")
+                    .WithOne("TemplateItemDetail")
+                    .HasForeignKey("PanacheSoftware.Core.Domain.Task.Template.TemplateItemDetail", "TemplateItemHeaderId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+
+                b.Navigation("TemplateItemHeader");
+            });
+
+            modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.Template.TemplateItemHeader", b =>
+            {
+                b.HasOne("PanacheSoftware.Core.Domain.Task.Template.TemplateGroupHeader", "TemplateGroupHeader")
+                    .WithMany("TemplateItemHeaders")
+                    .HasForeignKey("TemplateGroupHeaderId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+
+                b.Navigation("TemplateGroupHeader");
+            });
+
+            modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.TaskGroupHeader", b =>
+            {
+                b.Navigation("ChildTaskGroups");
+
+                b.Navigation("ChildTasks");
+
+                b.Navigation("TaskGroupDetail");
+            });
+
+            modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.TaskHeader", b =>
+            {
+                b.Navigation("TaskDetail");
+            });
+
+            modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.Template.TemplateGroupHeader", b =>
+            {
+                b.Navigation("TemplateGroupDetail");
+
+                b.Navigation("TemplateItemHeaders");
+            });
+
+            modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.Template.TemplateHeader", b =>
+            {
+                b.Navigation("TemplateDetail");
+
+                b.Navigation("TemplateGroupHeaders");
+            });
+
+            modelBuilder.Entity("PanacheSoftware.Core.Domain.Task.Template.TemplateItemHeader", b =>
+            {
+                b.Navigation("TemplateItemDetail");
+            });
 #pragma warning restore 612, 618
         }
     }

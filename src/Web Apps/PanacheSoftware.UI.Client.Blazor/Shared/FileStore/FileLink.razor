@@ -1,0 +1,81 @@
+﻿@attribute [Authorize]
+@inject UserAppCache UserAppCache
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@using PanacheSoftware.Core.Domain.API.File
+
+<br />
+<FileHistory fileHead="@fileHead" linkId="@linkId" linkType="@linkType" FileUploaded="@FileUploadedAction"/>
+@if (!string.IsNullOrWhiteSpace(@fileHead.FileVersions.OrderByDescending(v => v.VersionNumber).FirstOrDefault().URI))
+{
+    <Blazorise.Link To="@fileHead.FileVersions.OrderByDescending(v => v.VersionNumber).FirstOrDefault().URI" Target="Target.Blank">
+        @fileHead.FileDetail.FileTitle
+    </Blazorise.Link>
+}
+else
+{
+    <Blazorise.Link To="@GetFileDownloadLink()" Target="Target.Blank">
+        @fileHead.FileDetail.FileTitle
+    </Blazorise.Link>
+}
+    &nbsp;
+@switch (fileHead.FileDetail.FileExtension)
+{
+    case ".pdf":
+        <Icon Name="IconName.FilePdf" IconSize="IconSize.Large" />
+        break;
+    case ".docx":
+    case ".doc":
+        <Icon Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.FileWord" IconSize="IconSize.Large"  />
+        break;
+    case "URI":
+        <Icon Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.Link" IconSize="IconSize.Large" />
+        break;
+    default:
+        <Icon Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.File" IconSize="IconSize.Large" />
+        break;
+}
+    &nbsp;
+    @if(fileHead.FileDetail.Automated)
+    {
+        <Icon Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.Robot" IconSize="IconSize.Large" />
+    }
+
+@code {
+
+    [CascadingParameter]
+    LangQueryList langQueryList { get; set; }
+
+    [Parameter]
+    public Guid linkId { get; set; }
+
+    [Parameter]
+    public string linkType { get; set; }
+
+    [Parameter]
+    public FileHead fileHead { get; set; }
+
+    private string fileDownloadLink { get; set; }
+
+    private string GetFileDownloadLink()
+    {
+        if (fileHead == default)
+            return string.Empty;
+
+        return $"/File/Download/{fileHead.Id}/{Guid.Empty}/{fileHead.FileDetail.Automated}/{linkId}/{linkType}";
+    }
+
+    void FileUploadedAction(Tuple<bool, FileHead, FileVer> fileUploadResult)
+    {
+        if (fileUploadResult.Item1)
+        {
+            //if(fileUploadResult.Item3 != default)
+            //    fileHead.FileVersions.Add(fileUploadResult.Item3);
+
+            if (fileUploadResult.Item2 != default)
+                fileHead.FileDetail = fileUploadResult.Item2.FileDetail;
+        }
+
+        StateHasChanged();
+    }
+}

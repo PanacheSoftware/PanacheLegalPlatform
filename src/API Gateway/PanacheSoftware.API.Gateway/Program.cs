@@ -23,7 +23,7 @@ namespace PanacheSoftware.API.Gateway
                     webBuilder.ConfigureAppConfiguration((hostingContext, config) =>
                     {
                         config.SetBasePath(hostingContext.HostingEnvironment.ContentRootPath)
-                        .AddJsonFile("ocelot.json")
+                        //.AddJsonFile("ocelot.json")
                         .AddEnvironmentVariables();
                     });
                     webBuilder.UseStartup<Startup>();

@@ -1,0 +1,66 @@
+﻿@if (includeAlert)
+{
+    <Alert Color="@ColorHelper.GetAlertColor(alertModel.AlertType)" @bind-Visible="@alertModel.ShowAlert" Dismisable="true" @ref="alert">
+        <AlertMessage>
+            @alertModel.AlertMessage
+        </AlertMessage>
+        <AlertDescription>
+            @alertModel.AlertDescription
+        </AlertDescription>
+        <CloseButton />
+    </Alert>
+}
+@if (includeSnackBar)
+{
+    <PLSnackBar @ref="@plSnackBar" />
+}
+
+
+@code {
+    [Parameter]
+    public bool includeSnackBar { get; set; }
+
+    [Parameter]
+    public bool includeAlert { get; set; }
+
+    public AlertModel alertModel { get; set; }
+    private PLSnackBar plSnackBar { get; set; }
+    private Alert alert { get; set; }
+
+    protected override void OnInitialized()
+    {
+        alertModel = new AlertModel();
+    }
+
+    //protected override async Task OnInitializedAsync()
+    //{
+    //    alertModel = new AlertModel();
+    //}
+
+    public void ShowAlert(bool success, string message)
+    {
+        alertModel.ShowAlert = true;
+        alertModel.AlertType = success ? "Success" : "Danger";
+        alertModel.AlertMessage = message;
+
+        if (includeSnackBar)
+        {
+            plSnackBar.ShowSnackBar(success, message);
+        }
+        StateHasChanged();
+    }
+
+    public void HideAlert()
+    {
+        alertModel.ShowAlert = false;
+        if (includeAlert)
+        {
+            alert.Hide();
+        }
+        if (includeSnackBar)
+        {
+            plSnackBar.HideSnackBar();
+        }
+        StateHasChanged();
+    }
+}

@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using IdentityServer4.AccessTokenValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -16,6 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PanacheSoftware.Core.Domain.Configuration;
 using PanacheSoftware.Core.Types;
@@ -64,22 +65,37 @@ namespace PanacheSoftware.Service.Team
             services.AddMvc(options =>
             {
                 options.EnableEndpointRouting = false;
-            }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            });
+                //.SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
             services.AddAuthorization();
 
-            services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
-                .AddIdentityServerAuthentication(options =>
+            Action<JwtBearerOptions> jwtOptions = o =>
+            {
+                o.Authority = bool.Parse(panacheSoftwareConfiguration.CallMethod.UICallsSecure) ? panacheSoftwareConfiguration.Url.IdentityServerURLSecure : panacheSoftwareConfiguration.Url.IdentityServerURL;
+                o.Audience = PanacheSoftwareScopeNames.TeamService;
+                o.RequireHttpsMetadata = false;
+                o.TokenValidationParameters = new TokenValidationParameters
                 {
-                    // base-address of your identityserver
-                    options.Authority = bool.Parse(panacheSoftwareConfiguration.CallMethod.UICallsSecure) ? panacheSoftwareConfiguration.Url.IdentityServerURLSecure : panacheSoftwareConfiguration.Url.IdentityServerURL;
+                    ValidateAudience = true,
+                };
+            };
 
-                    // name of the API resource
-                    options.ApiName = PanacheSoftwareScopeNames.TeamService;
-                    options.ApiSecret = panacheSoftwareConfiguration.Secret.TeamServiceSecret;
-                    options.RequireHttpsMetadata = false;
-                    //options.EnableCaching = true;
-                });
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(jwtOptions);
+
+            //services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
+            //    .AddIdentityServerAuthentication(options =>
+            //    {
+            //        // base-address of your identityserver
+            //        options.Authority = bool.Parse(panacheSoftwareConfiguration.CallMethod.UICallsSecure) ? panacheSoftwareConfiguration.Url.IdentityServerURLSecure : panacheSoftwareConfiguration.Url.IdentityServerURL;
+
+            //        // name of the API resource
+            //        options.ApiName = PanacheSoftwareScopeNames.TeamService;
+            //        options.ApiSecret = panacheSoftwareConfiguration.Secret.TeamServiceSecret;
+            //        options.RequireHttpsMetadata = false;
+            //        //options.EnableCaching = true;
+            //    });
 
             //services.AddAuthentication("Bearer")
             //    .AddJwtBearer("Bearer", options =>

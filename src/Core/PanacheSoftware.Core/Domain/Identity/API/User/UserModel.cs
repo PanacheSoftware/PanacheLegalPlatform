@@ -32,7 +32,8 @@ namespace PanacheSoftware.Core.Domain.Identity.API
         public string FullName { get; set; }
         [Required(AllowEmptyStrings = true)]
         public string Base64ProfileImage { get; set; }
-        [Required, DataType(DataType.EmailAddress, ErrorMessage = "Must be a valid Email address")]
+        [Required]
+        [EmailAddress(ErrorMessage = "Must be a valid Email address")]
         public string Email { get; set; }
         [Required, DataType(DataType.DateTime, ErrorMessage = "Must be a valid DateTime")]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]

@@ -11,6 +11,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using PanacheSoftware.Core.Domain.Configuration;
+using Microsoft.OpenApi.Readers;
+using Microsoft.OpenApi.Models;
+using PanacheSoftware.Core.Domain.Ocelot;
 
 namespace PanacheSoftware.Http
 {
@@ -87,6 +90,18 @@ namespace PanacheSoftware.Http
             return null;
         }
 
+        public async Task<UsrSetting> GetUserSetting(string accessToken, string settingName)
+        {
+            var response = await MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FOUNDATION, $"Setting/UserSetting/{settingName}");
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                return response.ContentAsType<UsrSetting>();
+            }
+
+            return null;
+        }
+
         public async Task<List<Guid>> GetTeamsForUserId(string accessToken, string userId)
         {
             var userTeams = new List<Guid>();
@@ -136,16 +151,19 @@ namespace PanacheSoftware.Http
             return langQueryList;
         }
 
-        public string GetBaseURL(string apiType)
+        public string GetBaseURL(string apiType, bool ignoreGateway = false)
         {
             var panacheSoftwareConfiguration = new PanacheSoftwareConfiguration();
             _configuration.Bind("PanacheSoftware", panacheSoftwareConfiguration);
 
-            //If appsttings specifies we should use the API gateway force all API requests through their
-            if(bool.Parse(panacheSoftwareConfiguration.CallMethod.UseAPIGateway))
-                return bool.Parse(panacheSoftwareConfiguration.CallMethod.APICallsSecure)
-                    ? panacheSoftwareConfiguration.Url.APIGatewayURLSecure
-                    : panacheSoftwareConfiguration.Url.APIGatewayURL;
+            if (!ignoreGateway)
+            {
+                //If appsttings specifies we should use the API gateway force all API requests through their
+                if (bool.Parse(panacheSoftwareConfiguration.CallMethod.UseAPIGateway))
+                    return bool.Parse(panacheSoftwareConfiguration.CallMethod.APICallsSecure)
+                        ? panacheSoftwareConfiguration.Url.APIGatewayURLSecure
+                        : panacheSoftwareConfiguration.Url.APIGatewayURL;
+            }
 
             //Otherwise return the URL specific to the APIType passed in
             switch (apiType)
@@ -182,6 +200,14 @@ namespace PanacheSoftware.Http
                     return bool.Parse(panacheSoftwareConfiguration.CallMethod.APICallsSecure)
                         ? panacheSoftwareConfiguration.Url.UIClientURLSecure
                         : panacheSoftwareConfiguration.Url.UIClientURL;
+                case APITypes.CUSTOMFIELD:
+                    return bool.Parse(panacheSoftwareConfiguration.CallMethod.APICallsSecure)
+                        ? panacheSoftwareConfiguration.Url.CustomFieldServiceURLSecure
+                        : panacheSoftwareConfiguration.Url.CustomFieldServiceURL;
+                case APITypes.AUTOMATION:
+                    return bool.Parse(panacheSoftwareConfiguration.CallMethod.APICallsSecure)
+                        ? panacheSoftwareConfiguration.Url.AutomationServiceURLSecure
+                        : panacheSoftwareConfiguration.Url.AutomationServiceURL;
             }
 
             return string.Empty;
@@ -197,6 +223,154 @@ namespace PanacheSoftware.Http
             }
 
             return true;
+        }
+
+        public async Task<bool> CheckGatewayConfig(string accessToken)
+        {
+            //If no accesstoken we won't be able to query the gateway so just assume it's okay, it
+            //will be checked again once there is a valid token.
+            if (string.IsNullOrWhiteSpace(accessToken))
+                return true;
+
+            var response = await MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.GATEWAY, $"administration/configuration");
+
+            if(response.IsSuccessStatusCode)
+            {
+                var gatewayConfig = response.ContentAsType<Root>();
+
+                if(gatewayConfig != null)
+                {
+                    if(gatewayConfig.Routes != null)
+                    {
+                        if(gatewayConfig.Routes.Count > 0)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        public async Task<bool> CreateBaseGatewayConfig(string accessToken)
+        {
+            //var apiList = new APIList();
+
+            //apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.FOUNDATION, true), string.Empty));
+            //apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.TEAM, true), string.Empty));
+            //apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.IDENTITY, true), string.Empty));
+            //apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.TASK, true), string.Empty));
+            //apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.CLIENT, true), string.Empty));
+            //apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.CUSTOMFIELD, true), string.Empty));
+            //apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.FILE, true), string.Empty));
+            //apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.AUTOMATION, true), string.Empty));
+
+            var apiList = GetAPIList();
+
+            return await ProcessAPIConfig(accessToken, apiList, GetBaseURL(APITypes.GATEWAY));
+        }
+
+        public APIList GetAPIList()
+        {
+            var apiList = new APIList();
+
+            apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.FOUNDATION, true), string.Empty, apiName: APITypes.FOUNDATION));
+            apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.TEAM, true), string.Empty, apiName: APITypes.TEAM));
+            apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.IDENTITY, true), string.Empty, apiName: APITypes.IDENTITY));
+            apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.TASK, true), string.Empty, apiName: APITypes.TASK));
+            apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.CLIENT, true), string.Empty, apiName: APITypes.CLIENT));
+            apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.CUSTOMFIELD, true), string.Empty, apiName: APITypes.CUSTOMFIELD));
+            apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.FILE, true), string.Empty, apiName: APITypes.FILE));
+            apiList.APIListDetails.Add(new APIListDetail(GetBaseURL(APITypes.AUTOMATION, true), string.Empty, apiName: APITypes.AUTOMATION));
+
+            return apiList;
+        }
+
+        private async Task<OpenApiDocument> GetOpenAPIDocument(Uri APIBaseURI, string URIGetPart)
+        {
+            var httpClient = new HttpClient
+            {
+                BaseAddress = APIBaseURI
+            };
+
+            var stream = await httpClient.GetStreamAsync(URIGetPart);
+
+            return new OpenApiStreamReader().Read(stream, out var diagnostic);
+        }
+
+        public async Task<bool> ProcessAPIConfig(string accessToken, APIList apiList, string GatewayURI)
+        {
+            if(string.IsNullOrWhiteSpace(GatewayURI))
+                return false;
+
+            var OcelotConfiguration = new Root();
+            OcelotConfiguration.Routes = new List<Route>();
+
+            OcelotConfiguration.GlobalConfiguration = new GlobalConfiguration()
+            {
+                BaseUrl = GatewayURI
+            };
+
+            foreach (var apiDetail in apiList.APIListDetails)
+            {
+                var routes = await GenerateRoutes(apiDetail);
+
+                if(routes.Count > 0)
+                    OcelotConfiguration.Routes.AddRange(routes);
+            }
+
+            var JsonString = JsonConvert.SerializeObject(OcelotConfiguration);
+
+            HttpContent contentPost = new StringContent(JsonConvert.SerializeObject(OcelotConfiguration), Encoding.UTF8, "application/json");
+
+            var contentText = contentPost.ReadAsStringAsync();
+
+            var response = await MakeAPICallAsync(accessToken, HttpMethod.Post, APITypes.GATEWAY, $"administration/configuration", contentPost);
+
+            return response.IsSuccessStatusCode;
+        }
+
+        private async Task<IList<Route>> GenerateRoutes(APIListDetail apiListDetail)
+        {
+            var routes = new List<Route>();
+
+            var openAPIDocument = await GetOpenAPIDocument(apiListDetail.APIBaseURI, apiListDetail.APIGetPart);         
+
+            foreach (var path in openAPIDocument.Paths)
+            {
+                var route = new Route();
+
+                route.DownstreamPathTemplate = path.Key;
+                route.UpstreamPathTemplate = path.Key;
+                route.UpstreamHttpMethod = new List<string>();
+
+                foreach (var operation in path.Value.Operations)
+                {
+                    route.UpstreamHttpMethod.Add(operation.Key.ToString());
+                }
+
+                route.DownstreamScheme = apiListDetail.HttpPart;
+
+                route.AuthenticationOptions = new AuthenticationOptions()
+                {
+                    AuthenticationProviderKey = "GatewayKey"
+                };
+
+                route.DownstreamHostAndPorts = new List<DownstreamHostAndPort>();
+
+                route.DownstreamHostAndPorts.Add(new DownstreamHostAndPort()
+                {
+                    Host = apiListDetail.HostPart,
+                    Port = apiListDetail.PortPart
+                });
+
+                route.RouteIsCaseSensitive = true;
+
+                routes.Add(route);
+            }
+
+            return routes;
         }
 
         //public string GetScope(string apiType)

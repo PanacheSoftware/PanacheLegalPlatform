@@ -1,0 +1,108 @@
+﻿@page "/client/clients"
+@attribute [Authorize]
+@inject UserAppCache UserAppCache
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@using PanacheSoftware.Core.Domain.API.Client;
+
+<PageProgressBar @ref="@pageProgressBar" pageProgressColor="Color.Warning" pageProgressVisible="@loadingPage" />
+
+@if (!loadingPage)
+{
+    <Breadcrumb>
+        <BreadcrumbItem>
+            <BreadcrumbLink To="dashboard">@LanguageHelper.GetTitle(langQueryList, 10121)</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbItem Active="true">
+            <BreadcrumbLink>@LanguageHelper.GetTitle(langQueryList, 10105)</BreadcrumbLink>
+        </BreadcrumbItem>
+    </Breadcrumb>
+
+    <Card Margin="Margin.Is4.OnY">
+        <CardHeader>
+            <CardTitle>@LanguageHelper.GetTitle(langQueryList, 10105)</CardTitle>
+        </CardHeader>
+        <CardBody>
+            @if (clientList != null)
+            {
+                <DataGrid TItem="ClientHead"
+                          Data="@clientList.ClientHeaders"
+                          Filterable="true"
+                          FilterMethod="DataGridFilterMethod.StartsWith"
+                          PageSize="25"
+                          Striped="true"
+                          Bordered="true"
+                          Hoverable="true"
+                          Responsive="true"
+                          ShowPager="true"
+                          PagerPosition="DataGridPagerPosition.Bottom"
+                          ShowPageSizes="true">
+                    <EmptyTemplate>No records...</EmptyTemplate>
+                    <DataGridColumns>
+                        <DataGridColumn TItem="ClientHead" Field="@nameof(ClientHead.Id)" Caption="" Width="10px" Filterable="false" Sortable="false">
+                            <DisplayTemplate>
+                                <Button To="@($"client/{context.Id}")" Type="ButtonType.Link" Color="Color.Primary"><Icon Name="@("fa-edit")" /></Button>
+                            </DisplayTemplate>
+                        </DataGridColumn>
+                        <DataGridColumn TItem="ClientHead" Field="@nameof(ClientHead.ShortName)" Caption="@LanguageHelper.GetTitle(langQueryList, 10301)" />
+                        <DataGridColumn TItem="ClientHead" Field="@nameof(ClientHead.LongName)" Caption="@LanguageHelper.GetTitle(langQueryList, 10302)" />
+                        <DataGridColumn TItem="ClientHead" Field="@nameof(ClientHead.Description)" Caption="@LanguageHelper.GetTitle(langQueryList, 10200)" />
+                        <DataGridColumn TItem="ClientHead" Field="@nameof(ClientHead.Status)" Caption="@LanguageHelper.GetTitle(langQueryList, 10201)" />
+                        <DataGridColumn TItem="ClientHead" Field="@nameof(ClientHead.DateFrom)" Caption="@LanguageHelper.GetTitle(langQueryList, 10202)" DisplayFormat="{0:dd/MM/yyyy}" />
+                        <DataGridColumn TItem="ClientHead" Field="@nameof(ClientHead.DateTo)" Caption="@LanguageHelper.GetTitle(langQueryList, 10203)" DisplayFormat="{0:dd/MM/yyyy}" />
+                    </DataGridColumns>
+                </DataGrid>
+                <Button To="client" Color="Color.Success" Type="ButtonType.Link">@LanguageHelper.GetTitle(langQueryList, 10204)</Button>
+            }
+            else
+            {
+                <p>Loading...</p>
+            }
+        </CardBody>
+    </Card>
+}
+
+@code {
+    LangQueryList langQueryList { get; set; }
+    ClientList clientList { get; set; }
+    PageProgressBar pageProgressBar;
+    bool loadingPage = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetLanguageList();
+        await GetClients();
+        loadingPage = false;
+        pageProgressBar.ChangeVisibility(loadingPage);
+    }
+
+    private async Task GetLanguageList()
+    {
+        var textCodes = new List<long>();
+        textCodes.Add(10121);
+        textCodes.Add(10105);
+        textCodes.Add(10301);
+        textCodes.Add(10302);
+        textCodes.Add(10200);
+        textCodes.Add(10201);
+        textCodes.Add(10202);
+        textCodes.Add(10203);
+        textCodes.Add(10204);
+
+        langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, UserAppCache.LanguageCode, textCodes.ToArray());
+    }
+
+    private async Task GetClients()
+    {
+        var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.CLIENT, $"Client");
+
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            clientList = response.ContentAsType<ClientList>();
+        }
+        else
+        {
+            clientList = new ClientList();
+        }
+    }
+}

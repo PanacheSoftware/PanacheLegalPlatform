@@ -1,20 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using IdentityServer4.AccessTokenValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
+using Ocelot.Administration;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 using PanacheSoftware.Core.Domain.Configuration;
 using PanacheSoftware.Core.Types;
+using System;
 
 namespace PanacheSoftware.API.Gateway
 {
@@ -53,13 +50,28 @@ namespace PanacheSoftware.API.Gateway
                 o.ApiName = PanacheSoftwareScopeNames.APIGateway;
                 o.SupportedTokens = SupportedTokens.Both;
                 o.ApiSecret = panacheSoftwareConfiguration.Secret.APIGatewaySecret;
+                o.RequireHttpsMetadata = false;
             };
 
-            services.AddAuthentication()
+            Action<JwtBearerOptions> jwtOptions = o =>
+            {
+                o.Authority = bool.Parse(panacheSoftwareConfiguration.CallMethod.UICallsSecure) ? panacheSoftwareConfiguration.Url.IdentityServerURLSecure : panacheSoftwareConfiguration.Url.IdentityServerURL;
+                o.Audience = PanacheSoftwareScopeNames.APIGateway;
+                o.RequireHttpsMetadata = false;
+                o.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateAudience = true,
+                };
+            };
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                //.AddJwtBearer(jwtOptions);
                 .AddIdentityServerAuthentication(authenticationProviderKey, options);
 
             services.AddControllers();
-            services.AddOcelot(Configuration);
+            services
+                .AddOcelot(Configuration)
+                .AddAdministration("/administration", jwtOptions);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -74,6 +86,7 @@ namespace PanacheSoftware.API.Gateway
 
             app.UseRouting();
 
+            app.UseAuthentication().UseOcelot().Wait();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -81,7 +94,7 @@ namespace PanacheSoftware.API.Gateway
                 endpoints.MapControllers();
             });
 
-            app.UseAuthentication().UseOcelot().Wait();
+            
         }
     }
 }

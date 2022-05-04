@@ -1,0 +1,33 @@
+@import "./mixin";
+
+.default-theme {
+
+    $sidebar-bg-color: #2a445a;
+    $primary-color: #adadad;
+    $primary-highlight-color: #d8d8d8;
+    $border-color: #2a445a;
+    $submenu-bg-color: #2a445a;
+    $menu-icon-bg-color: #2a445a;
+    $menu-icon-color: #818896;
+    $menu-icon-highlight-color: #cbdb2a;
+    $menu-header-color: #868686;
+    $search-input-bg-color: #2a445a;
+    $footer-bg-color: #2a445a;
+    $shadow-color: #1d1d1d;
+    $scrollbar-color: #525965;
+
+    @include themes($sidebar-bg-color,
+    $primary-color,
+    $primary-highlight-color,
+    $border-color,
+    $submenu-bg-color,
+    $menu-icon-bg-color,
+    $menu-icon-color,
+    $menu-icon-highlight-color,
+    $menu-header-color,
+    $search-input-bg-color,
+    $footer-bg-color,
+    $shadow-color,
+    $scrollbar-color);    
+
+}

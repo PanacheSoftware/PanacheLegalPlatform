@@ -1,0 +1,59 @@
+﻿@page "/dashboard"
+@attribute [Authorize]
+@inject UserAppCache UserAppCache
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JsRuntime;
+
+<PageProgressBar @ref="@pageProgressBar" pageProgressColor="Color.Warning" pageProgressVisible="@loadingPage" />
+
+@if (!loadingPage)
+{
+    <Breadcrumb>
+        <BreadcrumbItem>
+            <BreadcrumbLink>@LanguageHelper.GetTitle(langQueryList, 10121)</BreadcrumbLink>
+        </BreadcrumbItem>
+    </Breadcrumb>
+
+    <Row>
+        <Column ColumnSize="ColumnSize.IsFull" Class="text-center">
+            <Button Color="Color.Primary" To="TaskGroup/CreateOrEdit" Type="ButtonType.Link"><Icon Name="@("fa-clipboard-list")" /> @LanguageHelper.GetTitle(langQueryList, 10113)</Button>
+            <Button Color="Color.Success" To="TaskGroup/TaskGroups" Type="ButtonType.Link"><Icon Name="@("fa-tasks")" /> @LanguageHelper.GetTitle(langQueryList, 10112)</Button>
+            <Button Color="Color.Info" Type="ButtonType.Link"><Icon Name="@("fa-address-card")" /> @LanguageHelper.GetTitle(langQueryList, 10807)</Button>
+            <Button Color="Color.Warning" Type="ButtonType.Link"><Icon Name="@("fa-users")" /> @LanguageHelper.GetTitle(langQueryList, 10408)</Button>
+        </Column>
+    </Row>
+}
+
+
+@code {
+    LangQueryList langQueryList { get; set; }
+    PageProgressBar pageProgressBar;
+    bool loadingPage = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        //await CheckGateway();
+        await GetLanguageList();
+        loadingPage = false;
+        pageProgressBar.ChangeVisibility(loadingPage);
+    }
+
+    //private async Task CheckGateway()
+    //{
+    //    await MyFoundationService.CheckBaseGatewayConfig(TokenProvider.AccessToken);    
+    //}
+
+    private async Task GetLanguageList()
+    {
+        var textCodes = new List<long>();
+        textCodes.Add(10112);
+        textCodes.Add(10113);
+        textCodes.Add(10121);
+        textCodes.Add(10408);
+        textCodes.Add(10807);
+
+        langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, UserAppCache.LanguageCode, textCodes.ToArray());
+    }
+}

@@ -1,0 +1,20 @@
+﻿<BarItem>
+    <BarDropdown>
+        <BarDropdownToggle>
+            <BarIcon IconName="@("fa-file-code")" Class="fa-fw"/>
+            @LanguageHelper.GetTitle(langQueryList, 10124)
+        </BarDropdownToggle>
+        <BarDropdownMenu>
+            <BarDropdownItem To="customfieldgroup/customfieldgroups">
+                @LanguageHelper.GetTitle(langQueryList, 10125)
+            </BarDropdownItem>
+            <BarDropdownItem To="customfieldgroup/">
+                @LanguageHelper.GetTitle(langQueryList, 10126)
+            </BarDropdownItem>
+        </BarDropdownMenu>
+    </BarDropdown>
+</BarItem>
+
+@code {
+    [CascadingParameter(Name = "langQueryList")] LangQueryList langQueryList { get; set; }
+}

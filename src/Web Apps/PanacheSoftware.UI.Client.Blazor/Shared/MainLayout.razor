@@ -1,0 +1,19 @@
+﻿@inherits LayoutComponentBase
+
+<Layout Sider="true">
+    <LayoutSider>
+        <LayoutSiderContent>
+            <SideBar />
+        </LayoutSiderContent>
+    </LayoutSider>
+    <Layout>
+        <LayoutHeader Fixed="true">
+            <Header />
+        </LayoutHeader>
+        <LayoutContent>
+            <Container Fluid="true" Margin="Margin.Is4.FromTop">
+                @Body
+            </Container>
+        </LayoutContent>
+    </Layout>
+</Layout>

@@ -35,11 +35,15 @@ namespace PanacheSoftware.Core.Domain.Configuration
         public string FoundationServiceURL { get; set; }
         public string TaskServiceURL { get; set; }
         public string TeamServiceURL { get; set; }
+        public string CustomFieldServiceURL { get; set; }
         public string ClientServiceURLSecure { get; set; }
         public string FileServiceURLSecure { get; set; }
         public string FoundationServiceURLSecure { get; set; }
         public string TaskServiceURLSecure { get; set; }
         public string TeamServiceURLSecure { get; set; }
+        public string CustomFieldServiceURLSecure { get; set; }
+        public string AutomationServiceURL { get; set; }
+        public string AutomationServiceURLSecure { get; set; }
     }
 
     public class SecretConfiguration
@@ -51,5 +55,7 @@ namespace PanacheSoftware.Core.Domain.Configuration
         public string FoundationServiceSecret { get; set; }
         public string TaskServiceSecret { get; set; }
         public string TeamServiceSecret { get; set; }
+        public string CustomFieldServiceSecret { get; set; }
+        public string AutomationServiceSecret { get; set; }
     }
 }

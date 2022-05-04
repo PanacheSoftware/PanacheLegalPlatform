@@ -1,0 +1,422 @@
+﻿@page "/template/{id?}"
+@attribute [Authorize]
+@inject UserAppCache UserAppCache
+@inject FoundationService MyFoundationService
+@inject TokenProvider TokenProvider
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@using PanacheSoftware.Core.Domain.API.Task
+@using PanacheSoftware.Core.Domain.API.Task.Template
+@using PanacheSoftware.Core.Domain.API.Team
+@using PanacheSoftware.Core.Domain.Identity.API
+@using PanacheSoftware.Core.Domain.API.Client
+@using PanacheSoftware.Core.Domain.UI
+
+<PageProgressBar @ref="@pageProgressBar" pageProgressColor="Color.Warning" pageProgressVisible="@loadingPage" />
+
+@if (!loadingPage)
+{
+    <Breadcrumb>
+        <BreadcrumbItem>
+            <BreadcrumbLink To="dashboard">@LanguageHelper.GetTitle(langQueryList, 10121)</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbItem>
+            <BreadcrumbLink To="template/templates">@LanguageHelper.GetTitle(langQueryList, 10127)</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbItem Active="true">
+            <BreadcrumbLink>@GetBreadCrumbTitle()</BreadcrumbLink>
+        </BreadcrumbItem>
+    </Breadcrumb>
+
+    @if (templateHeadModel.TemplateHeader != null)
+    {
+        <Form>
+            <Row>
+                <Column>
+                    <Card Margin="Margin.Is4.OnY"  Shadow="Shadow.Default">
+                        <CardHeader>
+                            <CardTitle>@GetBreadCrumbTitle()</CardTitle>
+                            @if(templateHeadModel.TemplateHeader.Id != Guid.Empty)
+                            {
+                                <Button To="@($"templateview/{templateHeadModel.TemplateHeader.Id}")" Type="ButtonType.Link" Color="Color.Primary" Float="Float.End"><Icon Name="IconName.List" /></Button>
+                            }
+                        </CardHeader>
+                        <CardBody>
+                            <Validations Mode="ValidationMode.Auto" Model="@templateHeadModel.TemplateHeader">
+                                <Row>
+                                    <Column ColumnSize="ColumnSize.Is6">
+                                        <Validation>
+                                            <Field>
+                                                <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10223)</FieldLabel>
+                                                <TextEdit @bind-Text="templateHeadModel.TemplateHeader.ShortName">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        </Validation>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is6">
+                                        <Validation>
+                                            <Field>
+                                                <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10218)</FieldLabel>
+                                                <TextEdit @bind-Text="templateHeadModel.TemplateHeader.LongName">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        </Validation>
+                                    </Column>
+                                </Row>
+                                <Row>
+                                    <Column ColumnSize="ColumnSize.Is12">
+                                        <Validation>
+                                            <Field>
+                                                <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10200)</FieldLabel>
+                                                <MemoEdit @bind-Text="@templateHeadModel.TemplateHeader.Description" Rows="5">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </MemoEdit>
+                                            </Field>
+                                        </Validation>
+                                    </Column>
+                                </Row>                              
+                            </Validations>
+                            @if (templateHeadModel.TemplateHeader.Id == Guid.Empty)
+                            {
+                                <Row>
+                                    <Column ColumnSize="ColumnSize.Is12">
+                                    <Field>
+                                        <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 11101)</FieldLabel>
+                                        <SelectList TItem="SelectListModel" TValue="string" Data="@TaskSelectListValues" TextField="@((item) => item.DescriptionField)" ValueField="@((item) => item.ValueField)" SelectedValue="@templateHeadModel.TaskGroupHeadId.ToString()" SelectedValueChanged="@TaskListValueChangedHandler" />
+                                    </Field>
+                                    </Column>
+                                </Row>
+                            }
+                        </CardBody>
+                    </Card>
+                </Column>
+            </Row>
+        </Form>
+        <Row>
+            <Column>
+                <Card Margin="Margin.Is4.OnY" Shadow="Shadow.Default">
+                    <CardHeader>
+                        <CardTitle>@LanguageHelper.GetTitle(langQueryList, 10225)</CardTitle>
+                    </CardHeader>
+                    <CardBody>
+                        <Validations Mode="ValidationMode.Auto" Model="@templateHeadModel.TemplateHeader">
+                            <Row>
+                                <Column ColumnSize="ColumnSize.Is6">
+                                    <Validation>
+                                        <Field>
+                                            <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 11103)</FieldLabel>
+                                            <NumericEdit @bind-Value="templateHeadModel.TemplateHeader.TemplateDetail.TotalDays" Disabled=@DetailDisabled>
+                                                <Feedback>
+                                                    <ValidationError />
+                                                </Feedback>
+                                            </NumericEdit>
+                                        </Field>
+                                    </Validation>
+                                </Column>
+                            </Row>
+                            <Row>
+                                <Column ColumnSize="ColumnSize.Is12">
+                                    <Validation>
+                                        <Field>
+                                            <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 11102)</FieldLabel>
+                                            <MemoEdit @bind-Text="@templateHeadModel.TemplateHeader.TemplateDetail.Description" Rows="5">
+                                                <Feedback>
+                                                    <ValidationError />
+                                                </Feedback>
+                                            </MemoEdit>
+                                        </Field>
+                                    </Validation>
+                                </Column>
+                            </Row> 
+                        </Validations>
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is6">
+                                <Field>
+                                    <FieldLabel>@LanguageHelper.GetTitle(langQueryList, 10201)</FieldLabel>
+                                    <SelectList TItem="SelectListModel" TValue="string" Data="@StatusSelectListValues" TextField="@((item) => item.DescriptionField)" ValueField="@((item) => item.ValueField)" SelectedValue="@templateHeadModel.TemplateHeader.Status" SelectedValueChanged="@StatusListValueChangedHandler" />
+                                </Field>
+                            </Column>
+                        </Row>
+                    </CardBody>
+                </Card>
+            </Column>
+        </Row>
+        <Row>
+            <Column>
+                <Card Margin="Margin.Is4.OnY">
+                    <CardBody>
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is12">
+                                <PLAlert includeSnackBar="true" includeAlert="true" @ref="plAlert" />
+                            </Column>
+                        </Row>
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is4">
+                                @if (templateHeadModel.TemplateHeader.Id == Guid.Empty)
+                                {
+                                    <Button Type="ButtonType.Submit" Color="Color.Primary" PreventDefaultOnSubmit="true" Clicked="@SubmitForm" Loading="@SavingTemplateHead">@LanguageHelper.GetTitle(langQueryList, 11104)</Button>
+                                }
+                                else
+                                {
+                                    <Button Type="ButtonType.Submit" Color="Color.Primary" PreventDefaultOnSubmit="true" Clicked="@SubmitForm" Loading="@SavingTemplateHead">@LanguageHelper.GetTitle(langQueryList, 11105)</Button>
+                                }
+                            </Column>
+                        </Row>
+                    </CardBody>
+                </Card>
+            </Column>
+        </Row>
+    }
+}
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    LangQueryList langQueryList { get; set; }
+    TemplateHeadModel templateHeadModel { get; set; }
+    PageProgressBar pageProgressBar;
+    bool loadingPage = true;
+    IEnumerable<SelectListModel> StatusSelectListValues { get; set; }
+    IEnumerable<SelectListModel> TaskSelectListValues { get; set; }
+    PLAlert plAlert { get; set; }
+    bool SavingTemplateHead = false;
+    bool DetailDisabled = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetLanguageList();
+        await CreateSelectListModels();
+        await GetTemplate();
+        loadingPage = false;
+        pageProgressBar.ChangeVisibility(loadingPage);
+    }
+
+    private async Task GetLanguageList()
+    {
+        var textCodes = new List<long>();
+        textCodes.Add(10121);
+        textCodes.Add(10127);
+        textCodes.Add(11100);
+        textCodes.Add(10223);
+        textCodes.Add(10218);
+        textCodes.Add(10200);
+        textCodes.Add(10225);
+        textCodes.Add(11101);
+        textCodes.Add(11102);
+        textCodes.Add(11103);
+        textCodes.Add(11104);
+        textCodes.Add(11105);
+
+
+
+
+
+
+
+        //textCodes.Add(10111);
+        //textCodes.Add(10915);
+        //textCodes.Add(10908);
+
+
+        //textCodes.Add(10224);
+        //textCodes.Add(10222);
+        //textCodes.Add(10911);
+        //textCodes.Add(10225);
+        //textCodes.Add(10902);
+        //textCodes.Add(10904);
+        //textCodes.Add(10905);
+        //textCodes.Add(10201);
+        //textCodes.Add(10906);
+        //textCodes.Add(10907);
+        //textCodes.Add(10917);
+        //textCodes.Add(10918);
+        //textCodes.Add(11001);
+        //textCodes.Add(11006);
+        //textCodes.Add(11010);
+
+        langQueryList = await MyFoundationService.GetLanguageInfo(TokenProvider.AccessToken, UserAppCache.LanguageCode, textCodes.ToArray());
+    }
+
+    private string GetBreadCrumbTitle()
+    {
+        if (templateHeadModel == null)
+            return string.Empty;
+
+        if (templateHeadModel.TemplateHeader.Id == Guid.Empty)
+            return LanguageHelper.GetTitle(langQueryList, 11100);
+
+        return templateHeadModel.TemplateHeader.ShortName;
+    }
+
+    private async Task GetTemplate()
+    {
+        templateHeadModel = new TemplateHeadModel();
+        templateHeadModel.TemplateHeader.Id = Guid.Empty;
+
+        if (!string.IsNullOrWhiteSpace(Id))
+        {
+            var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.TASK, $"Template/{Id}");
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                templateHeadModel.TemplateHeader = response.ContentAsType<TemplateHead>();
+            }
+        }
+    }
+
+    private async Task CreateSelectListModels()
+    {
+        StatusTypes statusTypes = new StatusTypes();
+        StatusSelectListValues = statusTypes.GetStatusTypesDictionary().Select(s => new SelectListModel { ValueField = s.Key, DescriptionField = s.Value });
+        await CreateTaskSelectList();
+    }
+
+    private void StatusListValueChangedHandler(string newValue)
+    {
+        templateHeadModel.TemplateHeader.Status = newValue;
+    }
+
+    private async Task SubmitForm()
+    {
+        SavingTemplateHead = true;
+        var saveResult = await SaveTemplateHeadAsync();
+
+        plAlert.ShowAlert(saveResult.Item1, saveResult.Item2);
+
+        if (saveResult.Item1)
+        {
+
+        }
+
+        SavingTemplateHead = false;
+    }
+
+    private async Task<Tuple<bool, string>> SaveTemplateHeadAsync()
+    {
+        if (templateHeadModel.TemplateHeader != null)
+        {
+            if (templateHeadModel.TemplateHeader.Id != Guid.Empty)
+            {
+                var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.TASK, $"Template/{templateHeadModel.TemplateHeader.Id}");
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    var foundTemplateHead = response.ContentAsType<TemplateHead>();
+
+                    if (foundTemplateHead != null)
+                    {
+                        var processPatchResult = await MyFoundationService.ProcessPatch(foundTemplateHead, templateHeadModel.TemplateHeader, foundTemplateHead.Id, TokenProvider.AccessToken, APITypes.TASK, "Template");
+                        if (!processPatchResult.Item1)
+                        {
+                            return processPatchResult;
+                        }
+
+                        response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.TASK, $"Template/Detail/{templateHeadModel.TemplateHeader.TemplateDetail.Id}");
+
+                        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                        {
+                            var foundTemplateDet = response.ContentAsType<TemplateDet>();
+
+                            if (foundTemplateDet != null)
+                            {
+                                processPatchResult = await MyFoundationService.ProcessPatch(foundTemplateDet, templateHeadModel.TemplateHeader.TemplateDetail, foundTemplateDet.Id, TokenProvider.AccessToken, APITypes.TASK, "Template/Detail");
+                                if (!processPatchResult.Item1)
+                                {
+                                    return processPatchResult;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                HttpContent contentPost = new StringContent(JsonConvert.SerializeObject(templateHeadModel.TemplateHeader), Encoding.UTF8, "application/json");
+
+                try
+                {
+                    var uriPart = templateHeadModel.TaskGroupHeadId == Guid.Empty ? "Template" : $"Template/CreateTemplateFromTask/{templateHeadModel.TaskGroupHeadId}";
+
+                    var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Post, APITypes.TASK, uriPart, contentPost);
+
+                    if (response.StatusCode != System.Net.HttpStatusCode.Created)
+                    {
+                        return new Tuple<bool, string>(false, MyFoundationService.GetErrorFromResponse(response));
+                    }
+
+                    templateHeadModel.TemplateHeader = response.ContentAsType<TemplateHead>();
+                }
+                catch (Exception ex)
+                {
+                    return new Tuple<bool, string>(false, $"Error calling API: {ex.Message}");
+                }
+            }
+
+            return new Tuple<bool, string>(true, $"Template {templateHeadModel.TemplateHeader.ShortName} saved");
+        }
+
+        return new Tuple<bool, string>(false, $"No template to save");
+    }
+
+    private async Task CreateTaskSelectList()
+    {
+        var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.TASK, $"TaskGroup/GetMainTaskGroups");
+        Dictionary<string, string> TaskListDictionary = new Dictionary<string, string>();
+        TaskListDictionary.Add(Guid.Empty.ToString(), "None");
+
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var taskGroupList = response.ContentAsType<TaskGroupList>();
+
+            foreach (var taskGroupHeader in taskGroupList.TaskGroupHeaders.OrderBy(h => h.ShortName))
+            {
+                TaskListDictionary.Add(taskGroupHeader.Id.ToString(), taskGroupHeader.ShortName);
+            }
+        }
+
+        TaskSelectListValues = TaskListDictionary.Select(s => new SelectListModel { ValueField = s.Key, DescriptionField = s.Value });
+    }
+
+    private async Task TaskListValueChangedHandler(string newValue)
+    {
+        if (Guid.TryParse(newValue, out Guid newId))
+        {
+            templateHeadModel.TaskGroupHeadId = newId;
+
+            if (newId != Guid.Empty)
+            {
+                DetailDisabled = true;
+
+                var taskGroupHead = await GetTaskGroupSummary(newId);
+
+                if (taskGroupHead != null)
+                {
+                    templateHeadModel.TemplateHeader.TemplateDetail.Description = taskGroupHead.Description;
+                    return;
+                }
+            }
+        }
+        
+        templateHeadModel.TaskGroupHeadId = Guid.Empty;
+        DetailDisabled = false;
+    }
+
+    private async Task<TaskGroupHead> GetTaskGroupSummary(Guid taskGroupId)
+    {
+        var response = await MyFoundationService.MakeAPICallAsync(TokenProvider.AccessToken, HttpMethod.Get, APITypes.TASK, $"TaskGroup/GetTaskGroupSummary/{taskGroupId}");
+
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            return response.ContentAsType<TaskGroupHead>();
+        }
+
+        return null;
+    }
+}

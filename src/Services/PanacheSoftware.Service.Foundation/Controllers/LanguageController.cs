@@ -170,8 +170,7 @@ namespace PanacheSoftware.Service.Foundation.Controllers
 
                             _unitOfWork.Complete();
 
-                            return CreatedAtRoute("Get", new {id = _mapper.Map<LangHead>(languageHeader).Id},
-                                _mapper.Map<LangHead>(languageHeader));
+                            return Ok();
                         }
 
                         return NotFound();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -75,57 +76,72 @@ namespace PanacheSoftware.Service.Task.Controllers
 
                     if (taskHead.Id == Guid.Empty)
                     {
-                        TaskGroupHeader taskGroupHeader =
-                            _unitOfWork.TaskGroupHeaders.SingleOrDefault(c => c.Id == taskHead.TaskGroupHeaderId, true);
+                        var taskHeader = _mapper.Map<TaskHeader>(taskHead);
 
-                        if (taskGroupHeader != null)
-                        {
-                            if (await _taskManager.CanAccessTaskGroupHeaderAsync(taskGroupHeader.Id, accessToken))
-                            {
-                                if (taskGroupHeader.Id != Guid.Empty)
-                                {
-                                    var taskHeader = _mapper.Map<TaskHeader>(taskHead);
+                        var taskHeaderCreation = await _taskManager.CreateTaskHeader(taskHeader, accessToken);
 
-                                    //Make sure the start and completion dates don't fall outside of the group headers dates
-                                    taskHeader.StartDate = (taskHeader.StartDate < taskGroupHeader.StartDate)
-                                        ? taskGroupHeader.StartDate
-                                        : taskHeader.StartDate;
-                                    taskHeader.CompletionDate =
-                                        (taskHeader.CompletionDate > taskGroupHeader.CompletionDate)
-                                            ? taskGroupHeader.CompletionDate
-                                            : taskHeader.CompletionDate;
-
-                                    if (!await _taskManager.SetNewTaskSequenceNoAsync(taskHeader, accessToken))
-                                        return StatusCode(StatusCodes.Status400BadRequest,
-                                            new APIErrorMessage(StatusCodes.Status400BadRequest,
-                                                $"Unable to set task sequence number."));
-
-                                    _unitOfWork.TaskHeaders.Add(taskHeader);
-
-                                    _unitOfWork.Complete();
-
-                                    return Created(new Uri($"{Request.Path}/{taskHeader.Id}", UriKind.Relative),
-                                        _mapper.Map<TaskHead>(taskHeader));
-                                }
-
-                                return StatusCode(StatusCodes.Status400BadRequest,
-                                    new APIErrorMessage(StatusCodes.Status400BadRequest,
-                                        $"TaskHead.TaskGroupHeaderId: '{taskHead.TaskGroupHeaderId}' cannot be empty."));
-                            }
-
+                        if (!taskHeaderCreation.Item1)
                             return StatusCode(StatusCodes.Status400BadRequest,
                                 new APIErrorMessage(StatusCodes.Status400BadRequest,
-                                    $"TaskHead.TaskGroupHeaderId: Can't access '{taskHead.TaskGroupHeaderId}'."));
-                        }
+                                taskHeaderCreation.Item2));
 
-                        return StatusCode(StatusCodes.Status400BadRequest,
-                            new APIErrorMessage(StatusCodes.Status400BadRequest,
-                                $"TaskHead.TaskGroupHeaderId: '{taskHead.TaskGroupHeaderId}' is not valid."));
+                        return Created(new Uri($"{Request.Path}/{taskHeader.Id}", UriKind.Relative), 
+                            _mapper.Map<TaskHead>(taskHeader));
+
                     }
 
-                    return StatusCode(StatusCodes.Status400BadRequest,
-                        new APIErrorMessage(StatusCodes.Status400BadRequest,
-                            $"TaskHead.Id: '{taskHead.Id}' is not an empty guid."));
+                    //if (taskHead.Id == Guid.Empty)
+                    //{
+                    //    TaskGroupHeader taskGroupHeader =
+                    //        _unitOfWork.TaskGroupHeaders.SingleOrDefault(c => c.Id == taskHead.TaskGroupHeaderId, true);
+
+                    //    if (taskGroupHeader != null)
+                    //    {
+                    //        if (await _taskManager.CanAccessTaskGroupHeaderAsync(taskGroupHeader.Id, accessToken))
+                    //        {
+                    //            if (taskGroupHeader.Id != Guid.Empty)
+                    //            {
+                    //                var taskHeader = _mapper.Map<TaskHeader>(taskHead);
+
+                    //                //Make sure the start and completion dates don't fall outside of the group headers dates
+                    //                var dateCheck = await _taskManager.TaskDatesOkayAsync(taskHeader);
+
+                    //                if (!dateCheck.Item1)
+                    //                    return StatusCode(StatusCodes.Status400BadRequest,
+                    //                        new APIErrorMessage(StatusCodes.Status400BadRequest,
+                    //                        dateCheck.Item2));
+
+                    //                if (!await _taskManager.SetNewTaskSequenceNoAsync(taskHeader, accessToken))
+                    //                    return StatusCode(StatusCodes.Status400BadRequest,
+                    //                        new APIErrorMessage(StatusCodes.Status400BadRequest,
+                    //                            $"Unable to set task sequence number."));
+
+                    //                _unitOfWork.TaskHeaders.Add(taskHeader);
+
+                    //                _unitOfWork.Complete();
+
+                    //                return Created(new Uri($"{Request.Path}/{taskHeader.Id}", UriKind.Relative),
+                    //                    _mapper.Map<TaskHead>(taskHeader));
+                    //            }
+
+                    //            return StatusCode(StatusCodes.Status400BadRequest,
+                    //                new APIErrorMessage(StatusCodes.Status400BadRequest,
+                    //                    $"TaskHead.TaskGroupHeaderId: '{taskHead.TaskGroupHeaderId}' cannot be empty."));
+                    //        }
+
+                    //        return StatusCode(StatusCodes.Status400BadRequest,
+                    //            new APIErrorMessage(StatusCodes.Status400BadRequest,
+                    //                $"TaskHead.TaskGroupHeaderId: Can't access '{taskHead.TaskGroupHeaderId}'."));
+                    //    }
+
+                    //    return StatusCode(StatusCodes.Status400BadRequest,
+                    //        new APIErrorMessage(StatusCodes.Status400BadRequest,
+                    //            $"TaskHead.TaskGroupHeaderId: '{taskHead.TaskGroupHeaderId}' is not valid."));
+                    //}
+
+                    //return StatusCode(StatusCodes.Status400BadRequest,
+                    //    new APIErrorMessage(StatusCodes.Status400BadRequest,
+                    //        $"TaskHead.Id: '{taskHead.Id}' is not an empty guid."));
                 }
                 catch (Exception e)
                 {
@@ -173,21 +189,24 @@ namespace PanacheSoftware.Service.Task.Controllers
                                     taskHead.OriginalCompletionDate = taskHeader.OriginalCompletionDate;
                                     taskHead.OriginalStartDate = taskHeader.OriginalStartDate;
 
+                                    if (taskHead.ShortName != taskHeader.ShortName)
+                                        return StatusCode(StatusCodes.Status400BadRequest,
+                                            new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                                $"TaskHeader.ShortName: '{taskHeader.ShortName}' can't be changed."));
+
                                     //Make sure the start and completion dates don't fall outside of the group headers dates
-                                    taskHead.StartDate = (taskHead.StartDate < taskGroupHeader.StartDate)
-                                        ? taskGroupHeader.StartDate
-                                        : taskHead.StartDate;
-                                    taskHead.CompletionDate =
-                                        (taskHead.CompletionDate > taskGroupHeader.CompletionDate)
-                                            ? taskGroupHeader.CompletionDate
-                                            : taskHead.CompletionDate;
+                                    var dateCheck = _taskManager.TaskDatesOkay(_mapper.Map<TaskHeader>(taskHead));
+
+                                    if (!dateCheck.Item1)
+                                        return StatusCode(StatusCodes.Status400BadRequest,
+                                            new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                            dateCheck.Item2));
 
                                     _mapper.Map(taskHead, taskHeader);
 
                                     _unitOfWork.Complete();
 
-                                    return CreatedAtRoute("Get", new {id = _mapper.Map<TaskHead>(taskHeader).Id},
-                                        _mapper.Map<TaskHead>(taskHeader));
+                                    return Ok();
                                 }
 
                                 return StatusCode(StatusCodes.Status400BadRequest,
@@ -215,9 +234,9 @@ namespace PanacheSoftware.Service.Task.Controllers
             return BadRequest(new APIErrorMessage(StatusCodes.Status400BadRequest, "One or more validation errors occurred.", ModelState));
         }
 
-        [Route("[action]/{id}")]
+        [Route("[action]/{id}/{completionDate}")]
         [HttpPost]
-        public async Task<IActionResult> Complete(string id)
+        public async Task<IActionResult> Complete(string id, string completionDate)
         {
             try
             {
@@ -235,14 +254,17 @@ namespace PanacheSoftware.Service.Task.Controllers
                             {
                                 taskHeader.Completed = true;
 
-                                if (DateTime.Today <= taskHeader.StartDate)
-                                {
-                                    taskHeader.CompletedOnDate = taskHeader.CompletionDate;
-                                }
-                                else
-                                {
-                                    taskHeader.CompletedOnDate = DateTime.Today;
-                                }
+                                var dateTimeFormatString = "yyyyMMddHHmmss";
+                                DateTime.TryParseExact(string.IsNullOrWhiteSpace(completionDate) ? "19000101000000" : completionDate, dateTimeFormatString, null, DateTimeStyles.None, out DateTime convertedDateTime);
+
+                                taskHeader.CompletedOnDate = convertedDateTime;
+
+                                var dateCheck = _taskManager.TaskDatesOkay(taskHeader);
+
+                                if (!dateCheck.Item1)
+                                    return StatusCode(StatusCodes.Status400BadRequest,
+                                        new APIErrorMessage(StatusCodes.Status400BadRequest,
+                                        dateCheck.Item2));
 
                                 _unitOfWork.Complete();
 
