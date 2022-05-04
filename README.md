@@ -8,7 +8,7 @@
 
 ## Branches
 
-Significant updates and changes to the project are currently within the 'Field/APICreation' branch.  These changes will be merged into the main branch shortly.
+Main Branch is current.
 
 ## Panache Legal Platform
 
