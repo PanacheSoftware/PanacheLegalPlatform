@@ -55,27 +55,58 @@ namespace PanacheSoftware.UI.Client.Blazor.Pages.File
                 {
                     if (parsedId != Guid.Empty)
                     {
-                        if(!Automated)
+                        Guid.TryParse(VersionId, out Guid parsedVersionId);
+
+                        if (!Automated)
                         {
+                            var queryString = parsedVersionId == Guid.Empty ? $"File/{parsedId}" : $"File/Version/{parsedVersionId}";
+
                             //var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FILE, $"File/Version/{parsedId}");
-                            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FILE, $"File/{parsedId}");
+                            //var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FILE, $"File/{parsedId}");
+                            var response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FILE, queryString);
 
                             if (response.StatusCode == System.Net.HttpStatusCode.OK)
                             {
-                                var fileHeader = response.ContentAsType<FileHead>();
-
-                                if (Guid.TryParse(VersionId, out Guid versionId))
+                                if(parsedVersionId == Guid.Empty)
                                 {
-                                    var foundFileVersion = fileHeader.FileVersions.OrderByDescending(v => v.VersionNumber).FirstOrDefault();
+                                    var fileHeader = response.ContentAsType<FileHead>();
 
-                                    if (versionId != Guid.Empty)
-                                    {
-                                        foundFileVersion = fileHeader.FileVersions.FirstOrDefault(v => v.Id == versionId);
-                                    }
+                                    var foundFileVersion = fileHeader.FileVersions.FirstOrDefault(v => v.Id == parsedVersionId);
 
                                     if (foundFileVersion != null)
                                     {
                                         return File(foundFileVersion.Content, fileHeader.FileDetail.FileType, foundFileVersion.TrustedName);
+                                    }
+
+                                    //if (Guid.TryParse(VersionId, out Guid versionId))
+                                    //{
+                                    //    var foundFileVersion = fileHeader.FileVersions.OrderByDescending(v => v.VersionNumber).FirstOrDefault();
+
+                                    //    if (versionId != Guid.Empty)
+                                    //    {
+                                    //        foundFileVersion = fileHeader.FileVersions.FirstOrDefault(v => v.Id == versionId);
+                                    //    }
+
+                                    //    if (foundFileVersion != null)
+                                    //    {
+                                    //        return File(foundFileVersion.Content, fileHeader.FileDetail.FileType, foundFileVersion.TrustedName);
+                                    //    }
+                                    //}
+                                }
+                                else
+                                {
+                                    var fileVersion = response.ContentAsType<FileVer>();
+
+                                    if (fileVersion != null)
+                                    {
+                                        response = await _apiHelper.MakeAPICallAsync(accessToken, HttpMethod.Get, APITypes.FILE, $"File/{fileVersion.FileHeaderId}");
+
+                                        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                                        {
+                                            var fileHeader = response.ContentAsType<FileHead>();
+
+                                            return File(fileVersion.Content, fileHeader.FileDetail.FileType, fileVersion.TrustedName);
+                                        }
                                     }
                                 }
                             }

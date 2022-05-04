@@ -449,7 +449,7 @@ namespace PanacheSoftware.Service.Automation.Manager
 
             foreach (var autoVal in values)
             {
-                wmlDoc = wmlDoc.SearchAndReplace($"{openVariableSymbol}{autoVal.Placeholder}{closeVariableSymbol}", autoVal.Value, false);
+                wmlDoc = wmlDoc.SearchAndReplace($"{openVariableSymbol}{autoVal.Placeholder}{closeVariableSymbol}", string.IsNullOrWhiteSpace(autoVal.Value) ? " " : autoVal.Value, false);
             }
 
             return wmlDoc.DocumentByteArray;

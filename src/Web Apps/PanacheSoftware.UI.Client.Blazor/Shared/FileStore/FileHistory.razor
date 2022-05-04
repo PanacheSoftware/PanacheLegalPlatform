@@ -112,7 +112,7 @@
 
     private string GetFileDownloadLink(Guid fileVersionId)
     {
-        return $"/File/Download/{fileHead.Id}/{fileVersionId}";
+        return $"/File/Download/{fileHead.Id}/{fileVersionId}/False/{Guid.Empty}/{linkType}";
     }
 
     private void ShowFileHistory()
