@@ -1,6 +1,7 @@
 #See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-FROM mcr.microsoft.com/dotnet/aspnet:6.0-bullseye-slim-arm32v7 AS base
+#FROM mcr.microsoft.com/dotnet/aspnet:6.0-bullseye-slim-arm32v7 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:6.0-bullseye-slim AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
@@ -21,10 +22,10 @@ COPY ["Core/PanacheSoftware.Http/PanacheSoftware.Http.csproj", "Core/PanacheSoft
 RUN dotnet restore "Web Apps/PanacheSoftware.UI.Client.Blazor/PanacheSoftware.UI.Client.Blazor.csproj"
 COPY . .
 WORKDIR "/src/Web Apps/PanacheSoftware.UI.Client.Blazor"
-RUN dotnet build "PanacheSoftware.UI.Client.Blazor.csproj" -c Release -o /app/build -r linux-arm
+RUN dotnet build "PanacheSoftware.UI.Client.Blazor.csproj" -c Release -o /app/build #-r linux-arm
 
 FROM build AS publish
-RUN dotnet publish "PanacheSoftware.UI.Client.Blazor.csproj" -c Release -o /app/publish -r linux-arm --self-contained false --no-restore
+RUN dotnet publish "PanacheSoftware.UI.Client.Blazor.csproj" -c Release -o /app/publish --no-restore #-r linux-arm --self-contained false --no-restore
 
 FROM base AS final
 WORKDIR /app

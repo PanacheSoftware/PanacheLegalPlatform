@@ -10,7 +10,7 @@
     <Card Margin="Margin.Is4.OnY">
         <CardHeader>
             <CardTitle>@customFieldGroupValuesModel.customFieldGroupHeader.LongName
-                <CascadingValue Value="langQueryList"><DocAutoCustomFieldGroupModal customFieldGroupHead=@customFieldGroupValuesModel.customFieldGroupHeader CustomFieldRows=@CustomFieldRows LinkType=@customFieldGroupValuesModel.LinkType LinkId=@customFieldGroupValuesModel.LinkId /></CascadingValue>
+                <CascadingValue Value="langQueryList"><DocAutoCustomFieldGroupModal customFieldGroupHead=@customFieldGroupValuesModel.customFieldGroupHeader CustomFieldRows=@CustomFieldRows LinkType=@customFieldGroupValuesModel.LinkType LinkId=@customFieldGroupValuesModel.LinkId MainParent=MainParent/></CascadingValue>
             </CardTitle>
         </CardHeader>
         <CardBody>
@@ -164,6 +164,9 @@
 
     [Parameter]
     public bool ReadOnly { get; set; }
+
+    [Parameter]
+    public bool MainParent { get; set; }
 
     bool SavingFieldGroup = false;
     PLAlert plAlert { get; set; }

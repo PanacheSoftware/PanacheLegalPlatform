@@ -11,5 +11,6 @@ namespace PanacheSoftware.Service.Task.Core.Repositories
     {
         TemplateHeader GetTemplateHeaderWithRelations(string templateHeaderShortName, bool readOnly, string accessToken);
         TemplateHeader GetTemplateHeaderWithRelations(Guid templateHeaderId, bool readOnly, string accessToken);
+        IList<TemplateHeader> GetTemplateHeadersWithDetails(bool readOnly);
     }
 }

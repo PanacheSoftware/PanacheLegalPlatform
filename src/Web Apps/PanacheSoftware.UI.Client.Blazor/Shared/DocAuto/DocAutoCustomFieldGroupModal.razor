@@ -70,6 +70,9 @@
     [Parameter]
     public Guid LinkId { get; set; }
 
+    [Parameter]
+    public bool MainParent { get; set; }
+
     private string taskGroupShortName = string.Empty;
     private string taskItemShortName = string.Empty;
 
@@ -200,7 +203,10 @@
         var autoDocTag = new AutoDocTag();
 
         if(!string.IsNullOrWhiteSpace(taskGroupShortName))
-            autoDocTag.TaskGroup = taskGroupShortName;
+        {
+            if(!MainParent)
+                autoDocTag.TaskGroup = taskGroupShortName;
+        }
 
         if(!string.IsNullOrWhiteSpace(taskItemShortName))
             autoDocTag.TaskItem = taskItemShortName;     

@@ -69,5 +69,18 @@ namespace PanacheSoftware.Service.Task.Persistance.Repositories.Template
 
             return foundGuid;
         }
+
+        public IList<TemplateHeader> GetTemplateHeadersWithDetails(bool readOnly)
+        {
+            if (readOnly)
+                return PanacheSoftwareServiceTaskContext.TemplateHeaders
+                .Include(t => t.TemplateDetail)
+                .AsNoTracking()
+                .Where(t => t.Status != StatusTypes.Closed).ToList();
+
+            return PanacheSoftwareServiceTaskContext.TemplateHeaders
+                .Include(t => t.TemplateDetail)
+                .Where(t => t.Status != StatusTypes.Closed).ToList();
+        }
     }
 }

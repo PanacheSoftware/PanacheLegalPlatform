@@ -531,7 +531,7 @@ namespace PanacheSoftware.Service.Task.Manager
                     childTaskItemHead.CompletionDate = childTaskItemHead.StartDate.AddDays(templateItemHeader.TemplateItemDetail.TotalDays);
                     childTaskItemHead.TaskGroupHeaderId = childTaskGroupHeader.Id;
                     childTaskItemHead.MainUserId = childTaskGroupHeader.MainUserId;
-                    childTaskItemHead.ShortName = childTaskGroupHeader.ShortName;
+                    childTaskItemHead.ShortName = templateItemHeader.ShortName;
                     var childTaskItemHeader = _mapper.Map<TaskHeader>(childTaskItemHead);
 
                     var childTaskItemCreation = await CreateTaskHeader(childTaskItemHeader, accessToken);

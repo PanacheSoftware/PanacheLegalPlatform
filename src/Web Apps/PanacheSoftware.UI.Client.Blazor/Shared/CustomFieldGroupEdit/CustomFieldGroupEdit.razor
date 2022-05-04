@@ -10,7 +10,7 @@
     {
         @foreach (var customFieldGroupValuesModel in customFieldGroupValuesModelList.CustomFieldGroupValuesModels)
         {
-            <CustomFieldGroupValueEdit customFieldGroupValuesModel="customFieldGroupValuesModel" ReadOnly="ReadOnly"/>
+            <CustomFieldGroupValueEdit customFieldGroupValuesModel="customFieldGroupValuesModel" ReadOnly="ReadOnly" MainParent=MainParent/>
         }
     }
 }
@@ -28,6 +28,9 @@
 
     [Parameter]
     public bool ReadOnly { get; set; }
+
+    [Parameter]
+    public bool MainParent { get; set; }
 
     private CustomFieldGroupValuesModelList customFieldGroupValuesModelList { get; set; }
 

@@ -41,7 +41,7 @@ namespace PanacheSoftware.Service.Task.Manager
 
             var templateHeadList = new TemplateHeadList();
 
-            foreach (var currentTemplateHeader in _unitOfWork.TemplateHeaders.GetAll(true))
+            foreach (var currentTemplateHeader in _unitOfWork.TemplateHeaders.GetTemplateHeadersWithDetails(true))
             {
                 templateHeadList.TemplateHeaders.Add(_mapper.Map<TemplateHead>(currentTemplateHeader));
             }
@@ -108,7 +108,7 @@ namespace PanacheSoftware.Service.Task.Manager
 
                 foreach (var taskItemHeader in taskGroupHeader.ChildTasks)
                 {
-                    var taskHeader = _unitOfWork.TaskHeaders.GetTaskHeader(taskItemHeader.Id, true);
+                    //var taskHeader = _unitOfWork.TaskHeaders.GetTaskHeader(taskItemHeader.Id, true);
 
                     var templateItemHeader = new TemplateItemHeader();
 
@@ -121,7 +121,7 @@ namespace PanacheSoftware.Service.Task.Manager
                     templateItemHeader.SequenceNumber = taskItemHeader.SequenceNumber;
                     templateItemHeader.TemplateItemDetail.DaysOffset = (taskItemHeader.StartDate - taskGroupHeader.StartDate).Days;
                     templateItemHeader.TemplateItemDetail.TotalDays = (taskItemHeader.CompletionDate - taskItemHeader.StartDate).Days;
-                    templateItemHeader.ShortName = taskHeader.ShortName;
+                    templateItemHeader.ShortName = taskItemHeader.ShortName;
                     templateItemHeader.TemplateGroupHeaderId = templateGroupHeader.Id;
 
                     _unitOfWork.TemplateItemHeaders.Add(templateItemHeader);

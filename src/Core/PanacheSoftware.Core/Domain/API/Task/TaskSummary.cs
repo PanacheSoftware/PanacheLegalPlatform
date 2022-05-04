@@ -39,5 +39,7 @@ namespace PanacheSoftware.Core.Domain.API.Task
         //Adding this is a temporary fix for the task group and task item summary pages
         public LangQueryList langQueryList { get; set; }
         public string MainUserName { get; set; }
+
+        public string ShortName { get; set; }
     }
 }

@@ -93,7 +93,7 @@
             }
             <Row>
                 <Column ColumnSize="ColumnSize.Is12">
-                    <CustomFieldGroupEdit @ref="customFieldGroupEdit" linkId="@taskHead.Id" linkType="@LinkTypes.Task" ReadOnly="@taskHead.Completed"/>
+                    <CustomFieldGroupEdit @ref="customFieldGroupEdit" linkId="@taskHead.Id" linkType="@LinkTypes.Task" ReadOnly="@taskHead.Completed" MainParent=false/>
                 </Column>
             </Row>
         </CardBody>
