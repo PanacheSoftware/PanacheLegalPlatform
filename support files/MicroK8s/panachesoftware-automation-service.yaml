@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: panachesoftware-service-automation
+  labels:
+    app: panachesoftware-service-automation
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: panachesoftware-service-automation
+  template:
+    metadata:
+      labels:
+        app: panachesoftware-service-automation
+    spec:
+      containers:
+      - env:
+          - name: ASPNETCORE_ENVIRONMENT
+            value: Development
+          - name: ASPNETCORE_URLS
+            value: http://+:55010
+          - name: PanacheSoftware__CallMethod__APICallsSecure
+            value: "False"
+          - name: PanacheSoftware__CallMethod__UICallsSecure
+            value: "False"
+          - name: PanacheSoftware__CallMethod__UseAPIGateway
+            value: "True"
+          - name: PanacheSoftware__Secret__AutomationServiceSecret
+            value: C4CCF7EA-0F2D-4BF8-8941-98D43A5E1605
+          - name: PanacheSoftware__StartDomain
+            value: panachesoftware.com
+          - name: PanacheSoftware__Url__IdentityServerURL
+            value: http://{server-IP}:30002
+          - name: PanacheSoftware__Url__IdentityServerURLSecure
+            value: https://{server-IP}:30002
+          - name: PanacheSoftware__Url__APIGatewayURL
+            value: http://{server-IP}:30003
+          - name: PanacheSoftware__Url__APIGatewayURLSecure
+            value: https://{server-IP}:30003
+        image: panachesoftware/panachesoftwareserviceautomation:latest
+        name: panachesoftware-service-automation
+        ports:
+        - containerPort: 55010
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: panachesoftware-service-automation-service
+spec:
+  type: NodePort
+  selector:
+    app: panachesoftware-service-automation
+  ports:
+    - protocol: TCP
+      port: 55010
+      targetPort: 55010
+      nodePort: 30010

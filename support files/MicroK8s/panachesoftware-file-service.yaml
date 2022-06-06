@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: panachesoftware-service-file
+  labels:
+    app: panachesoftware-service-file
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: panachesoftware-service-file
+  template:
+    metadata:
+      labels:
+        app: panachesoftware-service-file
+    spec:
+      containers:
+      - env:
+          - name: ASPNETCORE_ENVIRONMENT
+            value: Development
+          - name: ASPNETCORE_URLS
+            value: http://+:55008
+          - name: ConnectionStrings__MySQL
+            value: server={db-server-IP};port=3306;database=PanacheSoftware.File.K8S;user={db-user};password={db-password};GuidFormat=Char36
+          - name: PanacheSoftware__CallMethod__APICallsSecure
+            value: "False"
+          - name: PanacheSoftware__CallMethod__UICallsSecure
+            value: "False"
+          - name: PanacheSoftware__CallMethod__UseAPIGateway
+            value: "True"
+          - name: PanacheSoftware__DBProvider
+            value: MySQL
+          - name: PanacheSoftware__Secret__FileServiceSecret
+            value: 6D20E27B-18EE-4694-AFB7-929343F51D43
+          - name: PanacheSoftware__StartDomain
+            value: panachesoftware.com
+          - name: PanacheSoftware__Url__IdentityServerURL
+            value: http://{server-IP}:30002
+          - name: PanacheSoftware__Url__IdentityServerURLSecure
+            value: https://{server-IP}:30002
+        image: panachesoftware/panachesoftwareservicefile:latest
+        name: panachesoftware-service-file
+        ports:
+        - containerPort: 55008
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: panachesoftware-service-file-service
+spec:
+  type: NodePort
+  selector:
+    app: panachesoftware-service-file
+  ports:
+    - protocol: TCP
+      port: 55008
+      targetPort: 55008
+      nodePort: 30008

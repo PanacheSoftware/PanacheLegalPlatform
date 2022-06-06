@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: panachesoftware-api-gateway
+  labels:
+    app: panachesoftware-api-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: panachesoftware-api-gateway
+  template:
+    metadata:
+      labels:
+        app: panachesoftware-api-gateway
+    spec:
+      containers:
+      - env:
+          - name: ASPNETCORE_ENVIRONMENT
+            value: Development
+          - name: ASPNETCORE_URLS
+            value: http://+:55003
+          - name: PanacheSoftware__CallMethod__APICallsSecure
+            value: "False"
+          - name: PanacheSoftware__CallMethod__UICallsSecure
+            value: "False"
+          - name: PanacheSoftware__CallMethod__UseAPIGateway
+            value: "True"
+          - name: PanacheSoftware__Secret__APIGatewaySecret
+            value: D32CAA87-2F1F-4D35-B2DF-C712C2AFF6C3
+          - name: PanacheSoftware__StartDomain
+            value: panachesoftware.com
+          - name: PanacheSoftware__Url__IdentityServerURL
+            value: http://{server-IP}:30002
+          - name: PanacheSoftware__Url__IdentityServerURLSecure
+            value: https://{server-IP}:30002
+          - name: GlobalConfiguration__BaseUrl
+            value: http://{server-IP}:30003
+        image: panachesoftware/panachesoftwareapigateway:latest
+        name: panachesoftware-api-gateway
+        ports:
+        - containerPort: 55003
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: panachesoftware-api-gateway-service
+spec:
+  type: NodePort
+  selector:
+    app: panachesoftware-api-gateway
+  ports:
+    - protocol: TCP
+      port: 55003
+      targetPort: 55003
+      nodePort: 30003

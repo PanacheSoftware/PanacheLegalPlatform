@@ -1,0 +1,10 @@
+microk8s kubectl delete -f panachesoftware-api-gateway.yaml
+microk8s kubectl delete -f panachesoftware-automation-service.yaml
+microk8s kubectl delete -f panachesoftware-client-service.yaml
+microk8s kubectl delete -f panachesoftware-customfield-service.yaml
+microk8s kubectl delete -f panachesoftware-file-service.yaml
+microk8s kubectl delete -f panachesoftware-foundation-service.yaml
+microk8s kubectl delete -f panachesoftware-identity.yaml
+microk8s kubectl delete -f panachesoftware-task-service.yaml
+microk8s kubectl delete -f panachesoftware-team-service.yaml
+microk8s kubectl delete -f panachesoftware-ui-client.yaml

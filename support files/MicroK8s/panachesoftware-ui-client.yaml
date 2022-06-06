@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: panachesoftware-ui-client
+  labels:
+    app: panachesoftware-ui-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: panachesoftware-ui-client
+  template:
+    metadata:
+      labels:
+        app: panachesoftware-ui-client
+    spec:
+      containers:
+      - env:
+          - name: ASPNETCORE_ENVIRONMENT
+            value: Development
+          - name: ASPNETCORE_URLS
+            value: http://+:55001
+          - name: PanacheSoftware__CallMethod__APICallsSecure
+            value: "False"
+          - name: PanacheSoftware__CallMethod__UICallsSecure
+            value: "False"
+          - name: PanacheSoftware__CallMethod__UseAPIGateway
+            value: "True"
+          - name: PanacheSoftware__Secret__UIClientSecret
+            value: 9C32BBD1-9C08-40FA-96C3-2195F61661F1
+          - name: PanacheSoftware__StartDomain
+            value: panachesoftware.com
+          - name: PanacheSoftware__Url__APIGatewayURL
+            value: http://{server-IP}:30003
+          - name: PanacheSoftware__Url__APIGatewayURLSecure
+            value: https://{server-IP}:30003
+          - name: PanacheSoftware__Url__AutomationServiceURL
+            value: http://{server-IP}:30010
+          - name: PanacheSoftware__Url__AutomationServiceURLSecure
+            value: https://{server-IP}:30010
+          - name: PanacheSoftware__Url__ClientServiceURL
+            value: http://{server-IP}:30005
+          - name: PanacheSoftware__Url__ClientServiceURLSecure
+            value: https://{server-IP}:30005
+          - name: PanacheSoftware__Url__FileServiceURL
+            value: http://{server-IP}:30008
+          - name: PanacheSoftware__Url__FileServiceURLSecure
+            value: https://{server-IP}:30008
+          - name: PanacheSoftware__Url__FoundationServiceURL
+            value: http://{server-IP}:30004
+          - name: PanacheSoftware__Url__FoundationServiceURLSecure
+            value: https://{server-IP}:30004
+          - name: PanacheSoftware__Url__IdentityServerURL
+            value: http://{server-IP}:30002
+          - name: PanacheSoftware__Url__IdentityServerURLSecure
+            value: https://{server-IP}:30002
+          - name: PanacheSoftware__Url__TaskServiceURL
+            value: http://{server-IP}:30007
+          - name: PanacheSoftware__Url__TaskServiceURLSecure
+            value: https://{server-IP}:30007
+          - name: PanacheSoftware__Url__TeamServiceURL
+            value: http://{server-IP}:30006
+          - name: PanacheSoftware__Url__TeamServiceURLSecure
+            value: https://{server-IP}:30006
+          - name: PanacheSoftware__Url__CustomFieldServiceURL
+            value: http://{server-IP}:30009
+          - name: PanacheSoftware__Url__CustomFieldServiceURLSecure
+            value: https://{server-IP}:30009
+          - name: PanacheSoftware__Url__UIClientURL
+            value: http://{server-IP}:30001
+          - name: PanacheSoftware__Url__UIClientURLSecure
+            value: https://{server-IP}:30001
+        image: panachesoftware/panachesoftwareuiclient:latest
+        name: panachesoftware-ui-client
+        ports:
+        - containerPort: 55001
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: panachesoftware-ui-client-service
+spec:
+  type: NodePort
+  selector:
+    app: panachesoftware-ui-client
+  ports:
+    - protocol: TCP
+      port: 55001
+      targetPort: 55001
+      nodePort: 30001

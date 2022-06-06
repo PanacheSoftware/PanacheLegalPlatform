@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: panachesoftware-service-customfield
+  labels:
+    app: panachesoftware-service-customfield
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: panachesoftware-service-customfield
+  template:
+    metadata:
+      labels:
+        app: panachesoftware-service-customfield
+    spec:
+      containers:
+      - env:
+          - name: ASPNETCORE_ENVIRONMENT
+            value: Development
+          - name: ASPNETCORE_URLS
+            value: http://+:55009
+          - name: ConnectionStrings__MySQL
+            value: server={db-server-IP};port=3306;database=PanacheSoftware.CustomField.K8S;user={db-user};password={db-password};GuidFormat=Char36
+          - name: PanacheSoftware__CallMethod__APICallsSecure
+            value: "False"
+          - name: PanacheSoftware__CallMethod__UICallsSecure
+            value: "False"
+          - name: PanacheSoftware__CallMethod__UseAPIGateway
+            value: "True"
+          - name: PanacheSoftware__DBProvider
+            value: MySQL
+          - name: PanacheSoftware__Secret__CustomFieldServiceSecret
+            value: 98E90BBB-2343-4B3B-B008-5A958BE60AF3
+          - name: PanacheSoftware__StartDomain
+            value: panachesoftware.com
+          - name: PanacheSoftware__Url__IdentityServerURL
+            value: http://{server-IP}:30002
+          - name: PanacheSoftware__Url__IdentityServerURLSecure
+            value: https://{server-IP}:30002
+        image: panachesoftware/panachesoftwareservicecustomfield:latest
+        name: panachesoftware-service-customfield
+        ports:
+        - containerPort: 55009
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: panachesoftware-service-customfield-service
+spec:
+  type: NodePort
+  selector:
+    app: panachesoftware-service-customfield
+  ports:
+    - protocol: TCP
+      port: 55009
+      targetPort: 55009
+      nodePort: 30009

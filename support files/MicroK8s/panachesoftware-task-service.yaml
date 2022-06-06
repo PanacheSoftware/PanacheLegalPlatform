@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: panachesoftware-service-task
+  labels:
+    app: panachesoftware-service-task
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: panachesoftware-service-task
+  template:
+    metadata:
+      labels:
+        app: panachesoftware-service-task
+    spec:
+      containers:
+      - env:
+          - name: ASPNETCORE_ENVIRONMENT
+            value: Development
+          - name: ASPNETCORE_URLS
+            value: http://+:55007
+          - name: ConnectionStrings__MySQL
+            value: server={db-server-IP};port=3306;database=PanacheSoftware.Task.K8S;user={db-user};password={db-password};GuidFormat=Char36
+          - name: PanacheSoftware__CallMethod__APICallsSecure
+            value: "False"
+          - name: PanacheSoftware__CallMethod__UICallsSecure
+            value: "False"
+          - name: PanacheSoftware__CallMethod__UseAPIGateway
+            value: "True"
+          - name: PanacheSoftware__DBProvider
+            value: MySQL
+          - name: PanacheSoftware__Secret__TaskServiceSecret
+            value: 8CDD9C0B-EAD3-4377-A42E-AEEAC9909C0D
+          - name: PanacheSoftware__StartDomain
+            value: panachesoftware.com
+          - name: PanacheSoftware__Url__IdentityServerURL
+            value: http://{server-IP}:30002
+          - name: PanacheSoftware__Url__IdentityServerURLSecure
+            value: https://{server-IP}:30002
+          - name: PanacheSoftware__Url__APIGatewayURL
+            value: http://{server-IP}:30003
+          - name: PanacheSoftware__Url__APIGatewayURLSecure
+            value: https://{server-IP}:30003
+        image: panachesoftware/panachesoftwareservicetask:latest
+        name: panachesoftware-service-task
+        ports:
+        - containerPort: 55007
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: panachesoftware-service-task-service
+spec:
+  type: NodePort
+  selector:
+    app: panachesoftware-service-task
+  ports:
+    - protocol: TCP
+      port: 55007
+      targetPort: 55007
+      nodePort: 30007
