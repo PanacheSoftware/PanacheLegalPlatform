@@ -26,7 +26,9 @@ With the project currently being in an early pre-alpha stage many components are
 
 ## Documentation
 
-For project documentation please visit [ReadTheDocs](https://panachelegal.readthedocs.io/)
+For project documentation please visit [ReadTheDocs](https://panachelegal.readthedocs.io/).
+
+I've also written a [dev.to guide](https://dev.to/panachesoftwaredev/making-a-local-microk8s-environment-available-externally-part-1-building-a-linux-vm-1n3d) which details how to get your own environment up and running using MicroK8s.
 
 ## Docker
 
