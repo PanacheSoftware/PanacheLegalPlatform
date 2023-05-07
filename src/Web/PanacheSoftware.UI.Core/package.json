@@ -26,7 +26,7 @@
     "datatables.net-responsive-bs4": "^2.2.3",
     "jquery": "^3.5.1",
     "malihu-custom-scrollbar-plugin": "^3.1.5",
-    "orgchart": "^2.1.9",
+    "orgchart": "^3.6.0",
     "popper.js": "^1.16.0"
   },
   "devDependencies": {
