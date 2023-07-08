@@ -26,15 +26,15 @@
     "datatables.net-responsive-bs4": "^2.2.3",
     "jquery": "^3.5.1",
     "malihu-custom-scrollbar-plugin": "^3.1.5",
-    "orgchart": "^2.1.9",
+    "orgchart": "^3.8.0",
     "popper.js": "^1.16.0"
   },
   "devDependencies": {
     "browser-sync": "^2.26.7",
     "gulp": "^4.0.2",
     "gulp-autoprefixer": "^7.0.1",
-    "gulp-sass": "^4.0.2",
-    "node-sass": "^4.14.1"
+    "gulp-sass": "^5.1.0",
+    "node-sass": "^9.0.0"
   },
   "scripts": {
     "start": "gulp"
